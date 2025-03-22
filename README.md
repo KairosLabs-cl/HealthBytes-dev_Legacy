@@ -1,4 +1,4 @@
-### ⚠️ Este no es el readme oficial es un esquema de este asi que no tomar literal lo que dice acá
+### ⚠️ Este no es el readme oficial es un esquema, asi que no tomar literal lo que dice acá
 
 # ❤️‍🩹 SafeBities - 
 
