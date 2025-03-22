@@ -51,14 +51,6 @@ npm install
 npm run android  # o npm run ios
 ```
 
-## 📌 Próximas Tareas / Roadmap
-
-- [ ] Integración completa con pasarela de pagos
-- [ ] Sistema de notificaciones push
-- [ ] Pruebas automatizadas y cobertura
-- [ ] Documentación Swagger para las APIs
-- [ ] Mejoras en el módulo Backoffice
-
 ## 🤝 Equipo de Desarrollo
 
 - **Product Owner:** 
