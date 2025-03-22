@@ -2,7 +2,7 @@
 
 # ❤️‍🩹 SafeBities - 
 
-Proyecto de desarrollo de la aplicación eCommerce **SafeBities** con enfoque en arquitectura monolítica y API REST con **FastAPI**.
+El proyecto se centra en desarrollar una aplicación de e-commerce para personas con necesidades alimenticias específicas, como diabetes y celiaquía. La arquitectura será monolítica, usando FastAPI para el backend y React Native para el frontend, priorizando la versión móvil.
 
 ## 📂 Estructura del Proyecto
 
