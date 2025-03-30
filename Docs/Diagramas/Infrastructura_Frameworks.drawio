@@ -90,7 +90,7 @@
           <mxGeometry x="25" y="140" width="230" height="30" as="geometry" />
         </mxCell>
         <mxCell id="unBNjvJRPo2GrpM0oRp7-10" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;⚠️Consideraciones&lt;/h1&gt;&lt;p&gt;Este no es el listado final de frameworks, esto evolucionara con el tiempo.&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="20" y="20" width="250" height="150" as="geometry" />
+          <mxGeometry x="670" y="90" width="250" height="150" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
