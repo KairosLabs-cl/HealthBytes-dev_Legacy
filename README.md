@@ -17,9 +17,9 @@ Desarrollar un **Ecomerce funcional** con:
 
 ## 📊 Diagramas de organizacion
 ### 🥷 Infraestructura Personal
-![Infraestructura Personal](Docs/Diagramas/Infrastructura_Frameworks.drawio.png)
+![Infraestructura Personal](Docs/Diagramas/Infrastructura_personal.drawio.png)
 ### ⚙️ Infraestructura Frameworks
-![Infraestructura Frameworks](Docs/Diagramas/Infrastructura_personal.drawio.png)
+![Infraestructura Frameworks](Docs/Diagramas/Infrastructura_Frameworks.drawio.png)
 
 ---
 ## 📂 Estructura del Proyecto
