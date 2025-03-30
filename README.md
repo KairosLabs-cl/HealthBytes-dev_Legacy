@@ -5,10 +5,14 @@ El proyecto se centra en desarrollar una aplicación de e-commerce para personas
 ## 🎯 Objetivo General del Q2 / MVP - Desarrollo App Móvil
 
 Desarrollar un **Ecomerce funcional** con:
-- 🛒 Agregar productos
-- 💳 Portal de pagos
-- 📅 Reservas de productos
-- 🔗 Integración con proveedores
+- 🏠 Página Principal {prioridad alta}
+- 🔍 Búsqueda de Productos {prioridad alta}
+- 🛒 Carrito de Compras {prioridad alta}
+- 🎛️ Agregar Productos [BackOffice] {prioridad alta}
+- 💳 Portal de Pagos {prioridad alta}
+- 🎚️ Filtros de Productos {prioridad media}
+- 📅 Reservas de productos {prioridad baja}
+- 🔗 Integración con proveedores {A considerar con en efectos de tiempo}
     - **🎛️ Funcionalidad de pixel:** Gestión de paquetes de terceros y compras dentro de la plataforma
 
 ## 📊 Diagramas de organizacion
