@@ -1,9 +1,9 @@
-### ⚠️ Este no es el readme oficial es un esquema, asi que no tomar literal lo que dice acá como plan final
-
-# ❤️‍🩹 SafeBities - 
+# ❤️‍🩹 SafeBities - MVP
 
 El proyecto se centra en desarrollar una aplicación de e-commerce para personas con necesidades alimenticias específicas, como diabetes y celiaquía. La arquitectura será monolítica, usando FastAPI para el backend y React Native para el frontend, priorizando la versión móvil.
 
+
+---
 ## 📂 Estructura del Proyecto
 
 ```
@@ -53,7 +53,5 @@ npm run android  # o npm run ios
 
 ## 🤝 Equipo de Desarrollo
 
-- **Product Owner:** 
-- **Scrum Master:** 
-- **Equipo Técnico:** 
+[Inserte grafico de draio de gestion peronal] 
 
