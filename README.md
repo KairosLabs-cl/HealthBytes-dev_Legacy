@@ -2,6 +2,20 @@
 
 El proyecto se centra en desarrollar una aplicación de e-commerce para personas con necesidades alimenticias específicas, como diabetes y celiaquía. La arquitectura será monolítica, usando FastAPI para el backend y React Native para el frontend, priorizando la versión móvil.
 
+## 🎯 Objetivo General del Q2 / MVP - Desarrollo App Móvil
+
+Desarrollar un **Ecomerce funcional** con:
+- 🛒 Agregar productos
+- 💳 Portal de pagos
+- 📅 Reservas de productos
+- 🔗 Integración con proveedores
+    - **🎛️ Funcionalidad de pixel:** Gestión de paquetes de terceros y compras dentro de la plataforma
+
+## 📊 Diagramas de organizacion
+### 🥷 Infraestructura Personal
+![Infraestructura Personal](Docs/Diagramas/Infrastructura_Frameworks.drawio.png)
+### ⚙️ Infraestructura Frameworks
+![Infraestructura Frameworks](Docs/Diagramas/Infrastructura_personal.drawio.png)
 
 ---
 ## 📂 Estructura del Proyecto
@@ -51,7 +65,4 @@ npm install
 npm run android  # o npm run ios
 ```
 
-## 🤝 Equipo de Desarrollo
-
-[Inserte grafico de draio de gestion peronal] 
 
