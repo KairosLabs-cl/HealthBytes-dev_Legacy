@@ -1,109 +1,197 @@
-import { StyleSheet, Image, Platform } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, FlatList, Text, Platform, ToastAndroid, Alert } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
+// Componentes
 import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { ThemedText } from '@/components/ThemedText';
+import { Header } from '@/components/ui/Header';
+import { SearchBar } from '@/components/ui/SearchBar';
+import { CategoryButtons } from '@/components/ui/CategoryButtons';
+import { ProductCard } from '@/components/ui/ProductCard';
+import { SettingsSelector } from '@/components/ui/SettingsSelector';
 
-export default function TabTwoScreen() {
+// Datos y traducciones
+import { getLocalizedData } from '@/constants/Translations';
+
+// Contexts
+import { useCart } from '@/contexts/CartContext';
+import { useAppSettings } from '@/contexts/AppSettingsContext';
+
+export default function SearchScreen() {
+  const { query } = useLocalSearchParams<{ query: string }>();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [isSettingsVisible, setIsSettingsVisible] = useState(false);
+  const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const { addToCart, getItemCount } = useCart();
+  const { language, resolvedTheme } = useAppSettings();
+  
+  // Obtener los datos localizados según el idioma
+  const {
+    categories,
+    featuredProducts,
+    newProducts,
+    texts
+  } = getLocalizedData(language);
+  
+  // Verificar si tenemos categorías disponibles
+  console.log("Explore - categories from data:", categories);
+  
+  // Combinar productos para la vista de rejilla
+  const ALL_PRODUCTS = [...featuredProducts, ...newProducts];
+  
+  const [filteredProducts, setFilteredProducts] = useState(ALL_PRODUCTS);
+
+  // Notification helper function
+  const showNotification = (message: string) => {
+    if (Platform.OS === 'android') {
+      ToastAndroid.show(message, ToastAndroid.SHORT);
+    } else {
+      Alert.alert('SafeBities', message);
+    }
+  };
+
+  // Inicializar la búsqueda si viene desde otra pantalla
+  useEffect(() => {
+    if (query) {
+      setSearchQuery(query);
+      filterProducts(query, selectedCategory);
+    }
+  }, [query]);
+
+  // Filtrar productos por categoría y búsqueda
+  const filterProducts = (query: string, category: string) => {
+    const searchText = query.toLowerCase().trim();
+    let filtered = ALL_PRODUCTS;
+    
+    // Filtrar por categoría
+    if (category !== 'all') {
+      // Simulamos filtrado por categoría (en una app real, tendrías una propiedad de categoría)
+      filtered = filtered.filter((_, index) => 
+        index % categories.length === categories.findIndex(c => c.id === category)
+      );
+    }
+    
+    // Filtrar por texto de búsqueda
+    if (searchText) {
+      filtered = filtered.filter(product => 
+        product.name.toLowerCase().includes(searchText)
+      );
+    }
+    
+    setFilteredProducts(filtered);
+  };
+
+  const handleSearch = () => {
+    filterProducts(searchQuery, selectedCategory);
+  };
+
+  const handleCategoryPress = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    filterProducts(searchQuery, categoryId);
+  };
+
+  const handleProductPress = (productId: string) => {
+    console.log('Product pressed:', productId);
+    // En una implementación real, navegaríamos a la página de detalles del producto
+  };
+
+  const handleAddToCart = (productId: string) => {
+    const product = ALL_PRODUCTS.find(product => product.id === productId);
+    
+    if (product) {
+      addToCart(product);
+      showNotification(texts.home.productAdded);
+    }
+  };
+
+  const handleFavorite = (productId: string) => {
+    showNotification(texts.home.favoriteAdded);
+  };
+
+  const handleCartPress = () => {
+    router.push('/cart');
+  };
+  
+  const handleSettingsPress = () => {
+    setIsSettingsVisible(true);
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user's current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    <ThemedView style={styles.container}>
+      <StatusBar style="auto" />
+      <Header 
+        title={texts.search.title}
+        onCartPress={handleCartPress}
+        onSettingsPress={handleSettingsPress}
+        cartItemsCount={getItemCount()}
+      />
+      
+      <SearchBar
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        onSubmit={handleSearch}
+        placeholder={texts.home.search}
+      />
+      
+      <CategoryButtons
+        categories={categories}
+        selectedCategoryId={selectedCategory || 'all'}
+        onCategoryPress={handleCategoryPress}
+      />
+      
+      <FlatList
+        data={filteredProducts}
+        numColumns={2}
+        showsVerticalScrollIndicator={false}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={[
+          styles.listContent,
+          { paddingBottom: insets.bottom + 20 }
+        ]}
+        renderItem={({ item }) => (
+          <ProductCard
+            {...item}
+            onPress={() => handleProductPress(item.id)}
+            onAddToCart={() => handleAddToCart(item.id)}
+            onFavorite={() => handleFavorite(item.id)}
+          />
+        )}
+        ListEmptyComponent={
+          <ThemedView style={styles.emptyContainer}>
+            <Text style={[styles.emptyText, {color: resolvedTheme === 'dark' ? '#FFF' : '#000'}]}>
+              {texts.search.noResults}
+            </Text>
+          </ThemedView>
+        }
+      />
+      
+      <SettingsSelector 
+        isVisible={isSettingsVisible} 
+        onClose={() => setIsSettingsVisible(false)} 
+      />
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: {
+    flex: 1,
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+  listContent: {
+    padding: 8,
+  },
+  emptyContainer: {
+    padding: 20,
+    alignItems: 'center',
+    marginTop: 40,
+  },
+  emptyText: {
+    textAlign: 'center',
+    fontSize: 16,
   },
 });

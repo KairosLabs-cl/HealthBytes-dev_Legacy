@@ -1,0 +1,2 @@
+- **2. ¿Tienes alguna referencia visual o competidores que te gusten?**  
+Se puede tomar inspiración de plataformas como **Amazon, Shopify o Mercado Libre**, priorizando un diseño **intuitivo y mobile-first**, ya que la app está desarrollada en **React Native**.

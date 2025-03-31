@@ -23,6 +23,8 @@ export default {
     card: '#FFFFFF',
     badge: '#FFFFFF',
     badgeText: '#000000',
+    tint: '#663399',
+    icon: '#666666',
   },
   dark: {
     primary: '#9370DB', // Versión más clara del morado para modo oscuro
@@ -42,5 +44,7 @@ export default {
     card: '#262626',
     badge: '#2C2C2C',
     badgeText: '#FFFFFF',
+    tint: '#9370DB',
+    icon: '#AAAAAA',
   }
 };
