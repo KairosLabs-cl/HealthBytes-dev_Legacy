@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "shop_safebites_mvp",
-    "slug": "shop_safebites_mvp",
-    "scheme": "shop_safebites",
+    "name": "shop",
+    "slug": "shop",
+    "scheme": "safe_ecommerce",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -23,7 +23,8 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
     },
     "plugins": [
       "expo-router"
