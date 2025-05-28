@@ -202,12 +202,13 @@ _Próximamente - Capturas de la aplicación móvil_
 ## 👥 Equipo
 
 - **Developer**: [@WindB3NJA](https://github.com/WindB3NJA)
+- **BigBoss**:[@ChachoCL](https://github.com/chachoCL)
 
 ## 📞 Contacto
 
 ¿Tienes preguntas o sugerencias? 
 
-- 📧 Email: [tu-email@ejemplo.com]
+- 📧 Email: [staff@healthbyes.cl]
 - 🐙 GitHub: [@WindB3NJA](https://github.com/WindB3NJA)
 
 ---
