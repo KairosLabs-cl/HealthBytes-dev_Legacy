@@ -203,10 +203,6 @@ _Próximamente - Capturas de la aplicación móvil_
 
 - **Developer**: [@WindB3NJA](https://github.com/WindB3NJA)
 
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
-
 ## 📞 Contacto
 
 ¿Tienes preguntas o sugerencias? 
