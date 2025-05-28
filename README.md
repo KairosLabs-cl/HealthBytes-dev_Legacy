@@ -193,7 +193,7 @@ _Próximamente - Capturas de la aplicación móvil_
 
 ## 📈 Roadmap
 
-- [ ] MVP Q2 2025
+- [x] MVP Q2 2025
 - [ ] Integración con proveedores
 - [ ] Expansión a web
 - [ ] Sistema de recomendaciones IA
@@ -201,8 +201,7 @@ _Próximamente - Capturas de la aplicación móvil_
 
 ## 👥 Equipo
 
-- **Developer**: [@WindB3NJA](https://github.com/WindB3NJA)
-- **BigBoss**:[@ChachoCL](https://github.com/chachoCL)
+- **Developers**: [@WindB3NJA](https://github.com/WindB3NJA), [@ChachoCL](https://github.com/chachoCL)
 
 ## 📞 Contacto
 
