@@ -1,6 +1,7 @@
 import { Text } from "@/components/ui/text";
 import { useLocalSearchParams } from "expo-router";
 import products from "@/assets/products.json";
+import { useCart } from "@/context/CartContext";
 
 import { Card } from "@/components/ui/card"
 import { Image } from "@/components/ui/image"
@@ -17,6 +18,8 @@ export default function ProductDetailsScreen(){
     if (!product) {
         return <Text>Product not found</Text>;
     }
+
+    const { addToCart } = useCart();
 
     return (
         <Card className="p-5 rounded-lg max-w-[560px] flex-1">
@@ -40,7 +43,10 @@ export default function ProductDetailsScreen(){
             </Text>
           </VStack>
           <Box className="flex-col sm:flex-row">
-            <Button className="px-4 py-2 mr-0 mb-3 sm:mr-3 sm:mb-0 sm:flex-1">
+            <Button 
+              className="px-4 py-2 mr-0 mb-3 sm:mr-3 sm:mb-0 sm:flex-1"
+              onPress={() => addToCart(product.id)}
+            >
               <ButtonText size="sm">Add to cart</ButtonText>
             </Button>
             <Button
