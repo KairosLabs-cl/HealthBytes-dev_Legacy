@@ -1,38 +1,46 @@
-import { View, Text, Button as RNButton } from "react-native";
-import { useCart } from "@/context/CartContext";
-import products from "@/assets/products.json";
+import { View, FlatList} from "react-native";
+import { useCart } from "@/store/cartStore";
+import { Box } from "@/components/ui/box";
+import { HStack } from "@/components/ui/hstack";
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import { Button, ButtonText } from "@/components/ui/button";
+import { Redirect } from "expo-router";
 
 export default function CartScreen() {
-  const { cart, removeFromCart } = useCart();
 
-  if (cart.length === 0) {
-    return (
-      <View style={{ padding: 16 }}>
-        <Text>El carrito está vacío</Text>
-      </View>
-    );
+  const items = useCart(state => state.items);
+  const reserCart = useCart((state) => state.reserCart);
+
+  const onCheckout = () => {
+    // send order to server
+    reserCart();
+    // 
   }
 
+  if (items.length === 0) {
+    return <Redirect href={'/'} />;
+  }
+
+
   return (
-    <View style={{ padding: 16 }}>
-      <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 12 }}>
-        Carrito:
-      </Text>
-      {cart.map((item) => {
-        const product = products.find((p) => p.id === item.id);
-        return (
-          <View key={item.id} style={{ marginBottom: 8, flexDirection: "row", alignItems: "center" }}>
-            <Text style={{ flex: 1}}>
-              {product?.name ?? "Producto"} x {item.quantity}
-            </Text>
-            <RNButton
-              title="Eliminar"
-              color="red"
-              onPress={() => removeFromCart(item.id)}
-            />
-          </View>
-        );
-      })}
-    </View>
+    <FlatList
+      data={items}
+      contentContainerClassName="gap-2 max-w-[960px] w-full mx-auto p-2"
+      renderItem={({item}) => (
+        <HStack className="bg-white p-3">
+          <VStack space="sm">
+            <Text bold>{item.product.name}</Text>
+            <Text>{item.product.price}</Text>
+          </VStack>
+          <Text className="ml-auto">{item.quantity}</Text>
+        </HStack>
+      )}
+      ListFooterComponent={() => (
+        <Button onPress={onCheckout}>
+          <ButtonText>Checkout</ButtonText>
+        </Button>
+      )}
+    />
   );
 }
