@@ -1,6 +1,27 @@
+//Definimos types para el carrito de compras, ya que Zustand no infiere el tipo de estado
+type CartItem = {
+    product: {
+        name: string;
+        price: number;
+
+    };
+    quantity: number;
+};
+
+
+type CartState = {
+    items: CartItem[];
+    addProduct: (product: any) => void;
+    reserCart: () => void;
+}
+
+
+
+
+
 import { create } from "zustand";
 
-export const useCart = create((set) => ({
+export const useCart = create<CartState>((set) => ({ //Se hace el llamado al type y eso soluciona el problema
     items: [],
 
     addProduct: (product: any) => 
