@@ -9,7 +9,9 @@ import { useCart } from "@/store/cartStore";
 import { Text } from "@/components/ui/text";
 
 export default function RootLayout() {
-    const cartItemsNum = useCart((state) => state.items.length);
+    const cartItemsNum = useCart((state) => 
+        state.items.reduce((total, item) => total + item.quantity, 0)
+    );
 
     return (
         <GluestackUIProvider>
@@ -18,7 +20,10 @@ export default function RootLayout() {
                     headerRight: () => 
                         cartItemsNum > 0 && (
                         <Link href={"/cart"} asChild> 
-                            <Pressable className="flex-row gap-2">
+                            <Pressable 
+                            className="flex-row gap-2"
+                            style={{ marginRight: 40 }}
+                            >
                                 <Icon as={ShoppingCart} />
                                 <Text>{cartItemsNum}</Text>
                             </Pressable>
