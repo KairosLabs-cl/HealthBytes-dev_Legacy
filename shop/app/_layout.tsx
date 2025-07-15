@@ -7,6 +7,7 @@ import { ShoppingCart, User } from "lucide-react-native";
 import { Pressable } from "react-native";
 import { useCart } from "@/store/cartStore";
 import { Text } from "@/components/ui/text";
+import BottomNavBar from "@/components/ui/NavBarr/BottomNavBar";
 
 export default function RootLayout() {
     const cartItemsNum = useCart((state) => 
@@ -43,6 +44,7 @@ export default function RootLayout() {
 
             </Stack>
             
+            <BottomNavBar />
         </GluestackUIProvider>
     );
 }
