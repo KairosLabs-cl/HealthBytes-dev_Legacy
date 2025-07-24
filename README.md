@@ -75,6 +75,10 @@ HealthBytes_app/
 ```
 
 ## ⚙️ Tecnologías
+### conexion db : 
+
+<img width="586" height="374" alt="image" src="https://github.com/user-attachments/assets/b4ee4aff-16a1-4ad1-bcd4-a1f4fbf79761" />
+
 
 ### Frontend
 - **React Native** - Framework móvil multiplataforma

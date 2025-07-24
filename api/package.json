@@ -15,7 +15,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@types/cors": "^2.8.19",
     "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
     "drizzle-orm": "^0.34.1",
     "drizzle-zod": "^0.5.1",
     "express": "^4.21.1",
