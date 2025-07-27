@@ -34,7 +34,7 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/lodash": "^4.17.10",
     "@types/pg": "^8.11.10",
-    "drizzle-kit": "^0.25.0",
+    "drizzle-kit": "^0.18.1",
     "tsx": "^4.19.1",
     "typescript": "^5.6.3"
   }
