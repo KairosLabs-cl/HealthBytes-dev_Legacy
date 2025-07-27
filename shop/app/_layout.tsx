@@ -8,6 +8,7 @@ import { Pressable } from "react-native";
 import { useCart } from "@/store/cartStore";
 import { Text } from "@/components/ui/text";
 import BottomNavBar from "@/components/ui/NavBarr/BottomNavBar";
+import { useAuth } from "@/store/authStore";
 
 
 // Create a client
@@ -17,40 +18,49 @@ export default function RootLayout() {
     const cartItemsNum = useCart((state) => 
         state.items.reduce((total, item) => total + item.quantity, 0)
     );
+    const isLoggedIn = useAuth((state) => !!state.token);
 
     return (
-        <QueryClientProvider client={queryClient}>
-            <GluestackUIProvider>
-                <Stack 
-                    screenOptions={{ 
-                        headerRight: () => 
-                            cartItemsNum > 0 && (
-                            <Link href={"/cart"} asChild> 
-                                <Pressable 
-                                className="flex-row gap-2"
-                                style={{ marginRight: 40 }}
-                                >
-                                    <Icon as={ShoppingCart} />
-                                    <Text>{cartItemsNum}</Text>
-                                </Pressable>
-                            </Link>
-                            ),
-                        headerLeft: () => (
-                            <Link href={"/login"} asChild> 
-                                <Pressable className="flex-row gap-2" style={{ marginLeft: 50 }}>
-                                    <Icon as={User} />
-                                </Pressable>
-                            </Link>
-                        ),
-                    }}
-                >
-                    <Stack.Screen name="index" options={{ title: "Shop", headerTitleAlign: "center" }} />
-                    <Stack.Screen name="product/[id]" options={{ title: "Product"}} />
+      <QueryClientProvider client={queryClient}>
+        <GluestackUIProvider>
+          <Stack
+            screenOptions={{
+              headerRight: () =>
+                cartItemsNum > 0 && (
+                  <Link href={"/cart"} asChild>
+                    <Pressable
+                      className="flex-row gap-2"
+                      style={{ marginRight: 40 }}
+                    >
+                      <Icon as={ShoppingCart} />
+                      <Text>{cartItemsNum}</Text>
+                    </Pressable>
+                  </Link>
+                ),
+            }}
+          >
+            <Stack.Screen
+              name="index"
+              options={{
+                title: "Shop",
+                headerTitleAlign: "center",
+                headerLeft: () => !isLoggedIn && (
+                  <Link href={"/login"} asChild>
+                    <Pressable
+                      className="flex-row gap-2"
+                      style={{ marginLeft: 50 }}
+                    >
+                      <Icon as={User} />
+                    </Pressable>
+                  </Link>
+                ),
+              }}
+            />
+            <Stack.Screen name="product/[id]" options={{ title: "Product" }} />
+          </Stack>
 
-                </Stack>
-                
-                <BottomNavBar />
-            </GluestackUIProvider>
-        </QueryClientProvider>
+          <BottomNavBar />
+        </GluestackUIProvider>
+      </QueryClientProvider>
     );
 }
