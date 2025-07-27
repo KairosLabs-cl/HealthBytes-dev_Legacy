@@ -15,10 +15,8 @@ import { useAuth } from "@/store/authStore";
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
-    const cartItemsNum = useCart((state) => 
-        state.items.reduce((total, item) => total + item.quantity, 0)
-    );
-    const isLoggedIn = useAuth((state) => !!state.token);
+    const cartItemsNum = useCart((state) => state.items.length);
+    const isLoggedIn = useAuth((s) => !!s.token);
 
     return (
       <QueryClientProvider client={queryClient}>

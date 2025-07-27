@@ -4,23 +4,18 @@ type Product = {
   price: number;
 };
 
-
-
-
 //Definimos types para el carrito de compras, ya que Zustand no infiere el tipo de estado
 type CartItem = {
-    product: Product; // Aquí usas Product, no solo name y price
-    quantity: number;
-}
-
+  product: Product; // Aquí usas Product, no solo name y price
+  quantity: number;
+};
 
 type CartState = {
-    items: CartItem[];
-    addProduct: (product: any) => void;
-    reserCart: () => void;
-}
+  items: CartItem[];
+  addProduct: (product: any) => void;
+  resetCart: () => void;
+};
 // ------------------------------------------------------
-
 
 import { create } from "zustand";
 
@@ -46,5 +41,5 @@ export const useCart = create<CartState>((set) => ({
       };
     }),
 
-  reserCart: () => set({ items: [] }),
+  resetCart: () => set({ items: [] }),
 }));
