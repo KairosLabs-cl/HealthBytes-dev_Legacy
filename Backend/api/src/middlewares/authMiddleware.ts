@@ -2,15 +2,20 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 export function verifyToken(req: Request, res: Response, next: NextFunction) {
-  const token = req.header('Authorization');
+  const authHeader = req.header('Authorization');
 
-  if (!token) {
+  if (!authHeader) {
     res.status(401).json({ error: 'Access denied' });
     return;
   }
 
+  // Soportar formato "Bearer <token>" además del token simple
+  const token = authHeader.startsWith('Bearer ')
+    ? authHeader.substring(7)
+    : authHeader;
+
   try {
-    // decode jwt toke data
+    // decode jwt token data
     const decoded = jwt.verify(token, 'your-secret');
     if (typeof decoded !== 'object' || !decoded?.userId) {
       res.status(401).json({ error: 'Access denied' });
