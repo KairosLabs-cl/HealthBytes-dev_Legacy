@@ -54,8 +54,8 @@ Desarrollar un **ecommerce funcional** con las siguientes funcionalidades priori
 
 El proyecto utiliza una **arquitectura monolítica** optimizada para el MVP, con capacidad de evolución hacia microservicios:
 
-- **Frontend**: React Native (Mobile First)
-- **Backend**: FastAPI (Python)
+- **Frontend**: React Native (Mobile First) 
+- **Backend**: FastAPI (Python) <= actualmente 
 - **Base de Datos**: PostgreSQL
 - **Infraestructura**: Amazon Web Services (AWS)
 
@@ -63,15 +63,13 @@ El proyecto utiliza una **arquitectura monolítica** optimizada para el MVP, con
 
 ```
 HealthBytes_app/
-├── 📁 Docs/                    # Documentación del proyecto
-│   └── 📁 Diagramas/          # Diagramas de arquitectura
-├── 📁 shop/                   # Aplicación React Native
-│   ├── 📁 src/
-│   ├── 📁 assets/
-│   └── package.json
-├── 📁 backend/                # API FastAPI (si existe)
+├── 📁 Backend/                    # Proximamente API con Fast API
+│   └── 📁 api/          <= Actualmente esta construida con typescript
+├── 📁 Frontend/                   # Aplicación React Native
+│   ├── 📁 shop/
+├── 📁 Docs/                       # Documentación del proyecto
+│   └── 📁 Diagramas/                    # Diagramas de arquitectura
 ├── 📄 README.md
-└── 📄 .gitignore
 ```
 
 ## ⚙️ Tecnologías
