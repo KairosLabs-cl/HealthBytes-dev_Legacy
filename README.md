@@ -1,223 +1,171 @@
-# 🛒 HealthBytes - Ecommerce Inteligente y Seguro
+# 🛒💊 HealthBytes – Compras Inteligentes y Seguras (Alimentos y/o Medicamentos)
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactnative.dev/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![AWS](https://img.shields.io/badge/Amazon_AWS-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white)](https://aws.amazon.com/)
 
-> **La forma más inteligente y segura de comprar comestibles** 🚀
+> Plataforma enfocada en simplificar y hacer más seguras las decisiones de compra para personas con restricciones de salud.  
+> Exploramos un modelo híbrido: alimentos especializados y (en evaluación) productos / medicamentos OTC de bienestar. 🌱💊
 
-HealthBytes es una plataforma de e-commerce especializada en personas con necesidades alimenticias específicas como diabetes, celiaquía y otras restricciones dietéticas. Nuestra misión es hacer que las compras de alimentos sean seguras, fáciles y accesibles para todos.
+HealthBytes comenzó centrado en alimentos para usuarios con restricciones (celiaquía, diabetes, alergias). Ahora evaluamos expandir el alcance hacia un catálogo mixto (alimentos funcionales y/o medicamentos OTC). Esta fase es exploratoria: la arquitectura y el dominio se están adaptando para soportar ambos casos, manteniendo criterios de seguridad y escalabilidad.
 
-## 📋 Tabla de Contenidos
+Estado actual (snapshot):
+- ⚙️ API: Node.js + TypeScript + Drizzle ORM (PostgreSQL)
+- 👤 Autenticación: integración en progreso con Clerk
+- 🐳 Docker: todavía NO en uso estándar (planeado)
+- 🐍 FastAPI: previsto como servicio futuro para análisis nutricional / validaciones / recomendador
+- 🔄 Pivot: soporte experimental dual food | med (con modo híbrido)
 
-- [🎯 Objetivo del MVP](#-objetivo-del-mvp)
-- [✨ Características](#-características)
-- [🏗️ Arquitectura](#️-arquitectura)
-- [📂 Estructura del Proyecto](#-estructura-del-proyecto)
-- [⚙️ Tecnologías](#️-tecnologías)
-- [🚀 Instalación](#-instalación)
-- [📊 Diagramas](#-diagramas)
-- [🤝 Contribución](#-contribución)
-- [📄 Licencia](#-licencia)
+⚠️ Disclaimer:
+- No sustituye consejo médico profesional.
+- La clasificación de productos está en evolución; no usar como única fuente clínica.
 
-## 🎯 Objetivo del MVP
+## Información General
 
-Desarrollar un **ecommerce funcional** con las siguientes funcionalidades prioritarias:
+🎯 Objetivos inmediatos:
+- Catálogo filtrable (alérgenos, etiquetas dietéticas, clasificación preliminar)
+- Extender modelo a soporte dual: alimentos / medicamentos OTC
+- Carrito y flujo base de compra (checkout completo en roadmap)
+- BackOffice inicial (gestión y normalización de datos)
+- Base para recomendación y validaciones automáticas (ingredientes / riesgos)
 
-### 🔥 Prioridad Alta
-- **🏠 Página Principal** - Interfaz intuitiva y accesible
-- **🔍 Búsqueda de Productos** - Sistema de búsqueda avanzado con filtros de alérgenos
-- **🛒 Carrito de Compras** - Gestión completa del carrito con validaciones
-- **🎛️ BackOffice** - Panel administrativo para gestión de productos
-- **💳 Portal de Pagos** - Integración segura de pagos
+🧩 Características clave:
+- 🩺 Filtros de salud (alérgenos, ingredientes sensibles)
+- 🔄 Dominio adaptable (food | med | hybrid)
+- 👤 Auth centralizada con Clerk (sesiones seguras, roles)
+- 📱 Mobile First (React Native)
+- 🧱 Monolito modular evolutivo
+- 🗃️ Drizzle: tipado end‑to‑end esquema ↔ dominio
+- 🚀 Preparado para extraer servicios (FastAPI / ML / validación)
 
-### 🟡 Prioridad Media
-- **🎚️ Filtros de Productos** - Filtrado por restricciones dietéticas y alérgenos
+🛠️ Stack actual:
+- Frontend: React Native + TypeScript
+- Backend: Node.js + TypeScript + Drizzle ORM
+- DB: PostgreSQL
+- Auth: Clerk (en integración)
+- Infra (futuro): Docker + AWS
+- Servicios futuros: FastAPI (procesamiento avanzado, validaciones, recomendador)
 
-### 🔵 Prioridad Baja
-- **📅 Reservas de Productos** - Sistema de reservas y pedidos programados
-
-### 🟣 A Considerar
-- **🔗 Integración con Proveedores** - Conexión directa con proveedores
-- **🎛️ Funcionalidad Pixel** - Gestión de paquetes de terceros y analytics
-
-## ✨ Características
-
-- 🩺 **Enfoque en Salud**: Diseñado específicamente para personas con restricciones alimentarias
-- 📱 **Mobile First**: Optimizado para dispositivos móviles
-- 🔒 **Seguro**: Validación rigurosa de ingredientes y alérgenos
-- ⚡ **Rápido**: Arquitectura optimizada para rendimiento
-- 🌐 **Escalable**: Arquitectura preparada para crecimiento
-
-## 🏗️ Arquitectura
-
-El proyecto utiliza una **arquitectura monolítica** optimizada para el MVP, con capacidad de evolución hacia microservicios:
-
-- **Frontend**: React Native (Mobile First) 
-- **Backend**: FastAPI (Python) <= actualmente 
-- **Base de Datos**: PostgreSQL
-- **Infraestructura**: Amazon Web Services (AWS)
-
-## 📂 Estructura del Proyecto
+## Estructura de Carpetas (resumen, máx. 2 niveles)
 
 ```
-HealthBytes_app/
-├── 📁 Backend/                    # Proximamente API con Fast API
-│   └── 📁 api/          <= Actualmente esta construida con typescript
-├── 📁 Frontend/                   # Aplicación React Native
-│   ├── 📁 shop/
-├── 📁 Docs/                       # Documentación del proyecto
-│   └── 📁 Diagramas/                    # Diagramas de arquitectura
-├── 📄 README.md
+HealthBytes/
+├── Backend/
+│   └── api/                 # API TypeScript (routers, casos de uso, repositorios Drizzle)
+├── Frontend/
+│   └── shop/                # App React Native (pantallas, hooks, componentes)
+├── Docs/
+│   └── Diagramas/           # Diagramas de arquitectura / dominio
+└── README.md
 ```
 
-## ⚙️ Tecnologías
-### conexion db : 
+Notas:
+- Servicios Python futuros: Backend/py-services/
+- Posible módulo común: Backend/shared/ (DTOs, esquemas, eventos, utils)
 
-<img width="586" height="374" alt="image" src="https://github.com/user-attachments/assets/b4ee4aff-16a1-4ad1-bcd4-a1f4fbf79761" />
+## Configuración de Entorno
 
+### 🔑 Prerrequisitos
+- Node.js 18+ (LTS)
+- npm o yarn
+- PostgreSQL 14+
+- Cuenta Clerk (keys de prueba)
+- (Roadmap) Python 3.11+ (servicios complementarios)
+- (Roadmap) Docker / Docker Compose
 
-### Frontend
-- **React Native** - Framework móvil multiplataforma
-- **TypeScript** - Tipado estático para JavaScript
-- **React Navigation** - Navegación entre pantallas
+### 🧬 Variables de Entorno
 
-### Backend
-- **Python** - Lenguaje de programación
-- **FastAPI** - Framework web moderno y rápido
-- **SQLAlchemy** - ORM para base de datos
+## Recuerda seguir los pasos Conexión a la Base de Datos para un correcto funcionamiento
 
-### Base de Datos
-- **PostgreSQL** - Base de datos relacional
-
-### Infraestructura
-- **AWS** - Servicios de nube
-- **Docker** - Containerización (recomendado)
-
-### Herramientas de Desarrollo
-- **VS Code / Cursor** - Editor de código recomendado
-- **JetBrains** - IDEs alternativos
-- **Git** - Control de versiones
-
-## 🚀 Instalación
-
-### Prerrequisitos
-
-- Node.js (v16 o superior)
-- Python (v3.8 o superior)
-- Git
-- Android Studio / Xcode (para desarrollo móvil)
-
-### 1. Clonar el Repositorio
-
-```bash
-git clone https://github.com/WindB3NJA/Safebites_app.git
-cd HealthBytes_app
-```
-
-### 2. Configurar el Frontend (React Native)
-
-```bash
-cd shop
-npm install
-# o
-yarn install
-```
-
-### 3. Configurar el Backend (FastAPI)
-
-```bash
-cd backend  # Si existe la carpeta
-pip install -r requirements.txt
-```
-
-### 4. Variables de Entorno
-
-Crear archivo `.env` en la raíz del proyecto:
+Archivo `.env` (ejemplo mínimo para desarrollo):
 
 ```env
-# Database
+# --- Base de Datos ---
 ***REDACTED_DATABASE_URL***
 
-# API Keys
-STRIPE_SECRET_KEY=your_stripe_key
-AWS_ACCESS_KEY_ID=your_aws_key
+# --- Auth (Clerk) --- <= Todavia no integrado
+CLERK_PUBLISHABLE_KEY=pk_test_xxx
+***REDACTED_CLERK_SECRET_KEY***
+# CLERK_WEBHOOK_SECRET=whsec_xxx   # (Opcional si usas webhooks)
+
 ```
 
-### 5. Ejecutar la Aplicación
+### 🔌 Conexión a la Base de Datos (Esquema / Flujo)
 
-#### Frontend (React Native)
+(Visual de referencia del flujo de conexión / capa de acceso actual)
+
+<img width="586" height="374" alt="Conexión DB" src="https://github.com/user-attachments/assets/b4ee4aff-16a1-4ad1-bcd4-a1f4fbf79761" />
+
+### 🚀 Instalación
+
+Clonar repositorio:
+
 ```bash
-cd shop
-npx react-native run-android  # Android
-# o
-npx react-native run-ios      # iOS
+git clone https://github.com/WindB3NJA/HealthBytes-dev.git
+cd HealthBytes-dev
 ```
 
-#### Backend (FastAPI)
+Frontend:
+
 ```bash
-cd backend
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+cd Frontend/shop
+npm install
 ```
 
-## 📊 Diagramas
-
-### 🥷 Infraestructura Personal
-![Infraestructura Personal](Docs/Diagramas/Infrastructura_personal.drawio.png)
-
-### ⚙️ Infraestructura Frameworks
-![Infraestructura Frameworks](Docs/Diagramas/Infrastructura_Frameworks.drawio.png)
-
-## 🧪 Testing
+Backend:
 
 ```bash
-# Frontend
-cd shop
+cd Backend/api
+npm install
+```
+
+### ▶️ Ejecución
+
+Backend (API):
+
+```bash
+cd Backend/api
+npm run dev
+```
+
+Frontend (emulador / dispositivo):
+
+```bash
+cd Frontend/shop
+npm start
+```
+
+### 🧪 Tests (cuando se integren) <=  No definitivo
+
+```bash
+# Backend
+cd Backend/test
 npm test
 
-# Backend
-cd backend
-pytest
+# Frontend
+cd Frontend/test
+npm test
 ```
 
-## 📱 Capturas de Pantalla
+## Contacto 💬
 
-_Próximamente - Capturas de la aplicación móvil_
+¿Ideas, dudas o colaboración?
 
-## 🤝 Contribución
+- 📧 Email: staff@healthbyes.cl
+- 🐙 GitHub: @WindB3NJA, @GuillermoSerrano132, @Simon-Aspee, @chachoCL
 
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+## Notas Legales (Provisorio) ⚖️
 
-## 📈 Roadmap
-
-- [x] MVP Q2 2025
-- [ ] Integración con proveedores
-- [ ] Expansión a web
-- [ ] Sistema de recomendaciones IA
-- [ ] Marketplace de productos especializados
-
-## 👥 Equipo
-
-- **Developers**: [@WindB3NJA](https://github.com/WindB3NJA), [@ChachoCL](https://github.com/chachoCL)
-
-## 📞 Contacto
-
-¿Tienes preguntas o sugerencias? 
-
-- 📧 Email: [staff@healthbyes.cl]
-- 🐙 GitHub: [@WindB3NJA](https://github.com/WindB3NJA)
+El contenido es informativo y no constituye consejo médico.  
+La exactitud de composiciones y advertencias está en revisión continua.  
+Siempre consulta a un profesional de salud ante dudas.
 
 ---
 
 <div align="center">
 
-**HealthBytes** - Haciendo las compras de alimentos más seguras para todos 🛒❤️
-
-[![Hecho con ❤️](https://img.shields.io/badge/Hecho%20con-❤️-red.svg)](https://github.com/WindB3NJA/HealthBytes_app)
+**HealthBytes** – Salud y conveniencia en un mismo lugar 🛒💊❤️  
+Construyendo un ecosistema seguro para decisiones de compra informadas.
 
 </div>
