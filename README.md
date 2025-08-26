@@ -95,6 +95,7 @@ CLERK_SECRET_KEY=sk_test_xxx
 
 (Visual de referencia del flujo de conexión / capa de acceso actual)
 
+Insertar url postgres de ejemplo arriba a .env en proyecto
 
 ### 🚀 Instalación
 
