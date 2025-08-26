@@ -82,7 +82,7 @@ Archivo `.env` (ejemplo mínimo para desarrollo):
 
 ```env
 # --- Base de Datos ---
-DATABASE_URL=postgresql://usuario:password@localhost:5432/healthbytes
+DATABASE_URL=postgresql://admin:contra123A@db.healthbytes.cl:25432
 
 # --- Auth (Clerk) --- <= Todavia no integrado
 CLERK_PUBLISHABLE_KEY=pk_test_xxx
@@ -95,7 +95,7 @@ CLERK_SECRET_KEY=sk_test_xxx
 
 (Visual de referencia del flujo de conexión / capa de acceso actual)
 
-<img width="586" height="374" alt="Conexión DB" src="https://github.com/user-attachments/assets/b4ee4aff-16a1-4ad1-bcd4-a1f4fbf79761" />
+Insertar url postgres de ejemplo arriba a .env en proyecto
 
 ### 🚀 Instalación
 
