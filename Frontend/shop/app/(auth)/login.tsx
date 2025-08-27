@@ -13,6 +13,10 @@ import { err } from "react-native-svg/lib/typescript/xml";
 import { useAuth } from "@/store/authStore";
 import { Redirect } from "expo-router";
 
+export const options = {
+  title: "Mi cuenta",
+};
+
 export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -66,7 +70,7 @@ export default function LoginScreen() {
       className="p-4 border rounded-lg max-w-[500px] border-outline-300 bg-white m-2"
     >
       <VStack space="xl">
-        <Heading className="text-typography-900 leading-3 pt-3">Login</Heading>
+        <Heading className="text-typography-900 leading-3 pt-3">Inicia Sesión en HealthBytes</Heading>
         <VStack space="xs">
           <Text className="text-typography-500 leading-1">Email</Text>
           <Input>
