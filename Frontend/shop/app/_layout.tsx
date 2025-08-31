@@ -37,10 +37,12 @@ export default function RootLayout() {
                 ),
             }}
           >
+            <Stack.Screen name="index" options={{ title: "HealthBytes" }} />
+            <Stack.Screen name="categories" options={{ title: "Categories" }} />
             <Stack.Screen
-              name="index"
+              name="(auth)/login"
               options={{
-                title: "Shop",
+                title: "Mi cuenta",
                 headerTitleAlign: "center",
                 headerLeft: () => !isLoggedIn && (
                   <Link href={"/login"} asChild>
@@ -55,6 +57,13 @@ export default function RootLayout() {
               }}
             />
             <Stack.Screen name="product/[id]" options={{ title: "Product" }} />
+            <Stack.Screen
+              name="cart"
+              options={{
+                title: "Carrito de Compras",
+                headerTitleAlign: "center",
+              }}
+            />
           </Stack>
 
           <BottomNavBar />
