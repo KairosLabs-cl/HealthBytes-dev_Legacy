@@ -82,7 +82,7 @@ Archivo `.env` (ejemplo mínimo para desarrollo):
 
 ```env
 # --- Base de Datos ---
-DATABASE_URL=postgresql://admin:contra123A@db.healthbytes.cl:25432
+DATABASE_URL='postgresql://admin:contra123A@db.healthbytes.cl:25432/tienda'
 
 # --- Auth (Clerk) --- <= Todavia no integrado
 CLERK_PUBLISHABLE_KEY=pk_test_xxx
