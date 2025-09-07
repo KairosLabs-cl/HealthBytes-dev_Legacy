@@ -10,11 +10,15 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchProductById } from '@/api/products';
 import { ActivityIndicator } from 'react-native';
 import { useCart } from '@/store/cartStore';
+import { useRecentlyViewed } from '@/store/recentlyViewedStore';
+import { useEffect } from 'react';
 
 export default function ProductDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const addProduct = useCart((state) => state.addProduct);
+
+
 
   const {
     data: product,
@@ -24,6 +28,12 @@ export default function ProductDetailsScreen() {
     queryKey: ['products', id],
     queryFn: () => fetchProductById(Number(id)),
   });
+  // Después de la declaración de product:
+  useEffect(() => {
+    if (product) {
+      useRecentlyViewed.getState().addProduct(product);
+    }
+  }, [product]);
 
   const addToCart = () => {
     addProduct(product);
