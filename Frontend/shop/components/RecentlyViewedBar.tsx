@@ -5,7 +5,7 @@ import { Text } from "@/components/ui/text";
 import { Link } from "expo-router";
 
 export default function RecentlyViewedBar() {
-  const products = useRecentlyViewed((s) => s.products);
+  const products = useRecentlyViewed((s) => s.items);
 
   if (!products.length) return null;
 

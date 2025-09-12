@@ -13,12 +13,11 @@ import { useCart } from '@/store/cartStore';
 import { useRecentlyViewed } from '@/store/recentlyViewedStore';
 import { useEffect } from 'react';
 
+
 export default function ProductDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const addProduct = useCart((state) => state.addProduct);
-
-
 
   const {
     data: product,
@@ -31,7 +30,7 @@ export default function ProductDetailsScreen() {
   // Después de la declaración de product:
   useEffect(() => {
     if (product) {
-      useRecentlyViewed.getState().addProduct(product);
+      useRecentlyViewed.getState().add(product);
     }
   }, [product]);
 
