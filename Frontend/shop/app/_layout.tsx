@@ -9,7 +9,8 @@ import { useCart } from "@/store/cartStore";
 import { Text } from "@/components/ui/text";
 import BottomNavBar from "@/components/ui/NavBarr/BottomNavBar";
 import { useAuth } from "@/store/authStore";
-
+import { useRouter, useSegments } from "expo-router";
+import React from "react";
 
 // Create a client
 const queryClient = new QueryClient();
