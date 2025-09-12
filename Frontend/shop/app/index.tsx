@@ -5,6 +5,8 @@ import { listProducts } from '@/api/products';
 import { useQuery } from '@tanstack/react-query';
 // import { err } from 'react-native-svg/lib/typescript/xml';
 import { Text } from '@/components/ui/text';
+import RecentlyViewedBar from '@/components/RecentlyViewedBar';
+import { Header } from '@/components/Header';
 
 export default function HomeScreen() {
   const { data, isLoading, error } = useQuery({
@@ -26,14 +28,20 @@ export default function HomeScreen() {
     return <Text>Error loading products</Text>;
   }
 
+  
   return (
-    <FlatList
-      key={numColumns}
-      data={data}
-      numColumns={numColumns}
-      contentContainerClassName="gap-2 max-w-[960px] mx-auto w-full"
-      columnWrapperClassName="gap-2"
-      renderItem={({ item }) => <ProductListItem product={item} />}
-    />
+    <>
+      <Header userName='Guillermo' />
+      
+      <RecentlyViewedBar />
+      <FlatList
+        key={numColumns}
+        data={data}
+        numColumns={numColumns}
+        contentContainerClassName="gap-2 max-w-[960px] mx-auto w-full"
+        columnWrapperClassName="gap-2"
+        renderItem={({ item }) => <ProductListItem product={item} />}
+      />
+    </>
   );
 }
