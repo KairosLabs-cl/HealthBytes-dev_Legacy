@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 // import { err } from 'react-native-svg/lib/typescript/xml';
 import { Text } from '@/components/ui/text';
 import RecentlyViewedBar from '@/components/RecentlyViewedBar';
+import { Header } from '@/components/Header';
 
 export default function HomeScreen() {
   const { data, isLoading, error } = useQuery({
@@ -30,6 +31,8 @@ export default function HomeScreen() {
   
   return (
     <>
+      <Header userName='Guillermo' />
+      
       <RecentlyViewedBar />
       <FlatList
         key={numColumns}
