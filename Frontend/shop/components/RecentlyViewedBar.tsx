@@ -1,77 +1,42 @@
-import { ScrollView, Pressable, View } from "react-native";
-import { useRecentlyViewed } from "@/store/recentlyViewedStore";
-import { Image } from "@/components/ui/image";
+import React from "react";
+import { View, FlatList, Image } from "react-native";
 import { Text } from "@/components/ui/text";
-import { Link } from "expo-router";
+import SectionHeader from "@/components/SectionHeader";
+import type { Product } from "@/types/product";
 
-export default function RecentlyViewedBar() {
-  const products = useRecentlyViewed((s) => s.items);
+type Props = { items?: Product[] };
 
-  if (!products.length) return null;
+function MiniItem({ product }: { product: Product }) {
+  const price =
+    typeof product.price === "number" ? product.price.toFixed(2) : product.price;
 
   return (
-    <View
-        style={{
-            marginVertical: 15,
-            alignItems: "center",
-            width: "100%",
-        }}    
-    >
-      <Text
-        style={{ fontSize: 18, fontWeight: "bold", marginBottom: 8 }}
-      >
-        Vistos recientemente
+    <View className="w-24 items-center mr-3">
+      <View className="w-24 h-24 rounded-2xl bg-white border border-neutral-200 shadow-sm mb-2 items-center justify-center overflow-hidden">
+        <Image source={{ uri: product.image }} className="w-20 h-20" resizeMode="contain" />
+      </View>
+      <Text numberOfLines={2} className="text-[11px] text-neutral-700 text-center">
+        {product.name}
       </Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {products.map((product) => (
-          <Link key={product.id} href={`/product/${product.id}`} asChild>
-            <Pressable 
-                style={{
-                    backgroundColor: "#fff",
-                    borderRadius: 12,
-                    padding: 5,
-                    alignItems: "center",
-                    width: 95,
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 4,
-                    elevation: 3,
-                }}
-                android_ripple={{ color: "#eee" }}
-            
-            >
-              <Image
-                source={{ uri: product.image }}
-                style={{
-                    width: 70,
-                    height: 70,
-                    borderRadius: 8,
-                    marginBottom: 6,
-                    backgroundColor: "#f5f5f5",
-                        
-                    
-                    }}
-                alt={product.name}
-                resizeMode="contain"
-              />
-              <Text 
-                numberOfLines={2} 
-                style={{
-                    width: 80,
-                    fontSize: 12,
-                    textAlign: "center",
-                    color: "#333",
-                }}
-                
-                
-                >
-                {product.name}
-              </Text>
-            </Pressable>
-          </Link>
-        ))}
-      </ScrollView>
+      <Text className="text-[11px] font-semibold text-center mt-1">{price}</Text>
+    </View>
+  );
+}
+
+export default function RecentlyViewedBar({ items = [] }: Props) {
+  if (!items.length) return null;
+
+  return (
+    <View className="mb-2">
+      <SectionHeader icon="time-outline" title="Vistos recientemente" />
+      <FlatList
+        horizontal
+        data={items}
+        keyExtractor={(item) => String(item.id)}
+        showsHorizontalScrollIndicator={false}
+        contentContainerClassName="px-3"
+        renderItem={({ item }) => <MiniItem product={item} />}
+      />
     </View>
   );
 }
