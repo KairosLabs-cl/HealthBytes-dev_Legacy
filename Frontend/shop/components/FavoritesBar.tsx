@@ -1,40 +1,47 @@
-// components/FavoritesBar.tsx
 import React, { useMemo } from "react";
-import { View, FlatList } from "react-native";
+import { View, FlatList, Image } from "react-native";
 import { Text } from "@/components/ui/text";
-import ProductListItem from "@/components/ProductListItem";
+import SectionHeader from "@/components/SectionHeader";
 import type { Product } from "@/types/product";
 
-type Props = {
-  products?: Product[]; // productos actuales del query
-  limit?: number;       // opcional, por si quieres cambiar cuantos muestras
-};
+type Props = { products?: Product[]; limit?: number };
 
-export default function FavoritesBar({ products, limit = 2 }: Props) {
-  // Por ahora: "favoritos" = primeros N productos disponibles.
-  const favs = useMemo(() => {
-    if (!products || products.length === 0) return [];
-    return products.slice(0, limit);
-  }, [products, limit]);
+function FavoriteCard({ product }: { product: Product }) {
+  const price =
+    typeof product.price === "number" ? product.price.toFixed(2) : product.price;
 
+  return (
+    <View className="w-60 mr-10">
+      <View className="rounded-3xl bg-white border border-neutral-200 p-3 shadow-sm">
+        <Image
+          source={{ uri: product.image }}
+          className="w-full h-40 rounded-2xl"
+          resizeMode="contain"
+        />
+      </View>
+
+      <Text numberOfLines={2} className="mt-2 text-[13px] text-neutral-700">
+        {product.name}
+      </Text>
+      <Text className="mt-1 text-[18px] font-extrabold">{price}</Text>
+    </View>
+  );
+}
+
+export default function FavoritesBar({ products, limit = 8 }: Props) {
+  const favs = useMemo(() => (products?.length ? products.slice(0, limit) : []), [products, limit]);
   if (!favs.length) return null;
 
   return (
-    <View className="mb-4">
-      <Text className="text-xl font-bold mb-2">⭐ Favoritos</Text>
-
+    <View className="mt-2 mb-4">
+      <SectionHeader icon="star" title="Favoritos" />
       <FlatList
         horizontal
         data={favs}
-        keyExtractor={(item) => String(item.id)} // id puede ser number | string
+        keyExtractor={(item) => String(item.id)}
         showsHorizontalScrollIndicator={false}
-        contentContainerClassName="gap-2"
-        renderItem={({ item }) => (
-          // Reutilizo tu tarjeta. La meto en un contenedor con ancho fijo para carrusel.
-          <View className="w-48">
-            <ProductListItem product={item} />
-          </View>
-        )}
+        contentContainerClassName="px-3"
+        renderItem={({ item }) => <FavoriteCard product={item} />}
       />
     </View>
   );

@@ -8,6 +8,8 @@ import FavoritesBar from "@/components/FavoritesBar";
 import RecentlyViewedBar from "@/components/RecentlyViewedBar";
 import { Header } from "@/components/Header";
 import { Stack } from "expo-router";
+import QuickFilters from "@/components/QuickFilters"; 
+import SectionHeader from "@/components/SectionHeader"; 
 
 export default function HomeScreen() {
   const { data, isLoading, error } = useQuery({
@@ -36,8 +38,10 @@ return (
       </View>
 
       <View className="px-3">
-        <RecentlyViewedBar />
+          <RecentlyViewedBar items={data?.slice(0, 10) ?? []} />
       </View>
+
+      <QuickFilters />
 
       <FlatList
         key={numColumns}
