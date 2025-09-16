@@ -4,8 +4,11 @@ import { Text } from "@/components/ui/text"
 import { Heading } from "@/components/ui/heading"
 import { Link } from "expo-router"
 import { Pressable } from "react-native"
+import type { Product } from "@/types/product"
 
-export default function ProductListItem ({product})  {
+type Props = { product: Product };
+
+export default function ProductListItem ({product} : Props) { {
     return (
       <Link href={`/product/${product.id}`} asChild>
         <Pressable className="flex-1">
@@ -28,4 +31,4 @@ export default function ProductListItem ({product})  {
         </Pressable>
       </Link>
       )
-}
+}}
