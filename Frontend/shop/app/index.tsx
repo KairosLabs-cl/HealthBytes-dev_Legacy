@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Text } from '@/components/ui/text';
 import RecentlyViewedBar from '@/components/RecentlyViewedBar';
 import { Header } from '@/components/Header';
+import { Stack } from 'expo-router';
 
 export default function HomeScreen() {
   const { data, isLoading, error } = useQuery({
@@ -31,6 +32,7 @@ export default function HomeScreen() {
   
   return (
     <>
+      <Stack.Screen options={{ headerShown: false}} />
       <Header userName='Guillermo' />
       
       <RecentlyViewedBar />

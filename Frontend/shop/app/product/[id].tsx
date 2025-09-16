@@ -73,7 +73,7 @@ export default function ProductDetailsScreen() {
             onPress={addToCart}
             className="px-4 py-2 mr-0 mb-3 sm:mr-3 sm:mb-0 sm:flex-1"
           >
-            <ButtonText size="sm">Add to cart</ButtonText>
+            <ButtonText size="sm">Agregar al carrito</ButtonText>
           </Button>
           <Button
             variant="outline"
