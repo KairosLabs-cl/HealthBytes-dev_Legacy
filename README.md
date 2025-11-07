@@ -11,10 +11,10 @@
 HealthBytes comenzó centrado en alimentos para usuarios con restricciones (celiaquía, diabetes, alergias). Ahora evaluamos expandir el alcance hacia un catálogo mixto (alimentos funcionales y/o medicamentos OTC). Esta fase es exploratoria: la arquitectura y el dominio se están adaptando para soportar ambos casos, manteniendo criterios de seguridad y escalabilidad.
 
 Estado actual (snapshot):
-- ⚙️ API: Node.js + TypeScript + Drizzle ORM (PostgreSQL)
-- 👤 Autenticación: integración en progreso con Clerk
+- ⚙️ API: **FastAPI (Python)** - Migrado de Node.js a FastAPI
+- 🗄️ Base de datos: PostgreSQL compartida
+- 👤 Autenticación: JWT (compatible con sistema anterior)
 - 🐳 Docker: todavía NO en uso estándar (planeado)
-- 🐍 FastAPI: previsto como servicio futuro para análisis nutricional / validaciones / recomendador
 - 🔄 Pivot: soporte experimental dual food | med (con modo híbrido)
 
 ⚠️ Disclaimer:
@@ -41,18 +41,19 @@ Estado actual (snapshot):
 
 🛠️ Stack actual:
 - Frontend: React Native + TypeScript
-- Backend: Node.js + TypeScript + Drizzle ORM
-- DB: PostgreSQL
-- Auth: Clerk (en integración)
+- Backend: **FastAPI + Python + SQLAlchemy** (async ORM)
+- DB: PostgreSQL (compartida)
+- Auth: JWT (HS256) - Tokens compatibles entre servicios
 - Infra (futuro): Docker + AWS
-- Servicios futuros: FastAPI (procesamiento avanzado, validaciones, recomendador)
+- Servicios complementarios: Procesamiento, validaciones, recomendador
 
 ## Estructura de Carpetas (resumen, máx. 2 niveles)
 
 ```
 HealthBytes/
 ├── Backend/
-│   └── api/                 # API TypeScript (routers, casos de uso, repositorios Drizzle)
+│   ├── fastapi-service/     # API FastAPI (Python) - ACTUAL
+│   └── api/                 # API Node.js (legacy - deprecado)
 ├── Frontend/
 │   └── shop/                # App React Native (pantallas, hooks, componentes)
 ├── Docs/
@@ -67,35 +68,48 @@ Notas:
 ## Configuración de Entorno
 
 ### 🔑 Prerrequisitos
-- Node.js 18+ (LTS)
-- npm o yarn
+- **Python 3.11+** (para API FastAPI)
 - PostgreSQL 14+
-- Cuenta Clerk (keys de prueba)
-- (Roadmap) Python 3.11+ (servicios complementarios)
+- Node.js 18+ (para Frontend)
+- npm o yarn
 - (Roadmap) Docker / Docker Compose
 
 ### 🧬 Variables de Entorno
 
-## Recuerda seguir los pasos Conexión a la Base de Datos para un correcto funcionamiento
-
-Archivo `.env` (ejemplo mínimo para desarrollo):
+Archivo `.env` (Backend FastAPI):
 
 ```env
 # --- Base de Datos ---
-DATABASE_URL='postgresql://admin:contra123A@db.healthbytes.cl:25432/tienda'
+DATABASE_URL='postgresql://admin:password@db.healthbytes.cl:25432/tienda'
 
-# --- Auth (Clerk) --- <= Todavia no integrado
-CLERK_PUBLISHABLE_KEY=pk_test_xxx
-CLERK_SECRET_KEY=sk_test_xxx
-# CLERK_WEBHOOK_SECRET=whsec_xxx   # (Opcional si usas webhooks)
+# --- JWT Authentication ---
+JWT_SECRET='your-secret'
+JWT_ALGORITHM='HS256'
+ACCESS_TOKEN_EXPIRE_MINUTES='43200'
 
+# --- Environment ---
+ENVIRONMENT='dev'
+
+# --- Stripe (opcional - deshabilitado por ahora) ---
+STRIPE_SECRET_KEY='sk_test_xxx'
+STRIPE_WEBHOOK_SECRET='whsec_xxx'
 ```
 
-### 🔌 Conexión a la Base de Datos (Esquema / Flujo)
+**Nota:** El archivo `.env.example` está disponible en `Backend/fastapi-service/.env.example` como plantilla.
 
-(Visual de referencia del flujo de conexión / capa de acceso actual)
+### 🔌 Conexión a la Base de Datos
 
-Insertar url postgres de ejemplo arriba a .env en proyecto
+La API FastAPI se conecta a una base de datos PostgreSQL compartida con las siguientes tablas:
+
+- `products` - Catálogo de productos
+- `users` - Usuarios del sistema
+- `orders` - Órdenes de compra
+- `order_items` - Items de cada orden
+
+**Configuración:**
+1. Crear archivo `.env` en `Backend/fastapi-service/` con el `DATABASE_URL`
+2. Las tablas se crean automáticamente si no existen
+3. La conexión usa **psycopg** (driver async para PostgreSQL)
 
 ### 🚀 Instalación
 
@@ -106,47 +120,78 @@ git clone https://github.com/WindB3NJA/HealthBytes-dev.git
 cd HealthBytes-dev
 ```
 
-Frontend:
+**Backend (FastAPI):**
+
+```bash
+cd Backend/fastapi-service
+
+# Crear entorno virtual (recomendado)
+python -m venv venv
+.\venv\Scripts\Activate.ps1  # Windows
+# source venv/bin/activate    # Linux/Mac
+
+# Instalar dependencias
+pip install -r requirements.txt
+
+# Configurar variables de entorno
+cp .env.example .env
+# Editar .env con tus credenciales de base de datos
+```
+
+**Frontend:**
 
 ```bash
 cd Frontend/shop
 npm install
 ```
 
-Backend:
-
-```bash
-cd Backend/api
-npm install
-```
-
 ### ▶️ Ejecución
 
-Backend (API):
+**Backend (API FastAPI):**
 
 ```bash
-cd Backend/api
-npm run dev
+cd Backend/fastapi-service
+
+# Opción 1: Usando el script de inicio
+.\start.ps1
+
+# Opción 2: Usando uvicorn directamente
+uvicorn app.main:app --reload --port 3001
 ```
 
-Frontend (emulador / dispositivo):
+El servidor estará disponible en:
+- API: `http://localhost:3001`
+- Documentación interactiva: `http://localhost:3001/docs`
+
+**Frontend (emulador / dispositivo):**
 
 ```bash
 cd Frontend/shop
 npm start
 ```
 
-### 🧪 Tests (cuando se integren) <=  No definitivo
+### 🧪 API Endpoints Disponibles
 
-```bash
-# Backend
-cd Backend/test
-npm test
+**Autenticación:**
+- `POST /auth/register` - Registrar nuevo usuario
+- `POST /auth/login` - Iniciar sesión (retorna JWT)
 
-# Frontend
-cd Frontend/test
-npm test
-```
+**Productos:**
+- `GET /products` - Listar todos los productos
+- `GET /products/{id}` - Obtener producto por ID
+- `POST /products` - Crear producto (requiere rol seller)
+- `PUT /products/{id}` - Actualizar producto (requiere rol seller)
+- `DELETE /products/{id}` - Eliminar producto (requiere rol seller)
+
+**Órdenes:**
+- `POST /orders/` - Crear nueva orden (requiere autenticación)
+- `GET /orders/` - Listar órdenes (requiere autenticación)
+- `GET /orders/{id}` - Obtener detalle de orden (requiere autenticación)
+- `PUT /orders/{id}` - Actualizar estado de orden (requiere autenticación)
+
+Ver documentación completa en: `http://localhost:3001/docs`
+
+---
 
 ## Contacto 💬
 
