@@ -1,12 +1,33 @@
 import { Request, Response } from 'express';
 import { db } from '../../db/index.js';
 import { productsTable } from '../../db/productsSchema.js';
-import { eq } from 'drizzle-orm';
+import { eq, or, ilike } from 'drizzle-orm';
 import _ from 'lodash';
 
 export async function listProducts(req: Request, res: Response) {
   try {
-    const products = await db.select().from(productsTable);
+    // aca lee el parmetro de búsqueda de query string
+    const { search } = req.query;
+    
+    let products;
+    
+    // filtra productos por nombre o descripción si hay búsqueda
+    if (search && typeof search === 'string' && search.trim() !== '') {
+      const searchTerm = `%${search.trim()}%`;
+      products = await db
+        .select()
+        .from(productsTable)
+        .where(
+          or(
+            ilike(productsTable.name, searchTerm),
+            ilike(productsTable.description, searchTerm)
+          )
+        );
+    } else {
+      // si no hay una busqyeda retorna todos los productos
+      products = await db.select().from(productsTable);
+    }
+    
     res.json(products);
   } catch (e) {
     console.log(e);
