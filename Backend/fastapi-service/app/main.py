@@ -32,7 +32,7 @@ app.add_middleware(
 @app.get("/")
 async def root():
     """Root endpoint - Replica of '/' route from Node.js"""
-    return {"message": "Hello World!"}
+    return {"message": "Hola curiosin 👋! Bienvenido a la API de HealthBytes con FastAPI."}
 
 
 # Include routers (equivalent to app.use() in Express)
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",
-        port=3002,  # Different port from Node.js (3001)
+        port=3001,  # Different port from Node.js (3001)
         reload=True if settings.ENVIRONMENT == "dev" else False
     )
 

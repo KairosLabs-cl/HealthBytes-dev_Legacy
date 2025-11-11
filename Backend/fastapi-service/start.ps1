@@ -1,28 +1,54 @@
-# Script para iniciar el servidor FastAPI
-# Este script asegura que se use el entorno virtual correcto
+param(
+    [switch]$NoInstall
+)
 
-Write-Host "Iniciando servidor FastAPI..." -ForegroundColor Green
+$ErrorActionPreference = "Stop"
 
-# Verificar que estamos en el directorio correcto
-$currentDir = Get-Location
-if ($currentDir.Path -notlike "*fastapi-service") {
-    Write-Host "Error: Debes estar en el directorio Backend/fastapi-service" -ForegroundColor Red
-    exit 1
+# Move to script directory (fastapi-service)
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+Set-Location $ScriptDir
+
+Write-Host "===============================================" -ForegroundColor Cyan
+Write-Host " HealthBytes FastAPI - Windows Starter" -ForegroundColor Cyan
+Write-Host "===============================================" -ForegroundColor Cyan
+
+function New-Venv {
+    if (Get-Command py -ErrorAction SilentlyContinue) {
+        try {
+            Write-Host "Creating virtualenv with 'py -3.14'..." -ForegroundColor Yellow
+            py -3.14 -m venv .venv
+            return
+        } catch {
+            Write-Host "'py -3.14' failed, trying 'py -3'..." -ForegroundColor Yellow
+            try { py -3 -m venv .venv; return } catch {}
+        }
+    }
+    Write-Host "Using system Python to create virtualenv..." -ForegroundColor Yellow
+    python -m venv .venv
 }
 
-# Verificar Python
-$pythonExe = "..\..\.venv\Scripts\python.exe"
-if (-not (Test-Path $pythonExe)) {
-    Write-Host "Error: No se encuentra el entorno virtual en $pythonExe" -ForegroundColor Red
-    exit 1
+# 1) Ensure virtualenv exists
+if (-not (Test-Path ".venv")) {
+    New-Venv
 }
 
-Write-Host "Usando Python: $pythonExe" -ForegroundColor Cyan
+# 2) Activate virtualenv
+$activate = Join-Path ".venv" "Scripts/Activate.ps1"
+if (-not (Test-Path $activate)) {
+    throw "Virtualenv looks broken. Expected '$activate' to exist."
+}
+. $activate
 
-# Iniciar uvicorn
-Write-Host "`nIniciando servidor en http://127.0.0.1:3002" -ForegroundColor Green
-Write-Host "Documentacion disponible en http://127.0.0.1:3002/docs" -ForegroundColor Cyan
-Write-Host "`nPresiona CTRL+C para detener el servidor`n" -ForegroundColor Yellow
+# 3) Install/update deps (unless --NoInstall)
+if (-not $NoInstall) {
+    Write-Host "Upgrading pip/setuptools/wheel..." -ForegroundColor Yellow
+    python -m pip install --upgrade pip setuptools wheel | Out-Host
 
-# Usar run_server.py que configura el event loop correcto para Windows
-& $pythonExe run_server.py
+    Write-Host "Installing requirements..." -ForegroundColor Yellow
+    python -m pip install -r requirements.txt | Out-Host
+}
+
+# 4) Start server via run_server.py (configured reload excludes)
+Write-Host "Starting FastAPI server on http://127.0.0.1:3001 ..." -ForegroundColor Green
+Write-Host "Press CTRL+C to stop." -ForegroundColor Green
+python run_server.py
