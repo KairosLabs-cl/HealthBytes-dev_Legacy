@@ -1,44 +1,94 @@
-# HealthBytes FastAPI Service# HealthBytes FastAPI Service
+# HealthBytes FastAPI Service
 
+Replica 1:1 de la API Node.js (Express) usando FastAPI, manteniendo mismos endpoints y lógica.
 
+## 🚀 Inicio rápido
 
-Réplica 1:1 de la API Node.js Express usando FastAPI.FastAPI replica of the Node.js Express API for HealthBytes.
+Servidor (dev): http://localhost:3001
 
+Docs: http://localhost:3001/docs  |  ReDoc: http://localhost:3001/redoc
 
+### Arranque recomendado
 
-## 🚀 Inicio Rápido## 🎯 Objective
+#### Windows (PowerShell)
 
+```powershell
+cd Backend\fastapi-service
+./start.ps1
+# Sólo arrancar (sin reinstalar deps)
+./start.ps1 -NoInstall
+```
 
+Si ves error de ejecución de scripts:
 
-### Iniciar ServidorThis is a **1:1 replica** of the existing Node.js API (`Backend/api/`) using FastAPI. All endpoints maintain the same behavior, request/response formats, and business logic.
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+```
 
+#### Unix / macOS (Bash/Zsh)
 
+```bash
+cd Backend/fastapi-service
+chmod +x start.sh   # primera vez
+./start.sh
+# Sólo arrancar (sin instalar)
+NO_INSTALL=1 ./start.sh
+```
 
-```powershell## 📦 Project Structure
+### Alternativa manual
 
-# Desde Backend/fastapi-service/
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python run_server.py
+```
 
-.\start.ps1```
+### uvicorn directo (evitando recargas ruidosas)
 
-```fastapi-service/
+```powershell
+uvicorn app.main:app --reload --port 3001 `
+  --reload-exclude ".venv/*" --reload-exclude ".venv/**/*" `
+  --reload-exclude "**/site-packages/*" --reload-dir app
+```
 
-├── app/
+```bash
+uvicorn app.main:app --reload --port 3001 \
+  --reload-exclude '.venv/*' --reload-exclude '.venv/**/*' \
+  --reload-exclude '**/site-packages/*' --reload-dir app
+```
 
-El servidor iniciará en: **http://localhost:3002**│   ├── main.py              # Main application (index.ts equivalent)
+---
 
-│   ├── config.py            # Environment configuration
+## 📦 Project Structure
 
-- Documentación API: http://localhost:3002/docs│   ├── routers/             # API endpoints
+```
+fastapi-service/
+  ├── app/
+  │   ├── main.py            # FastAPI app entrypoint
+  │   ├── config.py          # Settings (pydantic-settings)
+  │   ├── routers/           # Endpoints (products, auth, orders, stripe)
+  │   ├── models/            # Pydantic schemas
+  │   ├── db/                # DB connection & SQLAlchemy models
+  │   ├── middleware/        # Auth/JWT middleware
+  │   └── utils/             # Security, exceptions
+  ├── run_server.py          # Dev runner (reload configurado)
+  ├── start.ps1              # Windows bootstrap
+  ├── start.sh               # Unix/macOS bootstrap
+  ├── requirements.txt
+  ├── .env.example
+  └── README.md
+```
 
-│   │   ├── products.py      # Products CRUD
+### Variables (.env)
 
-### Configuración (.env)│   │   ├── auth.py          # Registration & Login
-
-│   │   ├── orders.py        # Orders management
-
-```env│   │   └── stripe.py        # Stripe integration (disabled)
-
-DATABASE_URL=postgresql://user:password@host:port/database│   ├── models/              # Pydantic schemas (Zod equivalent)
+```env
+DATABASE_URL=postgresql://user:password@host:port/database
+JWT_SECRET=your-secret
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=43200
+ENVIRONMENT=dev
+```
 
 JWT_SECRET=your-secret│   │   ├── product.py
 
@@ -48,7 +98,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES=43200│   │   └── order.py
 
 ENVIRONMENT=dev│   ├── db/
 
-```│   │   ├── database.py      # DB connection
+```│
 
 │   │   └── schemas.py       # SQLAlchemy models (Drizzle equivalent)
 
@@ -80,7 +130,7 @@ app/│       ├── security.py      # JWT & password hashing
 
 ```
 
-```powershell
+1
 
 ## 📋 API Endpoints# Windows PowerShell
 
@@ -89,13 +139,9 @@ cd Backend\fastapi-service
 ### Productspython -m venv venv
 
 - `GET /products` - Listar productos.\venv\Scripts\Activate.ps1
-
 - `GET /products/{id}` - Obtener producto```
-
 - `POST /products` - Crear producto (seller)
-
 - `PUT /products/{id}` - Actualizar producto (seller)### 2. Install Dependencies
-
 - `DELETE /products/{id}` - Eliminar producto (seller)
 
 ```powershell
@@ -136,38 +182,31 @@ cd Backend\fastapi-service
 
 JWT compatible con la API Node.js:# Option 1: Using uvicorn directly
 
-- Mismo secret: `your-secret`uvicorn app.main:app --reload --port 3002
+- Mismo secret: `your-secret`uvicorn app.main:app --reload --port 3001
 
 - Mismo algoritmo: `HS256`
 
 - Mismo payload: `{userId, role}`# Option 2: Using Python
 
 - Expiración: 30 díaspython -m app.main
-
 ```
 
 Los tokens son intercambiables entre ambas APIs.
 
-Server will start at: **http://localhost:3002**
+Server will start at: **http://localhost:3001**
 
 ## 🗄️ Base de Datos
 
-- API Docs (Swagger): http://localhost:3002/docs
+- API Docs (Swagger): http://localhost:3001/docs
 
-Comparte la misma base de datos PostgreSQL con la API Node.js.- Alternative Docs (ReDoc): http://localhost:3002/redoc
-
-
+Comparte la misma base de datos PostgreSQL con la API Node.js.- Alternative Docs (ReDoc): http://localhost:3001/redoc
 
 Tablas:## 📋 API Endpoints
 
 - `products` - Productos
-
 - `users` - Usuarios### Products
-
 - `orders` - Órdenes- `GET /products` - List all products
-
 - `order_items` - Items de órdenes- `GET /products/{id}` - Get product by ID
-
 - `POST /products` - Create product (seller only)
 
 ## 🔧 Desarrollo- `PUT /products/{id}` - Update product (seller only)
@@ -178,7 +217,7 @@ Tablas:## 📋 API Endpoints
 
 # Ejecutar con auto-reload### Authentication
 
-uvicorn app.main:app --reload --port 3002- `POST /auth/register` - Create user account
+uvicorn app.main:app --reload --port 3001- `POST /auth/register` - Create user account
 
 - `POST /auth/login` - Login and get JWT token
 
@@ -194,7 +233,7 @@ python run_server.py### Orders
 
 - `PUT /orders/{id}` - Update order status (authenticated)
 
-- Puerto 3002 (Node.js usa 3001)
+- Puerto 3001 (Node.js usa 3001)
 
 - Windows: Usa `WindowsSelectorEventLoopPolicy` para compatibilidad con psycopg### Stripe
 
@@ -212,7 +251,7 @@ python run_server.py### Orders
 
 | Feature | Node.js | FastAPI | Status |
 |---------|---------|---------|--------|
-| Port | 3001 | 3002 | ✅ Different ports |
+| Port | 3001 | 3001 | ✅ Different ports |
 | JWT Secret | `your-secret` | `your-secret` | ✅ Compatible |
 | Token Expiration | 30 days | 30 days | ✅ Same |
 | Password Hashing | bcrypt | bcrypt | ✅ Compatible |
@@ -226,13 +265,13 @@ python run_server.py### Orders
 
 ```powershell
 # Test root endpoint
-curl http://localhost:3002/
+curl http://localhost:3001/
 
 # Test products list
-curl http://localhost:3002/products
+curl http://localhost:3001/products
 
 # Test login
-curl -X POST http://localhost:3002/auth/login `
+curl -X POST http://localhost:3001/auth/login `
   -H "Content-Type: application/json" `
   -d '{"email":"test@example.com","password":"password123"}'
 ```
@@ -246,6 +285,7 @@ pytest tests/
 ## 🔐 Authentication
 
 All JWT tokens are **compatible between Node.js and FastAPI** APIs because they use:
+
 - Same secret: `your-secret`
 - Same algorithm: `HS256`
 - Same payload structure: `{userId, role}`
@@ -255,15 +295,18 @@ You can authenticate on one API and use the token on the other.
 ## 📝 Known Limitations & TODOs
 
 ### Orders
+
 - ⚠️ **TODO**: Validate product IDs and take actual prices from DB (line 33 in `ordersController.ts`)
   - Currently using prices from client request (security issue)
   - Same behavior as Node.js API for consistency
 
 ### Stripe
+
 - ❌ All endpoints return 503 (temporarily disabled)
 - Same as Node.js implementation
 
 ### Future Enhancements
+
 - [ ] Add product price validation in orders
 - [ ] Enable Stripe integration
 - [ ] Add role-based filtering for orders (admin/seller)
@@ -273,13 +316,16 @@ You can authenticate on one API and use the token on the other.
 ## 🐛 Troubleshooting
 
 ### Import Errors
+
 If you see import errors in VSCode:
+
 ```powershell
 # Select Python interpreter from venv
 # Ctrl+Shift+P -> "Python: Select Interpreter" -> Choose venv
 ```
 
 ### Database Connection Issues
+
 ```powershell
 # Test PostgreSQL connection
 python -c "import asyncpg; print('asyncpg installed')"
@@ -289,6 +335,7 @@ python -c "import asyncpg; print('asyncpg installed')"
 ```
 
 ### Port Already in Use
+
 ```powershell
 # Change port in app/main.py or run with custom port
 uvicorn app.main:app --reload --port 3003
@@ -328,12 +375,13 @@ functions:
 ## 🤝 Contributing
 
 This is a direct replica of the Node.js API. Any changes should:
+
 1. First be implemented in Node.js API
 2. Then replicated here to maintain parity
 3. Or be discussed as FastAPI-specific optimizations
 
 ---
 
-**Version**: 2.0.0  
-**Last Updated**: 2025-11-06  
+**Version**: 2.0.0
+**Last Updated**: 2025-11-06
 **Node.js API Version**: 1.0.0

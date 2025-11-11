@@ -10,20 +10,27 @@ if sys.platform == "win32":
 
 if __name__ == "__main__":
     import uvicorn
+    from pathlib import Path
     
     print("="*70)
     print("Iniciando HealthBytes FastAPI Server")
     print("="*70)
-    print(f"Servidor: http://127.0.0.1:3002")
-    print(f"Docs: http://127.0.0.1:3002/docs")
-    print(f"ReDoc: http://127.0.0.1:3002/redoc")
+    print(f"Servidor: http://127.0.0.1:3001")
+    print(f"Docs: http://127.0.0.1:3001/docs")
+    print(f"ReDoc: http://127.0.0.1:3001/redoc")
     print("="*70)
     print("\nPresiona CTRL+C para detener el servidor\n")
     
+    project_root = Path(__file__).parent
+    app_dir = project_root / "app"
+
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",
-        port=3002,
+        port=3001,
         reload=True,
-        log_level="info"
+        log_level="info",
+        # Ignorar el entorno virtual y solo observar código propio
+        reload_excludes=[".venv/*", ".venv/**/*", "**/site-packages/*"],
+        reload_dirs=[str(app_dir)],
     )

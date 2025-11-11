@@ -5,12 +5,13 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![AWS](https://img.shields.io/badge/Amazon_AWS-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white)](https://aws.amazon.com/)
 
-> Plataforma enfocada en simplificar y hacer más seguras las decisiones de compra para personas con restricciones de salud.  
+> Plataforma enfocada en simplificar y hacer más seguras las decisiones de compra para personas con restricciones de salud.
 > Exploramos un modelo híbrido: alimentos especializados y (en evaluación) productos / medicamentos OTC de bienestar. 🌱💊
 
 HealthBytes comenzó centrado en alimentos para usuarios con restricciones (celiaquía, diabetes, alergias). Ahora evaluamos expandir el alcance hacia un catálogo mixto (alimentos funcionales y/o medicamentos OTC). Esta fase es exploratoria: la arquitectura y el dominio se están adaptando para soportar ambos casos, manteniendo criterios de seguridad y escalabilidad.
 
 Estado actual (snapshot):
+
 - ⚙️ API: **FastAPI (Python)** - Migrado de Node.js a FastAPI
 - 🗄️ Base de datos: PostgreSQL compartida
 - 👤 Autenticación: JWT (compatible con sistema anterior)
@@ -18,12 +19,14 @@ Estado actual (snapshot):
 - 🔄 Pivot: soporte experimental dual food | med (con modo híbrido)
 
 ⚠️ Disclaimer:
+
 - No sustituye consejo médico profesional.
 - La clasificación de productos está en evolución; no usar como única fuente clínica.
 
 ## Información General
 
 🎯 Objetivos inmediatos:
+
 - Catálogo filtrable (alérgenos, etiquetas dietéticas, clasificación preliminar)
 - Extender modelo a soporte dual: alimentos / medicamentos OTC
 - Carrito y flujo base de compra (checkout completo en roadmap)
@@ -31,6 +34,7 @@ Estado actual (snapshot):
 - Base para recomendación y validaciones automáticas (ingredientes / riesgos)
 
 🧩 Características clave:
+
 - 🩺 Filtros de salud (alérgenos, ingredientes sensibles)
 - 🔄 Dominio adaptable (food | med | hybrid)
 - 👤 Auth centralizada con Clerk (sesiones seguras, roles)
@@ -40,6 +44,7 @@ Estado actual (snapshot):
 - 🚀 Preparado para extraer servicios (FastAPI / ML / validación)
 
 🛠️ Stack actual:
+
 - Frontend: React Native + TypeScript
 - Backend: **FastAPI + Python + SQLAlchemy** (async ORM)
 - DB: PostgreSQL (compartida)
@@ -62,13 +67,15 @@ HealthBytes/
 ```
 
 Notas:
+
 - Servicios Python futuros: Backend/py-services/
 - Posible módulo común: Backend/shared/ (DTOs, esquemas, eventos, utils)
 
 ## Configuración de Entorno
 
 ### 🔑 Prerrequisitos
-- **Python 3.11+** (para API FastAPI)
+
+- **Python 3.14+** (para API FastAPI)
 - PostgreSQL 14+
 - Node.js 18+ (para Frontend)
 - npm o yarn
@@ -107,6 +114,7 @@ La API FastAPI se conecta a una base de datos PostgreSQL compartida con las sigu
 - `order_items` - Items de cada orden
 
 **Configuración:**
+
 1. Crear archivo `.env` en `Backend/fastapi-service/` con el `DATABASE_URL`
 2. Las tablas se crean automáticamente si no existen
 3. La conexión usa **psycopg** (driver async para PostgreSQL)
@@ -149,17 +157,29 @@ npm install
 
 **Backend (API FastAPI):**
 
+Windows (PowerShell):
+
+```powershell
+cd Backend\fastapi-service
+./start.ps1
+```
+
+Unix/macOS (Bash/Zsh):
+
 ```bash
 cd Backend/fastapi-service
+chmod +x ./start.sh   # primera vez
+./start.sh
+```
 
-# Opción 1: Usando el script de inicio
-.\start.ps1
+Opción 2 (avanzado) – uvicorn directo:
 
-# Opción 2: Usando uvicorn directamente
+```bash
 uvicorn app.main:app --reload --port 3001
 ```
 
 El servidor estará disponible en:
+
 - API: `http://localhost:3001`
 - Documentación interactiva: `http://localhost:3001/docs`
 
@@ -173,10 +193,12 @@ npm start
 ### 🧪 API Endpoints Disponibles
 
 **Autenticación:**
+
 - `POST /auth/register` - Registrar nuevo usuario
 - `POST /auth/login` - Iniciar sesión (retorna JWT)
 
 **Productos:**
+
 - `GET /products` - Listar todos los productos
 - `GET /products/{id}` - Obtener producto por ID
 - `POST /products` - Crear producto (requiere rol seller)
@@ -184,6 +206,7 @@ npm start
 - `DELETE /products/{id}` - Eliminar producto (requiere rol seller)
 
 **Órdenes:**
+
 - `POST /orders/` - Crear nueva orden (requiere autenticación)
 - `GET /orders/` - Listar órdenes (requiere autenticación)
 - `GET /orders/{id}` - Obtener detalle de orden (requiere autenticación)
@@ -198,19 +221,18 @@ Ver documentación completa en: `http://localhost:3001/docs`
 ¿Ideas, dudas o colaboración?
 
 - 📧 Email: staff@healthbyes.cl
-- 🐙 GitHub: @WindB3NJA, @GuillermoSerrano132, @Simon-Aspee, @chachoCL
 
 ## Notas Legales (Provisorio) ⚖️
 
-El contenido es informativo y no constituye consejo médico.  
-La exactitud de composiciones y advertencias está en revisión continua.  
+El contenido es informativo y no constituye consejo médico.
+La exactitud de composiciones y advertencias está en revisión continua.
 Siempre consulta a un profesional de salud ante dudas.
 
 ---
 
 <div align="center">
 
-**HealthBytes** – Salud y conveniencia en un mismo lugar 🛒💊❤️  
+**HealthBytes** – Salud y conveniencia en un mismo lugar 🛒💊❤️
 Construyendo un ecosistema seguro para decisiones de compra informadas.
 
 </div>
