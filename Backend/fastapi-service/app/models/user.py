@@ -16,6 +16,13 @@ class UserLogin(BaseModel):
     password: str
 
 
+class UserUpdate(BaseModel):
+    """Schema for user update - Replica of updateUserSchema"""
+    password: Optional[str] = Field(None, min_length=1)
+    name: Optional[str] = Field(None, max_length=255)
+    address: Optional[str] = None
+
+
 class UserResponse(BaseModel):
     """User response schema (without password)"""
     id: int
