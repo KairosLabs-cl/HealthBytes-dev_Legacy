@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     
     # Environment
     ENVIRONMENT: str = "dev"
+    HOST: str = "0.0.0.0"
+    PORT: int = 3001
     
     class Config:
         env_file = ".env"
