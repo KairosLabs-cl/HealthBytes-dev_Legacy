@@ -178,3 +178,17 @@ Frontend/shop/ <= ! aqui es donde debes hacer el ´´npm install && npm start´�
 ---
 
 Mantener este documento actualizado cuando se introduzcan cambios estructurales o de experiencia.
+
+## 20. Calidad de Código y Seguridad
+
+Es **obligatorio** verificar la calidad y seguridad del código antes de enviar cambios (Push/PR).
+
+- **Comando**: `npm run lint`
+- **Qué hace**: Ejecuta ESLint con reglas de seguridad (`eslint-plugin-security`) y buenas prácticas de React/React Native.
+- **Por qué es importante**:
+  - Detecta vulnerabilidades de seguridad comunes (ej: inyección de objetos).
+  - Asegura consistencia en el código.
+  - Previene errores en tiempo de ejecución.
+
+> **Nota para devs**: Si el linter falla, **no** ignores los errores. Corrígelos o discute si es un falso positivo.
+

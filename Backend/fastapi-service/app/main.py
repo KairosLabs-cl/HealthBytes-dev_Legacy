@@ -55,8 +55,8 @@ if __name__ == "__main__":
     
     uvicorn.run(
         "app.main:app",
-        host="0.0.0.0",
-        port=3001,  # Different port from Node.js (3001)
+        host=settings.HOST,
+        port=settings.PORT,  # Configured in config.py
         reload=True if settings.ENVIRONMENT == "dev" else False
     )
 
