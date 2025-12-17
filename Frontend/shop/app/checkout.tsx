@@ -7,7 +7,7 @@ import { createOrder } from "@/api/orders";
 import { Button, ButtonText } from "@/components/ui/button";
 import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CheckCircleIcon } from "lucide-react-native";
 
 export default function CheckoutScreen() {
@@ -15,6 +15,8 @@ export default function CheckoutScreen() {
     const { items, resetCart } = useCart();
     const [isProcessing, setIsProcessing] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const paymentTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const subtotal = items.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
 
@@ -33,7 +35,7 @@ export default function CheckoutScreen() {
             setIsSuccess(true);
             resetCart();
             // Esperar un momento para mostrar el estado de éxito antes de redirigir
-            setTimeout(() => {
+            successTimeoutRef.current = setTimeout(() => {
                 router.replace("/");
             }, 2000);
         },
@@ -43,6 +45,18 @@ export default function CheckoutScreen() {
             alert(error.message || "Hubo un error al procesar la orden. Inténtalo de nuevo.");
         },
     });
+
+    // Cleanup timeouts on unmount to prevent memory leaks and state updates on unmounted components
+    useEffect(() => {
+        return () => {
+            if (paymentTimeoutRef.current) {
+                clearTimeout(paymentTimeoutRef.current);
+            }
+            if (successTimeoutRef.current) {
+                clearTimeout(successTimeoutRef.current);
+            }
+        };
+    }, []);
 
     const handlePay = () => {
         const token = useAuth.getState().token;
@@ -56,7 +70,7 @@ export default function CheckoutScreen() {
         setIsProcessing(true);
 
         /* Simular Pasarela de Pago (Stripe/PayPal) - Delay de 3s */
-        setTimeout(() => {
+        paymentTimeoutRef.current = setTimeout(() => {
             createOrderMutation.mutate();
         }, 3000);
     };
