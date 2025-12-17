@@ -9,12 +9,14 @@ import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
 import { useState } from "react";
 import { CheckCircleIcon } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function CheckoutScreen() {
     const router = useRouter();
     const { items, resetCart } = useCart();
     const [isProcessing, setIsProcessing] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const insets = useSafeAreaInsets();
 
     const subtotal = items.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
 
@@ -108,7 +110,7 @@ export default function CheckoutScreen() {
                 </View>
             </VStack>
 
-            <View className="absolute bottom-24 left-6 right-6">
+            <View style={{ position: 'absolute', bottom: insets.bottom + 16, left: 24, right: 24 }}>
                 <Button
                     size="xl"
                     onPress={handlePay}

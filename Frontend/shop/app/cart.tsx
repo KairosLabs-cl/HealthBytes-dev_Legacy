@@ -5,10 +5,12 @@ import { useCart } from "@/store/cartStore";
 import { View, FlatList, Image } from "react-native";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Redirect, useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function CartScreen() {
   const items = useCart((state) => state.items);
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   if (items.length === 0) {
     return <Redirect href={"/"} />;
@@ -74,7 +76,7 @@ export default function CartScreen() {
         )}
       />
 
-      <View className="absolute bottom-24 left-4 right-4">
+      <View style={{ position: 'absolute', bottom: insets.bottom + 16, left: 16, right: 16 }}>
         <Button size="lg" onPress={onCheckout} className="w-full bg-black rounded-full h-14 shadow-lg active:opacity-90">
           <ButtonText className="text-white font-bold text-lg">
             Ir a Pagar (${subtotal.toFixed(2)})
