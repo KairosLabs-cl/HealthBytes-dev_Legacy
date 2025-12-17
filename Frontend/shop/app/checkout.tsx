@@ -1,5 +1,5 @@
 import { View, Text, ActivityIndicator } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, Redirect } from "expo-router";
 import { useCart } from "@/store/cartStore";
 import { useAuth } from "@/store/authStore";
 import { useMutation } from "@tanstack/react-query";
@@ -15,6 +15,10 @@ export default function CheckoutScreen() {
     const { items, resetCart } = useCart();
     const [isProcessing, setIsProcessing] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+
+    if (items.length === 0) {
+        return <Redirect href={"/"} />;
+    }
 
     const subtotal = items.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
 
