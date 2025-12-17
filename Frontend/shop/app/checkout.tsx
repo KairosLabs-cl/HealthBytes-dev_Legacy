@@ -7,7 +7,7 @@ import { createOrder } from "@/api/orders";
 import { Button, ButtonText } from "@/components/ui/button";
 import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { CheckCircleIcon } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -17,6 +17,15 @@ export default function CheckoutScreen() {
     const [isProcessing, setIsProcessing] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const insets = useSafeAreaInsets();
+
+    const buttonContainerStyle = useMemo(
+        () => ({
+            paddingBottom: insets.bottom + 24,
+            paddingLeft: 24,
+            paddingRight: 24,
+        }),
+        [insets.bottom]
+    );
 
     const subtotal = items.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
 
@@ -110,7 +119,7 @@ export default function CheckoutScreen() {
                 </View>
             </VStack>
 
-            <View style={{ paddingBottom: insets.bottom + 24, paddingLeft: 24, paddingRight: 24 }}>
+            <View style={buttonContainerStyle}>
                 <Button
                     size="xl"
                     onPress={handlePay}
