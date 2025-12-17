@@ -19,7 +19,7 @@ export async function createOrder(items: any[]) {
   if (!res.ok) {
     console.log(data);
     /* Lanzar error específico del backend para mostrar en la UI */
-    throw new Error(data.message || "Error al procesar la solicitud, Debe iniciar sesión");
+    throw new Error(data.message || "Error al procesar la solicitud, debe iniciar sesión");
   }
 
   return data;
