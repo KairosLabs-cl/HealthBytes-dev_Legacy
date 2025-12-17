@@ -49,7 +49,7 @@ export default function CheckoutScreen() {
 
         /* Validar Autenticación: Impedir checkout si no hay sesión */
         if (!token) {
-            alert("Necesitas haber iniciado una sesión para realizar una compra.");
+            alert("Necesitas iniciar sesión para realizar una compra.");
             return;
         }
 
