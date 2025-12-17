@@ -2,7 +2,7 @@ import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
 import { Text } from "@/components/ui/text";
 import { useCart } from "@/store/cartStore";
-import { View, FlatList, Image } from "react-native";
+import { View, FlatList } from "react-native";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Redirect, useRouter } from "expo-router";
 
