@@ -15,8 +15,8 @@ export default function CheckoutScreen() {
     const { items, resetCart } = useCart();
     const [isProcessing, setIsProcessing] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
-    const paymentTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const paymentTimeoutRef = useRef<number | null>(null);
+    const successTimeoutRef = useRef<number | null>(null);
 
     const subtotal = items.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
 
@@ -49,12 +49,8 @@ export default function CheckoutScreen() {
     // Cleanup timeouts on unmount to prevent memory leaks and state updates on unmounted components
     useEffect(() => {
         return () => {
-            if (paymentTimeoutRef.current) {
-                clearTimeout(paymentTimeoutRef.current);
-            }
-            if (successTimeoutRef.current) {
-                clearTimeout(successTimeoutRef.current);
-            }
+            clearTimeout(paymentTimeoutRef.current);
+            clearTimeout(successTimeoutRef.current);
         };
     }, []);
 
