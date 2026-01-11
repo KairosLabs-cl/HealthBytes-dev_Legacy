@@ -1,12 +1,12 @@
 // to make the file a module and avoid the TypeScript error
-export {};
+export { };
 
 declare global {
   namespace Express {
     export interface Request {
-      userId?: Number;
+      userId?: string | number;
       cleanBody?: any;
-      role: string;
+      role?: string;
       rawBody?: Buffer;
     }
   }
