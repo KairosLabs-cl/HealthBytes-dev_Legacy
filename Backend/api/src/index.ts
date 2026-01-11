@@ -4,6 +4,7 @@ import productsRoutes from "./routes/products/index.js";
 import authRoutes from "./routes/auth/index.js";
 import ordersRoutes from "./routes/orders/index.js";
 import stripeRoutes from "./routes/stripe/index.js";
+import { clerkAuth, attachUserId } from "./middlewares/authMiddleware.js";
 
 import serverless from "serverless-http";
 
@@ -17,7 +18,7 @@ app.use(
       "http://localhost:8081",
       "http://127.0.0.1:8082",
       "http://localhost:8081", //recuerda que si quieres usar Expo Go en el celular, debes usar la IP local de tu computadora
-      "http://192.168.1.124:8081", // Reemplaza con tu IP local real (usa: ip route get 1.1.1.1 | awk '{print $7}' | head -n1)
+      "http://192.168.1.103:8081", // Reemplaza con tu IP local real (usa: ip route get 1.1.1.1 | awk '{print $7}' | head -n1)
     ], // Expo dev server
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -32,6 +33,11 @@ app.use(
     },
   })
 );
+
+// Add Clerk authentication middleware
+// This populates req.auth with the Clerk session data
+app.use(clerkAuth);
+app.use(attachUserId);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

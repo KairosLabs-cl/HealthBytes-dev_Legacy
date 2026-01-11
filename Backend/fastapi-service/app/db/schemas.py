@@ -19,10 +19,11 @@ class User(Base):
     
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     email = Column(String(255), unique=True, nullable=False, index=True)
-    password = Column(String(255), nullable=False)
+    password = Column(String(255), nullable=True)  # Nullable for Clerk users
     role = Column(String(255), nullable=False, default="user")
     name = Column(String(255), nullable=True)
     address = Column(Text, nullable=True)
+    clerk_id = Column(String(255), unique=True, nullable=True, index=True)  # Clerk user ID
 
 
 class Order(Base):

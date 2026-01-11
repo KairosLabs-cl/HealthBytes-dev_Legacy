@@ -5,13 +5,11 @@ import { Heading } from "@/components/ui/heading";
 import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
 import { EyeIcon, EyeOffIcon } from "lucide-react-native";
 import { Button, ButtonText } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { HStack } from "@/components/ui/hstack";
-import { useMutation } from "@tanstack/react-query";
-import { login, signup } from "@/api/auth";
-import { err } from "react-native-svg/lib/typescript/xml";
-import { useAuth } from "@/store/authStore";
-import { Redirect } from "expo-router";
+import { useSignIn, useSignUp, useAuth } from "@clerk/clerk-expo";
+import { useRouter } from "expo-router";
+import { ActivityIndicator, View } from "react-native";
 
 export const options = {
   title: "Mi cuenta",
@@ -21,62 +19,106 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const setUser = useAuth((s) => s.setUser);
-  const setToken = useAuth((s) => s.setToken);
-  const isLoggedIn = useAuth((s) => !!s.token);
-
-  const loginMutation = useMutation({
-    mutationFn: () => login(email, password),
-    onSuccess: (data) => {
-      console.log("Success: ", data);
-      if (data.user && data.token) {
-        setUser(data.user);
-        setToken(data.token);
-      }
-    },
-    onError: (error) => {
-      console.error("Error: ", error);
-    },
-  });
-
-  const signupMutation = useMutation({
-    mutationFn: () => signup(email, password),
-    onSuccess: (data) => {
-      console.log("Success sign up: ", data);
-      if (data.user && data.token) {
-        setUser(data.user);
-        setToken(data.token);
-      }
-    },
-    onError: (error) => {
-      console.error("Error sign up: ", error);
-    },
-  });
+  const { signIn, setActive: setSignInActive, isLoaded: isSignInLoaded } = useSignIn();
+  const { signUp, setActive: setSignUpActive, isLoaded: isSignUpLoaded } = useSignUp();
+  const { isSignedIn } = useAuth();
+  const router = useRouter();
 
   const handleState = () => {
-    setShowPassword((showState) => {
-      return !showState;
-    });
+    setShowPassword((showState) => !showState);
   };
 
-  if (isLoggedIn) {
-    return <Redirect href="/" />;
+  const onSignIn = useCallback(async () => {
+    if (!isSignInLoaded || !signIn) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const result = await signIn.create({
+        identifier: email,
+        password,
+      });
+
+      if (result.status === "complete") {
+        await setSignInActive({ session: result.createdSessionId });
+        router.replace("/");
+      } else {
+        console.log("Sign in requires additional steps:", result);
+        setError("Se requieren pasos adicionales para iniciar sesión");
+      }
+    } catch (err: any) {
+      console.error("Sign in error:", err);
+      setError(err.errors?.[0]?.message || "Error al iniciar sesión");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isSignInLoaded, signIn, email, password, setSignInActive, router]);
+
+  const onSignUp = useCallback(async () => {
+    if (!isSignUpLoaded || !signUp) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const result = await signUp.create({
+        emailAddress: email,
+        password,
+      });
+
+      if (result.status === "complete") {
+        await setSignUpActive({ session: result.createdSessionId });
+        router.replace("/");
+      } else {
+        // Handle email verification or other steps
+        console.log("Sign up requires additional steps:", result);
+        setError("Por favor verifica tu email para completar el registro");
+      }
+    } catch (err: any) {
+      console.error("Sign up error:", err);
+      setError(err.errors?.[0]?.message || "Error al registrarse");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isSignUpLoaded, signUp, email, password, setSignUpActive, router]);
+
+  // If already signed in, redirect to home
+  if (isSignedIn) {
+    router.replace("/");
+    return null;
   }
 
   return (
     <FormControl
-      isInvalid={loginMutation.error || signupMutation.error}
+      isInvalid={!!error}
       className="p-4 border rounded-lg max-w-[500px] border-outline-300 bg-white m-2"
     >
       <VStack space="xl">
-        <Heading className="text-typography-900 leading-3 pt-3">Inicia Sesión en HealthBytes</Heading>
+        <Heading className="text-typography-900 leading-3 pt-3">
+          Inicia Sesión en HealthBytes
+        </Heading>
+
+        {error && (
+          <Text className="text-red-500 text-sm">{error}</Text>
+        )}
+
         <VStack space="xs">
           <Text className="text-typography-500 leading-1">Email</Text>
           <Input>
-            <InputField value={email} onChangeText={setEmail} type="text" />
+            <InputField
+              value={email}
+              onChangeText={setEmail}
+              type="text"
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
           </Input>
         </VStack>
+
         <VStack space="xs">
           <Text className="text-typography-500 leading-1">Password</Text>
           <Input className="text-center">
@@ -86,7 +128,6 @@ export default function LoginScreen() {
               type={showPassword ? "text" : "password"}
             />
             <InputSlot className="pr-3" onPress={handleState}>
-              {/* EyeIcon, EyeOffIcon are both imported from 'lucide-react-native' */}
               <InputIcon
                 as={showPassword ? EyeIcon : EyeOffIcon}
                 className="text-darkBlue-500"
@@ -94,18 +135,30 @@ export default function LoginScreen() {
             </InputSlot>
           </Input>
         </VStack>
-        <HStack space="sm">
-          <Button
-            className="flex-1"
-            variant="outline"
-            onPress={() => signupMutation.mutate()}
-          >
-            <ButtonText>Sign up</ButtonText>
-          </Button>
-          <Button className="flex-1" onPress={() => loginMutation.mutate()}>
-            <ButtonText>Sign in</ButtonText>
-          </Button>
-        </HStack>
+
+        {isLoading ? (
+          <View className="py-4 items-center">
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        ) : (
+          <HStack space="sm">
+            <Button
+              className="flex-1"
+              variant="outline"
+              onPress={onSignUp}
+              isDisabled={!email || !password}
+            >
+              <ButtonText>Registrarse</ButtonText>
+            </Button>
+            <Button
+              className="flex-1"
+              onPress={onSignIn}
+              isDisabled={!email || !password}
+            >
+              <ButtonText>Iniciar Sesión</ButtonText>
+            </Button>
+          </HStack>
+        )}
       </VStack>
     </FormControl>
   );
