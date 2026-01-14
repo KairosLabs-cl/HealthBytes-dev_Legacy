@@ -33,6 +33,17 @@ def verify_clerk_token(token: str) -> Optional[dict]:
     """
     jwks_client = get_clerk_jwks_client()
     if not jwks_client:
+        # If JWKS client can't be created, try to decode without verification
+        # This is a fallback for development when JWKS URL is not accessible
+        if settings.ENVIRONMENT == "dev":
+            try:
+                print("Warning: JWKS client not available, decoding token without verification (dev mode only)")
+                payload = jwt.decode(token, options={"verify_signature": False})
+                # Basic validation: check if it looks like a Clerk token
+                if payload.get("sub") and payload.get("iss"):
+                    return payload
+            except Exception as e:
+                print(f"Failed to decode token without verification: {e}")
         return None
     
     try:
@@ -49,6 +60,16 @@ def verify_clerk_token(token: str) -> Optional[dict]:
         return payload
     except Exception as e:
         print(f"Clerk token verification failed: {e}")
+        # Fallback for development: try to decode without verification
+        if settings.ENVIRONMENT == "dev":
+            try:
+                print("Warning: JWKS verification failed, decoding token without verification (dev mode only)")
+                payload = jwt.decode(token, options={"verify_signature": False})
+                # Basic validation: check if it looks like a Clerk token
+                if payload.get("sub") and payload.get("iss"):
+                    return payload
+            except Exception as decode_error:
+                print(f"Failed to decode token without verification: {decode_error}")
         return None
 
 
@@ -100,8 +121,26 @@ async def get_current_user(
                 if user:
                     return user
                 
-                # If no user found by clerk_id, we might need to create one
-                # For now, we'll try legacy lookup or fail
+                # If no user found by clerk_id, try to decode token without verification
+                # and create user if needed (for development when JWKS fails)
+                try:
+                    # Decode without verification to get user info
+                    decoded = jwt.decode(token, options={"verify_signature": False})
+                    email = decoded.get("email") or decoded.get("primary_email_address")
+                    
+                    # Create new user with Clerk ID
+                    new_user = User(
+                        clerk_id=clerk_user_id,
+                        email=email or f"user_{clerk_user_id[:8]}@example.com",
+                        role="customer"
+                    )
+                    db.add(new_user)
+                    await db.commit()
+                    await db.refresh(new_user)
+                    return new_user
+                except Exception as e:
+                    print(f"Error creating user from Clerk token: {e}")
+                    # Fall through to try legacy JWT
     
     # Fallback: Try legacy JWT token
     payload = decode_token(token)
