@@ -30,8 +30,28 @@ function New-Venv {
     Write-Host "Error: Could not find Python to create virtualenv." -ForegroundColor Red
 }
 
-# 1) Ensure virtualenv exists
+function Test-VenvValid {
+    $pythonPath = Join-Path ".venv" "Scripts\python.exe"
+    if (-not (Test-Path $pythonPath)) {
+        return $false
+    }
+    # Try to run python to verify it works
+    try {
+        $null = & $pythonPath --version 2>&1
+        return $LASTEXITCODE -eq 0
+    } catch {
+        return $false
+    }
+}
+
+# 1) Ensure virtualenv exists and is valid
 if (-not (Test-Path ".venv")) {
+    Write-Host "Virtualenv not found. Creating new one..." -ForegroundColor Yellow
+    New-Venv
+} elseif (-not (Test-VenvValid)) {
+    Write-Host "Virtualenv exists but appears corrupted or has incorrect paths." -ForegroundColor Yellow
+    Write-Host "Removing old virtualenv and creating a new one..." -ForegroundColor Yellow
+    Remove-Item -Recurse -Force ".venv"
     New-Venv
 }
 

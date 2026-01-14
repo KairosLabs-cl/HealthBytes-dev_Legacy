@@ -1,7 +1,7 @@
 import { View, Text, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { useCart } from "@/store/cartStore";
-import { useAuth } from "@/store/authStore";
+import { useAuth } from "@clerk/clerk-expo";
 import { useMutation } from "@tanstack/react-query";
 import { createOrder } from "@/api/orders";
 import { Button, ButtonText } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { CheckCircleIcon } from "lucide-react-native";
 export default function CheckoutScreen() {
     const router = useRouter();
     const { items, resetCart } = useCart();
+    const { isSignedIn, getToken } = useAuth();
     const [isProcessing, setIsProcessing] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
 
@@ -25,7 +26,8 @@ export default function CheckoutScreen() {
                     productId: item.product.id,
                     quantity: item.quantity,
                     price: item.product.price,
-                }))
+                })),
+                getToken
             ),
         onSuccess: (data) => {
             console.log("Order Created:", data);
@@ -44,12 +46,11 @@ export default function CheckoutScreen() {
         },
     });
 
-    const handlePay = () => {
-        const token = useAuth.getState().token;
-
+    const handlePay = async () => {
         /* Validar Autenticación: Impedir checkout si no hay sesión */
-        if (!token) {
+        if (!isSignedIn) {
             alert("Necesitas haber iniciado una sesión para realizar una compra.");
+            router.push("/(auth)/login");
             return;
         }
 
