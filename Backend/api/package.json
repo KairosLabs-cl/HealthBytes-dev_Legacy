@@ -36,7 +36,7 @@
     "@types/lodash": "^4.17.10",
     "@types/pg": "^8.11.10",
     "cross-env": "^10.0.0",
-    "drizzle-kit": "^0.18.1",
+    "drizzle-kit": "^0.31.8",
     "tsx": "^4.19.1",
     "typescript": "^5.6.3"
   }
