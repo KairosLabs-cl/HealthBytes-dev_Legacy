@@ -400,6 +400,15 @@ Si ves la URL de tu base de datos, ¡todo está bien! 🎉
 - **Frontend**: [frontend/README.md](frontend/README.md) - Componentes, navegación, estado
 - **Testing**: [backend/tests/README.md](backend/tests/README.md) - Estrategia de testing
 
+### 🤖 Directrices para IA
+
+**Si eres un asistente de IA (Copilot, Claude, etc.) o vas usar alguna herramienta de IA, debes leer estos primero:**
+
+- **[backend/AI-CONTEXT.md](backend/AI-CONTEXT.md)** - Reglas y patrones para generar código del backend
+- **[frontend/AI-CONTEXT.md](frontend/AI-CONTEXT.md)** - Reglas y patrones para generar código del frontend
+
+⚠️ **IMPORTANTE**: Estos archivos contienen reglas obligatorias que debes seguir. No ignorarlas es la diferencia entre código de calidad y "cagadas".
+
 ### API Documentation
 
 Una vez que el backend esté corriendo, accede a:
