@@ -6,7 +6,7 @@ import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
-import { View, StyleSheet, Platform } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { useOAuth, useSignIn, useSignUp, useAuth } from "@clerk/clerk-expo";
 import { useState, useCallback } from "react";
