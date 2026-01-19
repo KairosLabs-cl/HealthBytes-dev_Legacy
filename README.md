@@ -404,10 +404,11 @@ Si ves la URL de tu base de datos, ¡todo está bien! 🎉
 
 **Si eres un asistente de IA (Copilot, Claude, etc.) o vas usar alguna herramienta de IA, debes leer estos primero:**
 
-- **[backend/AI-CONTEXT.md](backend/AI-CONTEXT.md)** - Reglas y patrones para generar código del backend
-- **[frontend/AI-CONTEXT.md](frontend/AI-CONTEXT.md)** - Reglas y patrones para generar código del frontend
+- **[.cursorrules](.cursorrules)** - Guard rails obligatorios para cualquier IA; define qué se puede y no se puede hacer ¡ADJUNTALO! 
+- **[backend/AI-README.md](backend/AI-README.md)** - Reglas y patrones para generar código del backend
+- **[frontend/AI-README.md](frontend/AI-README.md)** - Reglas y patrones para generar código del frontend
 
-⚠️ **IMPORTANTE**: Estos archivos contienen reglas obligatorias que debes seguir. No ignorarlas es la diferencia entre código de calidad y "cagadas".
+⚠️ **IMPORTANTE**: [.cursorrules](.cursorrules) tiene prioridad y es obligatorio para mantener la calidad; ignóralo y romperás las reglas del proyecto.
 
 ### API Documentation
 
