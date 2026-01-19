@@ -62,7 +62,6 @@ class Settings(BaseSettings):
                     print(f"Publishable key part: {key_part}")
                 if 'frontend_api' in locals():
                     print(f"Decoded frontend API: {frontend_api}")
-                pass
         return ""
     
     class Config:
