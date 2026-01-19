@@ -1,0 +1,15 @@
+{
+  "extends": "./node_modules/expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "@/*": [
+        "*"
+      ],
+      "tailwind.config": [
+        "tailwind.config.js"
+      ]
+    }
+  }
+}

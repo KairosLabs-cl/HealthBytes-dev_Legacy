@@ -1,0 +1,16 @@
+# Development dependencies for HealthBytes Backend
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.21.0
+httpx>=0.24.0
+
+# Code quality
+ruff>=0.0.280
+black>=23.7.0
+mypy>=1.4.0
+
+# Development tools
+ipython>=8.14.0
+python-dotenv>=1.0.0

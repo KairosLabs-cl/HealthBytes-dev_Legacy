@@ -40,7 +40,7 @@ Estado actual (snapshot):
 - 👤 Auth centralizada con Clerk (sesiones seguras, roles)
 - 📱 Mobile First (React Native)
 - 🧱 Monolito modular evolutivo
-- 🗃️ Drizzle: tipado end‑to‑end esquema ↔ dominio
+- 🗃️ SQLAlchemy: ORM async con tipado end‑to‑end
 - 🚀 Preparado para extraer servicios (FastAPI / ML / validación)
 
 🛠️ Stack actual:
@@ -57,12 +57,11 @@ Estado actual (snapshot):
 ```
 HealthBytes/
 ├── Backend/
-│   ├── fastapi-service/     # API FastAPI (Python) - ACTUAL
-│   └── api/                 # API Node.js (legacy - deprecado)
+│   └── fastapi-service/     # API FastAPI (Python) - ACTUAL
 ├── Frontend/
 │   └── shop/                # App React Native (pantallas, hooks, componentes)
 ├── Docs/
-│   └── Diagramas/           # Diagramas de arquitectura / dominio
+│   └── Diagramas-flujos/    # Diagramas de arquitectura / dominio
 └── README.md
 ```
 
@@ -75,10 +74,10 @@ Notas:
 
 ### 🔑 Prerrequisitos
 
-- **Python 3.14+** (para API FastAPI)
+- **Python 3.11+** (para API FastAPI)
 - PostgreSQL 14+
 - Node.js 18+ (para Frontend)
-- npm o yarn
+- pnpm (obligatorio para no comprometer la seguridad)
 - (Roadmap) Docker / Docker Compose
 
 ### 🧬 Variables de Entorno
@@ -87,7 +86,11 @@ Archivo `.env` (Backend FastAPI):
 
 ```env
 # --- Base de Datos ---
-DATABASE_URL='postgresql://admin:password@db.healthbytes.cl:25432/tienda'
+DATABASE_URL="ingresar las keys guardadas en clickup aqui"
+
+# --- Autenticacion & login
+CLERK_PUBLISHABLE_KEY="ingresar las keys guardadas en clickup aqui"
+CLERK_SECRET_KEY="ingresar las keys guardadas en clickup aqui"
 
 # --- JWT Authentication ---
 JWT_SECRET='your-secret'
@@ -97,9 +100,6 @@ ACCESS_TOKEN_EXPIRE_MINUTES='43200'
 # --- Environment ---
 ENVIRONMENT='dev'
 
-# --- Stripe (opcional - deshabilitado por ahora) ---
-STRIPE_SECRET_KEY='sk_test_xxx'
-STRIPE_WEBHOOK_SECRET='whsec_xxx'
 ```
 
 **Nota:** El archivo `.env.example` está disponible en `Backend/fastapi-service/.env.example` como plantilla.
@@ -150,7 +150,7 @@ cp .env.example .env
 
 ```bash
 cd Frontend/shop
-npm install
+pnpm install
 ```
 
 ### ▶️ Ejecución
@@ -187,7 +187,7 @@ El servidor estará disponible en:
 
 ```bash
 cd Frontend/shop
-npm start
+pnpm start
 ```
 
 ### 🧪 API Endpoints Disponibles
