@@ -203,6 +203,7 @@ Backend verifica firma con JWT_SECRET
 ```
 
 ### Método 2: Clerk (Nuevo)
+
 ```
 Usuario → Click "Sign up/in" → Clerk Modal →
   ↓
@@ -215,7 +216,7 @@ Backend valida contra JWKS de Clerk →
 Crea/actualiza User con clerk_id en DB
 ```
 
-**ESTADO:** Ambos soportados simultáneamente → **Confusión**  
+**ESTADO:** Ambos soportados simultáneamente → **Confusión**
 **ACCIÓN RECOMENDADA:** Deprecar JWT gradualmente en 3 meses
 
 ---
@@ -239,13 +240,13 @@ Backend:
   routers/products.py
     @router.get("/")
     query = select(Product)
-    
+  
     if allergen_free:
       query = query.where(~Product.allergens.contains([allergen_free]))
-    
+  
     if dietary:
       query = query.where(Product.dietary_tags.contains([dietary]))
-    
+  
     execute() → filtered results
        │
        ▼
@@ -301,6 +302,7 @@ Frontend:
 ## 📁 ESTRUCTURA DE CARPETAS - DETALLE
 
 ### Backend
+
 ```
 Backend/fastapi-service/
 ├── app/
@@ -348,6 +350,7 @@ Futuro:
 ```
 
 ### Frontend
+
 ```
 Frontend/shop/
 ├── app/                     # Expo Router pages
@@ -436,24 +439,25 @@ Frontend/shop/
 
 ## 🔒 Seguridad - Estado Actual
 
-| Aspecto | Status | Notas |
-|---------|--------|-------|
-| CORS | ✅ Configurado | localhost:8081, 8082 permitidos |
-| HTTPS | ⚠️ Dev sin SSL | Necesario en producción |
-| JWT | ✅ HS256 | Compatible con Node.js legacy |
-| Passwords | ✅ bcrypt | Hash seguro |
-| Precios | 🔴 INSEGURO | Cliente puede cambiar precios |
-| Rate Limiting | ❌ Ninguno | DDoS vulnerable |
-| Input Validation | ⚠️ Básico | Pydantic Field() sin constraints |
-| SQL Injection | ✅ SQLAlchemy | ORM protege queries |
-| CSRF | ⚠️ N/A | Stateless API, considerar tokens |
-| Secrets | ⚠️ En .env | Usar AWS Secrets Manager en prod |
+| Aspecto          | Status           | Notas                            |
+| ---------------- | ---------------- | -------------------------------- |
+| CORS             | ✅ Configurado   | localhost:8081, 8082 permitidos  |
+| HTTPS            | ⚠️ Dev sin SSL | Necesario en producción         |
+| JWT              | ✅ HS256         | Compatible con Node.js legacy    |
+| Passwords        | ✅ bcrypt        | Hash seguro                      |
+| Precios          | 🔴 INSEGURO      | Cliente puede cambiar precios    |
+| Rate Limiting    | ❌ Ninguno       | DDoS vulnerable                  |
+| Input Validation | ⚠️ Básico     | Pydantic Field() sin constraints |
+| SQL Injection    | ✅ SQLAlchemy    | ORM protege queries              |
+| CSRF             | ⚠️ N/A         | Stateless API, considerar tokens |
+| Secrets          | ⚠️ En .env     | Usar AWS Secrets Manager en prod |
 
 ---
 
 ## 💾 Estado de la Base de Datos
 
 ### Tablas Actuales
+
 ```sql
 products
 ├── id (PK, auto)
@@ -491,6 +495,7 @@ order_items
 ```
 
 ### Índices Necesarios
+
 ```sql
 -- Búsqueda rápida
 CREATE INDEX idx_products_name ON products(name);
@@ -507,9 +512,8 @@ CREATE INDEX idx_users_email ON users(email);
 
 **Arquitectura Sólida pero Incompleta**
 
-✅ Base técnica moderna y escalable  
-❌ Funcionalidades core no terminadas (checkout, filtros)  
-⚠️ Deuda técnica (testing, documentación, seguridad)  
+✅ Base técnica moderna y escalable
+❌ Funcionalidades core no terminadas (checkout, filtros)
+⚠️ Deuda técnica (testing, documentación, seguridad)
 
 **Next Step:** Implementar items de PLAN_ACCION.md en orden de prioridad
-
