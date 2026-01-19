@@ -7,6 +7,8 @@ Este documento guía a Desarrolladores y cualquier IA / asistente (Copilot u otr
 
 HealthBytes facilita decisiones de compra para personas con restricciones de salud. Inicia con alimentos especializados y evoluciona hacia productos y medicamentos OTC (over-the-counter). El valor clave: rapidez para encontrar productos adecuados sin fricción cognitiva.
 
+Ejemplo de descripción breve para un producto: "Barra de proteínas sin gluten, ideal para dietas keto. 20g de proteínas, 2g de carbohidratos. Sabor chocolate. Aporta energía y ayuda en la recuperación muscular."
+
 ## 2. Principio Rector UX (IMPORTANTE)
 
 El e‑commerce debe sentirse:

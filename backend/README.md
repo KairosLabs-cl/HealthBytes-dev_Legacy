@@ -27,6 +27,11 @@ backend/
 └── [config files]
 ```
 
+**Ejemplo de Estructura:**
+```
+c:\Users\benja\Proyects\Code\Work\HealthBytes-dev\backend\README.md
+```
+
 ---
 
 ## 🚀 Inicio Rápido
