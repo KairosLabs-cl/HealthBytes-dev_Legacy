@@ -1,141 +1,103 @@
-# 🛒💊 HealthBytes – Compras Inteligentes y Seguras (Alimentos y/o Medicamentos)
+# 🛒💊 HealthBytes – E-commerce de Salud y Bienestar
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactnative.dev/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
-[![AWS](https://img.shields.io/badge/Amazon_AWS-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white)](https://aws.amazon.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 
-> Plataforma enfocada en simplificar y hacer más seguras las decisiones de compra para personas con restricciones de salud.
-> Exploramos un modelo híbrido: alimentos especializados y (en evaluación) productos / medicamentos OTC de bienestar. 🌱💊
+> **Plataforma mobile-first de e-commerce especializada en productos para personas con restricciones alimenticias**
+>
+> Simplificamos las decisiones de compra de alimentos especializados y medicamentos OTC para usuarios con necesidades dietéticas específicas (celiaquía, diabetes, alergias, intolerancias).
 
-HealthBytes comenzó centrado en alimentos para usuarios con restricciones (celiaquía, diabetes, alergias). Ahora evaluamos expandir el alcance hacia un catálogo mixto (alimentos funcionales y/o medicamentos OTC). Esta fase es exploratoria: la arquitectura y el dominio se están adaptando para soportar ambos casos, manteniendo criterios de seguridad y escalabilidad.
+---
 
-Estado actual (snapshot):
+## 📋 Tabla de Contenidos
 
-- ⚙️ API: **FastAPI (Python)** - Migrado de Node.js a FastAPI
-- 🗄️ Base de datos: PostgreSQL compartida
-- 👤 Autenticación: JWT (compatible con sistema anterior)
-- 🐳 Docker: todavía NO en uso estándar (planeado)
-- 🔄 Pivot: soporte experimental dual food | med (con modo híbrido)
+- [¿Qué es HealthBytes?](#-qué-es-healthbytes)
+- [🚀 Quick Start](#-quick-start)
+- [🏗️ Arquitectura del Proyecto](#️-arquitectura-del-proyecto)
+- [🛠️ Stack Tecnológico](#️-stack-tecnológico)
+- [📦 Estructura del Proyecto](#-estructura-del-proyecto)
+- [🔧 Configuración](#-configuración)
+- [📚 Documentación](#-documentación)
+- [🧪 Testing](#-testing)
+- [🤝 Contribuir](#-contribuir)
+- [⚖️ Notas Legales](#️-notas-legales)
 
-⚠️ Disclaimer:
+---
 
-- No sustituye consejo médico profesional.
-- La clasificación de productos está en evolución; no usar como única fuente clínica.
+## 🎯 ¿Qué es HealthBytes?
 
-## Información General
+**HealthBytes** es una aplicación móvil de e-commerce que facilita la compra segura de productos para personas con restricciones de salud.
 
-🎯 Objetivos inmediatos:
+### Problema que Resolvemos
 
-- Catálogo filtrable (alérgenos, etiquetas dietéticas, clasificación preliminar)
-- Extender modelo a soporte dual: alimentos / medicamentos OTC
-- Carrito y flujo base de compra (checkout completo en roadmap)
-- BackOffice inicial (gestión y normalización de datos)
-- Base para recomendación y validaciones automáticas (ingredientes / riesgos)
+Las personas con condiciones como celiaquía, diabetes o alergias alimentarias enfrentan dificultades para:
 
-🧩 Características clave:
+- Identificar productos seguros para su consumo
+- Verificar ingredientes y componentes de manera rápida
+- Confiar en la información nutricional disponible
+- Encontrar alternativas adecuadas en un solo lugar
 
-- 🩺 Filtros de salud (alérgenos, ingredientes sensibles)
-- 🔄 Dominio adaptable (food | med | hybrid)
-- 👤 Auth centralizada con Clerk (sesiones seguras, roles)
-- 📱 Mobile First (React Native)
-- 🧱 Monolito modular evolutivo
-- 🗃️ SQLAlchemy: ORM async con tipado end‑to‑end
-- 🚀 Preparado para extraer servicios (FastAPI / ML / validación)
+### Nuestra Solución
 
-🛠️ Stack actual:
+- ✅ **Catálogo Curado**: Productos pre-validados con información clara de ingredientes y alérgenos
+- ✅ **Filtros Inteligentes**: Búsqueda por restricciones dietéticas, alérgenos y condiciones de salud
+- ✅ **Compra Segura**: Sistema de checkout completo con autenticación robusta
+- ✅ **Experiencia Mobile-First**: Diseñado para uso móvil con React Native
+- ✅ **API Moderna**: Backend robusto con FastAPI y PostgreSQL
 
-- Frontend: React Native + TypeScript
-- Backend: **FastAPI + Python + SQLAlchemy** (async ORM)
-- DB: PostgreSQL (compartida)
-- Auth: JWT (HS256) - Tokens compatibles entre servicios
-- Infra (futuro): Docker + AWS
-- Servicios complementarios: Procesamiento, validaciones, recomendador
+### Estado Actual del Proyecto
 
-## Estructura de Carpetas (resumen, máx. 2 niveles)
+**Versión:** MVP en Desarrollo Activo
+**Última actualización:** Enero 2026
 
-```
-HealthBytes/
-├── Backend/
-│   └── fastapi-service/     # API FastAPI (Python) - ACTUAL
-├── Frontend/
-│   └── shop/                # App React Native (pantallas, hooks, componentes)
-├── Docs/
-│   └── Diagramas-flujos/    # Diagramas de arquitectura / dominio
-└── README.md
-```
+| Componente         | Estado           | Descripción                      |
+| ------------------ | ---------------- | --------------------------------- |
+| 🎨 Frontend Mobile | ✅ Funcional     | React Native + Expo               |
+| ⚙️ Backend API   | ✅ Funcional     | FastAPI + SQLAlchemy              |
+| 🗄️ Base de Datos | ✅ Funcional     | PostgreSQL con modelos core       |
+| 🔐 Autenticación  | ✅ Implementado  | JWT + Clerk (en transición)      |
+| 🧪 Tests           | ⚠️ En Progreso | Coverage parcial (ver `tests/`) |
+| 🐳 Docker          | 📝 Planeado      | Containerización pendiente       |
+| 🚀 Deploy          | 📝 Planeado      | AWS (preparado)                   |
 
-Notas:
+⚠️ **Disclaimer Legal**: Este proyecto NO sustituye el consejo médico profesional. La información de productos es referencial y debe ser verificada. Consulta siempre a un profesional de la salud.
 
-- Servicios Python futuros: Backend/py-services/
-- Posible módulo común: Backend/shared/ (DTOs, esquemas, eventos, utils)
+---
 
-## Configuración de Entorno
+## 🚀 Quick Start
 
-### 🔑 Prerrequisitos
+¿Quieres empezar a desarrollar en menos de 10 minutos? Sigue estos pasos:
 
-- **Python 3.11+** (para API FastAPI)
-- PostgreSQL 14+
-- Node.js 18+ (para Frontend)
-- pnpm (obligatorio para no comprometer la seguridad)
-- (Roadmap) Docker / Docker Compose
+### Prerrequisitos
 
-### 🧬 Variables de Entorno
+Asegúrate de tener instalado:
 
-Archivo `.env` (Backend FastAPI):
+- **Git** ([Descargar](https://git-scm.com/downloads)) - Control de versiones
+- **GitHub CLI (gh)** ([Descargar](https://cli.github.com/)) - Herramienta de línea de comandos para GitHub
+- **Python 3.11+** ([Descargar](https://www.python.org/downloads/)) - Lenguaje para el backend
+- **Node.js 18+** ([Descargar](https://nodejs.org/)) - Runtime para frontend
+- **pnpm 8+** ([Descargar](https://pnpm.io/installation)) - Gestor de paquetes (obligatorio)
+- **PostgreSQL 14+** ([Descargar](https://www.postgresql.org/download/)) - Base de datos relacional
 
-```env
-# --- Base de Datos ---
-DATABASE_URL="ingresar las keys guardadas en clickup aqui"
-
-# --- Autenticacion & login
-CLERK_PUBLISHABLE_KEY="ingresar las keys guardadas en clickup aqui"
-CLERK_SECRET_KEY="ingresar las keys guardadas en clickup aqui"
-
-# --- JWT Authentication ---
-JWT_SECRET='your-secret'
-JWT_ALGORITHM='HS256'
-ACCESS_TOKEN_EXPIRE_MINUTES='43200'
-
-# --- Environment ---
-ENVIRONMENT='dev'
-
-```
-
-**Nota:** El archivo `.env.example` está disponible en `Backend/fastapi-service/.env.example` como plantilla.
-
-### 🔌 Conexión a la Base de Datos
-
-La API FastAPI se conecta a una base de datos PostgreSQL compartida con las siguientes tablas:
-
-- `products` - Catálogo de productos
-- `users` - Usuarios del sistema
-- `orders` - Órdenes de compra
-- `order_items` - Items de cada orden
-
-**Configuración:**
-
-1. Crear archivo `.env` en `Backend/fastapi-service/` con el `DATABASE_URL`
-2. Las tablas se crean automáticamente si no existen
-3. La conexión usa **psycopg** (driver async para PostgreSQL)
-
-### 🚀 Instalación
-
-Clonar repositorio:
+### 1️⃣ Clonar el Repositorio
 
 ```bash
-git clone https://github.com/WindB3NJA/HealthBytes-dev.git
+gh repo clone nojustbenja/HealthBytes-dev
 cd HealthBytes-dev
 ```
 
-**Backend (FastAPI):**
+### 2️⃣ Configurar Backend (5 minutos)
 
 ```bash
-cd Backend/fastapi-service
+cd backend
 
-# Crear entorno virtual (recomendado)
+# Crear entorno virtual
 python -m venv venv
-.\venv\Scripts\Activate.ps1  # Windows
+
+# Activar entorno virtual
+.\venv\Scripts\Activate.ps1  # Windows PowerShell
 # source venv/bin/activate    # Linux/Mac
 
 # Instalar dependencias
@@ -143,96 +105,493 @@ pip install -r requirements.txt
 
 # Configurar variables de entorno
 cp .env.example .env
-# Editar .env con tus credenciales de base de datos
+# ⚠️ IMPORTANTE: Edita .env con tus credenciales reales
 ```
 
-**Frontend:**
+**Configurar `.env`** (ver sección [Configuración](#-configuración) para más detalles)
+
+### 3️⃣ Configurar Frontend (3 minutos)
 
 ```bash
-cd Frontend/shop
+cd ../frontend
+
+# Instalar dependencias (usar pnpm)
 pnpm install
 ```
 
-### ▶️ Ejecución
+### 4️⃣ Ejecutar el Proyecto
 
-**Backend (API FastAPI):**
-
-Windows (PowerShell):
-
-```powershell
-cd Backend\fastapi-service
-./start.ps1
-```
-
-Unix/macOS (Bash/Zsh):
+**Terminal 1 - Backend:**
 
 ```bash
-cd Backend/fastapi-service
-chmod +x ./start.sh   # primera vez
-./start.sh
+cd backend
+.\start.ps1  # Windows
+# ./start.sh # Linux/Mac
 ```
 
-Opción 2 (avanzado) – uvicorn directo:
+El backend estará disponible en:
+
+- 🌐 API: http://localhost:3001
+- 📖 Docs: http://localhost:3001/docs (Swagger UI)
+
+**Terminal 2 - Frontend:**
 
 ```bash
-uvicorn app.main:app --reload --port 3001
-```
-
-El servidor estará disponible en:
-
-- API: `http://localhost:3001`
-- Documentación interactiva: `http://localhost:3001/docs`
-
-**Frontend (emulador / dispositivo):**
-
-```bash
-cd Frontend/shop
+cd frontend
 pnpm start
 ```
 
-### 🧪 API Endpoints Disponibles
+### 5️⃣ Verificar Instalación
 
-**Autenticación:**
+1. Abre http://localhost:3001/docs en tu navegador
+2. Deberías ver la documentación interactiva de la API
+3. Prueba el endpoint `GET /api/v1/health` para verificar que todo funciona
 
-- `POST /auth/register` - Registrar nuevo usuario
-- `POST /auth/login` - Iniciar sesión (retorna JWT)
-
-**Productos:**
-
-- `GET /products` - Listar todos los productos
-- `GET /products/{id}` - Obtener producto por ID
-- `POST /products` - Crear producto (requiere rol seller)
-- `PUT /products/{id}` - Actualizar producto (requiere rol seller)
-- `DELETE /products/{id}` - Eliminar producto (requiere rol seller)
-
-**Órdenes:**
-
-- `POST /orders/` - Crear nueva orden (requiere autenticación)
-- `GET /orders/` - Listar órdenes (requiere autenticación)
-- `GET /orders/{id}` - Obtener detalle de orden (requiere autenticación)
-- `PUT /orders/{id}` - Actualizar estado de orden (requiere autenticación)
-
-Ver documentación completa en: `http://localhost:3001/docs`
+¿Problemas? Consulta la [Guía de Troubleshooting](docs/Copilot-logs/status-logs/QUICK_START.md)
 
 ---
 
-## Contacto 💬
+## 🏗️ Arquitectura del Proyecto
 
-¿Ideas, dudas o colaboración?
+HealthBytes sigue una arquitectura **monolítica modular** que facilita el desarrollo inicial y permite la extracción futura de microservicios.
 
-- 📧 Email: staff@healthbyes.cl
+```
+┌─────────────────────────────────────────┐
+│         📱 React Native App             │
+│    (Frontend - Mobile First)            │
+└──────────────┬──────────────────────────┘
+               │ HTTP/JSON
+               │
+┌──────────────▼──────────────────────────┐
+│      ⚙️  FastAPI Backend                │
+│   • REST API (OpenAPI)                  │
+│   • JWT Authentication                  │
+│   • Business Logic                      │
+└──────────────┬──────────────────────────┘
+               │ SQLAlchemy ORM
+               │
+┌──────────────▼──────────────────────────┐
+│      🗄️  PostgreSQL Database            │
+│   • products, users, orders             │
+│   • Relational data model               │
+└─────────────────────────────────────────┘
+```
 
-## Notas Legales (Provisorio) ⚖️
+### Características de Arquitectura
 
-El contenido es informativo y no constituye consejo médico.
-La exactitud de composiciones y advertencias está en revisión continua.
-Siempre consulta a un profesional de salud ante dudas.
+- **🔄 API Versionada**: `/api/v1/` permite evolución sin romper compatibilidad
+- **🛡️ Seguridad por Capas**: Middleware de autenticación + validación en servicios
+- **📦 Modularidad**: Separación clara entre API, Services, DB, Schemas
+- **🔌 Preparado para Microservicios**: Estructura lista para extraer servicios independientes
+
+### Flujo de Request Típico
+
+```
+1. Usuario hace acción en App
+   ↓
+2. Frontend envía HTTP request a /api/v1/*
+   ↓
+3. Middleware valida JWT (si es necesario)
+   ↓
+4. Router delega a Service
+   ↓
+5. Service ejecuta lógica de negocio
+   ↓
+6. SQLAlchemy consulta PostgreSQL
+   ↓
+7. Response con Pydantic Schema
+   ↓
+8. Frontend actualiza UI
+```
+
+---
+
+## 🛠️ Stack Tecnológico
+
+### Frontend
+
+| Tecnología  | Versión | Propósito                       |
+| ------------ | -------- | -------------------------------- |
+| React Native | Latest   | Framework mobile multiplataforma |
+| TypeScript   | 5.x      | Type safety y mejor DX           |
+| Expo         | Latest   | Tooling y desarrollo             |
+| Zustand      | Latest   | State management ligero          |
+| Gluestack UI | Latest   | Componentes UI consistentes      |
+
+### Backend
+
+| Tecnología | Versión | Propósito               |
+| ----------- | -------- | ------------------------ |
+| FastAPI     | 0.109+   | Framework web moderno    |
+| Python      | 3.11+    | Lenguaje principal       |
+| SQLAlchemy  | 2.x      | ORM async                |
+| Pydantic    | 2.x      | Validación de datos     |
+| PostgreSQL  | 14+      | Base de datos relacional |
+| pytest      | Latest   | Testing framework        |
+
+### Autenticación & Seguridad
+
+- **JWT** (HS256): Tokens stateless
+- **Clerk** (en evaluación): Gestión avanzada de usuarios
+- **bcrypt**: Hash de contraseñas
+- **CORS**: Configuración para mobile apps
+
+### DevOps (Roadmap)
+
+- Docker + Docker Compose
+- AWS (EC2, RDS, S3)
+- GitHub Actions (CI/CD)
+
+---
+
+## 📦 Estructura del Proyecto
+
+```
+HealthBytes-dev/
+│
+├── 📱 frontend/              # Aplicación móvil React Native + TypeScript
+│                             # (Ver frontend/README.md para detalles)
+│
+├── ⚙️ backend/               # API FastAPI + Python + SQLAlchemy
+│                             # (Ver backend/README.md para detalles)
+│
+├── 📚 docs/                  # Documentación del proyecto
+│   ├── Copilot-logs/         # Reportes y análisis
+│   │   ├── status-logs/      # Estado y diagnóstico del proyecto
+│   │   └── test-logs/        # Documentación de testing
+│   └── diagramas/            # Diagramas de arquitectura
+│
+├── 🛠️ tools/                 # Herramientas y scripts utilitarios
+│
+├── 🐳 docker-compose.yml     # (Futuro) Configuración Docker
+└── 📄 README.md              # Este archivo (raíz)
+```
+
+### 🗂️ Carpetas Principales
+
+| Carpeta             | Descripción                                                                                         |
+| ------------------- | ---------------------------------------------------------------------------------------------------- |
+| **frontend/** | Aplicación móvil en React Native. Pantallas, componentes, estado global (Zustand), llamadas a API. |
+| **backend/**  | API REST en FastAPI. Modelos, servicios, autenticación, validaciones, base de datos.                |
+| **docs/**     | Documentación técnica, reportes de diagnóstico, guías y diagramas de arquitectura.               |
+| **tools/**    | Scripts y herramientas auxiliares para el proyecto.                                                  |
+
+📖 **Para ver la estructura detallada de cada carpeta, consulta:**
+
+- [frontend/README.md](frontend/README.md)
+- [backend/README.md](backend/README.md)
+
+### Navegación Rápida
+
+| Necesito...                 | Ve a...                                                                       |
+| --------------------------- | ----------------------------------------------------------------------------- |
+| Empezar rápido             | [QUICK_START.md](docs/Copilot-logs/status-logs/QUICK_START.md)                   |
+| Ver el estado del proyecto  | [RESUMEN_EJECUTIVO.md](docs/Copilot-logs/status-logs/RESUMEN_EJECUTIVO.md)       |
+| Entender la arquitectura    | [DIAGNOSTICO_PROYECTO.md](docs/Copilot-logs/status-logs/DIAGNOSTICO_PROYECTO.md) |
+| Conocer próximas tareas    | [PLAN_ACCION.md](docs/Copilot-logs/status-logs/PLAN_ACCION.md)                   |
+| Documentación del Backend  | [backend/README.md](backend/README.md)                                           |
+| Documentación del Frontend | [frontend/README.md](frontend/README.md)                                         |
+| Información de tests       | [tests/README.md](backend/tests/README.md)                                       |
+
+---
+
+## 🔧 Configuración
+
+### Variables de Entorno - Backend
+
+Crea un archivo `.env` en la carpeta `backend/` con las siguientes variables:
+
+```env
+# ============================================
+# DATABASE CONFIGURATION
+# ============================================
+DATABASE_URL="postgresql://user:password@localhost:5432/healthbytes"
+# Formato: postgresql://[usuario]:[contraseña]@[host]:[puerto]/[nombre_db]
+
+# ============================================
+# AUTHENTICATION - CLERK (Provider Externo)
+# ============================================
+CLERK_PUBLISHABLE_KEY="pk_test_..." # Obtener del documento de clickup
+CLERK_SECRET_KEY="sk_test_..."      # Obtener del documento de clickup
+
+# ============================================
+# JWT CONFIGURATION
+# ============================================
+JWT_SECRET="tu-secreto-super-seguro-aqui-cambia-esto-en-produccion"
+JWT_ALGORITHM="HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES="43200"  # 30 días (para desarrollo)
+
+# ============================================
+# APPLICATION SETTINGS
+# ============================================
+ENVIRONMENT="dev"  # dev | staging | production
+DEBUG="True"       # Solo en desarrollo
+
+# ============================================
+# API CONFIGURATION
+# ============================================
+API_V1_PREFIX="/api/v1"
+PROJECT_NAME="HealthBytes API"
+```
+
+### Configuración de PostgreSQL
+
+**Opción 1: Instalación Local**
+
+1. Descarga e instala PostgreSQL 14+ desde https://www.postgresql.org/download/
+2. Crea una base de datos:
+   ```sql
+   CREATE DATABASE healthbytes;
+   CREATE USER healthbytes_user WITH PASSWORD 'tu_password';
+   GRANT ALL PRIVILEGES ON DATABASE healthbytes TO healthbytes_user;
+   ```
+3. Actualiza `DATABASE_URL` en tu `.env`
+
+**Opción 2: Docker (Recomendado para desarrollo)**
+
+```bash
+docker run --name healthbytes-postgres \
+  -e POSTGRES_USER=healthbytes_user \
+  -e POSTGRES_PASSWORD=tu_password \
+  -e POSTGRES_DB=healthbytes \
+  -p 5432:5432 \
+  -d postgres:14
+```
+
+### Clerk Setup (Autenticación)
+
+1. Crea una cuenta en [Clerk](https://dashboard.clerk.com)
+2. Crea una nueva aplicación
+3. Copia las API Keys:
+   - `CLERK_PUBLISHABLE_KEY` (empieza con `pk_`)
+   - `CLERK_SECRET_KEY` (empieza con `sk_`)
+4. Pégalas en tu archivo `.env`
+
+**⚠️ IMPORTANTE**: Las keys reales están guardadas en ClickUp (solo para el equipo)
+
+### Verificar Configuración
+
+Una vez configurado todo, verifica que funciona:
+
+```bash
+cd backend
+python -c "from app.core.config import settings; print(settings.DATABASE_URL)"
+```
+
+Si ves la URL de tu base de datos, ¡todo está bien! 🎉
+
+---
+
+## 📚 Documentación
+
+### Documentación del Proyecto
+
+| Documento                                                                     | Descripción                               | Audiencia          |
+| ----------------------------------------------------------------------------- | ------------------------------------------ | ------------------ |
+| [RESUMEN_EJECUTIVO.md](docs/Copilot-logs/status-logs/RESUMEN_EJECUTIVO.md)       | ⭐**Empieza aquí** - Estado general | Todos              |
+| [QUICK_START.md](docs/Copilot-logs/status-logs/QUICK_START.md)                   | Guía de 10 minutos para empezar           | Nuevos devs        |
+| [DIAGNOSTICO_PROYECTO.md](docs/Copilot-logs/status-logs/DIAGNOSTICO_PROYECTO.md) | Análisis técnico detallado               | Devs senior        |
+| [PLAN_ACCION.md](docs/Copilot-logs/status-logs/PLAN_ACCION.md)                   | Roadmap y mejoras                          | Product/Tech leads |
+| [ARQUITECTURA.md](docs/Copilot-logs/status-logs/ARQUITECTURA.md)                 | Detalles de arquitectura                   | Arquitectos        |
+
+### READMEs Específicos
+
+- **Backend**: [backend/README.md](backend/README.md) - API, endpoints, modelos
+- **Frontend**: [frontend/README.md](frontend/README.md) - Componentes, navegación, estado
+- **Testing**: [backend/tests/README.md](backend/tests/README.md) - Estrategia de testing
+
+### API Documentation
+
+Una vez que el backend esté corriendo, accede a:
+
+- **Swagger UI** (interactivo): http://localhost:3001/docs
+- **ReDoc** (alternativo): http://localhost:3001/redoc
+- **OpenAPI JSON**: http://localhost:3001/openapi.json
+
+### Diagramas
+
+Los diagramas de arquitectura están en `docs/diagramas/`:
+
+- `Infrastructura.drawio` - Diagrama de infraestructura (abrir con draw.io)
+
+---
+
+## 🧪 Testing
+
+### Backend Tests
+
+```bash
+cd backend
+
+# Ejecutar todos los tests
+pytest
+
+# Ejecutar con coverage
+pytest --cov=app --cov-report=html
+
+# Ejecutar tests específicos
+pytest tests/test_api/test_products.py
+pytest tests/test_services/
+
+# Ejecutar tests en modo verbose
+pytest -v
+```
+
+### Estado Actual de Tests
+
+| Módulo      | Coverage | Estado           |
+| ------------ | -------- | ---------------- |
+| API Auth     | ~70%     | ⚠️ En progreso |
+| API Products | ~80%     | ✅ Funcional     |
+| API Orders   | ~60%     | ⚠️ Mejorar     |
+| Services     | ~50%     | ⚠️ Incompleto  |
+
+Ver más detalles en [tests/README.md](backend/tests/README.md)
+
+### Frontend Tests (Pendiente)
+
+```bash
+cd frontend
+# pnpm test  # Por implementar
+```
+
+---
+
+## 🤝 Contribuir
+
+¡Las contribuciones son bienvenidas! Sigue estos pasos:
+
+### 1. Fork y Clone
+
+```bash
+git clone https://github.com/tu-usuario/HealthBytes-dev.git
+cd HealthBytes-dev
+git checkout -b feature/mi-nueva-feature
+```
+
+### 2. Desarrollo
+
+- Sigue las convenciones de código existentes
+- Escribe tests para nuevas features
+- Actualiza la documentación si es necesario
+
+### 3. Commits
+
+Usa commits descriptivos siguiendo [Conventional Commits](https://www.conventionalcommits.org/):
+
+```bash
+git commit -m "feat(products): añadir filtro por alérgenos"
+git commit -m "fix(auth): corregir validación de JWT"
+git commit -m "docs(readme): actualizar guía de instalación"
+```
+
+### 4. Pull Request
+
+1. Asegúrate de que los tests pasen: `pytest`
+2. Push a tu fork: `git push origin feature/mi-nueva-feature`
+3. Crea un Pull Request con descripción clara
+
+### Convenciones de Código
+
+**Python (Backend)**
+
+- Seguir PEP 8
+- Type hints obligatorios
+- Docstrings en funciones públicas
+- Max line length: 100 caracteres
+
+**TypeScript (Frontend)**
+
+- Seguir ESLint config del proyecto
+- Componentes funcionales con hooks
+- Props con interfaces TypeScript
+- Nombres de componentes en PascalCase
+
+### Estructura de PR Ideal
+
+```markdown
+## Descripción
+[Qué hace este PR]
+
+## Tipo de cambio
+- [ ] Bug fix
+- [ ] Nueva feature
+- [ ] Breaking change
+- [ ] Documentación
+
+## Checklist
+- [ ] Tests pasan localmente
+- [ ] Código sigue las convenciones
+- [ ] Documentación actualizada
+- [ ] No hay console.logs ni prints
+```
+
+---
+
+## ⚖️ Notas Legales
+
+### Disclaimer Médico
+
+⚠️ **IMPORTANTE - LEE CUIDADOSAMENTE**
+
+**HealthBytes NO es un dispositivo médico ni sustituye el consejo médico profesional.**
+
+- ✋ La información de productos es **referencial** y debe ser verificada
+- ✋ NO usar como única fuente para decisiones de salud críticas
+- ✋ Clasificación de ingredientes y alérgenos en constante revisión
+- ✋ **SIEMPRE** consulta a un profesional de la salud certificado ante dudas
+- ✋ En caso de reacción alérgica o emergencia, busca atención médica inmediata
+
+### Responsabilidad del Usuario
+
+Al usar HealthBytes, el usuario acepta que:
+
+- Es responsable de verificar la información de productos
+- No utilizará la app como sustituto de consulta médica
+- Leerá las etiquetas de productos físicos antes de consumir
+- Reportará errores o inconsistencias en la información
+
+### Privacidad y Datos
+
+- Cumplimos con estándares de protección de datos
+- No compartimos información médica sin consentimiento
+- Ver [Política de Privacidad] para más detalles (en desarrollo)
+
+---
+
+## 📞 Contacto y Soporte
+
+### Equipo de Desarrollo
+
+- 📧 Email: staff@healthbytes.cl
+- 🐛 Reportar bugs: [GitHub Issues](https://github.com/WindB3NJA/HealthBytes-dev/issues)
+- 💡 Sugerencias: [GitHub Discussions](https://github.com/WindB3NJA/HealthBytes-dev/discussions)
+
+### Enlaces Útiles
+
+- 📖 [Documentación Completa](docs/)
+- 🎯 [Roadmap del Proyecto](docs/Copilot-logs/status-logs/PLAN_ACCION.md)
+- [📱 Wireframe / Diseño Figma](https://www.figma.com/design/0yTwgp5ddVCKM1SL1p2rIS/Wireframes---HealthBytes?node-id=11606-22516&t=VWSNkneVk6PCZnrh-1)
+- [🔑 Llaves de acceso para .env  ](https://app.clickup.com/90131597357/v/dc/2ky4621d-2233)
+
+---
+
+## 📜 Licencia
+
+[Pendiente de definir - En desarrollo privado]
 
 ---
 
 <div align="center">
 
-**HealthBytes** – Salud y conveniencia en un mismo lugar 🛒💊❤️
-Construyendo un ecosistema seguro para decisiones de compra informadas.
+### 💚 HealthBytes
+
+🛒 **E-commerce** • 💊 **Salud** • ❤️ **Bienestar**
+
+---
+
+Hecho con ❤️ por el equipo de HealthBytes
+
+_Última actualización: Enero 2026_
 
 </div>
