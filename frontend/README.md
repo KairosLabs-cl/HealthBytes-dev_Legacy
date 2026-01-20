@@ -430,7 +430,7 @@ pnpm --version  # Debe ser 8+
 
 ## 📞 Contacto
 
-Para dudas o sugerencias sobre el frontend, abre un [issue](https://github.com/WindB3NJA/HealthBytes-dev/issues) o una [discussion](https://github.com/WindB3NJA/HealthBytes-dev/discussions).
+Para dudas o sugerencias sobre el frontend, abre un [issue](https://github.com/nojustbenja/HealthBytes-dev/issues) o una [discussion](https://github.com/nojustbenja/HealthBytes-dev/discussions).
 
 ## 2. Principio Rector UX (IMPORTANTE)
 
