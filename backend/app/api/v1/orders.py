@@ -43,15 +43,25 @@ async def create_order(
         db.add(new_order)
         await db.flush()  # Get order.id without committing
         
-        # TODO: validate products ids, and take their actual price from db
-        # For now, using prices from request like Node.js does
+        # Validate products exist and get their actual price from database
         order_items = []
         for item_data in order_data.items:
+            # Get product from database to validate it exists and get real price
+            product = await db.get(Product, item_data.productId)
+            
+            if not product:
+                await db.rollback()
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Producto con ID {item_data.productId} no encontrado"
+                )
+            
+            # Use the REAL price from database, never trust client price
             order_item = OrderItem(
                 order_id=new_order.id,
                 product_id=item_data.productId,
                 quantity=item_data.quantity,
-                price=item_data.price
+                price=product.price  # Use actual price from DB
             )
             db.add(order_item)
             order_items.append(order_item)
