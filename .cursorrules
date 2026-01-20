@@ -1,0 +1,633 @@
+# 🛡️ Guard Rails - HealthBytes
+
+**Este documento establece límites y reglas estrictas para cualquier asistente de IA trabajando en este proyecto.**
+
+---
+
+## 🚫 PROHIBICIONES ABSOLUTAS
+
+### Nunca Modificar Sin Aprobación Explícita
+
+❌ **Stack Tecnológico**
+- Backend: FastAPI, SQLAlchemy 2.x (async), PostgreSQL, JWT
+- Frontend: React Native, Expo, TypeScript, Zustand, TailwindCSS
+- Infraestructura: Docker, docker-compose
+
+❌ **Estructura de Carpetas**
+- No mover archivos entre `backend/` y `frontend/`
+- No crear nuevas carpetas raíz (mantener: backend, frontend, docs, tools, image)
+- No renombrar carpetas principales sin consultar
+
+❌ **Archivos de Configuración Críticos**
+- `docker-compose.yml`
+- `backend/requirements.txt`
+- `frontend/package.json`
+- `backend/app/config.py`
+- `.env` (nunca crear ni commitear)
+
+❌ **Seguridad**
+- NUNCA hardcodear credenciales, tokens, API keys
+- NUNCA usar `localStorage` para tokens en frontend
+- NUNCA loguear información sensible (passwords, tokens, emails)
+- NUNCA deshabilitar validaciones de seguridad sin razón documentada
+- NUNCA exponer endpoints sin autenticación (excepto `/health`, `/docs`)
+
+❌ **Gestión de Dependencias**
+- No instalar dependencias sin justificación
+- No actualizar versiones mayores sin testing completo
+- Backend: usar `requirements.txt` (no conda, no poetry)
+- Frontend: usar `pnpm` (no npm, no yarn)
+
+---
+
+## 📍 REGLAS DE UBICACIÓN (Dónde Va Cada Cosa)
+
+### Backend (`backend/`)
+
+```
+app/
+├─ api/v1/              ← SOLO routers (endpoints HTTP)
+│  ├─ auth.py           ← Rutas de autenticación
+│  ├─ products.py       ← Rutas de productos
+│  ├─ orders.py         ← Rutas de órdenes
+│  └─ health.py         ← Health checks
+│
+├─ services/            ← TODA la lógica de negocio
+│  └─ {entity}_service.py  ← CRUD, cálculos, orquestación
+│
+├─ schemas/             ← Pydantic models (validación)
+│  └─ {entity}.py       ← Request/Response DTOs
+│
+├─ db/
+│  ├─ models/           ← SQLAlchemy ORM models
+│  │  └─ {entity}.py    ← Tablas de base de datos
+│  ├─ database.py       ← Conexión y sesión DB
+│  └─ schemas.py        ← Enums compartidos
+│
+├─ core/
+│  ├─ security.py       ← JWT, hashing, tokens
+│  ├─ exceptions.py     ← Excepciones custom
+│  └─ config.py         ← Variables de entorno
+│
+├─ middleware/
+│  └─ auth.py           ← Middleware de autenticación
+│
+└─ main.py              ← Punto de entrada (NO modificar sin razón)
+
+tests/
+├─ test_api/            ← Tests de endpoints
+├─ test_services/       ← Tests de lógica de negocio
+└─ conftest.py          ← Fixtures compartidas
+```
+
+**Reglas Estrictas Backend:**
+- ✅ Routers solo llaman services (sin lógica de negocio)
+- ✅ Services contienen TODA la lógica (queries, validaciones, cálculos)
+- ✅ Models solo definen estructura de tablas (sin métodos de negocio)
+- ✅ Schemas solo validación (sin lógica)
+- ❌ NUNCA lógica de negocio en routers
+- ❌ NUNCA queries SQL directas fuera de services
+- ❌ NUNCA importar `models` en `api/v1/` (usar services)
+
+### Frontend (`frontend/`)
+
+```
+app/                    ← Pantallas (Expo Router)
+├─ _layout.tsx          ← Layout principal
+├─ index.tsx            ← Home
+├─ cart.tsx             ← Carrito
+├─ checkout.tsx         ← Checkout
+├─ (auth)/              ← Grupo de autenticación
+└─ product/             ← Detalle de producto
+
+components/             ← Componentes reutilizables
+├─ ui/                  ← Componentes de gluestack-ui
+└─ {Feature}*.tsx       ← Componentes de dominio
+
+api/                    ← Clientes HTTP (fetch/axios)
+└─ {entity}.ts          ← Funciones de llamadas API
+
+store/                  ← Estado global (Zustand)
+└─ {entity}Store.ts     ← Store por dominio
+
+types/                  ← Tipos TypeScript compartidos
+└─ {entity}.ts          ← Interfaces y tipos
+
+lib/                    ← Utilidades y helpers
+└─ {utility}.ts         ← Cache, formatters, etc.
+```
+
+**Reglas Estrictas Frontend:**
+- ✅ Componentes son presentacionales (UI + props)
+- ✅ Lógica de negocio va en stores o custom hooks
+- ✅ Llamadas API SOLO en `api/` (no en componentes)
+- ✅ Estado global en Zustand stores
+- ✅ Tipos TypeScript explícitos (nunca `any`)
+- ❌ NUNCA `fetch` directo en componentes (usar `api/`)
+- ❌ NUNCA `useState` para datos de API (usar stores)
+- ❌ NUNCA lógica compleja en JSX
+
+### Documentación (`docs/`)
+
+```
+docs/
+├─ README.md                   ← Índice general
+├─ copilot-logs/               ← Logs de trabajo con IA
+│  ├─ status-logs/             ← Estado del proyecto
+│  ├─ test-logs/               ← Documentación de testing
+│  ├─ auth-logs/               ← Autenticación y seguridad
+│  ├─ database-logs/           ← Esquemas y migraciones DB
+│  ├─ api-logs/                ← Endpoints y servicios
+│  ├─ ui-logs/                 ← Componentes y UX
+│  ├─ deployment-logs/         ← Docker y despliegues
+│  └─ {topico}-logs/           ← Logs específicos por tópico
+└─ diagramas/                  ← Diagramas técnicos (.drawio, .png)
+```
+
+**Reglas Documentación:**
+- ✅ Logs de IA van en `copilot-logs/{topico}-logs/`
+- ✅ Cada carpeta de logs debe tener README.md como índice
+- ✅ Usar nombres descriptivos: `YYYY-MM-DD_descripcion.md`
+- ✅ Diagramas técnicos en `diagramas/`
+- ✅ Crear RESUMEN.md para tópicos extensos
+- ❌ NUNCA documentar en raíz del proyecto (usar `docs/`)
+- ❌ NUNCA borrar documentación existente sin consultar
+- ❌ NUNCA crear docs sin solicitud explícita (excepto cambios arquitectónicos)
+
+---
+
+## 🎯 FLUJO DE TRABAJO OBLIGATORIO
+
+### 1. Antes de Modificar Código
+
+```
+1. Lee el AI-README.md correspondiente (backend/frontend)
+2. Verifica la estructura actual con grep_search o semantic_search
+3. Identifica el archivo exacto donde hacer el cambio
+4. Lee el archivo completo antes de editarlo
+5. Ejecuta tests relevantes antes de cambios
+```
+
+### 2. Al Crear Nuevas Features
+
+**Backend:**
+```
+1. Define el schema Pydantic en schemas/
+2. Crea/actualiza el model en db/models/
+3. Implementa service en services/
+4. Crea router en api/v1/
+5. Escribe tests en tests/test_api/ o tests/test_services/
+6. Actualiza AI-README.md si cambia patrón
+```
+
+**Frontend:**
+```
+1. Define tipos en types/
+2. Crea funciones API en api/
+3. Crea/actualiza store si necesita estado global
+4. Implementa componente UI en components/
+5. Integra en screen de app/
+6. Verifica que compile con tsc (no `any`)
+```
+
+### 3. Al Debuggear
+
+```
+1. Lee el error completo antes de proponer solución
+2. Verifica archivos relacionados (imports, dependencias)
+3. Ejecuta tests para validar fix
+4. Si creas logs de debug, guárdalos en docs/copilot-logs/{topico}-logs/
+```
+
+### 4. Al Documentar Cambios
+
+**Cuando crear documentación:**
+- ✅ Soluciones de bugs complejos
+- ✅ Implementación de features nuevas con decisiones arquitectónicas
+- ✅ Refactorizaciones mayores
+- ✅ Logs de trabajo con IA
+
+**Estructura de documentación:**
+```
+docs/copilot-logs/
+├─ status-logs/          ← Estado general del proyecto
+├─ test-logs/            ← Testing y QA
+├─ {topico}-logs/        ← Logs específicos de tópico
+│  ├─ README.md          ← Índice del tópico
+│  ├─ {fecha}_{descripcion}.md
+│  └─ RESUMEN.md         ← Resumen ejecutivo
+```
+
+**Reglas de documentación:**
+- ✅ Usar formato: `docs/copilot-logs/{topico}-logs/`
+- ✅ Nombres descriptivos: `2026-01-19_implementacion_autenticacion.md`
+- ✅ Incluir contexto, decisiones y resultados
+- ✅ Crear README.md e índice en carpeta nueva
+- ❌ No documentar en raíz del proyecto
+- ❌ No crear docs para cambios triviales sin solicitud
+
+**Ejemplos de tópicos:**
+```
+docs/copilot-logs/
+├─ auth-logs/            ← Autenticación y seguridad
+├─ database-logs/        ← Migraciones y esquemas DB
+├─ api-logs/             ← Cambios en endpoints
+├─ ui-logs/              ← Componentes y UX
+└─ deployment-logs/      ← Docker y despliegues
+```
+
+### 5. Al Instalar Dependencias
+
+**Backend:**
+```bash
+# En terminal python:
+pip install {package}
+pip freeze | grep {package} >> requirements.txt
+```
+
+**Frontend:**
+```bash
+# En terminal pnpm:
+pnpm add {package}
+# o
+pnpm add -D {package}  # para dev dependencies
+```
+
+---
+
+## 🧪 TESTING (OBLIGATORIO)
+
+### Cuándo Ejecutar Tests
+
+- ✅ Antes de modificar código existente
+- ✅ Después de cada cambio significativo
+- ✅ Antes de declarar "tarea completada"
+
+### Comandos de Testing
+
+**Backend:**
+```bash
+cd backend
+pytest                          # Todos los tests
+pytest tests/test_api/         # Solo tests de API
+pytest -v -s                    # Verbose con prints
+```
+
+**Frontend:**
+```bash
+cd frontend
+pnpm run type-check            # Verificar tipos TypeScript
+```
+
+### No Proceder Si:
+- ❌ Tests fallan
+- ❌ TypeScript no compila
+- ❌ Hay errores de sintaxis
+
+---
+
+## 🔒 PRINCIPIOS DE SEGURIDAD
+
+### Variables de Entorno
+
+**Backend (.env):**
+```bash
+DATABASE_URL=postgresql://...
+JWT_SECRET_KEY=...
+JWT_ALGORITHM=HS256
+```
+
+**Frontend (.env):**
+```bash
+EXPO_PUBLIC_API_URL=http://...
+```
+
+**Reglas:**
+- ✅ Usar `config.py` (backend) o process.env (frontend)
+- ✅ Proveer `.env.example` con valores dummy
+- ❌ NUNCA commitear `.env`
+- ❌ NUNCA hardcodear valores sensibles
+
+### Autenticación
+
+**Backend:**
+- ✅ JWT con expiración (1 hora)
+- ✅ Middleware `verify_token` en rutas protegidas
+- ❌ NUNCA endpoints sin auth (excepto login, health, docs)
+
+**Frontend:**
+- ✅ Tokens en AsyncStorage cifrado
+- ✅ Limpiar tokens en logout
+- ❌ NUNCA localStorage para tokens
+- ❌ NUNCA tokens en URL query params
+
+---
+
+## 📦 GESTIÓN DE DEPENDENCIAS
+
+### Dependencias Aprobadas
+
+**Backend (requirements.txt):**
+```
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+sqlalchemy>=2.0.0
+pydantic>=2.0.0
+psycopg2-binary>=2.9.9
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+pytest
+httpx
+```
+
+**Frontend (package.json):**
+```json
+{
+  "dependencies": {
+    "expo": "~52.0.0",
+    "react-native": "0.76.5",
+    "@gluestack-ui/themed": "*",
+    "zustand": "*",
+    "nativewind": "*"
+  }
+}
+```
+
+### Antes de Añadir Nuevas:
+1. ¿Es realmente necesaria?
+2. ¿Hay alternativa nativa?
+3. ¿Está mantenida activamente?
+4. ¿Es compatible con las versiones actuales?
+
+---
+
+## 🚀 COMANDOS PERMITIDOS
+
+### Backend
+
+```bash
+# ✅ Permitidos
+cd backend
+python run_server.py           # Iniciar servidor
+pytest                          # Ejecutar tests
+pip install {package}          # Instalar dependencia
+pip freeze                      # Listar dependencias
+
+# ❌ Prohibidos
+rm -rf migrations/             # No borrar migraciones
+pip install --upgrade fastapi  # No actualizar sin consultar
+```
+
+### Frontend
+
+```bash
+# ✅ Permitidos
+cd frontend
+pnpm install                   # Instalar dependencias
+pnpm start                      # Iniciar app
+pnpm run type-check            # Check TypeScript
+pnpm add {package}             # Agregar dependencia
+
+# ❌ Prohibidos
+npm install                    # Usar pnpm, no npm
+rm -rf node_modules/           # No borrar sin razón
+expo eject                      # No eject
+```
+
+### Docker
+
+```bash
+# ✅ Permitidos
+docker-compose up              # Levantar servicios
+docker-compose down            # Bajar servicios
+docker-compose logs            # Ver logs
+
+# ❌ Prohibidos
+docker-compose down -v         # No borrar volúmenes sin consultar
+```
+
+---
+
+## 📝 CONVENCIONES DE CÓDIGO
+
+### Python (Backend)
+
+```python
+# ✅ Correcto
+from app.schemas.product import ProductResponse
+from app.services.product_service import get_products
+
+async def list_products(db: AsyncSession) -> list[ProductResponse]:
+    """Docstring conciso explicando propósito."""
+    products = await get_products(db)
+    return [ProductResponse.model_validate(p) for p in products]
+
+# ❌ Incorrecto
+def list_products(db):  # Sin async, sin tipos
+    return db.query(Product).all()  # Query directo (debe estar en service)
+```
+
+**Reglas Python:**
+- ✅ Type hints obligatorios
+- ✅ Async/await para I/O (DB, HTTP)
+- ✅ Docstrings en funciones públicas
+- ✅ snake_case para funciones y variables
+- ❌ No usar `print()` (usar logging)
+- ❌ No usar `Any` de typing
+
+### TypeScript (Frontend)
+
+```typescript
+// ✅ Correcto
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+}
+
+export const fetchProducts = async (): Promise<Product[]> => {
+  const response = await fetch(`${API_URL}/products`);
+  if (!response.ok) throw new Error('Failed to fetch');
+  return response.json();
+};
+
+// ❌ Incorrecto
+export const fetchProducts = async (): Promise<any> => {  // No any
+  return fetch('/products').then(r => r.json());  // URL hardcodeada
+};
+```
+
+**Reglas TypeScript:**
+- ✅ Interfaces para objetos complejos
+- ✅ Types explícitos (no `any`)
+- ✅ Async/await (no .then())
+- ✅ PascalCase para componentes e interfaces
+- ✅ camelCase para funciones y variables
+- ❌ No `var` (usar `const`/`let`)
+- ❌ No `require()` (usar `import`)
+
+### Componentes React Native
+
+```tsx
+// ✅ Correcto
+interface ProductCardProps {
+  product: Product;
+  onPress: (id: string) => void;
+}
+
+export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) => {
+  return (
+    <Pressable onPress={() => onPress(product.id)}>
+      <Text>{product.name}</Text>
+      <Text>${product.price}</Text>
+    </Pressable>
+  );
+};
+
+// ❌ Incorrecto
+export default function ProductCard({ product }: any) {  // No any, no default export
+  const [data, setData] = useState();  // No fetch en componente
+  useEffect(() => {
+    fetch('/api/products').then(/* ... */);  // Debe estar en api/
+  }, []);
+  return <View>...</View>;
+}
+```
+
+---
+
+## 🎨 PATRONES Y ANTI-PATRONES
+
+### ✅ Patrones Recomendados
+
+**Backend:**
+- Dependency Injection (FastAPI `Depends`)
+- Repository pattern (services actúan como repos)
+- Excepciones custom para errores de negocio
+- Async para toda I/O (DB, HTTP)
+
+**Frontend:**
+- Componentes presentacionales + Container pattern
+- Custom hooks para lógica reutilizable
+- Zustand para estado global predictible
+- Optimistic updates en carrito
+
+### ❌ Anti-Patrones Prohibidos
+
+**Backend:**
+- God objects (clases con múltiples responsabilidades)
+- Queries SQL raw (usar SQLAlchemy)
+- Lógica en routers (debe estar en services)
+- Excepciones genéricas sin contexto
+
+**Frontend:**
+- Props drilling (más de 3 niveles → usar store)
+- Fetching en componentes (usar api/ + store)
+- Estado duplicado entre componentes
+- Hardcodear estilos (usar TailwindCSS classes)
+
+---
+
+## 🔍 DEBUGGING Y LOGGING
+
+### Backend (Python)
+
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+
+# ✅ Correcto
+logger.info(f"Fetching products for user {user_id}")
+logger.error(f"Database error: {str(e)}", exc_info=True)
+
+# ❌ Incorrecto
+print(f"User token: {token}")  # No print, no tokens
+```
+
+### Frontend (React Native)
+
+```typescript
+// ✅ Correcto
+console.log('ProductList rendered with', products.length, 'items');
+console.error('Failed to fetch products:', error.message);
+
+// ❌ Incorrecto
+console.log('User token:', token);  // No loguear tokens
+alert('Error');  // Usar toast/notification UI
+```
+
+---
+
+## 🚦 CRITERIOS DE "COMPLETADO"
+
+Una tarea NO está completa hasta que:
+
+- [ ] El código compila/ejecuta sin errores
+- [ ] Tests relevantes pasan
+- [ ] TypeScript no tiene errores (frontend)
+- [ ] Sigue la estructura de carpetas establecida
+- [ ] No hay warnings de seguridad
+- [ ] Se actualizó documentación si hubo cambios arquitectónicos
+- [ ] Se probó manualmente la funcionalidad
+
+---
+
+## 📞 CUANDO CONSULTAR
+
+### Siempre Preguntar Si:
+
+- Vas a cambiar el stack tecnológico
+- Necesitas crear una carpeta nueva en raíz
+- Vas a modificar docker-compose.yml
+- La solución requiere dependencias nuevas
+- Hay conflicto entre estos guard rails y la solicitud
+- No estás seguro de dónde ubicar un archivo
+- La tarea requiere borrar código existente significativo
+
+### Puedes Proceder Sin Preguntar Si:
+
+- Agregas un endpoint nuevo siguiendo patrones existentes
+- Creas un componente UI dentro de `components/`
+- Agregas un test
+- Refactorizas código manteniendo funcionalidad
+- Actualizas documentación técnica en `docs/`
+
+---
+
+## 🎓 RECURSOS DE REFERENCIA
+
+### Documentación Interna
+
+- **Arquitectura**: `docs/copilot-logs/status-logs/ARQUITECTURA.md`
+- **Testing**: `docs/copilot-logs/test-logs/TESTING_QUICK_START.md`
+- **Backend AI**: `backend/AI-README.md`
+- **Frontend AI**: `frontend/AI-README.md`
+
+### Documentación Externa
+
+- FastAPI: https://fastapi.tiangolo.com/
+- SQLAlchemy 2.0: https://docs.sqlalchemy.org/
+- Expo: https://docs.expo.dev/
+- React Native: https://reactnative.dev/
+- Zustand: https://zustand-demo.pmnd.rs/
+
+---
+
+## 🤝 TL;DR - Reglas de Oro
+
+1. **Lee primero, modifica después** (AI-README.md + código existente)
+2. **Sigue la arquitectura** (routers → services → models)
+3. **Ubica correctamente** (usa la matriz de ubicaciones)
+4. **No hardcodees nada** (env vars para todo)
+5. **Testea siempre** (antes y después de cambios)
+6. **TypeScript estricto** (no `any`, types explícitos)
+7. **Seguridad primero** (no tokens en logs, no endpoints sin auth)
+8. **Pregunta si dudas** (mejor consultar que romper)
+
+---
+
+**Este documento es ley.** Si encuentras conflictos con otros documentos, este `.cursorrules` tiene prioridad.
+
+Última actualización: 2026-01-19

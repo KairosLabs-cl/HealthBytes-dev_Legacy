@@ -1,11 +1,436 @@
-# Contexto para IA - Frontend (HealthBytes)
-! Es importante leer ese documento
+# 📱 Frontend - HealthBytes
 
-Este documento guía a Desarrolladores y cualquier IA / asistente (Copilot u otros) para generar código consistente, escalable y ENFOCADO EN UNA EXPERIENCIA DE COMPRA INTUITIVA Y FÁCIL. Cualquier contribución debe priorizar simplicidad, claridad y accesibilidad del flujo de e‑commerce.
+React Native + TypeScript e-commerce mobile para personas con restricciones de salud.
 
-## 1. Descripción Breve
+## 📋 Tabla de Contenidos
 
-HealthBytes facilita decisiones de compra para personas con restricciones de salud. Inicia con alimentos especializados y evoluciona hacia productos y medicamentos OTC (over-the-counter). El valor clave: rapidez para encontrar productos adecuados sin fricción cognitiva.
+- [Quick Start](#-quick-start)
+- [Estructura del Proyecto](#-estructura-del-proyecto)
+- [Stack Tecnológico](#-stack-tecnológico)
+- [Desarrollo](#-desarrollo)
+- [Principios de Diseño](#-principios-de-diseño)
+- [Convenciones de Código](#-convenciones-de-código)
+- [Testing](#-testing)
+- [Troubleshooting](#-troubleshooting)
+
+---
+
+## 🚀 Quick Start
+
+### Instalación
+
+```bash
+cd frontend
+
+# Instalar dependencias (usar pnpm)
+pnpm install
+
+# Iniciar el servidor de desarrollo
+pnpm start
+```
+
+### Ejecutar en Emulador/Dispositivo
+
+```bash
+# iOS (macOS)
+pnpm ios
+
+# Android
+pnpm android
+
+# Expo Go (escanear QR con celular)
+pnpm start
+```
+
+---
+
+## 📂 Estructura del Proyecto
+
+```
+frontend/
+├── app/                          # Pantallas y navegación (Expo Router)
+│   ├── (auth)/                   # Rutas de autenticación
+│   ├── product/                  # Rutas de productos
+│   ├── _layout.tsx               # Layout raíz
+│   ├── index.tsx                 # Home
+│   ├── cart.tsx                  # Carrito
+│   └── checkout.tsx              # Checkout
+│
+├── components/                   # Componentes reutilizables
+│   ├── ui/                       # Componentes base (Gluestack)
+│   ├── ProductListItem.tsx       # Tarjeta de producto
+│   ├── Header.tsx                # Navegación
+│   ├── FavoritesBar.tsx          # Favoritos
+│   ├── QuickFilters.tsx          # Filtros rápidos
+│   └── ...
+│
+├── api/                          # Clientes API (data layer)
+│   ├── auth.ts                   # Endpoints de auth
+│   ├── products.ts               # Endpoints de productos
+│   └── orders.ts                 # Endpoints de órdenes
+│
+├── store/                        # Zustand stores (estado global)
+│   ├── authStore.ts              # Auth state
+│   ├── cartStore.ts              # Cart state
+│   └── recentlyViewedStore.ts    # Recently viewed state
+│
+├── types/                        # TypeScript types
+│   └── product.ts                # Tipos de producto
+│
+├── lib/                          # Utilidades
+│   └── cache.ts                  # Cache utilities
+│
+├── assets/                       # Recursos estáticos
+│   └── products.json             # Seed data
+│
+├── global.css                    # Estilos globales
+├── tailwind.config.js            # Tailwind config
+├── metro.config.js               # Metro bundler config
+├── babel.config.js               # Babel config
+├── app.json                      # Expo app config
+├── tsconfig.json                 # TypeScript config
+├── package.json                  # Dependencias
+└── README.md                     # Este archivo
+```
+
+---
+
+## 🛠️ Stack Tecnológico
+
+| Tecnología            | Propósito                       |
+| ---------------------- | -------------------------------- |
+| **React Native** | Framework mobile multiplataforma |
+| **TypeScript**   | Type safety                      |
+| **Expo**         | Tooling y desarrollo ágil       |
+| **Expo Router**  | Navegación file-based           |
+| **Zustand**      | State management ligero          |
+| **Gluestack UI** | Componentes UI consistentes      |
+| **NativeWind**   | Tailwind CSS para React Native   |
+| **pnpm**         | Gestor de paquetes               |
+
+---
+
+## 👨‍💻 Desarrollo
+
+### Scripts Disponibles
+
+```bash
+# Iniciar servidor de desarrollo
+pnpm start
+
+# Limpiar caché y reiniciar
+pnpm start --clear
+
+# Build para producción
+pnpm build
+
+# Lint del código
+pnpm lint
+
+# Tests
+pnpm test
+```
+
+### Estructura de Componentes
+
+**Componente Funcional Típico:**
+
+```typescript
+import React from 'react';
+import { Box } from '@gluestack-ui/themed';
+
+interface ProductCardProps {
+  id: string;
+  name: string;
+  price: number;
+  onPress: () => void;
+}
+
+export const ProductCard: React.FC<ProductCardProps> = ({
+  id,
+  name,
+  price,
+  onPress,
+}) => {
+  return (
+    <Box onPress={onPress}>
+      {/* Contenido */}
+    </Box>
+  );
+};
+```
+
+### Uso de Stores (Zustand)
+
+```typescript
+// En un componente
+import { useAuthStore } from '@/store/authStore';
+
+export const MyComponent = () => {
+  const { user, logout } = useAuthStore();
+  
+  return (
+    // Usar user y logout aquí
+  );
+};
+```
+
+### Llamadas a API
+
+```typescript
+// api/products.ts
+export const fetchProducts = async () => {
+  const response = await fetch('http://localhost:3001/api/v1/products');
+  return response.json();
+};
+
+// En componente
+import { useEffect, useState } from 'react';
+import { fetchProducts } from '@/api/products';
+
+export const ProductList = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await fetchProducts();
+        setProducts(data);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    load();
+  }, []);
+
+  if (loading) return <SkeletonLoader />;
+  if (error) return <ErrorMessage retry={load} />;
+  
+  return <FlatList data={products} renderItem={...} />;
+};
+```
+
+---
+
+## 🎨 Principios de Diseño
+
+### Experiencia de Usuario
+
+El e-commerce debe sentirse:
+
+- **Intuitivo**: El usuario entiende qué hacer sin tutoriales
+- **Rápido**: Feedback inmediato (< 300ms para interacciones)
+- **Accesible**: Funciona con lectores de pantalla, tamaños de fuente variables
+- **Confiable**: Mensajes claros en errores, carrito persistente
+- **Consistente**: Patrones repetibles para inputs, botones, tarjetas
+
+### Patrones Comunes
+
+**Loading States:**
+
+- Usar skeleton loaders, no spinners vacíos
+- Lazy loading de imágenes con fallback
+
+**Estados Vacíos:**
+
+- Icono + mensaje amigable + CTA
+- Ej: "No hay productos. Recargar?"
+
+**Errores:**
+
+- Mensajes amigables (no técnicos)
+- Botón de reintento en el contexto del error
+- No revelar causas exactas (ej: en login)
+
+**Carrito:**
+
+- Actualización optimista de cantidades
+- Botón sticky "Checkout" al scrollear
+- Toast de confirmación al añadir producto
+
+### Tokens de Diseño
+
+- **Espaciado**: Múltiplos de 4px
+- **Radio**: 8px por defecto en tarjetas/inputs
+- **Colores**: Respetar constraste AA mínimo (4.5:1)
+- **Tipografía**: Máx 3 jerarquías visuales simultáneas
+
+---
+
+## 📝 Convenciones de Código
+
+### Nombres
+
+- **Archivos**: `PascalCase` para componentes, `camelCase` para hooks/utils
+- **Componentes**: `PascalCase` (ej: `ProductCard.tsx`)
+- **Hooks**: `camelCase` con prefijo `use` (ej: `useProductList.ts`)
+- **Variables booleanas**: `is`, `has`, `can` (ej: `isLoading`, `hasError`)
+
+### Tipado TypeScript
+
+```typescript
+// ✅ BIEN
+interface ProductProps {
+  id: string;
+  name: string;
+  price: number;
+}
+
+const Product: React.FC<ProductProps> = ({ id, name, price }) => {
+  return null;
+};
+
+// ❌ MAL
+const Product = (props: any) => {
+  return null;
+};
+```
+
+### Estado Global vs Local
+
+- **Global**: auth, carrito, configuración, tema
+- **Local**: flags UI (modals, loaders por componente)
+- **Derivar** en lugar de duplicar (ej: total del carrito se calcula)
+
+### Props y Propiedades
+
+```typescript
+// ✅ BIEN: Props claros y simples
+interface CardProps {
+  title: string;
+  onPress: () => void;
+  isLoading?: boolean;
+}
+
+// ❌ MAL: Props complejos sin documentar
+interface CardProps {
+  data: any;
+  handlers: any;
+}
+```
+
+---
+
+## 🧪 Testing
+
+### Ejecutar Tests
+
+```bash
+pnpm test
+```
+
+### Estrategia de Testing
+
+- **Unit**: Lógica de hooks y utilidades
+- **Component**: Snapshot + interacción básica
+- **E2E** (futuro): Detox o Maestro
+
+### Ejemplo de Test
+
+```typescript
+// __tests__/ProductCard.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react-native';
+import { ProductCard } from '../ProductCard';
+
+describe('ProductCard', () => {
+  it('should call onPress when tapped', () => {
+    const mockOnPress = jest.fn();
+    render(
+      <ProductCard
+        id="1"
+        name="Test Product"
+        price={100}
+        onPress={mockOnPress}
+      />
+    );
+
+    fireEvent.press(screen.getByText('Test Product'));
+    expect(mockOnPress).toHaveBeenCalled();
+  });
+});
+```
+
+---
+
+## 🔒 Seguridad y Calidad
+
+### Verificar Código Antes de Hacer Push
+
+```bash
+pnpm lint
+```
+
+**Qué verifica:**
+
+- Vulnerabilidades de seguridad
+- Consistencia de código
+- Buenas prácticas de React/React Native
+
+> Si lint falla, corrige los errores antes de hacer commit
+
+### Reglas de Seguridad
+
+- ✋ **Nunca guardar tokens en localStorage sin cifrar** → usar AsyncStorage
+- ✋ **No hardcodear URLs de API** → usar variables de entorno
+- ✋ **No loguear datos sensibles** (tokens, contraseñas)
+- ✋ **Validar entrada del usuario** siempre
+
+---
+
+## 🚨 Troubleshooting
+
+### El metro bundler no inicia
+
+```bash
+# Limpiar caché
+pnpm start --clear
+
+# O más agresivo
+rm -rf node_modules pnpm-lock.yaml
+pnpm install
+pnpm start
+```
+
+### Los cambios no se reflejan
+
+- Presiona `r` en la terminal para recargar
+- Si no funciona, haz `pnpm start --clear`
+
+### Error de conexión a la API
+
+- Verifica que el backend está corriendo en `localhost:3001`
+- En Android, usa `10.0.2.2` en lugar de `localhost`
+- En iOS, asegúrate que tienes permiso de red (Info.plist)
+
+### Problema con pnpm
+
+```bash
+# Actualizar pnpm
+npm install -g pnpm@latest
+
+# Verificar versión
+pnpm --version  # Debe ser 8+
+```
+
+---
+
+## 📖 Documentación Adicional
+
+- [Expo Documentation](https://docs.expo.dev/)
+- [React Native Docs](https://reactnative.dev/docs/getting-started)
+- [Gluestack UI Components](https://gluestack.io/)
+- [Zustand Documentation](https://github.com/pmndrs/zustand)
+
+---
+
+## 📞 Contacto
+
+Para dudas o sugerencias sobre el frontend, abre un [issue](https://github.com/WindB3NJA/HealthBytes-dev/issues) o una [discussion](https://github.com/WindB3NJA/HealthBytes-dev/discussions).
 
 ## 2. Principio Rector UX (IMPORTANTE)
 
@@ -163,7 +588,6 @@ Frontend/shop/ <= ! aqui es donde debes hacer el ´´npm install && npm start´�
 - Estados vacíos sin guidance.
 - Bloquear acciones por validaciones silenciosas (si algo es inválido, explicarlo inline).
 
-
 ## 18. Notas Clínicas / Responsabilidad
 
 - La plataforma NO reemplaza consejo médico profesional.
@@ -183,7 +607,7 @@ Mantener este documento actualizado cuando se introduzcan cambios estructurales 
 
 Es **obligatorio** verificar la calidad y seguridad del código antes de enviar cambios (Push/PR).
 
-- **Comando**: `npm run lint`
+- **Comando**: `pnpm run lint`
 - **Qué hace**: Ejecuta ESLint con reglas de seguridad (`eslint-plugin-security`) y buenas prácticas de React/React Native.
 - **Por qué es importante**:
   - Detecta vulnerabilidades de seguridad comunes (ej: inyección de objetos).
@@ -191,4 +615,3 @@ Es **obligatorio** verificar la calidad y seguridad del código antes de enviar 
   - Previene errores en tiempo de ejecución.
 
 > **Nota para devs**: Si el linter falla, **no** ignores los errores. Corrígelos o discute si es un falso positivo.
-

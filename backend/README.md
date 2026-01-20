@@ -1,31 +1,438 @@
-# HealthBytes Backend - FastAPI [Actualizarlo!]
+# ⚙️ Backend - HealthBytes
 
-REST API para HealthBytes usando FastAPI (Python), SQLAlchemy, y PostgreSQL.
+FastAPI + Python + SQLAlchemy REST API para HealthBytes.
 
-**Servidor (dev):** http://localhost:3001
-**API Docs:** http://localhost:3001/docs | http://localhost:3001/redoc
+## 📋 Tabla de Contenidos
+
+- [Quick Start](#-quick-start)
+- [Estructura del Proyecto](#-estructura-del-proyecto)
+- [Stack Tecnológico](#-stack-tecnológico)
+- [Endpoints](#-endpoints)
+- [Variables de Entorno](#-variables-de-entorno)
+- [Base de Datos](#-base-de-datos)
+- [Testing](#-testing)
+- [Desarrollo](#-desarrollo)
+- [Troubleshooting](#-troubleshooting)
 
 ---
 
-## 📁 Estructura Reorganizada
+## 🚀 Quick Start
+
+### Windows (PowerShell)
+
+```powershell
+cd backend
+.\start.ps1
+```
+
+El servidor estará en `http://localhost:3001`
+
+### Linux/macOS (Bash)
+
+```bash
+cd backend
+chmod +x start.sh
+./start.sh
+```
+
+### Manual Setup
+
+```bash
+cd backend
+
+# Crear entorno virtual
+python -m venv venv
+
+# Activar (Windows)
+.\venv\Scripts\Activate.ps1
+
+# Activar (Linux/Mac)
+source venv/bin/activate
+
+# Instalar dependencias
+pip install -r requirements.txt
+
+# Configurar .env (ver sección Variables de Entorno)
+cp .env.example .env
+
+# Ejecutar
+python run_server.py
+```
+
+---
+
+## 📂 Estructura del Proyecto
 
 ```
 backend/
-├── app/                      # Código principal
-│   ├── api/v1/              # Endpoints versionados
-│   ├── services/            # Business logic
-│   ├── schemas/             # Pydantic models
-│   ├── db/                  # Database models
-│   ├── core/                # Security, exceptions
-│   └── middleware/
-├── tests/                   # Test suite
-│   ├── test_api/           # Endpoint tests
-│   ├── test_services/      # Service tests
-│   └── conftest.py         # Pytest configuration
-├── scripts/                # Utility scripts
-├── migrations/             # Database migrations
-└── [config files]
+├── app/                          # Código principal de la aplicación
+│   ├── api/v1/                   # Endpoints versionados
+│   ├── services/                 # Business logic
+│   ├── schemas/                  # Pydantic DTOs
+│   ├── db/                       # Database models & config
+│   ├── core/                     # Security, exceptions
+│   ├── middleware/               # Auth middleware
+│   ├── config.py                 # Configuración global
+│   └── main.py                   # FastAPI app
+│
+├── tests/                        # Suite de tests
+│   ├── test_api/                 # Tests de endpoints
+│   ├── test_services/            # Tests de servicios
+│   ├── conftest.py               # Fixtures pytest
+│   └── README.md                 # Guía de testing
+│
+├── scripts/                      # Scripts utilitarios
+├── migrations/                   # Alembic migrations
+├── requirements.txt              # Dependencias
+├── requirements-dev.txt          # Dependencias de desarrollo
+├── pytest.ini                    # Configuración pytest
+├── run_server.py                 # Script para ejecutar servidor
+└── README.md                     # Este archivo
 ```
+
+---
+
+## 🛠️ Stack Tecnológico
+
+| Tecnología | Versión | Propósito |
+|-----------|---------|-----------|
+| **FastAPI** | 0.109+ | Framework web moderno |
+| **Python** | 3.11+ | Lenguaje principal |
+| **SQLAlchemy** | 2.x | ORM async |
+| **Pydantic** | 2.x | Validación de datos |
+| **PostgreSQL** | 14+ | Base de datos |
+| **pytest** | Latest | Testing |
+
+---
+
+## 📡 Endpoints
+
+### Health Check
+
+```http
+GET /
+GET /health
+```
+
+Respuesta: `{"status": "ok"}`
+
+### Autenticación
+
+```http
+POST /api/v1/auth/register
+POST /api/v1/auth/login
+```
+
+### Productos
+
+```http
+GET    /api/v1/products           # Listar todos
+GET    /api/v1/products/{id}      # Obtener uno
+POST   /api/v1/products           # Crear (auth required)
+PUT    /api/v1/products/{id}      # Actualizar (auth required)
+DELETE /api/v1/products/{id}      # Eliminar (auth required)
+```
+
+### Órdenes
+
+```http
+GET    /api/v1/orders             # Listar órdenes del usuario
+GET    /api/v1/orders/{id}        # Obtener detalles
+POST   /api/v1/orders             # Crear nueva orden
+PUT    /api/v1/orders/{id}        # Actualizar estado
+```
+
+**📖 Ver documentación interactiva:**
+- Swagger: http://localhost:3001/docs
+- ReDoc: http://localhost:3001/redoc
+
+---
+
+## 🔧 Variables de Entorno
+
+Crear archivo `.env` en `backend/` (ver `.env.example` como plantilla):
+
+```env
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/healthbytes"
+
+# JWT (authentication)
+JWT_SECRET="tu-secreto-super-seguro-aqui"
+JWT_ALGORITHM="HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES=43200
+
+# Clerk (autenticación externa - opcional)
+CLERK_PUBLISHABLE_KEY="pk_test_..."
+CLERK_SECRET_KEY="sk_test_..."
+
+# Application
+ENVIRONMENT="dev"
+DEBUG=True
+API_V1_PREFIX="/api/v1"
+PROJECT_NAME="HealthBytes API"
+```
+
+⚠️ **IMPORTANTE**: Nunca commitear `.env` - está en `.gitignore`
+
+---
+
+## 🗄️ Base de Datos
+
+### Requisitos
+
+PostgreSQL 14+ instalado y corriendo
+
+### Configuración Rápida con Docker
+
+```bash
+docker run --name healthbytes-postgres \
+  -e POSTGRES_USER=healthbytes_user \
+  -e POSTGRES_PASSWORD=password123 \
+  -e POSTGRES_DB=healthbytes \
+  -p 5432:5432 \
+  -d postgres:14
+```
+
+### Conexión
+
+Update en `.env`:
+```env
+DATABASE_URL="postgresql://healthbytes_user:password123@localhost:5432/healthbytes"
+```
+
+### Crear Tablas
+
+Las tablas se crean automáticamente al iniciar el servidor (SQLAlchemy crea).
+
+### Migraciones (Alembic)
+
+```bash
+# Ver estado de migraciones
+alembic current
+
+# Crear nueva migración
+alembic revision --autogenerate -m "Descripción del cambio"
+
+# Aplicar migraciones
+alembic upgrade head
+
+# Revertir última migración
+alembic downgrade -1
+```
+
+---
+
+## 🧪 Testing
+
+### Ejecutar Tests
+
+```bash
+# Todos los tests
+pytest
+
+# Con output detallado
+pytest -v
+
+# Tests específicos
+pytest tests/test_api/test_products.py -v
+
+# Un test específico
+pytest tests/test_api/test_products.py::test_get_products -v
+
+# Con cobertura
+pytest --cov=app --cov-report=html
+```
+
+### Estado Actual
+
+✅ **8/8 tests pasando**
+
+```
+test_auth.py::test_register_user ✅
+test_auth.py::test_login_user ✅
+test_health.py::test_health_check ✅
+test_orders.py::test_get_orders ✅
+test_orders.py::test_create_order ✅
+test_products.py::test_get_products ✅
+test_products.py::test_get_product_by_id ✅
+test_products.py::test_create_product ✅
+```
+
+### Cobertura
+
+Generar reporte:
+```bash
+pytest --cov=app --cov-html=htmlcov
+```
+
+Abrir `htmlcov/index.html` en navegador
+
+### Escribir Tests Nuevos
+
+1. Crear archivo en `tests/test_api/test_<feature>.py`
+2. Importar fixture `client`
+3. Escribir test:
+
+```python
+def test_my_endpoint(client):
+    response = client.get("/api/v1/my-endpoint")
+    assert response.status_code == 200
+    assert response.json() == {...}
+```
+
+4. Ejecutar: `pytest tests/test_api/test_<feature>.py -v`
+
+📖 **Guía completa:** [tests/README.md](tests/README.md)
+
+---
+
+## 👨‍💻 Desarrollo
+
+### Scripts Útiles
+
+```bash
+# Format código
+black .
+
+# Lint
+ruff check .
+
+# Type checking
+mypy .
+
+# Ejecutar servidor con reload
+python run_server.py
+```
+
+### Agregar Dependencia
+
+```bash
+pip install <package>
+pip freeze > requirements.txt
+git add requirements.txt && git commit -m "chore: add <package>"
+```
+
+### Flujo de Trabajo - Nueva Feature
+
+1. **Crear schema** en `app/schemas/`
+   ```python
+   # app/schemas/my_feature.py
+   class MyFeatureCreate(BaseModel):
+       field: str
+   ```
+
+2. **Crear modelo DB** en `app/db/models/`
+   ```python
+   # app/db/models/my_feature.py
+   class MyFeature(Base):
+       __tablename__ = "my_features"
+       id = Column(Integer, primary_key=True)
+   ```
+
+3. **Crear servicio** en `app/services/`
+   ```python
+   # app/services/my_feature_service.py
+   async def get_my_feature(db, id):
+       return db.query(MyFeature).filter(...).first()
+   ```
+
+4. **Crear endpoint** en `app/api/v1/`
+   ```python
+   # app/api/v1/my_feature.py
+   @router.get("/my-feature/{id}")
+   async def get_feature(id: int, db = Depends(...)):
+       return await my_feature_service.get_my_feature(db, id)
+   ```
+
+5. **Crear tests** en `tests/test_api/` y `tests/test_services/`
+
+6. **Ejecutar tests** `pytest`
+
+7. **Commit**: 
+   ```bash
+   git commit -m "feat(my-feature): add new endpoint"
+   ```
+
+### Convenciones de Código
+
+- **Python**: Seguir PEP 8
+- **Type hints**: Obligatorios en funciones públicas
+- **Docstrings**: En funciones de negocio
+- **Max line length**: 100 caracteres
+
+---
+
+## 🔐 Autenticación
+
+### JWT (Actual)
+
+Token se envía en header:
+```http
+Authorization: Bearer <token>
+```
+
+JWT se valida contra `JWT_SECRET` en `.env`
+
+### Clerk (En transición)
+
+Sistema de autenticación externo para futuro soporte de sesiones más robustas.
+
+---
+
+## 🚨 Troubleshooting
+
+### Error: "Module not found"
+
+Asegúrate de estar en `backend/`:
+
+```bash
+cd backend
+python run_server.py  # ✅ Correcto
+```
+
+### Error: "Port 3001 already in use"
+
+```bash
+# Windows
+netstat -ano | findstr :3001
+taskkill /PID <PID> /F
+
+# Linux/macOS
+lsof -i :3001
+kill -9 <PID>
+```
+
+### Error: "Database connection failed"
+
+1. Verifica PostgreSQL está corriendo
+2. Verifica `DATABASE_URL` en `.env`
+3. Verifica credenciales de base de datos
+
+### Error: "JWT signature verification failed"
+
+Verifica que `JWT_SECRET` es consistente entre cliente y servidor
+
+### Los cambios no se reflejan
+
+El servidor tiene `--reload` activado. Si no funciona:
+1. Detén el servidor (Ctrl+C)
+2. Inicia nuevamente `python run_server.py`
+
+---
+
+## 📖 Documentación Adicional
+
+- [FastAPI Docs](https://fastapi.tiangolo.com/)
+- [SQLAlchemy ORM](https://docs.sqlalchemy.org/en/20/)
+- [Pydantic V2](https://docs.pydantic.dev/latest/)
+- [PostgreSQL](https://www.postgresql.org/docs/)
+- [Pytest](https://docs.pytest.org/)
+
+---
+
+## 📞 Contacto
+
+Para dudas sobre el backend, abre un [issue](https://github.com/WindB3NJA/HealthBytes-dev/issues) o [discussion](https://github.com/WindB3NJA/HealthBytes-dev/discussions).
 
 ---
 
