@@ -311,7 +311,8 @@ Crea un archivo `.env` en la carpeta `backend/` con las siguientes variables:
 # ============================================
 # AUTHENTICATION - CLERK (Provider Externo)
 # ============================================
-CLERK_PUBLISHABLE_KEY="pk_test_..." # Obtener del documento de clickup
+# Ver documento de keys: https://app.clickup.com/90131597357/v/dc/2ky4621d-2233
+CLERK_PUBLISHABLE_KEY="pk_test_..."
 ***REDACTED_CLERK_SECRET_KEY***
 
 # ============================================
@@ -333,6 +334,16 @@ DEBUG="True"       # Solo en desarrollo
 API_V1_PREFIX="/api/v1"
 PROJECT_NAME="HealthBytes API"
 ```
+
+### 🔑 Obtener Keys y Credenciales
+
+Las credenciales y API keys (Clerk, Stripe, etc.) están documentadas en ClickUp:
+
+**📋 [Documento de Keys en ClickUp](https://app.clickup.com/90131597357/v/dc/2ky4621d-2233)**
+
+> **⚠️ Nota Importante:** Debes estar previamente invitado al workspace de ClickUp y haber aceptado la invitación para poder ver este documento.
+
+Si no tienes acceso, solicítalo al líder del equipo.
 
 ### Configuración de PostgreSQL
 

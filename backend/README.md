@@ -174,6 +174,16 @@ PROJECT_NAME="HealthBytes API"
 
 ⚠️ **IMPORTANTE**: Nunca commitear `.env` - está en `.gitignore`
 
+### 🔑 Obtener Keys y Credenciales
+
+Las credenciales y API keys están documentadas en ClickUp:
+
+**📋 [Documento de Keys en ClickUp](https://app.clickup.com/90131597357/v/dc/2ky4621d-2233)**
+
+> **⚠️ Nota:** Debes estar previamente invitado al workspace de ClickUp y haber aceptado la invitación para poder ver este documento.
+
+Si no tienes acceso, contacta al líder del equipo.
+
 ---
 
 ## 🗄️ Base de Datos
