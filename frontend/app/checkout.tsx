@@ -97,7 +97,7 @@ export default function CheckoutScreen() {
 
                         <HStack className="justify-between items-end">
                             <Text className="text-xl font-bold text-black">Total a Pagar</Text>
-                            <Text className="text-3xl font-bold text-blue-600">${subtotal.toFixed(2)}</Text>
+                            <Text className="text-3xl font-bold text-blue-600">{formatPrice(subtotal)}</Text>
                         </HStack>
                     </View>
                 </View>
