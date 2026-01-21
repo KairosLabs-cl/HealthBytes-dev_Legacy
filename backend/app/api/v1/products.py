@@ -51,6 +51,29 @@ async def get_product_by_id(id: int, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/batch", response_model=List[ProductResponse])
+async def get_products_by_ids(ids: str, db: AsyncSession = Depends(get_db)):
+    """
+    GET /products/batch?ids=1,2,3
+    Get multiple products by IDs
+    Useful for recently viewed or cart items
+    """
+    try:
+        # Parse comma-separated IDs
+        id_list = [int(id.strip()) for id in ids.split(',') if id.strip()]
+        
+        if not id_list:
+            return []
+        
+        result = await db.execute(select(Product).where(Product.id.in_(id_list)))
+        products = result.scalars().all()
+        return products
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid ID format")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/", response_model=ProductResponse, status_code=201)
 async def create_product(
     product_data: ProductCreate,
