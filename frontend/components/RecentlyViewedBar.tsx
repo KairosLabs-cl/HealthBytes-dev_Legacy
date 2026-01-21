@@ -40,7 +40,7 @@ function MiniItem({ product, itemWidth }: { product: Product; itemWidth: number 
           resizeMode="contain"
         />
       </View>
-      <Text numberOfLines={1} style={{
+      <Text style={{
         fontWeight: '500',
         fontSize: 11,
         color: '#6b7280',

@@ -18,7 +18,7 @@ function FavoriteCard({ product }: { product: Product }) {
         />
       </View>
 
-      <Text numberOfLines={2} className="mt-2 text-[13px] text-neutral-700">
+      <Text className="mt-2 text-[13px] text-neutral-700">
         {product.name}
       </Text>
       <Text className="mt-1 text-[18px] font-extrabold">{formatPrice(product.price)}</Text>
