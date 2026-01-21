@@ -60,7 +60,7 @@ export default function CartScreen() {
 
             {/* Product Info */}
             <View className="flex-1">
-              <Text className="font-semibold text-base text-gray-900 mb-1" numberOfLines={2}>
+              <Text className="font-semibold text-base text-gray-900 mb-1">
                 {item.product.name}
               </Text>
               <Text className="text-lg font-bold text-gray-900 mb-3">
