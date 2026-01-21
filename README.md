@@ -613,47 +613,6 @@ Agrega screenshots para cambios visuales
 Información adicional que el revisor debería saber
 ```
 
-### 🎨 Convenciones de Código
-
-**Python (Backend)**
-
-- Seguir [PEP 8](https://pep8.org/)
-- Type hints obligatorios en funciones
-- Docstrings en funciones públicas
-- Max line length: 100 caracteres
-- Usar `black` para formateo
-
-```python
-def get_products(
-    db: AsyncSession,
-    skip: int = 0,
-    limit: int = 10,
-) -> List[ProductResponse]:
-    """Obtiene lista de productos con paginación."""
-    # Implementación
-```
-
-**TypeScript (Frontend)**
-
-- Seguir [ESLint config](frontend/.eslintrc.js) del proyecto
-- Componentes funcionales con hooks
-- Props con interfaces TypeScript
-- Nombres de componentes en `PascalCase`
-- Nombres de variables/funciones en `camelCase`
-
-```typescript
-interface ProductListProps {
-  items: Product[];
-  onSelect: (id: number) => void;
-}
-
-export function ProductList({ items, onSelect }: ProductListProps) {
-  return (
-    // JSX
-  );
-}
-```
-
 ### 🔍 Antes de hacer Push
 
 ```bash
