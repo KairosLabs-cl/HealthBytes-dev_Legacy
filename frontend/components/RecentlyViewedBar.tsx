@@ -1,41 +1,101 @@
 import React from "react";
-import { View, FlatList, Image } from "react-native";
+import { View, FlatList, Image, useWindowDimensions } from "react-native";
 import { Text } from "@/components/ui/text";
 import SectionHeader from "@/components/SectionHeader";
 import type { Product } from "@/types/product";
+import { Pressable } from "react-native";
+import { useRouter } from "expo-router";
 
 type Props = { items?: Product[] };
 
-function MiniItem({ product }: { product: Product }) {
-  const price =
-    typeof product.price === "number" ? product.price.toFixed(2) : product.price;
+function MiniItem({ product, itemWidth }: { product: Product; itemWidth: number }) {
+  const router = useRouter();
+
+  const handlePress = () => {
+    router.push(`/product/${product.id}`);
+  };
 
   return (
-    <View className="w-24 items-center mr-3">
-      <View className="w-24 h-24 rounded-2xl bg-white border border-neutral-200 shadow-sm mb-2 items-center justify-center overflow-hidden">
-        <Image source={{ uri: product.image }} className="w-20 h-20" resizeMode="contain" />
+    <Pressable onPress={handlePress} style={{ width: itemWidth, alignItems: 'center', marginRight: 8 }}>
+      <View style={{
+        width: itemWidth - 4,
+        height: itemWidth - 4,
+        borderRadius: 12,
+        backgroundColor: 'white',
+        borderWidth: 1,
+        borderColor: '#e5e5e5',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.08,
+        shadowRadius: 1,
+        elevation: 1,
+        marginBottom: 4,
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden'
+      }}>
+        <Image
+          source={{ uri: product.image }}
+          style={{ width: itemWidth - 16, height: itemWidth - 16 }}
+          resizeMode="contain"
+        />
       </View>
-      <Text numberOfLines={2} className="text-[11px] text-neutral-700 text-center">
+      <Text numberOfLines={1} style={{
+        fontWeight: '500',
+        fontSize: 11,
+        color: '#6b7280',
+        textAlign: 'center',
+        lineHeight: 2,
+        maxWidth: itemWidth - 4
+      }}>
         {product.name}
       </Text>
-      <Text className="text-[11px] font-semibold text-center mt-1">{price}</Text>
-    </View>
+    </Pressable>
   );
 }
 
 export default function RecentlyViewedBar({ items = [] }: Props) {
+  const { width: screenWidth } = useWindowDimensions();
+
   if (!items.length) return null;
 
+  // Calcular dimensiones dinámicas - más compacto
+  const paddingHorizontal = 20; // Menos padding
+  const availableWidth = screenWidth - paddingHorizontal;
+  const minItemWidth = 70; // Más pequeño para caber más
+  const maxItemWidth = 85; // Máximo más pequeño
+  const spacing = 8; // Menos espacio entre items
+
+  // Calcular cuántos items caben
+  const maxItems = Math.floor((availableWidth + spacing) / (minItemWidth + spacing));
+
+  // Limitar entre 3-6 items dependiendo del espacio
+  const itemsToShow = Math.min(items.length, Math.max(3, Math.min(maxItems, 6)));
+
+  // Calcular ancho óptimo para los items
+  const totalSpacing = (itemsToShow - 1) * spacing;
+  const itemWidth = Math.min(maxItemWidth, Math.max(minItemWidth, (availableWidth - totalSpacing) / itemsToShow));
+
+  // Tomar solo los items que vamos a mostrar
+  const displayedItems = items.slice(0, itemsToShow);
+
   return (
-    <View className="mb-2">
+    <View style={{ marginBottom: 12 }}>
       <SectionHeader icon="time-outline" title="Vistos recientemente" />
       <FlatList
         horizontal
-        data={items}
+        data={displayedItems}
         keyExtractor={(item) => String(item.id)}
         showsHorizontalScrollIndicator={false}
-        contentContainerClassName="px-3"
-        renderItem={({ item }) => <MiniItem product={item} />}
+        contentContainerStyle={{
+          paddingHorizontal: 10,
+          paddingVertical: 2
+        }}
+        renderItem={({ item }) => <MiniItem product={item} itemWidth={itemWidth} />}
+        // Optimizar rendimiento
+        initialNumToRender={itemsToShow}
+        maxToRenderPerBatch={itemsToShow}
+        windowSize={3}
       />
     </View>
   );

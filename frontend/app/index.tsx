@@ -11,10 +11,13 @@ import { Stack } from "expo-router";
 import QuickFilters from "@/components/QuickFilters"; 
 import SectionHeader from "@/components/SectionHeader"; 
 import { useState } from "react";
+import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 
 export default function HomeScreen() {
   // se Cambio el estado para que termino de búsqueda se guarde en el estado y se pueda usar en la pagina
   const [searchTerm, setSearchTerm] = useState("");
+
+  const { items: recentlyViewedItems } = useRecentlyViewed();
 
   const { data, isLoading, error, isFetching } = useQuery({
     queryKey: ["products", searchTerm], // se agrego searchTerm para re-fetch al buscar
@@ -76,7 +79,7 @@ return (
           </View>
 
           <View className="px-3">
-              <RecentlyViewedBar items={data?.slice(0, 10) ?? []} />
+              <RecentlyViewedBar items={recentlyViewedItems} />
           </View>
         </>
       )}
