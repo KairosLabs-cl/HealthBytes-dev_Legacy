@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 from typing import List
 
 from app.db.database import get_db
-from app.db.schemas import Product
 from app.schemas.product import ProductCreate, ProductUpdate, ProductResponse
 from app.middleware.auth import verify_seller, get_current_user
+from app.services import product_service
 
 router = APIRouter()
 
@@ -19,11 +18,8 @@ async def list_products(db: AsyncSession = Depends(get_db)):
     Replica of listProducts from Node.js
     """
     try:
-        result = await db.execute(select(Product))
-        products = result.scalars().all()
-        return products
+        return await product_service.list_products(db)
     except Exception as e:
-        print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -35,8 +31,7 @@ async def get_product_by_id(id: int, db: AsyncSession = Depends(get_db)):
     Replica of getProductById from Node.js
     """
     try:
-        result = await db.execute(select(Product).where(Product.id == id))
-        product = result.scalar_one_or_none()
+        product = await product_service.get_product(db, id)
         
         if not product:
             raise HTTPException(
@@ -63,16 +58,8 @@ async def create_product(
     Replica of createProduct from Node.js
     """
     try:
-        # Convert Pydantic model to dict (cleanBody equivalent)
-        product = Product(**product_data.dict())
-        
-        db.add(product)
-        await db.commit()
-        await db.refresh(product)
-        
-        return product
+        return await product_service.create_product(db, product_data)
     except Exception as e:
-        await db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -89,8 +76,7 @@ async def update_product(
     Replica of updateProduct from Node.js
     """
     try:
-        result = await db.execute(select(Product).where(Product.id == id))
-        product = result.scalar_one_or_none()
+        product = await product_service.update_product(db, id, product_data)
         
         if not product:
             raise HTTPException(
@@ -98,19 +84,10 @@ async def update_product(
                 detail={"message": "Product was not found"}
             )
         
-        # Update only provided fields (cleanBody equivalent)
-        update_data = product_data.dict(exclude_unset=True)
-        for key, value in update_data.items():
-            setattr(product, key, value)
-        
-        await db.commit()
-        await db.refresh(product)
-        
         return product
     except HTTPException:
         raise
     except Exception as e:
-        await db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -126,21 +103,16 @@ async def delete_product(
     Replica of deleteProduct from Node.js
     """
     try:
-        result = await db.execute(select(Product).where(Product.id == id))
-        product = result.scalar_one_or_none()
+        deleted = await product_service.delete_product(db, id)
         
-        if not product:
+        if not deleted:
             raise HTTPException(
                 status_code=404, 
                 detail={"message": "Product was not found"}
             )
         
-        await db.delete(product)
-        await db.commit()
-        
         return None
     except HTTPException:
         raise
     except Exception as e:
-        await db.rollback()
         raise HTTPException(status_code=500, detail=str(e))

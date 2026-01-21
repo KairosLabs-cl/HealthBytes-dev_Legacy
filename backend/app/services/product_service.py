@@ -110,7 +110,7 @@ async def update_product(
 async def delete_product(
     db: AsyncSession,
     product_id: int
-) -> bool:
+) -> Optional[Product]:
     """
     Delete product by ID.
     
@@ -119,7 +119,7 @@ async def delete_product(
         product_id: Product ID to delete
         
     Returns:
-        True if deleted, False if not found
+        Deleted Product object or None if not found
     """
     result = await db.execute(
         select(Product).where(Product.id == product_id)
@@ -127,8 +127,8 @@ async def delete_product(
     db_product = result.scalar_one_or_none()
     
     if not db_product:
-        return False
+        return None
     
     await db.delete(db_product)
     await db.commit()
-    return True
+    return db_product
