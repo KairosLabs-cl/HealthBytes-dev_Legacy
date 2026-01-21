@@ -285,13 +285,13 @@ HealthBytes-dev/
 
 | Necesito...                 | Ve a...                                                                       |
 | --------------------------- | ----------------------------------------------------------------------------- |
-| Empezar rápido             | [QUICK_START.md](docs/Copilot-logs/status-logs/QUICK_START.md)                   |
-| Ver el estado del proyecto  | [RESUMEN_EJECUTIVO.md](docs/Copilot-logs/status-logs/RESUMEN_EJECUTIVO.md)       |
-| Entender la arquitectura    | [DIAGNOSTICO_PROYECTO.md](docs/Copilot-logs/status-logs/DIAGNOSTICO_PROYECTO.md) |
-| Conocer próximas tareas    | [PLAN_ACCION.md](docs/Copilot-logs/status-logs/PLAN_ACCION.md)                   |
-| Documentación del Backend  | [backend/README.md](backend/README.md)                                           |
-| Documentación del Frontend | [frontend/README.md](frontend/README.md)                                         |
-| Información de tests       | [tests/README.md](backend/tests/README.md)                                       |
+| Ver estado del proyecto     | [ESTADO_ACTUAL.md](docs/Copilot-logs/status-logs/ESTADO_ACTUAL.md)                |
+| Entender la arquitectura    | [ARQUITECTURA.md](docs/Copilot-logs/status-logs/ARQUITECTURA.md)           |
+| Entender la documentación   | [INDEX.md](docs/Copilot-logs/status-logs/INDEX.md)                         |
+| Documentación del Backend   | [backend/README.md](backend/README.md)                                           |
+| Documentación del Frontend  | [frontend/README.md](frontend/README.md)                                         |
+| Información de tests        | [backend/tests/README.md](backend/tests/README.md)                                       |
+| Convención de branches      | [Sección Contribuir](#-contribuir)                                                |
 
 ---
 
@@ -399,11 +399,9 @@ Si ves la URL de tu base de datos, ¡todo está bien! 🎉
 
 | Documento                                                                     | Descripción                               | Audiencia          |
 | ----------------------------------------------------------------------------- | ------------------------------------------ | ------------------ |
-| [RESUMEN_EJECUTIVO.md](docs/Copilot-logs/status-logs/RESUMEN_EJECUTIVO.md)       | ⭐**Empieza aquí** - Estado general | Todos              |
-| [QUICK_START.md](docs/Copilot-logs/status-logs/QUICK_START.md)                   | Guía de 10 minutos para empezar           | Nuevos devs        |
-| [DIAGNOSTICO_PROYECTO.md](docs/Copilot-logs/status-logs/DIAGNOSTICO_PROYECTO.md) | Análisis técnico detallado               | Devs senior        |
-| [PLAN_ACCION.md](docs/Copilot-logs/status-logs/PLAN_ACCION.md)                   | Roadmap y mejoras                          | Product/Tech leads |
-| [ARQUITECTURA.md](docs/Copilot-logs/status-logs/ARQUITECTURA.md)                 | Detalles de arquitectura                   | Arquitectos        |
+| [ESTADO_ACTUAL.md](docs/Copilot-logs/status-logs/ESTADO_ACTUAL.md)       | ⭐**Empieza aquí** - Estado del proyecto (21/01/26) | Todos              |
+| [ARQUITECTURA.md](docs/Copilot-logs/status-logs/ARQUITECTURA.md)          | Diagramas técnicos y estructura                   | Devs senior        |
+| [INDEX.md](docs/Copilot-logs/status-logs/INDEX.md)                       | Navegación de documentación                | Todos              |
 
 ### READMEs Específicos
 
@@ -482,69 +480,200 @@ cd frontend
 
 ¡Las contribuciones son bienvenidas! Sigue estos pasos:
 
-### 1. Fork y Clone
+### 📋 Convención de Branch Names
 
-```bash
-git clone https://github.com/tu-usuario/HealthBytes-dev.git
-cd HealthBytes-dev
-git checkout -b feature/mi-nueva-feature
+Usamos **Conventional Branch Names** - estándar en la industria, simple y legible.
+
+**Formato:**
+```
+tipo/descripcion-corta
 ```
 
-### 2. Desarrollo
+**Tipos permitidos:**
 
-- Sigue las convenciones de código existentes
-- Escribe tests para nuevas features
-- Actualiza la documentación si es necesario
+| Tipo | Descripción | Ejemplo |
+|------|-------------|---------|
+| `feat/` | Nueva feature | `feat/product-filters` |
+| `fix/` | Bug fix | `fix/price-validation` |
+| `docs/` | Documentación | `docs/update-readme` |
+| `refactor/` | Mejora de código | `refactor/cart-store` |
+| `test/` | Agregar tests | `test/add-auth-tests` |
+| `chore/` | Tareas de mantenimiento | `chore/update-dependencies` |
+| `perf/` | Optimización | `perf/optimize-images` |
 
-### 3. Commits
+**Reglas:**
+- ✅ Usa minúsculas: `feat/product-filters`
+- ✅ Separa palabras con guión: `feat/add-allergen-filters`
+- ✅ Sé descriptivo pero conciso: `feat/cart-persistence` (no `feat/f1`)
+- ✅ No uses caracteres especiales: `feat/fix-auth` (no `feat/fix-@auth`)
 
-Usa commits descriptivos siguiendo [Conventional Commits](https://www.conventionalcommits.org/):
-
+**Ejemplos correctos:**
 ```bash
-git commit -m "feat(products): añadir filtro por alérgenos"
-git commit -m "fix(auth): corregir validación de JWT"
-git commit -m "docs(readme): actualizar guía de instalación"
+feat/product-filters
+feat/cart-persistence
+fix/price-validation
+docs/api-documentation
+test/auth-endpoints
+chore/npm-update
+refactor/auth-middleware
 ```
 
-### 4. Pull Request
+### 🔄 Flujo de Trabajo
 
-1. Asegúrate de que los tests pasen: `pytest`
-2. Push a tu fork: `git push origin feature/mi-nueva-feature`
-3. Crea un Pull Request con descripción clara
+#### 1. Crea tu rama desde `master`
 
-### Convenciones de Código
+```bash
+git checkout master
+git pull origin master
 
-**Python (Backend)**
+# Crea la rama con el nombre adecuado
+git checkout -b feat/mi-nueva-feature
+# git checkout -b fix/mi-bug-fix
+# git checkout -b docs/mi-doc-actualizada
+```
 
-- Seguir PEP 8
-- Type hints obligatorios
-- Docstrings en funciones públicas
-- Max line length: 100 caracteres
+#### 2. Desarrollo Local
 
-**TypeScript (Frontend)**
+```bash
+# Realiza tus cambios...
+# Asegúrate de seguir las convenciones de código
 
-- Seguir ESLint config del proyecto
-- Componentes funcionales con hooks
-- Props con interfaces TypeScript
-- Nombres de componentes en PascalCase
+# Tests (obligatorio)
+cd backend && pytest              # Para backend
+cd ../frontend && pnpm test       # Para frontend (cuando esté listo)
+```
 
-### Estructura de PR Ideal
+#### 3. Commits con Conventional Commits
+
+Sigue [Conventional Commits](https://www.conventionalcommits.org/) para que los commits sean claros y automáticamente versionados.
+
+```bash
+git commit -m "feat(products): add filtering by allergens and dietary tags"
+git commit -m "fix(orders): validate prices from database, not client"
+git commit -m "docs(readme): update branch naming convention"
+git commit -m "test(auth): add JWT validation tests"
+git commit -m "refactor(store): improve zustand cart structure"
+```
+
+**Formato:**
+```
+tipo(scope): descripción en presente
+
+[body opcional]
+[footer opcional - ejemplo: Closes #123]
+```
+
+**Ejemplos:**
+```bash
+feat(products): add product filtering by allergens
+
+- Added allergen field to Product model
+- Implemented filtering endpoint
+- Created QuickFilters UI component
+
+Closes #250
+```
+
+#### 4. Push y Pull Request
+
+```bash
+# Push a tu rama
+git push origin feat/mi-nueva-feature
+
+# Crea el Pull Request en GitHub
+# Title: feat: Add product filtering by allergens (mismo que el commit)
+# Description: Sigue la plantilla de abajo
+```
+
+### 📝 Estructura de Pull Request
 
 ```markdown
-## Descripción
-[Qué hace este PR]
+## 📝 Descripción
+Breve descripción de qué hace este PR y por qué
 
-## Tipo de cambio
+## 🎯 Tipo de Cambio
+- [x] Nueva feature
 - [ ] Bug fix
-- [ ] Nueva feature
 - [ ] Breaking change
 - [ ] Documentación
 
-## Checklist
-- [ ] Tests pasan localmente
+## 🔗 Relacionado con
+Closes #123 (reemplaza con el número de issue)
+
+## 📸 Screenshots/Demo (si aplica)
+Agrega screenshots para cambios visuales
+
+## ✅ Checklist
+- [ ] Tests pasan: `pytest` y `pnpm test`
 - [ ] Código sigue las convenciones
 - [ ] Documentación actualizada
-- [ ] No hay console.logs ni prints
+- [ ] Sin console.logs ni prints en prod
+- [ ] Sin TODOs pendientes
+- [ ] Branch name sigue la convención
+- [ ] Commits son descriptivos
+
+## 💡 Notas
+Información adicional que el revisor debería saber
+```
+
+### 🎨 Convenciones de Código
+
+**Python (Backend)**
+
+- Seguir [PEP 8](https://pep8.org/)
+- Type hints obligatorios en funciones
+- Docstrings en funciones públicas
+- Max line length: 100 caracteres
+- Usar `black` para formateo
+
+```python
+def get_products(
+    db: AsyncSession,
+    skip: int = 0,
+    limit: int = 10,
+) -> List[ProductResponse]:
+    """Obtiene lista de productos con paginación."""
+    # Implementación
+```
+
+**TypeScript (Frontend)**
+
+- Seguir [ESLint config](frontend/.eslintrc.js) del proyecto
+- Componentes funcionales con hooks
+- Props con interfaces TypeScript
+- Nombres de componentes en `PascalCase`
+- Nombres de variables/funciones en `camelCase`
+
+```typescript
+interface ProductListProps {
+  items: Product[];
+  onSelect: (id: number) => void;
+}
+
+export function ProductList({ items, onSelect }: ProductListProps) {
+  return (
+    // JSX
+  );
+}
+```
+
+### 🔍 Antes de hacer Push
+
+```bash
+# 1. Actualiza desde master
+git fetch origin
+git rebase origin/master
+
+# 2. Ejecuta tests
+pytest                          # Backend
+# pnpm test                    # Frontend
+
+# 3. Verifica que tu branch name sea correcto
+git branch --show-current
+# Output: feat/product-filters ✅
+
+# 4. Push
+git push origin feat/product-filters
 ```
 
 ---
