@@ -597,9 +597,6 @@ Breve descripción de qué hace este PR y por qué
 - [ ] Breaking change
 - [ ] Documentación
 
-## 🔗 Relacionado con
-Closes #123 (reemplaza con el número de issue)
-
 ## 📸 Screenshots/Demo (si aplica)
 Agrega screenshots para cambios visuales
 
