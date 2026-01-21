@@ -1,0 +1,300 @@
+"""Unit tests for order_service"""
+
+import pytest
+from sqlalchemy import select
+from app.services.order_service import (
+    create_order,
+    get_user_orders,
+    get_order,
+    update_order_status,
+)
+from app.schemas.order import OrderCreate, OrderItemCreate
+from app.db.schemas import Order, User, Product
+from app.services.auth_service import register_user
+from app.schemas.user import UserCreate
+from tests.conftest import MockAsyncSession
+
+
+@pytest.fixture
+def test_user(db_session):
+    """Create a test user for order operations"""
+    user = User(
+        id="user_order_test",
+        email="ordertest@example.com",
+        password_hash="hashed",
+        role="customer"
+    )
+    db_session.add(user)
+    db_session.commit()
+    return user
+
+
+@pytest.fixture
+def test_products(db_session):
+    """Create test products for orders"""
+    products = [
+        Product(
+            id=1,
+            name="Product 1",
+            description="Test Product 1",
+            price=10.00,
+            image="https://example.com/1.jpg"
+        ),
+        Product(
+            id=2,
+            name="Product 2",
+            description="Test Product 2",
+            price=20.00,
+            image="https://example.com/2.jpg"
+        ),
+    ]
+    for product in products:
+        db_session.add(product)
+    db_session.commit()
+    return products
+
+
+@pytest.mark.asyncio
+async def test_create_order_success(db_session, test_user, test_products):
+    """Test successful order creation"""
+    mock_db = MockAsyncSession(db_session)
+    
+    order_data = OrderCreate(
+        items=[
+            OrderItemCreate(product_id=1, quantity=2),
+            OrderItemCreate(product_id=2, quantity=1),
+        ]
+    )
+    
+    result = await create_order(mock_db, test_user, order_data)
+    
+    assert result is not None
+    assert result.user_id == "user_order_test"
+    assert result.status == "pending"
+    # Price should be 10*2 + 20*1 = 40
+    assert result.total == 40.0
+
+
+@pytest.mark.asyncio
+async def test_create_order_insufficient_stock(db_session, test_user):
+    """Test order creation fails with insufficient stock"""
+    mock_db = MockAsyncSession(db_session)
+    
+    # Create product with stock=1
+    product = Product(
+        id=10,
+        name="Limited Product",
+        description="Only 1 in stock",
+        price=50.00,
+        image="https://example.com/limited.jpg",
+        stock=1
+    )
+    db_session.add(product)
+    db_session.commit()
+    
+    # Try to order 2
+    order_data = OrderCreate(
+        items=[OrderItemCreate(product_id=10, quantity=2)]
+    )
+    
+    with pytest.raises(ValueError) as exc_info:
+        await create_order(mock_db, test_user, order_data)
+    
+    assert "stock" in str(exc_info.value).lower()
+
+
+@pytest.mark.asyncio
+async def test_create_order_product_not_found(db_session, test_user):
+    """Test order creation fails with non-existent product"""
+    mock_db = MockAsyncSession(db_session)
+    
+    order_data = OrderCreate(
+        items=[OrderItemCreate(product_id=9999, quantity=1)]
+    )
+    
+    with pytest.raises(ValueError) as exc_info:
+        await create_order(mock_db, test_user, order_data)
+    
+    assert "not found" in str(exc_info.value).lower()
+
+
+@pytest.mark.asyncio
+async def test_create_order_uses_current_price(db_session, test_user):
+    """Test that order uses current product price, not client-provided"""
+    mock_db = MockAsyncSession(db_session)
+    
+    # Create product with price 100
+    product = Product(
+        id=20,
+        name="Price Test",
+        description="Test",
+        price=100.00,
+        image="https://example.com/test.jpg"
+    )
+    db_session.add(product)
+    db_session.commit()
+    
+    # Try to create order (price comes from DB, not client)
+    order_data = OrderCreate(
+        items=[OrderItemCreate(product_id=20, quantity=1)]
+    )
+    
+    result = await create_order(mock_db, test_user, order_data)
+    
+    # Should use DB price (100), not any client-provided price
+    assert result.total == 100.0
+
+
+@pytest.mark.asyncio
+async def test_create_order_reduces_stock(db_session, test_user):
+    """Test that creating order reduces product stock"""
+    mock_db = MockAsyncSession(db_session)
+    
+    # Create product with stock=10
+    product = Product(
+        id=30,
+        name="Stock Test",
+        description="Test",
+        price=50.00,
+        image="https://example.com/test.jpg",
+        stock=10
+    )
+    db_session.add(product)
+    db_session.commit()
+    
+    # Create order for 3
+    order_data = OrderCreate(
+        items=[OrderItemCreate(product_id=30, quantity=3)]
+    )
+    
+    await create_order(mock_db, test_user, order_data)
+    
+    # Check stock was reduced
+    result = db_session.execute(select(Product).where(Product.id == 30))
+    updated_product = result.scalar_one()
+    assert updated_product.stock == 7
+
+
+@pytest.mark.asyncio
+async def test_get_user_orders_empty(db_session, test_user):
+    """Test getting orders for user with no orders"""
+    mock_db = MockAsyncSession(db_session)
+    
+    result = await get_user_orders(mock_db, test_user.id)
+    
+    assert result == []
+
+
+@pytest.mark.asyncio
+async def test_get_user_orders_with_data(db_session, test_user, test_products):
+    """Test getting user's orders"""
+    mock_db = MockAsyncSession(db_session)
+    
+    # Create orders
+    order1 = Order(
+        id="order_1",
+        user_id=test_user.id,
+        total=30.0,
+        status="pending"
+    )
+    order2 = Order(
+        id="order_2",
+        user_id=test_user.id,
+        total=50.0,
+        status="completed"
+    )
+    db_session.add(order1)
+    db_session.add(order2)
+    db_session.commit()
+    
+    result = await get_user_orders(mock_db, test_user.id)
+    
+    assert len(result) == 2
+    assert result[0].id == "order_1"
+    assert result[1].id == "order_2"
+
+
+@pytest.mark.asyncio
+async def test_get_order_existing(db_session, test_user):
+    """Test getting a specific order"""
+    mock_db = MockAsyncSession(db_session)
+    
+    # Create order
+    order = Order(
+        id="order_test",
+        user_id=test_user.id,
+        total=75.0,
+        status="pending"
+    )
+    db_session.add(order)
+    db_session.commit()
+    
+    result = await get_order(mock_db, "order_test")
+    
+    assert result is not None
+    assert result.total == 75.0
+    assert result.status == "pending"
+
+
+@pytest.mark.asyncio
+async def test_get_order_not_found(db_session):
+    """Test getting non-existent order"""
+    mock_db = MockAsyncSession(db_session)
+    
+    result = await get_order(mock_db, "nonexistent_order")
+    
+    assert result is None
+
+
+@pytest.mark.asyncio
+async def test_update_order_status_valid_transition(db_session, test_user):
+    """Test updating order status with valid transition"""
+    mock_db = MockAsyncSession(db_session)
+    
+    # Create order
+    order = Order(
+        id="order_update",
+        user_id=test_user.id,
+        total=50.0,
+        status="pending"
+    )
+    db_session.add(order)
+    db_session.commit()
+    
+    # Update status
+    result = await update_order_status(mock_db, "order_update", "processing")
+    
+    assert result is not None
+    assert result.status == "processing"
+
+
+@pytest.mark.asyncio
+async def test_update_order_status_not_found(db_session):
+    """Test updating status of non-existent order"""
+    mock_db = MockAsyncSession(db_session)
+    
+    result = await update_order_status(mock_db, "nonexistent", "processing")
+    
+    assert result is None
+
+
+@pytest.mark.asyncio
+async def test_update_order_status_invalid_transition(db_session, test_user):
+    """Test that invalid status transitions are rejected"""
+    mock_db = MockAsyncSession(db_session)
+    
+    # Create order
+    order = Order(
+        id="order_invalid",
+        user_id=test_user.id,
+        total=50.0,
+        status="completed"
+    )
+    db_session.add(order)
+    db_session.commit()
+    
+    # Try invalid transition: completed -> pending
+    with pytest.raises(ValueError) as exc_info:
+        await update_order_status(mock_db, "order_invalid", "pending")
+    
+    assert "invalid transition" in str(exc_info.value).lower()
