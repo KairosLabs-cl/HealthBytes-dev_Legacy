@@ -150,10 +150,68 @@ docs/
 - ✅ Usar nombres descriptivos: `YYYY-MM-DD_descripcion.md`
 - ✅ Diagramas técnicos en `diagramas/`
 - ✅ Crear RESUMEN.md para tópicos extensos
-- ✅ En `docs/copilot-logs/status-logs/` solo deben existir 4 archivos canónicos: ARQUITECTURA.md, ESTADO.md, RESUMEN_EJECUTIVO.md y PLAN_DE_ACCION.md; cualquier otro archivo nuevo requiere aprobación previa.
 - ❌ NUNCA documentar en raíz del proyecto (usar `docs/`)
 - ❌ NUNCA borrar documentación existente sin consultar
 - ❌ NUNCA crear docs sin solicitud explícita (excepto cambios arquitectónicos)
+
+**📁 Documentos Canónicos en `docs/copilot-logs/status-logs/`:**
+
+Solo deben existir 4 archivos canónicos. Cualquier otro archivo nuevo requiere aprobación previa.
+
+| Prioridad | Archivo | Propósito | Cuándo Modificar |
+|-----------|---------|-----------|------------------|
+| 1️⃣ | `ARQUITECTURA.md` | Diagramas técnicos, stack, estructura de capas, decisiones arquitectónicas | Primero en caso de cambios estructurales |
+| 2️⃣ | `ESTADO.md` | **Estado profundo del proyecto para devs**: métricas, scorecard, commits recientes, features por fase, bloqueadores, checklists técnicos | Después de arquitectura, refleja el "cómo estamos" |
+| 3️⃣ | `PLAN_DE_ACCION.md` | Roadmap detallado, estimaciones, dependencias entre tareas, sprints planeados | Define el "hacia dónde vamos" |
+| 4️⃣ | `RESUMEN_EJECUTIVO.md` | Vista de alto nivel para stakeholders, KPIs, hitos alcanzados | Último, resume los otros 3 docs |
+
+**Orden de actualización ante cambios mayores:**
+```
+ARQUITECTURA.md → ESTADO.md → PLAN_DE_ACCION.md → RESUMEN_EJECUTIVO.md
+```
+
+**📄 Contenido Requerido por Documento:**
+
+**`ARQUITECTURA.md` - Estructura Técnica:**
+- Diagrama ASCII de alto nivel (cliente → backend → DB → servicios externos)
+- Estructura de carpetas detallada con estado de cada componente (✅/⚠️/❌)
+- Patrón de capas obligatorio (routers → services → models)
+- Flujo de autenticación visual (Clerk + JWT)
+- Esquema SQL de todas las tablas con campos faltantes marcados
+- Tabla de endpoints con status actual
+- Brechas arquitectónicas identificadas con código de ejemplo
+
+**`ESTADO.md` - Estado Profundo para Devs:**
+- Scorecard visual ASCII del proyecto (% por área: seguridad, funcionalidad, testing, etc.)
+- Resultados de última ejecución de tests (passed/failed/errors con causas)
+- Desglose de fallos agrupados por categoría
+- Archivos con 0% coverage listados
+- Tabla de implementaciones confirmadas (backend/frontend)
+- Problemas activos con archivos afectados y solución propuesta
+- Commits recientes con hashes
+- Métricas objetivo vs actual
+- Checklist de próximos pasos con prioridad
+
+**`PLAN_DE_ACCION.md` - Roadmap Detallado:**
+- Roadmap visual ASCII con sprints y fechas
+- Tabla de tareas por sprint con: #, tarea, esfuerzo, dependencia, asignado
+- Criterios de éxito por sprint (checkboxes)
+- Archivos a modificar listados por sprint
+- Calendario visual del mes
+- Diagrama de dependencias entre tareas
+- Riesgos y mitigaciones
+- Definition of Done (DoD)
+
+**`RESUMEN_EJECUTIVO.md` - Vista Stakeholders:**
+- Propuesta de valor (1 línea)
+- Dashboard ejecutivo ASCII (status, fase, milestone)
+- Tabla de hitos alcanzados con fechas
+- Funcionalidades: implementadas ✅, en desarrollo ⏳, planificadas 📋
+- KPIs técnicos (uptime, coverage, tests, build time)
+- Stack tecnológico en tabla lado a lado (frontend vs backend)
+- Blocker actual destacado
+- Roadmap simplificado (mes a mes)
+- Decisiones clave tomadas con justificación
 
 ---
 
