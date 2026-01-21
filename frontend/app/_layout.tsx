@@ -46,7 +46,6 @@ function RootLayoutNav() {
         }}
       >
         <Stack.Screen name="index" options={{ title: "HealthBytes" }} />
-        <Stack.Screen name="categories" options={{ title: "Categories" }} />
         <Stack.Screen
           name="(auth)/login"
           options={{

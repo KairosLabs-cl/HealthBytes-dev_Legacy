@@ -9,6 +9,7 @@ import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
 import { useState } from "react";
 import { CheckCircleIcon } from "lucide-react-native";
+import { formatPrice } from "@/lib/formatPrice";
 
 export default function CheckoutScreen() {
     const router = useRouter();

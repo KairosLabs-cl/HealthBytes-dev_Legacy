@@ -3,7 +3,7 @@ import { Image } from "@/components/ui/image"
 import { Text } from "@/components/ui/text"
 import { Heading } from "@/components/ui/heading"
 import { Link } from "expo-router"
-import { Pressable, View } from "react-native"
+import { Pressable, View, Platform, GestureResponderEvent } from "react-native"
 import type { Product } from "@/types/product"
 import { formatPrice } from "@/lib/formatPrice"
 import { ShoppingCart } from "lucide-react-native"
@@ -14,7 +14,7 @@ type Props = { product: Product };
 export default function ProductListItem ({product} : Props) {
   const addProduct = useCart((state) => state.addProduct);
 
-  const handleAddToCart = (e: any) => {
+  const handleAddToCart = (e: GestureResponderEvent) => {
     e.preventDefault();
     e.stopPropagation();
     addProduct(product);
@@ -43,13 +43,18 @@ export default function ProductListItem ({product} : Props) {
             <Pressable
               onPress={handleAddToCart}
               className="w-10 h-10 rounded-full bg-black items-center justify-center active:opacity-80"
-              style={{
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.25,
-                shadowRadius: 3.84,
-                elevation: 5,
-              }}
+              style={Platform.select({
+                web: {
+                  boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.15)",
+                },
+                default: {
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 3.84,
+                  elevation: 5,
+                },
+              })}
             >
               <ShoppingCart size={18} color="white" />
             </Pressable>
