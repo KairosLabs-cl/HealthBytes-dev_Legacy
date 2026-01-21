@@ -22,8 +22,10 @@ def test_get_product_by_id(client):
 
 @pytest.mark.unit
 @pytest.mark.products
-def test_create_product(client, sample_product_data):
-    """Test POST /products endpoint (requires authentication)."""
-    # This will likely fail without proper auth token
-    response = client.post("/products", json=sample_product_data)
-    assert response.status_code in [201, 401, 403]
+def test_get_products_by_ids(client):
+    """Test GET /products/batch endpoint."""
+    response = client.get("/products/batch?ids=1,2,3")
+    assert response.status_code in [200, 404]
+    if response.status_code == 200:
+        data = response.json()
+        assert isinstance(data, list)
