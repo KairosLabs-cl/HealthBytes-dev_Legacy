@@ -59,12 +59,12 @@ async def get_products_by_ids(ids: str, db: AsyncSession = Depends(get_db)):
     Useful for recently viewed or cart items
     """
     try:
-        # Parse comma-separated IDs
+        # Parse comma-separated IDs, # Convierte "1,2,3" en [1, 2, 3]
         id_list = [int(id.strip()) for id in ids.split(',') if id.strip()]
         
         if not id_list:
             return []
-        
+          # Busca productos con esos IDs
         result = await db.execute(select(Product).where(Product.id.in_(id_list)))
         products = result.scalars().all()
         return products
