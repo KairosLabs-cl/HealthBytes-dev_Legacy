@@ -1,43 +1,188 @@
-ARQUITECTURA - HealthBytes
-Actualizado: 2026-01-22
+# 🏗️ ARQUITECTURA - HealthBytes
 
-Alcance: vista compacta de cómo se organiza la plataforma (frontend + backend) y los puntos a reforzar.
+**Última actualización:** 21 Enero 2026  
+**Propósito:** Documentar estructura técnica, decisiones arquitectónicas y puntos de mejora
 
-Backend (FastAPI)
-- Patrón capas obligatorio: routers → services → db/models → database. Lógica solo en services.
-- Autenticación dual: Clerk (RS256 via JWKS) con fallback JWT HS256 legacy; middleware en app/middleware/auth.py.
-- Rutas principales: products, auth, orders, users; Stripe está deshabilitado (503).
-- Datos: PostgreSQL (prod), SQLite en tests; ORM SQLAlchemy async; schemas Pydantic v2.
+---
 
-Frontend (React Native Expo)
-- Expo Router para navegación; páginas en frontend/app (index, product/[id], cart, checkout, (auth)/login).
-- Estado global con Zustand (authStore, cartStore, recentlyViewedStore); UI Gluestack + Tailwind.
-- Llamadas HTTP solo en frontend/api (products.ts, auth.ts, orders.ts); tokens en SecureStore (cache.ts).
+## 📐 DIAGRAMA DE ALTO NIVEL
 
-Flujos clave
-- Carrito: ProductListItem → useCart.add → cartStore (memoria + persistencia pendiente) → checkout.tsx → POST /orders → limpia carrito al éxito.
-- Auth: Clerk preferido; si falla JWKS en dev se intenta decode sin verificar; JWT legacy sigue activo para compatibilidad.
-
-Brechas arquitectónicas
-- Servicios en routers auth/users/orders siguen teniendo lógica: mover a services/ y cubrir con tests.
-- Falta paginación y filtros en GET /products; agregar índices en DB para campos consultados.
-- Checkout y Stripe aún no implementados; sin CI/CD ni contenedores.
-
-Referencias rápidas
-- Backend entrypoint: backend/app/main.py
-- Seguridad: backend/app/middleware/auth.py y backend/app/core/security.py
-- Frontend layout: frontend/app/_layout.tsx
-- Stores: frontend/store/cartStore.ts, frontend/store/authStore.ts
-├── metro.config.js
-├── tailwind.config.js
-├── tsconfig.json
-├── package.json
-└── README.md                # Buena documentación
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              CLIENTE                                        │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                    React Native (Expo)                              │    │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐                  │    │
+│  │  │   Screens   │  │   Stores    │  │  API Client │                  │    │
+│  │  │  (app/)     │──│  (Zustand)  │──│  (api/)     │                  │    │
+│  │  └─────────────┘  └─────────────┘  └──────┬──────┘                  │    │
+│  └───────────────────────────────────────────┼──────────────────────────┘    │
+└──────────────────────────────────────────────┼──────────────────────────────┘
+                                               │ HTTPS
+                                               ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              BACKEND                                        │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                       FastAPI                                       │    │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐                  │    │
+│  │  │   Routers   │──│  Services   │──│   Models    │                  │    │
+│  │  │  (api/v1/)  │  │ (services/) │  │(db/schemas) │                  │    │
+│  │  └──────┬──────┘  └─────────────┘  └──────┬──────┘                  │    │
+│  │         │                                  │                         │    │
+│  │  ┌──────┴──────┐                   ┌──────┴──────┐                  │    │
+│  │  │ Middleware  │                   │  Database   │                  │    │
+│  │  │   (auth)    │                   │ PostgreSQL  │                  │    │
+│  │  └─────────────┘                   └─────────────┘                  │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                               │
+                                               ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          SERVICIOS EXTERNOS                                 │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐                          │
+│  │    Clerk    │  │   Stripe    │  │  PostgreSQL │                          │
+│  │   (Auth)    │  │  (Pagos)    │  │   (Neon)    │                          │
+│  │     ✅      │  │     🔴      │  │     ✅      │                          │
+│  └─────────────┘  └─────────────┘  └─────────────┘                          │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🔌 API ENDPOINTS - Resumen
+## 🔧 BACKEND (FastAPI)
+
+### Estructura de Carpetas
+
+```
+backend/
+├── app/
+│   ├── main.py                 # Entrypoint, CORS, routers
+│   ├── config.py               # Settings (env vars)
+│   │
+│   ├── api/v1/                 # 🔵 ROUTERS (solo HTTP)
+│   │   ├── products.py         # ✅ Delega a service
+│   │   ├── orders.py           # ⚠️ Tiene lógica interna
+│   │   ├── auth.py             # ⚠️ Tiene lógica interna
+│   │   ├── users.py            # ⚠️ Tiene lógica interna
+│   │   └── stripe.py           # 🔴 Deshabilitado (503)
+│   │
+│   ├── services/               # 🟢 LÓGICA DE NEGOCIO
+│   │   ├── product_service.py  # ✅ 100% coverage
+│   │   ├── order_service.py    # ⚠️ Existe pero no usado
+│   │   ├── auth_service.py     # ⚠️ 71% coverage
+│   │   └── user_service.py     # ⚠️ 67% coverage
+│   │
+│   ├── schemas/                # 🔵 PYDANTIC (validación)
+│   │   ├── product.py
+│   │   ├── order.py
+│   │   └── user.py
+│   │
+│   ├── db/
+│   │   ├── database.py         # AsyncSession, engine
+│   │   └── schemas.py          # ORM Models (SQLAlchemy)
+│   │
+│   ├── middleware/
+│   │   └── auth.py             # Clerk JWKS + JWT legacy
+│   │
+│   └── core/
+│       ├── security.py         # JWT encode/decode, bcrypt
+│       └── exceptions.py       # Custom exceptions
+│
+└── tests/
+    ├── conftest.py             # Fixtures, MockAsyncSession
+    ├── test_api/               # Tests de endpoints
+    └── test_services/          # Tests de lógica
+```
+
+### Patrón de Capas (Obligatorio)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  ROUTER (api/v1/)                                           │
+│  - Parsear request                                          │
+│  - Validar auth (Depends)                                   │
+│  - Llamar service                                           │
+│  - Retornar response                                        │
+│  ❌ NO: queries, cálculos, lógica de negocio               │
+├─────────────────────────────────────────────────────────────┤
+│  SERVICE (services/)                                        │
+│  - Toda la lógica de negocio                               │
+│  - Queries a DB                                             │
+│  - Validaciones de dominio                                  │
+│  - Cálculos                                                 │
+│  ✅ SÍ: todo lo que no sea HTTP                            │
+├─────────────────────────────────────────────────────────────┤
+│  MODEL (db/schemas.py)                                      │
+│  - Definición de tablas                                     │
+│  - Relaciones                                               │
+│  ❌ NO: métodos de negocio                                 │
+├─────────────────────────────────────────────────────────────┤
+│  SCHEMA (schemas/)                                          │
+│  - DTOs (Request/Response)                                  │
+│  - Validación con Pydantic                                  │
+│  ❌ NO: lógica                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📱 FRONTEND (React Native Expo)
+
+### Estructura de Carpetas
+
+```
+frontend/
+├── app/                        # 📱 SCREENS (Expo Router)
+│   ├── _layout.tsx             # Root layout, providers
+│   ├── index.tsx               # Home (lista productos)
+│   ├── cart.tsx                # Carrito
+│   ├── checkout.tsx            # Checkout
+│   ├── (auth)/login.tsx        # Login (Clerk)
+│   └── product/[id].tsx        # Detalle producto
+│
+├── components/                 # 🧩 UI COMPONENTS
+│   ├── ui/                     # Gluestack components
+│   ├── ProductListItem.tsx
+│   ├── Header.tsx
+│   ├── QuickFilters.tsx        # ⚠️ UI lista, API pendiente
+│   ├── FavoritesBar.tsx
+│   └── RecentlyViewedBar.tsx
+│
+├── api/                        # 🌐 HTTP CLIENTS
+│   ├── products.ts             # listProducts, fetchProductById
+│   ├── orders.ts               # createOrder
+│   └── auth.ts                 # fetchWithAuth, login (legacy)
+│
+├── store/                      # 📦 ESTADO GLOBAL (Zustand)
+│   ├── cartStore.ts            # items, addProduct, resetCart
+│   ├── authStore.ts            # user, token
+│   └── recentlyViewedStore.ts  # recently viewed products
+│
+├── types/                      # 📝 TYPESCRIPT
+│   └── product.ts
+│
+└── lib/                        # 🔧 UTILIDADES
+    └── cache.ts                # SecureStore (token cache)
+```
+
+### Flujo de Datos
+
+```
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│   Screen    │───▶│   Store     │───▶│  API Client │
+│  (app/)     │◀───│  (Zustand)  │◀───│   (api/)    │
+└─────────────┘    └─────────────┘    └─────────────┘
+                          │
+                          ▼
+                   ┌─────────────┐
+                   │ AsyncStorage│
+                   │ (pendiente) │
+                   └─────────────┘
+```
+
+---
+
+## 🔌 API ENDPOINTS
 
 ```
 ┌─────────┬──────────────────────────────────────┬──────────────┐
@@ -45,11 +190,12 @@ Referencias rápidas
 ├─────────┼──────────────────────────────────────┼──────────────┤
 │ GET     │ /                                    │ ✅ OK        │
 │ GET     │ /health/jwks                         │ ✅ OK        │
+├─────────┼──────────────────────────────────────┼──────────────┤
 │ GET     │ /products                            │ ✅ OK        │
 │ GET     │ /products/{id}                       │ ✅ OK        │
-│ POST    │ /products                            │ ✅ OK (seller)
-│ PUT     │ /products/{id}                       │ ✅ OK (seller)
-│ DELETE  │ /products/{id}                       │ ✅ OK (seller)
+│ POST    │ /products                            │ ✅ OK (seller)│
+│ PUT     │ /products/{id}                       │ ✅ OK (seller)│
+│ DELETE  │ /products/{id}                       │ ✅ OK (seller)│
 ├─────────┼──────────────────────────────────────┼──────────────┤
 │ POST    │ /auth/register                       │ ✅ OK        │
 │ POST    │ /auth/login                          │ ✅ OK        │
@@ -59,7 +205,7 @@ Referencias rápidas
 ├─────────┼──────────────────────────────────────┼──────────────┤
 │ GET     │ /orders                              │ ✅ OK        │
 │ GET     │ /orders/{id}                         │ ✅ OK        │
-│ POST    │ /orders                              │ ⚠️  INSEGURO*│
+│ POST    │ /orders                              │ ✅ OK ✓      │
 │ PUT     │ /orders/{id}                         │ ✅ OK        │
 ├─────────┼──────────────────────────────────────┼──────────────┤
 │ GET     │ /stripe/keys                         │ 🔴 503       │
@@ -67,88 +213,181 @@ Referencias rápidas
 │ POST    │ /stripe/webhook                      │ 🔴 503       │
 └─────────┴──────────────────────────────────────┴──────────────┘
 
-* POST /orders: No valida precios de DB - CRÍTICO FIX
+✓ POST /orders: Valida precios desde DB (commit a427173)
 ```
 
 ---
 
-## 🔒 Seguridad - Estado Actual
+## 🔒 AUTENTICACIÓN
 
-| Aspecto          | Status           | Notas                            |
-| ---------------- | ---------------- | -------------------------------- |
-| CORS             | ✅ Configurado   | localhost:8081, 8082 permitidos  |
-| HTTPS            | ⚠️ Dev sin SSL | Necesario en producción         |
-| JWT              | ✅ HS256         | Compatible con Node.js legacy    |
-| Passwords        | ✅ bcrypt        | Hash seguro                      |
-| Precios          | 🔴 INSEGURO      | Cliente puede cambiar precios    |
-| Rate Limiting    | ❌ Ninguno       | DDoS vulnerable                  |
-| Input Validation | ⚠️ Básico     | Pydantic Field() sin constraints |
-| SQL Injection    | ✅ SQLAlchemy    | ORM protege queries              |
-| CSRF             | ⚠️ N/A         | Stateless API, considerar tokens |
-| Secrets          | ⚠️ En .env     | Usar AWS Secrets Manager en prod |
+### Flujo Dual (Clerk + JWT Legacy)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    REQUEST CON TOKEN                        │
+└─────────────────────────────────────────────────────────────┘
+                           │
+                           ▼
+            ┌──────────────────────────────┐
+            │  ¿CLERK_PUBLISHABLE_KEY set? │
+            └──────────────────────────────┘
+                    │              │
+                   SÍ              NO
+                    │              │
+                    ▼              │
+         ┌─────────────────┐       │
+         │ Verificar JWKS  │       │
+         │ (RS256)         │       │
+         └────────┬────────┘       │
+                  │                │
+           ┌──────┴──────┐         │
+           │  ¿Válido?   │         │
+           └──────┬──────┘         │
+            SÍ    │    NO          │
+            │     │     │          │
+            │     │     ▼          │
+            │     │  ┌─────────────────────┐
+            │     └─▶│ Fallback JWT HS256  │◀┘
+            │        │ (dev mode only)     │
+            │        └──────────┬──────────┘
+            │                   │
+            ▼                   ▼
+    ┌─────────────────────────────────────┐
+    │          USUARIO AUTENTICADO        │
+    └─────────────────────────────────────┘
+```
+
+### Archivos Clave
+
+- `backend/app/middleware/auth.py` - Lógica de verificación
+- `backend/app/core/security.py` - JWT encode/decode
+- `backend/app/config.py` - JWKS URL generation
+- `frontend/lib/cache.ts` - Token storage (SecureStore)
 
 ---
 
-## 💾 Estado de la Base de Datos
+## 💾 MODELOS DE DATOS
 
-### Tablas Actuales
+### Esquema Actual
 
 ```sql
-products
-├── id (PK, auto)
-├── name
-├── description
-├── image
-├── price
-└── [FALTA: created_at, updated_at, categoria, alérgenos, etc.]
+┌─────────────────────────────────────────────────────────────┐
+│                        PRODUCTS                             │
+├─────────────────────────────────────────────────────────────┤
+│ id          │ INTEGER     │ PK, AUTO                        │
+│ name        │ VARCHAR(255)│ NOT NULL                        │
+│ description │ TEXT        │ NULLABLE                        │
+│ image       │ VARCHAR(255)│ NULLABLE                        │
+│ price       │ FLOAT       │ NOT NULL                        │
+│ ─────────── │ ─────────── │ ─────────────────────────────── │
+│ ⚠️ FALTA:  │             │ allergens, dietary_tags,        │
+│             │             │ ingredients, created_at,        │
+│             │             │ updated_at                      │
+└─────────────────────────────────────────────────────────────┘
 
-users
-├── id (PK, auto)
-├── email (unique)
-├── password
-├── role
-├── name
-├── address
-└── clerk_id (unique, nullable)
-    [FALTA: created_at, updated_at, phone, etc.]
+┌─────────────────────────────────────────────────────────────┐
+│                         USERS                               │
+├─────────────────────────────────────────────────────────────┤
+│ id          │ INTEGER     │ PK, AUTO                        │
+│ email       │ VARCHAR(255)│ UNIQUE, NOT NULL                │
+│ password    │ VARCHAR(255)│ NULLABLE (Clerk users)          │
+│ role        │ VARCHAR(255)│ DEFAULT 'user'                  │
+│ name        │ VARCHAR(255)│ NULLABLE                        │
+│ address     │ TEXT        │ NULLABLE                        │
+│ clerk_id    │ VARCHAR(255)│ UNIQUE, NULLABLE                │
+└─────────────────────────────────────────────────────────────┘
 
-orders
-├── id (PK, auto)
-├── created_at
-├── status
-├── user_id (FK → users)
-└── stripe_payment_intent_id
-    [FALTA: updated_at, total_amount, shipping_address]
+┌─────────────────────────────────────────────────────────────┐
+│                        ORDERS                               │
+├─────────────────────────────────────────────────────────────┤
+│ id                      │ INTEGER     │ PK, AUTO            │
+│ created_at              │ TIMESTAMP   │ DEFAULT NOW()       │
+│ status                  │ VARCHAR(50) │ DEFAULT 'New'       │
+│ user_id                 │ INTEGER     │ FK → users.id       │
+│ stripe_payment_intent_id│ VARCHAR(255)│ NULLABLE            │
+└─────────────────────────────────────────────────────────────┘
 
-order_items
-├── id (PK, auto)
-├── order_id (FK → orders)
-├── product_id (FK → products)
-├── quantity
-└── price
-    [FALTA: updated_at]
+┌─────────────────────────────────────────────────────────────┐
+│                      ORDER_ITEMS                            │
+├─────────────────────────────────────────────────────────────┤
+│ id          │ INTEGER     │ PK, AUTO                        │
+│ order_id    │ INTEGER     │ FK → orders.id                  │
+│ product_id  │ INTEGER     │ FK → products.id                │
+│ quantity    │ INTEGER     │ NOT NULL                        │
+│ price       │ FLOAT       │ NOT NULL (snapshot from DB)     │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-### Índices Necesarios
+### Índices Recomendados
 
 ```sql
--- Búsqueda rápida
+-- Búsquedas frecuentes
 CREATE INDEX idx_products_name ON products(name);
-CREATE INDEX idx_products_category ON products(category);
-
--- Queries de usuario
-CREATE INDEX idx_orders_user_id ON orders(user_id);
 CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_clerk_id ON users(clerk_id);
+CREATE INDEX idx_orders_user_id ON orders(user_id);
+CREATE INDEX idx_order_items_order_id ON order_items(order_id);
 ```
 
 ---
 
-## 🎯 CONCLUSIÓN
+## 🔐 SEGURIDAD
 
-**Arquitectura Sólida pero Incompleta**
+| Aspecto | Estado | Notas |
+|---------|--------|-------|
+| CORS | ✅ | localhost:8081, 8082 |
+| HTTPS | ⚠️ | Solo en producción |
+| JWT | ✅ | HS256 (legacy) + RS256 (Clerk) |
+| Passwords | ✅ | bcrypt hash |
+| Precios | ✅ | Validados desde DB |
+| Rate Limiting | ❌ | Pendiente |
+| SQL Injection | ✅ | SQLAlchemy ORM |
+| Input Validation | ✅ | Pydantic v2 |
 
-✅ Base técnica moderna y escalable
-❌ Funcionalidades core no terminadas (checkout, filtros)
-⚠️ Deuda técnica (testing, documentación, seguridad)
+---
 
-**Next Step:** Implementar items de PLAN_ACCION.md en orden de prioridad
+## 🔴 BRECHAS ARQUITECTÓNICAS
+
+### 1. Lógica en Routers (Crítico)
+
+**Problema:** `orders.py`, `auth.py`, `users.py` tienen queries directas
+
+```python
+# ❌ ACTUAL (orders.py línea 45-60)
+product = await db.get(Product, item_data.productId)
+order_item = OrderItem(...)
+db.add(order_item)
+
+# ✅ CORRECTO
+return await order_service.create_order(db, user_id, order_data)
+```
+
+**Impacto:** Difícil de testear, lógica duplicada, violación de capas
+
+### 2. Product Model Incompleto
+
+**Problema:** Falta `allergens`, `dietary_tags`, `ingredients`
+
+**Impacto:** QuickFilters no puede filtrar en backend
+
+### 3. Sin Persistencia de Carrito
+
+**Problema:** cartStore solo en memoria
+
+**Impacto:** Usuario pierde carrito al cerrar app
+
+---
+
+## 📚 REFERENCIAS
+
+| Archivo | Propósito |
+|---------|-----------|
+| [ESTADO.md](ESTADO.md) | Métricas y tests actuales |
+| [PLAN_DE_ACCION.md](PLAN_DE_ACCION.md) | Sprints y tareas |
+| [.cursorrules](../../../.cursorrules) | Reglas estrictas |
+| [backend/AI-README.md](../../../backend/AI-README.md) | Patrones backend |
+| [frontend/AI-README.md](../../../frontend/AI-README.md) | Patrones frontend |
+
+---
+
+**Próxima actualización:** Cuando haya cambios arquitectónicos
