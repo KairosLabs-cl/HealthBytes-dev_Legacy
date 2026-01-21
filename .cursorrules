@@ -150,6 +150,7 @@ docs/
 - ✅ Usar nombres descriptivos: `YYYY-MM-DD_descripcion.md`
 - ✅ Diagramas técnicos en `diagramas/`
 - ✅ Crear RESUMEN.md para tópicos extensos
+- ✅ En `docs/copilot-logs/status-logs/` solo deben existir 4 archivos canónicos: ARQUITECTURA.md, ESTADO.md, RESUMEN_EJECUTIVO.md y PLAN_DE_ACCION.md; cualquier otro archivo nuevo requiere aprobación previa.
 - ❌ NUNCA documentar en raíz del proyecto (usar `docs/`)
 - ❌ NUNCA borrar documentación existente sin consultar
 - ❌ NUNCA crear docs sin solicitud explícita (excepto cambios arquitectónicos)
