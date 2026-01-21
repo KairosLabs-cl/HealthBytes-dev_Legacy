@@ -574,7 +574,219 @@ Una tarea NO está completa hasta que:
 
 ---
 
-## 📞 CUANDO CONSULTAR
+## � PULL REQUEST RULES (OBLIGATORIO)
+
+### 📌 Convención de Branch Names
+
+**Formato:**
+```
+tipo/descripcion-corta
+```
+
+**Tipos permitidos:**
+
+| Tipo | Descripción | Ejemplo |
+|------|-------------|---------|
+| `feat/` | Nueva feature | `feat/product-filters` |
+| `fix/` | Bug fix | `fix/price-validation` |
+| `docs/` | Documentación | `docs/update-readme` |
+| `refactor/` | Mejora de código | `refactor/cart-store` |
+| `test/` | Agregar tests | `test/add-auth-tests` |
+| `chore/` | Tareas de mantenimiento | `chore/update-dependencies` |
+| `perf/` | Optimización | `perf/optimize-images` |
+
+**Reglas Estrictas:**
+- ✅ Usa minúsculas: `feat/product-filters`
+- ✅ Separa palabras con guión: `feat/add-allergen-filters`
+- ✅ Sé descriptivo pero conciso (máx 50 caracteres)
+- ✅ No uses caracteres especiales: solo `-` y números
+- ❌ NO PERMITIDO: `feature/f1`, `fix/BUG-123`, `Feature/MyNewFeature`
+
+**IA: Si el usuario crea rama con nombre incorrecto, RECHAZA y sugiere el correcto.**
+
+### 📝 Commits con Conventional Commits
+
+**Formato obligatorio:**
+```
+tipo(scope): descripción en presente
+
+[body opcional - máximo 100 caracteres por línea]
+
+[footer opcional - Closes #123]
+```
+
+**Tipos de commit:**
+- `feat:` - Nueva feature
+- `fix:` - Bug fix
+- `docs:` - Cambios de documentación
+- `refactor:` - Refactoring sin cambio de funcionalidad
+- `test:` - Agregar o actualizar tests
+- `chore:` - Cambios no relacionados con código (deps, build, etc)
+- `perf:` - Mejora de performance
+
+**Ejemplos Correctos:**
+```bash
+feat(products): add filtering by allergens and dietary tags
+
+- Added allergen field to Product model
+- Implemented filtering endpoints with query parameters
+- Created QuickFilters UI component
+
+Closes #250
+
+---
+
+fix(orders): validate prices from database, not client
+
+Previously, prices were accepted from client, allowing security breach.
+Now always use price from Product table in DB.
+
+Closes #249
+
+---
+
+docs(readme): update branch naming convention
+
+Added comprehensive guide for branch naming and PR workflow.
+```
+
+**IA: Si el mensaje de commit no sigue este formato, RECHAZA y sugiere el correcto.**
+
+### 🎯 Estructura Obligatoria de Pull Request
+
+El título del PR DEBE coincidir con el primer commit.
+
+**Título (máximo 72 caracteres):**
+```
+feat: Add product filtering by allergens and dietary tags
+fix: Validate prices from database, not client
+docs: Update contributing guidelines
+```
+
+**Descripción (Template):**
+```markdown
+## 📝 Descripción
+[Qué hace este PR y por qué es importante]
+
+## 🎯 Tipo de Cambio
+- [x] Nueva feature
+- [ ] Bug fix
+- [ ] Breaking change
+- [ ] Documentación
+- [ ] Refactoring
+
+## 🔗 Relacionado con
+Closes #123 (reemplaza con número de issue real)
+
+## 📸 Screenshots (si aplica)
+[Agregar screenshots para cambios visuales]
+
+## ✅ Checklist Obligatorio
+- [ ] Tests pasan localmente (`pytest` en backend, `pnpm test` en frontend)
+- [ ] Código sigue convenciones (PEP8 backend, ESLint frontend)
+- [ ] Sin console.logs ni debuggers en código
+- [ ] Sin `any` types en TypeScript
+- [ ] Branch name sigue convención: `tipo/descripcion`
+- [ ] Commits son descriptivos y usan Conventional Commits
+- [ ] Documentación actualizada si es necesario
+- [ ] No hay TODOs pendientes (o documentados en issue)
+
+## 💡 Notas Adicionales
+[Información que el revisor debería saber]
+```
+
+**IA: Si el PR description está vacía o incompleta, RECHAZA y pide que completen el template.**
+
+### 🚫 PR Automáticamente Rechazado Si:
+
+❌ **Problemas de Formato:**
+- Branch name no sigue convención (`tipo/descripcion`)
+- Título no sigue Conventional Commits format
+- Commits sin mensajes descriptivos o con typos mayores
+- Description vacía o sin llenar template
+
+❌ **Problemas de Código:**
+- Tests fallan
+- TypeScript errors (frontend)
+- Código con `any` types
+- `console.log` o `debugger` en código
+- Líneas comentadas en código productivo
+
+❌ **Problemas de Seguridad:**
+- `.env` file commiteado
+- Tokens o credenciales en código
+- Endpoints sin autenticación (excepto `/health`, `/docs`)
+- Passwords hasheados incorrectamente
+
+❌ **Problemas de Estructura:**
+- Archivos en carpetas incorrectas
+- Nueva carpeta raíz sin aprobación
+- Cambio de stack tecnológico sin consultar
+- Breaking changes sin documentación
+
+❌ **Sin Checklist:**
+- No completó el checklist de PR
+- No hizo pruebas manuales
+
+**IA: Tu responsabilidad es RECHAZAR PRs que violen estas reglas ANTES de ser pushéadas.**
+
+### ✅ Flujo de PR Correcto (Paso a Paso)
+
+```bash
+# 1. Actualizar desde master
+git checkout master
+git pull origin master
+
+# 2. Crear rama con nombre correcto
+git checkout -b feat/product-filters    # ✅ CORRECTO
+# git checkout -b Feature/ProductFilters  # ❌ INCORRECTO
+# git checkout -b feature/filters         # ❌ Nombre muy genérico
+
+# 3. Desarrollo y tests
+# ... escribir código ...
+pytest                  # Tests deben pasar
+pnpm run type-check    # TypeScript sin errores
+
+# 4. Commits descriptivos
+git commit -m "feat(products): add filtering by allergens
+
+- Implemented filtering endpoints
+- Added QuickFilters UI component
+- Updated tests
+
+Closes #250"
+
+# 5. Verificar antes de push
+git log --oneline -3        # Ver últimos commits
+git branch --show-current   # Verificar nombre de rama
+git status                  # Archivos limpios
+
+# 6. Push
+git push origin feat/product-filters
+
+# 7. Crear PR en GitHub con template completo
+# - Título: "feat: Add product filtering by allergens and dietary tags"
+# - Description: Llenar completamente el template
+# - Checklist: Marcar todos los items
+```
+
+### IA: Antes de Sugerir un PR
+
+**SIEMPRE verifica:**
+1. ¿El branch name sigue `tipo/descripcion`?
+2. ¿Los commits usan Conventional Commits?
+3. ¿El código compila sin errores?
+4. ¿Los tests pasan?
+5. ¿No hay `console.log` o `debugger` en código?
+6. ¿No hay `.env` commiteado?
+7. ¿No hay tokens/credenciales en código?
+8. ¿Hay `any` types que deben ser explícitos?
+
+**Si algo falla: RECHAZA la sugerencia y pide que lo arreglen ANTES de crear el PR.**
+
+---
+
+## �📞 CUANDO CONSULTAR
 
 ### Siempre Preguntar Si:
 
