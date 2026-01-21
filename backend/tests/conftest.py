@@ -59,6 +59,10 @@ class MockAsyncSession:
         """Add instance to session."""
         self.sync_session.add(instance)
     
+    async def delete(self, instance):
+        """Delete instance from session."""
+        self.sync_session.delete(instance)
+    
     async def commit(self):
         """Commit changes."""
         self.sync_session.commit()
