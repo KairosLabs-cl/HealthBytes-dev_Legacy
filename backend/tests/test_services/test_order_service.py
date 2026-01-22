@@ -248,7 +248,7 @@ async def test_get_order_not_found(db_session, test_user):
     """Test getting non-existent order"""
     mock_db = MockAsyncSession(db_session)
     
-    result = await get_order(mock_db, "nonexistent_order", test_user.id)
+    result = await get_order(mock_db, 9999, test_user.id)
     
     assert result is None
 
