@@ -7,6 +7,7 @@ from sqlalchemy.pool import StaticPool
 from fastapi.testclient import TestClient
 from typing import Generator
 from unittest.mock import AsyncMock, MagicMock
+from contextlib import asynccontextmanager
 
 # Import app components
 from app.main import app
@@ -71,6 +72,17 @@ class MockAsyncSession:
         """Refresh instance."""
         self.sync_session.refresh(instance)
     
+    async def flush(self):
+        """Flush changes."""
+        self.sync_session.flush()
+
+    @asynccontextmanager
+    async def begin_nested(self):
+        """Begin nested transaction."""
+        nested = self.sync_session.begin_nested()
+        yield nested
+        # We don't need to do anything else here as the context manager handles it
+
     async def close(self):
         """Close session."""
         self.sync_session.close()
