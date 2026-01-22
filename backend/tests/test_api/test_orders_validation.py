@@ -12,54 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.schemas import Product, User, Order, OrderItem
 from app.schemas.order import OrderCreate, OrderItemCreate
 from app.api.v1.orders import create_order
-
-# Helper Mock Class (same as in conftest.py)
-class MockAsyncSession:
-    """Mock AsyncSession that wraps sync Session for testing."""
-
-    def __init__(self, sync_session: Session):
-        self.sync_session = sync_session
-
-    async def execute(self, statement):
-        """Execute a statement synchronously and return result."""
-        result = self.sync_session.execute(statement)
-        return result
-
-    def add(self, instance):
-        """Add instance to session."""
-        self.sync_session.add(instance)
-
-    async def delete(self, instance):
-        """Delete instance from session."""
-        self.sync_session.delete(instance)
-
-    async def commit(self):
-        """Commit changes."""
-        self.sync_session.commit()
-
-    async def refresh(self, instance):
-        """Refresh instance."""
-        self.sync_session.refresh(instance)
-
-    async def get(self, entity, ident):
-        """Get by ID."""
-        return self.sync_session.get(entity, ident)
-
-    async def flush(self):
-        self.sync_session.flush()
-
-    async def rollback(self):
-        self.sync_session.rollback()
-
-    async def close(self):
-        """Close session."""
-        self.sync_session.close()
-
-    async def __aenter__(self):
-        return self
-
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        await self.close()
+from tests.conftest import MockAsyncSession
 
 @pytest.fixture
 def async_session(db_session):

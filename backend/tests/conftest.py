@@ -71,6 +71,18 @@ class MockAsyncSession:
         """Refresh instance."""
         self.sync_session.refresh(instance)
     
+    async def get(self, entity, ident):
+        """Get by ID."""
+        return self.sync_session.get(entity, ident)
+    
+    async def flush(self):
+        """Flush session."""
+        self.sync_session.flush()
+    
+    async def rollback(self):
+        """Rollback transaction."""
+        self.sync_session.rollback()
+    
     async def close(self):
         """Close session."""
         self.sync_session.close()

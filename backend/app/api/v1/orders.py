@@ -43,6 +43,14 @@ async def create_order(
         db.add(new_order)
         await db.flush()  # Get order.id without committing
         
+        # Validate that order has at least one item
+        if not order_data.items:
+            await db.rollback()
+            raise HTTPException(
+                status_code=400,
+                detail="Order must have at least one item"
+            )
+        
         # Optimization: Fetch all products in one query to avoid N+1 problem
         product_ids = [item.productId for item in order_data.items]
 
