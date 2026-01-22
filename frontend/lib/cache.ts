@@ -6,24 +6,37 @@ const createTokenCache = (): TokenCache => {
   return {
     getToken: async (key: string) => {
       try {
+        console.log(`[CACHE 🔍] getToken() - Obteniendo: "${key}"`);
         const item = await SecureStore.getItemAsync(key);
         if (item) {
-          console.log(`${key} was used 🔐 \n`);
+          console.log(`[CACHE ✅] getToken() - Encontrado: "${key}" (${item.length} chars)`);
         } else {
-          console.log('No values stored under key: ' + key);
+          console.log(`[CACHE ❌] getToken() - No encontrado: "${key}"`);
         }
         return item;
       } catch (error) {
-        console.error('SecureStore get item error: ', error);
+        console.error('[CACHE ❌] getToken() error:', error);
         await SecureStore.deleteItemAsync(key);
         return null;
       }
     },
-    saveToken: (key: string, value: string) => {
-      return SecureStore.setItemAsync(key, value);
+    saveToken: async (key: string, value: string) => {
+      try {
+        console.log(`[CACHE 💾] saveToken() - Guardando: "${key}" (${value?.length} chars)`);
+        const result = await SecureStore.setItemAsync(key, value);
+        console.log(`[CACHE ✅] saveToken() - Guardado exitosamente: "${key}"`);
+        return result;
+      } catch (error) {
+        console.error('[CACHE ❌] saveToken() error:', error);
+        throw error;
+      }
     },
   };
 };
 
 // SecureStore is not supported on the web
 export const tokenCache = Platform.OS !== 'web' ? createTokenCache() : undefined;
+
+// Debug: Verificar si tokenCache está configurado
+console.log(`[CACHE] Platform: ${Platform.OS}, tokenCache enabled: ${!!tokenCache}`);
+
