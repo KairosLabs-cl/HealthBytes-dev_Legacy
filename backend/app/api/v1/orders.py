@@ -7,6 +7,7 @@ from app.db.database import get_db
 from app.db.schemas import Order, OrderItem, Product, User
 from app.schemas.order import OrderCreate, OrderResponse, OrderUpdate, OrderItemResponse
 from app.middleware.auth import get_current_user
+from app.services import order_service
 
 router = APIRouter()
 
@@ -31,62 +32,21 @@ async def create_order(
                 detail={"message": "Invalid order data"}
             )
         
-        # Get stripePaymentIntentId from order dict if provided
-        stripe_payment_intent_id = order_data.order.get("stripePaymentIntentId")
-        
-        # Create order
-        new_order = Order(
-            user_id=user_id,
-            stripe_payment_intent_id=stripe_payment_intent_id
-        )
-        
-        db.add(new_order)
-        await db.flush()  # Get order.id without committing
-        
-        # Validate products exist and get their actual price from database
-        order_items = []
-
-        # Optimize: Fetch all products in a single query
-        product_ids = [item.productId for item in order_data.items]
-        # Remove duplicates if any to avoid fetching same product twice
-        product_ids = list(set(product_ids))
-
-        if product_ids:
-            result = await db.execute(select(Product).where(Product.id.in_(product_ids)))
-            products = result.scalars().all()
-            products_map = {p.id: p for p in products}
-        else:
-            products_map = {}
-
-        for item_data in order_data.items:
-            # Get product from map
-            product = products_map.get(item_data.productId)
-            
-            if not product:
-                await db.rollback()
-                raise HTTPException(
-                    status_code=404,
-                    detail=f"Producto con ID {item_data.productId} no encontrado"
-                )
-            
-            # Use the REAL price from database, never trust client price
-            order_item = OrderItem(
-                order_id=new_order.id,
-                product_id=item_data.productId,
-                quantity=item_data.quantity,
-                price=product.price  # Use actual price from DB
+        try:
+            new_order = await order_service.create_order(
+                db=db,
+                user_id=user_id,
+                order_in=order_data
             )
-            db.add(order_item)
-            order_items.append(order_item)
-        
-        await db.commit()
-        await db.refresh(new_order)
-        
-        # Refresh all items to get their IDs
-        for item in order_items:
-            await db.refresh(item)
+        except ValueError as e:
+            await db.rollback()
+            raise HTTPException(
+                status_code=404 if "not found" in str(e).lower() else 400,
+                detail=str(e)
+            )
         
         # Build response
+        # Using selectinload in service means items are already populated
         items_response = [
             OrderItemResponse(
                 id=item.id,
@@ -95,7 +55,7 @@ async def create_order(
                 quantity=item.quantity,
                 price=item.price
             )
-            for item in order_items
+            for item in new_order.items
         ]
         
         return OrderResponse(
