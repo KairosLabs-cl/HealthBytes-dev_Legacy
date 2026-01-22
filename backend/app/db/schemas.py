@@ -38,7 +38,6 @@ class Order(Base):
     total = Column(Float, nullable=False, default=0.0)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     stripe_payment_intent_id = Column(String(255), nullable=True)
-    total = Column(Float, nullable=False, default=0.0)
 
     items = relationship("OrderItem", back_populates="order")
 
