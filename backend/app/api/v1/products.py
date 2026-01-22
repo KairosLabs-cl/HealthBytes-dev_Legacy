@@ -1,11 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
+import logging
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
 from app.db.database import get_db
 from app.schemas.product import ProductCreate, ProductUpdate, ProductResponse
-from app.middleware.auth import verify_seller, get_current_user
+from app.middleware.auth import verify_seller
 from app.services import product_service
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -20,30 +23,8 @@ async def list_products(db: AsyncSession = Depends(get_db)):
     try:
         return await product_service.list_products(db)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.get("/{id}", response_model=ProductResponse)
-async def get_product_by_id(id: int, db: AsyncSession = Depends(get_db)):
-    """
-    GET /products/:id
-    Get product by ID
-    Replica of getProductById from Node.js
-    """
-    try:
-        product = await product_service.get_product(db, id)
-        
-        if not product:
-            raise HTTPException(
-                status_code=404, 
-                detail={"message": "Product not found"}
-            )
-        
-        return product
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error listing products: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 @router.get("/batch", response_model=List[ProductResponse])
@@ -55,25 +36,47 @@ async def get_products_by_ids(ids: str, db: AsyncSession = Depends(get_db)):
     """
     try:
         # Parse comma-separated IDs, # Convierte "1,2,3" en [1, 2, 3]
-        id_list = [int(id.strip()) for id in ids.split(',') if id.strip()]
-        
+        id_list = [int(id.strip()) for id in ids.split(",") if id.strip()]
+
         if not id_list:
             return []
-          # Busca productos con esos IDs
-        result = await db.execute(select(Product).where(Product.id.in_(id_list)))
-        products = result.scalars().all()
-        return products
+
+        return await product_service.get_products_by_ids(db, id_list)
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid ID format")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error getting products batch: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+@router.get("/{id}", response_model=ProductResponse)
+async def get_product_by_id(id: int, db: AsyncSession = Depends(get_db)):
+    """
+    GET /products/:id
+    Get product by ID
+    Replica of getProductById from Node.js
+    """
+    try:
+        product = await product_service.get_product(db, id)
+
+        if not product:
+            raise HTTPException(
+                status_code=404, detail={"message": "Product not found"}
+            )
+
+        return product
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting product {id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 @router.post("/", response_model=ProductResponse, status_code=201)
 async def create_product(
     product_data: ProductCreate,
     db: AsyncSession = Depends(get_db),
-    current_user = Depends(verify_seller)
+    current_user=Depends(verify_seller),
 ):
     """
     POST /products
@@ -83,7 +86,8 @@ async def create_product(
     try:
         return await product_service.create_product(db, product_data)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error creating product: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 @router.put("/{id}", response_model=ProductResponse)
@@ -91,7 +95,7 @@ async def update_product(
     id: int,
     product_data: ProductUpdate,
     db: AsyncSession = Depends(get_db),
-    current_user = Depends(verify_seller)
+    current_user=Depends(verify_seller),
 ):
     """
     PUT /products/:id
@@ -100,25 +104,23 @@ async def update_product(
     """
     try:
         product = await product_service.update_product(db, id, product_data)
-        
+
         if not product:
             raise HTTPException(
-                status_code=404, 
-                detail={"message": "Product was not found"}
+                status_code=404, detail={"message": "Product was not found"}
             )
-        
+
         return product
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error updating product {id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 @router.delete("/{id}", status_code=204)
 async def delete_product(
-    id: int,
-    db: AsyncSession = Depends(get_db),
-    current_user = Depends(verify_seller)
+    id: int, db: AsyncSession = Depends(get_db), current_user=Depends(verify_seller)
 ):
     """
     DELETE /products/:id
@@ -127,15 +129,15 @@ async def delete_product(
     """
     try:
         deleted = await product_service.delete_product(db, id)
-        
+
         if not deleted:
             raise HTTPException(
-                status_code=404, 
-                detail={"message": "Product was not found"}
+                status_code=404, detail={"message": "Product was not found"}
             )
-        
+
         return None
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error deleting product {id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
