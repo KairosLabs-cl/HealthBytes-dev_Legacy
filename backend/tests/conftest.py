@@ -7,6 +7,7 @@ from sqlalchemy.pool import StaticPool
 from fastapi.testclient import TestClient
 from typing import Generator
 from unittest.mock import AsyncMock, MagicMock
+from contextlib import asynccontextmanager
 
 # Import app components
 from app.main import app
