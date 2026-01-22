@@ -17,14 +17,17 @@ router = APIRouter()
 
 @router.get("/", response_model=List[UserResponse])
 async def list_users(
-    db: AsyncSession = Depends(get_db), current_user: User = Depends(verify_admin)
+    skip: int = 0,
+    limit: int = 100,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(verify_admin),
 ):
     """
     GET /users
     List all users (Admin only)
     """
     try:
-        result = await db.execute(select(User))
+        result = await db.execute(select(User).offset(skip).limit(limit))
         users = result.scalars().all()
 
         return [
