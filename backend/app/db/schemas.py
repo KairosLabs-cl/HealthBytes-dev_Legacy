@@ -11,6 +11,7 @@ class Product(Base):
     description = Column(Text, nullable=True)
     image = Column(String(255), nullable=True)
     price = Column(Float, nullable=False)
+    stock = Column(Integer, nullable=False, default=0)
 
 
 class User(Base):
@@ -33,6 +34,7 @@ class Order(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     created_at = Column(TIMESTAMP, nullable=False, server_default=func.now())
     status = Column(String(50), nullable=False, default="New")
+    total = Column(Float, nullable=False, default=0.0)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     stripe_payment_intent_id = Column(String(255), nullable=True)
 
