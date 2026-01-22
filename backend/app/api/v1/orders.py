@@ -45,9 +45,22 @@ async def create_order(
         
         # Validate products exist and get their actual price from database
         order_items = []
+
+        # Optimize: Fetch all products in a single query
+        product_ids = [item.productId for item in order_data.items]
+        # Remove duplicates if any to avoid fetching same product twice
+        product_ids = list(set(product_ids))
+
+        if product_ids:
+            result = await db.execute(select(Product).where(Product.id.in_(product_ids)))
+            products = result.scalars().all()
+            products_map = {p.id: p for p in products}
+        else:
+            products_map = {}
+
         for item_data in order_data.items:
-            # Get product from database to validate it exists and get real price
-            product = await db.get(Product, item_data.productId)
+            # Get product from map
+            product = products_map.get(item_data.productId)
             
             if not product:
                 await db.rollback()
