@@ -80,8 +80,12 @@ class MockAsyncSession:
     async def begin_nested(self):
         """Begin nested transaction."""
         nested = self.sync_session.begin_nested()
-        yield nested
-        # We don't need to do anything else here as the context manager handles it
+        try:
+            yield nested
+            nested.commit()
+        except Exception:
+            nested.rollback()
+            raise
 
     async def close(self):
         """Close session."""
