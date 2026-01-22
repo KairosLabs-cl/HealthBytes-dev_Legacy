@@ -5,13 +5,13 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from typing import List, Optional
 
-from app.db.schemas import Order, OrderItem, Product, User
+from app.db.schemas import Order, OrderItem, Product
 from app.schemas.order import OrderCreate
 
 
 async def create_order(
     db: AsyncSession,
-    user_id: str,
+    user_id: int,
     order_in: OrderCreate
 ) -> Order:
     """
@@ -34,72 +34,91 @@ async def create_order(
     Raises:
         ValueError: If validation fails (product not found, insufficient stock, etc.)
     """
-    # Validate all products exist and calculate total
+
+    # 1. Collect all product IDs
+    product_ids = {item.productId for item in order_in.items}
+
+    if not product_ids:
+        raise ValueError("Order must have at least one item")
+
+    # 2. Fetch all products in one query
+    result = await db.execute(
+        select(Product).where(Product.id.in_(product_ids))
+    )
+    products = result.scalars().all()
+    products_map = {p.id: p for p in products}
+
+    # 3. Validate items and calculate total
     total = 0.0
     validated_items = []
     
+    # Check if all requested products exist
+    found_ids = set(products_map.keys())
+    missing_ids = product_ids - found_ids
+    if missing_ids:
+        raise ValueError(f"Producto(s) con ID {list(missing_ids)} no encontrado(s)")
+        
+    # Aggregate quantities per product to check stock properly
+    requested_quantities = {}
     for item in order_in.items:
-        # Get product from database
-        result = await db.execute(
-            select(Product).where(Product.id == item.product_id)
-        )
-        product = result.scalar_one_or_none()
+        requested_quantities[item.productId] = requested_quantities.get(item.productId, 0) + item.quantity
         
-        if not product:
-            raise ValueError(f"Product {item.product_id} not found")
-        
-        # Validate stock
-        if product.stock < item.quantity:
+    for pid, qty in requested_quantities.items():
+        product = products_map[pid]
+        if product.stock < qty:
             raise ValueError(
                 f"Insufficient stock for {product.name}. "
-                f"Available: {product.stock}, requested: {item.quantity}"
+                f"Available: {product.stock}, requested: {qty}"
             )
         
-        # Calculate price from database (NEVER trust client)
+        # Reduce stock (in memory, will be flushed on commit)
+        product.stock -= qty
+        db.add(product)
+
+    # 4. Calculate total and prepare items
+    for item in order_in.items:
+        product = products_map[item.productId]
         item_total = product.price * item.quantity
         total += item_total
         
         validated_items.append({
-            'product_id': item.product_id,
+            'product_id': item.productId,
             'quantity': item.quantity,
-            'price': product.price  # Database price
+            'price': product.price
         })
     
-    # Create order in transaction
-    async with db.begin_nested():
-        # Create order
-        db_order = Order(
-            user_id=user_id,
-            total=total,
-            status='pending'
+    # 5. Create order and items
+    stripe_payment_intent_id = order_in.order.get("stripePaymentIntentId")
+
+    new_order = Order(
+        user_id=user_id,
+        total=total,
+        stripe_payment_intent_id=stripe_payment_intent_id
+    )
+
+    db.add(new_order)
+    await db.flush() # Get ID
+
+    for item_data in validated_items:
+        order_item = OrderItem(
+            order_id=new_order.id,
+            **item_data
         )
-        db.add(db_order)
-        await db.flush()  # Get order ID
+        db.add(order_item)
         
-        # Create order items
-        for item_data in validated_items:
-            order_item = OrderItem(
-                order_id=db_order.id,
-                **item_data
-            )
-            db.add(order_item)
-        
-        # Reduce stock
-        for item in order_in.items:
-            result = await db.execute(
-                select(Product).where(Product.id == item.product_id)
-            )
-            product = result.scalar_one_or_none()
-            if product:
-                product.stock -= item.quantity
-                db.add(product)
+    # No manual commit here, we rely on caller or middleware?
+    # Usually service methods might flush but caller commits.
+    # But for a transaction script like this, it's safer to commit if it encapsulates the unit of work.
+    # The API router called `await db.commit()`.
+    # I will commit here to ensure transaction integrity within the service method.
     
     await db.commit()
+    await db.refresh(new_order)
     
-    # Reload order with items
+    # Refresh items efficienty
     result = await db.execute(
         select(Order)
-        .where(Order.id == db_order.id)
+        .where(Order.id == new_order.id)
         .options(selectinload(Order.items))
     )
     return result.scalar_one()
@@ -107,21 +126,12 @@ async def create_order(
 
 async def get_user_orders(
     db: AsyncSession,
-    user_id: str,
+    user_id: int,
     skip: int = 0,
     limit: int = 10
 ) -> List[Order]:
     """
     Get orders for a specific user with pagination.
-    
-    Args:
-        db: Database session
-        user_id: User ID
-        skip: Number of records to skip
-        limit: Maximum number of records to return
-        
-    Returns:
-        List of Order objects with items
     """
     result = await db.execute(
         select(Order)
@@ -136,19 +146,11 @@ async def get_user_orders(
 
 async def get_order(
     db: AsyncSession,
-    order_id: str,
-    user_id: str
+    order_id: int,
+    user_id: int
 ) -> Optional[Order]:
     """
     Get order and verify ownership.
-    
-    Args:
-        db: Database session
-        order_id: Order ID
-        user_id: User ID to verify ownership
-        
-    Returns:
-        Order object or None if not found or not owned by user
     """
     result = await db.execute(
         select(Order)
@@ -160,27 +162,11 @@ async def get_order(
 
 async def update_order_status(
     db: AsyncSession,
-    order_id: str,
+    order_id: int,
     status: str
 ) -> Optional[Order]:
     """
     Update order status.
-    
-    Valid status transitions:
-    - pending → processing
-    - processing → shipped
-    - processing → cancelled
-    
-    Args:
-        db: Database session
-        order_id: Order ID
-        status: New status
-        
-    Returns:
-        Updated Order object or None if not found
-        
-    Raises:
-        ValueError: If status transition is invalid
     """
     valid_statuses = ['pending', 'processing', 'shipped', 'cancelled']
     if status not in valid_statuses:

@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, TIMESTAMP, func
+from sqlalchemy.orm import relationship
 from app.db.database import Base
 
 
@@ -11,6 +12,7 @@ class Product(Base):
     description = Column(Text, nullable=True)
     image = Column(String(255), nullable=True)
     price = Column(Float, nullable=False)
+    stock = Column(Integer, nullable=False, default=0)
 
 
 class User(Base):
@@ -33,8 +35,12 @@ class Order(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     created_at = Column(TIMESTAMP, nullable=False, server_default=func.now())
     status = Column(String(50), nullable=False, default="New")
+    total = Column(Float, nullable=False, default=0.0)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     stripe_payment_intent_id = Column(String(255), nullable=True)
+    total = Column(Float, nullable=False, default=0.0)
+
+    items = relationship("OrderItem", back_populates="order")
 
 
 class OrderItem(Base):
@@ -46,3 +52,5 @@ class OrderItem(Base):
     product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
     quantity = Column(Integer, nullable=False)
     price = Column(Float, nullable=False)
+
+    order = relationship("Order", back_populates="items")

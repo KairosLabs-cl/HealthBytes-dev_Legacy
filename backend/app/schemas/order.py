@@ -1,11 +1,13 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 from datetime import datetime
 
 
 class OrderItemCreate(BaseModel):
     """Schema for order item creation - Replica of insertOrderItemSchema"""
-    productId: int
+    model_config = ConfigDict(populate_by_name=True)
+
+    product_id: int = Field(..., alias="productId")
     quantity: int = Field(..., ge=1)
     price: float = Field(..., gt=0)
 
