@@ -43,11 +43,21 @@ async def create_order(
         db.add(new_order)
         await db.flush()  # Get order.id without committing
         
-        # Validate products exist and get their actual price from database
+        # Optimization: Fetch all products in one query to avoid N+1 problem
+        product_ids = [item.productId for item in order_data.items]
+
+        # Deduplicate IDs to avoid fetching same product multiple times if user added it twice
+        unique_product_ids = list(set(product_ids))
+
+        result = await db.execute(select(Product).where(Product.id.in_(unique_product_ids)))
+        products = result.scalars().all()
+
+        # Create a map for O(1) lookup
+        product_map = {p.id: p for p in products}
+
         order_items = []
         for item_data in order_data.items:
-            # Get product from database to validate it exists and get real price
-            product = await db.get(Product, item_data.productId)
+            product = product_map.get(item_data.productId)
             
             if not product:
                 await db.rollback()
