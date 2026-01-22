@@ -14,6 +14,8 @@ router = APIRouter()
 
 @router.get("/", response_model=List[UserResponse])
 async def list_users(
+    skip: int = 0,
+    limit: int = 100,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(verify_admin)
 ):
@@ -22,9 +24,9 @@ async def list_users(
     List all users (Admin only)
     """
     try:
-        result = await db.execute(select(User))
+        result = await db.execute(select(User).offset(skip).limit(limit))
         users = result.scalars().all()
-        
+
         return [
             UserResponse(
                 id=user.id,
