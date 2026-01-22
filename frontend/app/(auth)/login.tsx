@@ -58,7 +58,34 @@ export default function LoginScreen() {
       if (createdSessionId && setActive) {
         console.log(`🔄 Setting active session...`);
         await setActive({ session: createdSessionId });
-        console.log(`✅ Session is now active. Redirecting to home...`);
+        console.log(`✅ Session is now active.`);
+        
+        // Esperar a que el token esté disponible (mitigar timing issue)
+        console.log(`⏳ Waiting for token to be available in cache...`);
+        let attempts = 0;
+        const maxAttempts = 10;
+        
+        while (attempts < maxAttempts) {
+          try {
+            // Intentar obtener el token para verificar que está disponible
+            const testToken = await getToken?.();
+            if (testToken) {
+              console.log(`✅ Token is now available in cache. Redirecting to home...`);
+              router.replace("/");
+              return;
+            }
+            // Si no está disponible, esperar y reintentar
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+          } catch (e) {
+            console.warn(`⚠️ Attempt ${attempts + 1}/${maxAttempts}: Token not yet available`);
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+          }
+        }
+        
+        // Si después de varios intentos el token no está disponible, redirigir de todas formas
+        console.warn(`⚠️ Token not available after ${maxAttempts} attempts, redirecting anyway...`);
         router.replace("/");
       } else {
         console.error(`❌ OAuth failed: Missing createdSessionId or setActive`);
