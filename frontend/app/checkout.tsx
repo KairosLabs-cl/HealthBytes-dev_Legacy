@@ -62,10 +62,27 @@ export default function CheckoutScreen() {
 
         // Verificar que el token esté disponible ANTES de procesar pago
         console.log("🔄 handlePay: Solicitando token...");
-        const token = await getToken();
+        let token = await getToken();
+        
+        // Si el token no está disponible, intentar esperar un poco (timing issue mitigation)
+        if (!token) {
+            console.warn("⚠️ handlePay: Token no disponible en primer intento, reintentar...");
+            
+            for (let attempt = 1; attempt <= 3; attempt++) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                token = await getToken();
+                
+                if (token) {
+                    console.log(`✅ handlePay: Token disponible en intento ${attempt + 1}`);
+                    break;
+                } else {
+                    console.warn(`⚠️ handlePay: Intento ${attempt + 1}/3 - Token aún no disponible`);
+                }
+            }
+        }
         
         if (!token) {
-            console.error("❌ handlePay: Token no disponible - getToken() retornó null");
+            console.error("❌ handlePay: Token no disponible después de reintentos");
             console.error("❌ Este es el problema: El usuario está autenticado en Clerk pero el token no está disponible en SecureStore");
             alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
             router.push("/(auth)/login");
