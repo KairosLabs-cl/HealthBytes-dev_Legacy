@@ -48,17 +48,36 @@ export default function CheckoutScreen() {
     });
 
     const handlePay = async () => {
+        console.log("🔵 handlePay: Iniciando validación...");
+        
         /* Validar Autenticación: Impedir checkout si no hay sesión */
         if (!isSignedIn) {
+            console.error("❌ handlePay: Usuario no autenticado (isSignedIn=false)");
             alert("Necesitas haber iniciado una sesión para realizar una compra.");
             router.push("/(auth)/login");
             return;
         }
 
+        console.log("✅ handlePay: Usuario autenticado (isSignedIn=true)");
+
+        // Verificar que el token esté disponible ANTES de procesar pago
+        console.log("🔄 handlePay: Solicitando token...");
+        const token = await getToken();
+        
+        if (!token) {
+            console.error("❌ handlePay: Token no disponible - getToken() retornó null");
+            console.error("❌ Este es el problema: El usuario está autenticado en Clerk pero el token no está disponible en SecureStore");
+            alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
+            router.push("/(auth)/login");
+            return;
+        }
+
+        console.log("✅ handlePay: Token disponible. Iniciando procesamiento de pago...");
         setIsProcessing(true);
 
         /* Simular Pasarela de Pago (Stripe/PayPal) - Delay de 3s */
         setTimeout(() => {
+            console.log("💳 handlePay: Creando orden...");
             createOrderMutation.mutate();
         }, 3000);
     };
