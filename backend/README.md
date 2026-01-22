@@ -1,10 +1,11 @@
 # ⚙️ Backend - HealthBytes
 
-FastAPI + Python + SQLAlchemy REST API para HealthBytes.
+FastAPI + Python 3.14 + SQLAlchemy REST API para HealthBytes.
 
 ## 📋 Tabla de Contenidos
 
 - [Quick Start](#-quick-start)
+- [Requisitos](#-requisitos)
 - [Estructura del Proyecto](#-estructura-del-proyecto)
 - [Stack Tecnológico](#-stack-tecnológico)
 - [Endpoints](#-endpoints)
@@ -15,6 +16,15 @@ FastAPI + Python + SQLAlchemy REST API para HealthBytes.
 - [Troubleshooting](#-troubleshooting)
 
 ---
+
+## ✅ Requisitos
+
+- **Python 3.14+** (recomendado: 3.14.2 o superior)
+- pip 24+
+- PostgreSQL 14+ (para producción)
+- SQLite 3 (para desarrollo/testing)
+
+**Nota**: El proyecto usa Python 3.14 para garantizar compatibilidad con dependencias modernas.
 
 ## 🚀 Quick Start
 
@@ -35,19 +45,19 @@ chmod +x start.sh
 ./start.sh
 ```
 
-### Manual Setup
+### Manual Setup con Python 3.14
 
 ```bash
 cd backend
 
-# Crear entorno virtual
-python -m venv venv
+# Crear entorno virtual con Python 3.14
+python3.14 -m venv .venv314
 
 # Activar (Windows)
-.\venv\Scripts\Activate.ps1
+.\.venv314\Scripts\Activate.ps1
 
 # Activar (Linux/Mac)
-source venv/bin/activate
+source .venv314/bin/activate
 
 # Instalar dependencias
 pip install -r requirements.txt
