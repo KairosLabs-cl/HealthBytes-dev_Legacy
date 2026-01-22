@@ -70,8 +70,11 @@ async def create_order(
         await db.refresh(new_order)
         
         # Refresh all items to get their IDs
-        for item in order_items:
-            await db.refresh(item)
+        # Optimized: Fetch all items for this order in a single query instead of refreshing individually
+        result = await db.execute(
+            select(OrderItem).where(OrderItem.order_id == new_order.id)
+        )
+        order_items_fetched = result.scalars().all()
         
         # Build response
         items_response = [
@@ -82,7 +85,7 @@ async def create_order(
                 quantity=item.quantity,
                 price=item.price
             )
-            for item in order_items
+            for item in order_items_fetched
         ]
         
         return OrderResponse(
