@@ -1,14 +1,10 @@
 import pytest
 from unittest.mock import patch, AsyncMock
-from fastapi import HTTPException
 
 
 @pytest.mark.unit
 def test_product_error_leakage(client):
-    """
-    Test that internal error details are leaked (checking vulnerability)
-    or NOT leaked (verifying fix).
-    """
+    """Test that internal error details are not leaked in API error responses."""
     with patch("app.services.product_service.list_products") as mock_list:
         sensitive_error = (
             "Database Connection Failed: postgres://user:password@localhost:5432/db"

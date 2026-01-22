@@ -1,14 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 import logging
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 from typing import List
 
 from app.db.database import get_db
 from app.schemas.product import ProductCreate, ProductUpdate, ProductResponse
 from app.middleware.auth import verify_seller
 from app.services import product_service
-from app.db.schemas import Product
 
 logger = logging.getLogger(__name__)
 
@@ -42,10 +40,8 @@ async def get_products_by_ids(ids: str, db: AsyncSession = Depends(get_db)):
 
         if not id_list:
             return []
-        # Busca productos con esos IDs
-        result = await db.execute(select(Product).where(Product.id.in_(id_list)))
-        products = result.scalars().all()
-        return products
+
+        return await product_service.get_products_by_ids(db, id_list)
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid ID format")
     except Exception as e:
