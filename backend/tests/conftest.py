@@ -7,6 +7,7 @@ from sqlalchemy.pool import StaticPool
 from fastapi.testclient import TestClient
 from typing import Generator
 from unittest.mock import AsyncMock, MagicMock
+from contextlib import asynccontextmanager
 
 # Import app components
 from app.main import app
@@ -128,6 +129,42 @@ def sample_user_data():
         "password": "testpassword123",
         "name": "Test User"
     }
+
+
+def create_test_user(
+    db_session: Session,
+    email: str = "test@example.com",
+    password: str = "hashed_test_password",
+    role: str = "customer",
+    **kwargs
+) -> object:
+    """
+    Helper to create test user with correct field names.
+    
+    Args:
+        db_session: Database session
+        email: User email
+        password: Password (will be hashed)
+        role: User role (customer, seller, admin)
+        **kwargs: Additional fields (name, clerk_id, address)
+    
+    Returns:
+        Created User instance
+    """
+    from app.db.schemas import User
+    
+    user = User(
+        email=email,
+        password=password,  # Field is 'password', not 'password_hash'
+        role=role,
+        name=kwargs.get("name", "Test User"),
+        address=kwargs.get("address"),
+        clerk_id=kwargs.get("clerk_id")
+    )
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+    return user
 
 
 @pytest.fixture

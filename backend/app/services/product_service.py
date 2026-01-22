@@ -24,6 +24,10 @@ async def list_products(
     Returns:
         List of Product objects
     """
+    # Ensure skip and limit are Python integers to avoid PostgreSQL cast issues
+    skip = int(skip) if skip is not None else 0
+    limit = int(limit) if limit is not None else 100
+    
     result = await db.execute(
         select(Product)
         .offset(skip)
@@ -50,6 +54,26 @@ async def get_product(
         select(Product).where(Product.id == product_id)
     )
     return result.scalar_one_or_none()
+
+
+async def get_products_by_ids(
+    db: AsyncSession,
+    product_ids: List[int]
+) -> List[Product]:
+    """
+    Get multiple products by IDs.
+
+    Args:
+        db: Database session
+        product_ids: List of product IDs
+
+    Returns:
+        List of Product objects
+    """
+    result = await db.execute(
+        select(Product).where(Product.id.in_(product_ids))
+    )
+    return result.scalars().all()
 
 
 async def create_product(
