@@ -22,10 +22,24 @@ export async function createOrder(items: any[], getToken: () => Promise<string |
   const data = await res.json();
 
   if (!res.ok) {
-    console.log("❌ Error del servidor:", data);
-    console.log("❌ Status:", res.status);
+    console.log("❌ Error del servidor - Status:", res.status);
+    console.log("❌ Error del servidor - Response:", JSON.stringify(data, null, 2));
+    
     /* Lanzar error específico del backend para mostrar en la UI */
-    const errorMsg = data.detail || data.message || data.error || `Error ${res.status}: Debe iniciar sesión`;
+    let errorMsg = `Error ${res.status}`;
+    
+    // Intentar extraer mensaje de error del backend
+    if (typeof data.detail === 'string') {
+      errorMsg = data.detail;
+    } else if (typeof data.detail === 'object' && data.detail?.message) {
+      errorMsg = data.detail.message;
+    } else if (data.message) {
+      errorMsg = data.message;
+    } else if (data.error) {
+      errorMsg = data.error;
+    }
+    
+    console.error("❌ Error finalizado:", errorMsg);
     throw new Error(errorMsg);
   }
 

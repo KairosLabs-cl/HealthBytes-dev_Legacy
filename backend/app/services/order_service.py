@@ -36,7 +36,7 @@ async def create_order(
     """
 
     # 1. Collect all product IDs
-    product_ids = {item.productId for item in order_in.items}
+    product_ids = {item.product_id for item in order_in.items}
 
     if not product_ids:
         raise ValueError("Order must have at least one item")
@@ -61,7 +61,7 @@ async def create_order(
     # Aggregate quantities per product to check stock properly
     requested_quantities = {}
     for item in order_in.items:
-        requested_quantities[item.productId] = requested_quantities.get(item.productId, 0) + item.quantity
+        requested_quantities[item.product_id] = requested_quantities.get(item.product_id, 0) + item.quantity
         
     for pid, qty in requested_quantities.items():
         product = products_map[pid]
@@ -77,12 +77,12 @@ async def create_order(
 
     # 4. Calculate total and prepare items
     for item in order_in.items:
-        product = products_map[item.productId]
+        product = products_map[item.product_id]
         item_total = product.price * item.quantity
         total += item_total
         
         validated_items.append({
-            'product_id': item.productId,
+            'product_id': item.product_id,
             'quantity': item.quantity,
             'price': product.price
         })

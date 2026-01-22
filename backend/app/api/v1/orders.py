@@ -72,9 +72,11 @@ async def create_order(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error creating order: {str(e)}")
+        logger.error(f"Error creating order: {type(e).__name__}: {str(e)}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
         await db.rollback()
-        raise HTTPException(status_code=400, detail={"message": "Invalid order data"})
+        raise HTTPException(status_code=400, detail={"message": f"Error: {str(e)[:200]}"})
 
 
 @router.get("/", response_model=List[OrderResponse])
