@@ -34,39 +34,45 @@ async def create_order(
     Raises:
         ValueError: If validation fails (product not found, insufficient stock, etc.)
     """
-    # Validate all products exist and calculate total
-    total = 0.0
-    validated_items = []
-    
-    for item in order_in.items:
-        # Get product from database
-        result = await db.execute(
-            select(Product).where(Product.id == item.product_id)
-        )
-        product = result.scalar_one_or_none()
-        
-        if not product:
-            raise ValueError(f"Product {item.product_id} not found")
-        
-        # Validate stock
-        if product.stock < item.quantity:
-            raise ValueError(
-                f"Insufficient stock for {product.name}. "
-                f"Available: {product.stock}, requested: {item.quantity}"
-            )
-        
-        # Calculate price from database (NEVER trust client)
-        item_total = product.price * item.quantity
-        total += item_total
-        
-        validated_items.append({
-            'product_id': item.product_id,
-            'quantity': item.quantity,
-            'price': product.price  # Database price
-        })
-    
     # Create order in transaction
     async with db.begin_nested():
+        # Validate all products exist and calculate total
+        total = 0.0
+        validated_items = []
+        
+        # Collect all product IDs
+        product_ids = [item.product_id for item in order_in.items]
+        
+        # Fetch all products in one query with row locking to prevent race conditions
+        result = await db.execute(
+            select(Product).where(Product.id.in_(product_ids)).with_for_update()
+        )
+        products = result.scalars().all()
+        product_map = {p.id: p for p in products}
+        
+        for item in order_in.items:
+            product = product_map.get(item.product_id)
+
+            if not product:
+                raise ValueError(f"Product {item.product_id} not found")
+
+            # Validate stock
+            if product.stock < item.quantity:
+                raise ValueError(
+                    f"Insufficient stock for {product.name}. "
+                    f"Available: {product.stock}, requested: {item.quantity}"
+                )
+
+            # Calculate price from database (NEVER trust client)
+            item_total = product.price * item.quantity
+            total += item_total
+
+            validated_items.append({
+                'product_id': item.product_id,
+                'quantity': item.quantity,
+                'price': product.price  # Database price
+            })
+    
         # Create order
         db_order = Order(
             user_id=user_id,
@@ -86,10 +92,8 @@ async def create_order(
         
         # Reduce stock
         for item in order_in.items:
-            result = await db.execute(
-                select(Product).where(Product.id == item.product_id)
-            )
-            product = result.scalar_one_or_none()
+            # Reuse product object from product_map which is attached to session
+            product = product_map.get(item.product_id)
             if product:
                 product.stock -= item.quantity
                 db.add(product)

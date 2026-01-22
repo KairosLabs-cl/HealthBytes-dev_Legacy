@@ -24,6 +24,10 @@ async def list_products(
     Returns:
         List of Product objects
     """
+    # Ensure skip and limit are Python integers to avoid PostgreSQL cast issues
+    skip = int(skip) if skip is not None else 0
+    limit = int(limit) if limit is not None else 100
+    
     result = await db.execute(
         select(Product)
         .offset(skip)
