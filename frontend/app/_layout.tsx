@@ -1,5 +1,5 @@
 import "@/global.css";
-import { Link, Stack } from "expo-router";
+import { Link, Stack, useRouter } from "expo-router";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { Icon } from "@/components/ui/icon";
@@ -8,7 +8,7 @@ import { Pressable } from "react-native";
 import { useCart } from "@/store/cartStore";
 import { Text } from "@/components/ui/text";
 import BottomNavBar from "@/components/ui/NavBarr/BottomNavBar";
-import React from "react";
+import React, { useEffect } from "react";
 import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@/lib/cache";
 
@@ -79,12 +79,39 @@ function RootLayoutNav() {
   );
 }
 
+function AuthStateMonitor() {
+  const { isSignedIn, isLoaded, getToken, sessionId } = useAuth();
+
+  useEffect(() => {
+    if (!isLoaded) {
+      console.log("[🔐 AUTH] Inicializando Clerk...");
+      return;
+    }
+
+    console.log("[🔐 AUTH] Estado de autenticación:");
+    console.log("  ✓ isLoaded:", isLoaded);
+    console.log("  ✓ isSignedIn:", isSignedIn);
+    console.log("  ✓ sessionId:", sessionId || "undefined");
+
+    // Verificar token si está autenticado
+    if (isSignedIn) {
+      (async () => {
+        const token = await getToken();
+        console.log("  ✓ getToken():", token ? `${token.substring(0, 20)}...` : "null");
+      })();
+    }
+  }, [isSignedIn, isLoaded, sessionId, getToken]);
+
+  return null;
+}
+
 export default function RootLayout() {
   return (
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
       <ClerkLoaded>
         <QueryClientProvider client={queryClient}>
           <GluestackUIProvider>
+            <AuthStateMonitor />
             <RootLayoutNav />
           </GluestackUIProvider>
         </QueryClientProvider>

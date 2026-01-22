@@ -48,16 +48,24 @@ export default function LoginScreen() {
       setIsLoading(true);
       setError(null);
 
+      console.log(`🔐 Starting ${provider} OAuth...`);
       const { createdSessionId, setActive } = await oauthFn({
         redirectUrl: Linking.createURL("/(auth)/login", { scheme: "myapp" }),
       });
 
+      console.log(`✅ ${provider} OAuth completed. Session ID:`, createdSessionId);
+
       if (createdSessionId && setActive) {
+        console.log(`🔄 Setting active session...`);
         await setActive({ session: createdSessionId });
+        console.log(`✅ Session is now active. Redirecting to home...`);
         router.replace("/");
+      } else {
+        console.error(`❌ OAuth failed: Missing createdSessionId or setActive`);
+        setError(`Error con ${provider}: No se pudo completar la autenticación`);
       }
     } catch (err: any) {
-      console.error(`OAuth ${provider} error:`, err);
+      console.error(`❌ OAuth ${provider} error:`, err);
       setError(`Error con ${provider}: ${err.errors?.[0]?.message || err.message}`);
     } finally {
       setIsLoading(false);
