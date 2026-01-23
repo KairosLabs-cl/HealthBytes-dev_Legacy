@@ -32,7 +32,7 @@ async def test_user(db_session: AsyncSession):
     """Crear un usuario de prueba."""
     user = User(
         email="test@example.com",
-        password_hash="hashed_password",
+        password="hashed_password",
         name="Test User"
     )
     db_session.add(user)
