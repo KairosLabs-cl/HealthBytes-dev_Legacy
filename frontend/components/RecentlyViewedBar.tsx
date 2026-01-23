@@ -1,4 +1,3 @@
-import React from "react";
 import { View, FlatList, Image, useWindowDimensions } from "react-native";
 import { Text } from "@/components/ui/text";
 import SectionHeader from "@/components/SectionHeader";

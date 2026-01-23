@@ -1,5 +1,5 @@
 import "@/global.css";
-import { Link, Stack, useRouter } from "expo-router";
+import { Link, Stack } from "expo-router";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { Icon } from "@/components/ui/icon";
@@ -8,7 +8,7 @@ import { Pressable } from "react-native";
 import { useCart } from "@/store/cartStore";
 import { Text } from "@/components/ui/text";
 import BottomNavBar from "@/components/ui/NavBarr/BottomNavBar";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@/lib/cache";
 import { SafeAreaProvider } from "react-native-safe-area-context";

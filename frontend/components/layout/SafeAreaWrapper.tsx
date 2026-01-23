@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ViewProps } from 'react-native';
+import { ViewProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface SafeAreaWrapperProps extends ViewProps {

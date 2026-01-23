@@ -1,7 +1,7 @@
 import { Text } from "@/components/ui/text";
 import { useCart } from "@/store/cartStore";
 import { View, FlatList, Image, Pressable } from "react-native";
-import { Redirect, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react-native";
 import { formatPrice } from "@/lib/formatPrice";
 
@@ -10,7 +10,6 @@ export default function CartScreen() {
   const addProduct = useCart((state) => state.addProduct);
   const decrementProduct = useCart((state) => state.decrementProduct);
   const removeProduct = useCart((state) => state.removeProduct);
-  const resetCart = useCart((state) => state.resetCart);
   const router = useRouter();
 
   if (items.length === 0) {

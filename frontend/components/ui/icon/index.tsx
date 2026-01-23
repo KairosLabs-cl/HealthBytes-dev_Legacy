@@ -42,8 +42,9 @@ cssInterop(UIIcon, {
 });
 
 type IIConProps = IPrimitiveIcon &
-  VariantProps<typeof iconStyle> &
-  React.ComponentPropsWithoutRef<typeof UIIcon>;
+  Omit<VariantProps<typeof iconStyle>, 'size'> & {
+    size?: VariantProps<typeof iconStyle>['size'] | number;
+  } & React.ComponentPropsWithoutRef<typeof UIIcon>;
 
 const Icon = React.forwardRef<React.ComponentRef<typeof UIIcon>, IIConProps>(
   function Icon({ size = 'md', className, ...props }, ref) {

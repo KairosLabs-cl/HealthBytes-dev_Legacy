@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { View, FlatList, Image } from "react-native";
 import { Text } from "@/components/ui/text";
 import SectionHeader from "@/components/SectionHeader";

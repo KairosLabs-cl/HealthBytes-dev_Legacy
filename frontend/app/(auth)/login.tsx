@@ -24,7 +24,7 @@ export const options = {
 export default function LoginScreen() {
   const router = useRouter();
   const { signOut } = useClerk();
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, getToken } = useAuth();
 
   // OAuth providers
   const { startOAuthFlow: googleOAuth } = useOAuth({ strategy: "oauth_google" });

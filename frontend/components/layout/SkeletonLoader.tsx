@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, DimensionValue } from 'react-native';
 import Animated, { 
   useAnimatedStyle, 
   useSharedValue, 
@@ -9,7 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 interface SkeletonProps {
-  width?: number | string;
+  width?: DimensionValue;
   height?: number;
   borderRadius?: number;
   className?: string;

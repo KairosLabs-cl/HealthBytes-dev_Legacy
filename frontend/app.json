@@ -2,7 +2,7 @@
   "expo": {
     "name": "HealthBytes",
     "slug": "shop",
-    "scheme": "safe_ecommerce",
+    "scheme": "safe-ecommerce",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -29,7 +29,8 @@
     "plugins": [
       "expo-router",
       "expo-secure-store",
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-font"
     ]
   }
 }
