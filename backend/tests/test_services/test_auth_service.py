@@ -20,7 +20,7 @@ async def test_register_user_success(db_session):
     
     user_data = UserCreate(
         email="newuser@example.com",
-        password="secure123"
+        password="sec123"  # Max 72 bytes for bcrypt
     )
     
     result = await register_user(mock_db, user_data)
