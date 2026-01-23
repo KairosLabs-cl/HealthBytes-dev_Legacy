@@ -122,7 +122,7 @@ def sample_user_data():
     """Sample user data for testing."""
     return {
         "email": "test@example.com",
-        "password": "testpassword123",
+        "password": "short_pwd_1234",  # Max 72 bytes for bcrypt
         "name": "Test User"
     }
 
