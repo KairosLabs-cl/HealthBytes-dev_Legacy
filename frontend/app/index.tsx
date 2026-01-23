@@ -19,7 +19,7 @@ export default function HomeScreen() {
   const [searchTerm, setSearchTerm] = useState("");
   const { items: recentlyViewedItems } = useRecentlyViewed();
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["products", searchTerm],
     queryFn: () => listProducts(searchTerm),
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -61,9 +61,10 @@ export default function HomeScreen() {
             Error al cargar productos
           </Text>
           <Text className="text-center text-gray-600 mb-4">
-            No pudimos cargar los productos. Por favor, intenta nuevamente.
+            {error instanceof Error ? error.message : "No pudimos cargar los productos. Por favor, intenta nuevamente."}
           </Text>
           <Pressable 
+            onPress={() => refetch()}
             className="bg-black px-6 py-3 rounded-lg active:opacity-80"
             accessibilityRole="button"
             accessibilityLabel="Reintentar carga de productos"
