@@ -12,6 +12,7 @@ __pycache__/
 venv/
 env/
 .env
+.venv314
 
 # Testing & Coverage
 .coverage

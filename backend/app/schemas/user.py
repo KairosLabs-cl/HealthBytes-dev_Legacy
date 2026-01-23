@@ -18,9 +18,11 @@ class UserLogin(BaseModel):
 
 class UserUpdate(BaseModel):
     """Schema for user update - Replica of updateUserSchema"""
+    email: Optional[EmailStr] = None
     password: Optional[str] = Field(None, min_length=1)
     name: Optional[str] = Field(None, max_length=255)
     address: Optional[str] = None
+    role: Optional[str] = None
 
 
 class UserResponse(BaseModel):
