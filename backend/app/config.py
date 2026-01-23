@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str
     
     # JWT (Legacy - for backwards compatibility)
-    JWT_SECRET: str = "your-secret"
+    JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 43200  # 30 days like Node.js
     

@@ -51,7 +51,8 @@ async def test_update_user_success(db_session):
     
     # Create user
     user = User(
-        email="update_test@example.com",
+        id="user_456",
+        email="original@example.com",
         password="hashed_password",
         role="customer"
     )
@@ -89,10 +90,10 @@ async def test_update_user_partial(db_session):
     
     # Create user
     user = User(
-        email="partial_test@example.com",
+        id="user_789",
+        email="original@example.com",
         password="hashed_password",
-        role="customer",
-        name="Original Name"
+        role="customer"
     )
     db_session.add(user)
     db_session.commit()
@@ -114,11 +115,10 @@ async def test_update_user_all_fields(db_session):
     
     # Create user
     user = User(
-        email="all_fields@example.com",
-        password="hashed_password",
-        role="customer",
-        name="User All Fields",
-        address="123 Main St"
+        id="user_999",
+        email="old@example.com",
+        password="old_hash",
+        role="customer"
     )
     db_session.add(user)
     db_session.commit()
