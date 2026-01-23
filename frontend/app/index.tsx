@@ -1,4 +1,4 @@
-import { ActivityIndicator, FlatList, ScrollView, View, Image, Pressable } from "react-native";
+import { FlatList, ScrollView, View, Image, Pressable } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { Text } from "@/components/ui/text";
 import { useBreakpointValue } from "@/components/ui/utils/use-break-point-value";
@@ -10,19 +10,19 @@ import { Header } from "@/components/Header";
 import { Stack } from "expo-router";
 import QuickFilters from "@/components/QuickFilters"; 
 import SectionHeader from "@/components/SectionHeader"; 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
+import { ProductListSkeleton } from "@/components/layout/SkeletonLoader";
+import { SafeAreaWrapper } from "@/components/layout/SafeAreaWrapper";
 
 export default function HomeScreen() {
-  // se Cambio el estado para que termino de búsqueda se guarde en el estado y se pueda usar en la pagina
   const [searchTerm, setSearchTerm] = useState("");
-
   const { items: recentlyViewedItems } = useRecentlyViewed();
 
-  const { data, isLoading, error, isFetching } = useQuery({
-    queryKey: ["products", searchTerm], // se agrego searchTerm para re-fetch al buscar
-    queryFn: () => listProducts(searchTerm), // Pasa término de búsqueda a la API
-    // mantiene datos anteriores mientrss carga para evitar que desaparezcan
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["products", searchTerm],
+    queryFn: () => listProducts(searchTerm),
+    staleTime: 5 * 60 * 1000, // 5 minutes
     placeholderData: (previousData) => previousData,
   });
 
@@ -34,33 +34,46 @@ export default function HomeScreen() {
 
   const heroProduct = useMemo(() => data?.[0], [data]);
 
-  // Solo muestra loading completo en primera carga no durante búsqueda
+  const handleSearchChange = useCallback((term: string) => {
+    setSearchTerm(term);
+  }, []);
+
+  // Loading state with skeleton
   if (isLoading && !data) {
     return (
       <>
         <Stack.Screen options={{ headerShown: false }} />
-        <View className="flex-1 items-center justify-center bg-white">
-          <ActivityIndicator />
-          <Text className="mt-4 text-gray-500">Cargando productos...</Text>
-        </View>
+        <SafeAreaWrapper className="flex-1 bg-gray-50">
+          <Header userName="Francisco" onSearchChange={handleSearchChange} />
+          <ProductListSkeleton count={6} numColumns={numColumns} />
+        </SafeAreaWrapper>
       </>
     );
   }
 
+  // Error state
   if (error) {
     return (
       <>
         <Stack.Screen options={{ headerShown: false }} />
-        <View className="flex-1 items-center justify-center bg-white">
-          <Text className="text-red-500">Error cargando productos</Text>
-        </View>
+        <SafeAreaWrapper className="flex-1 items-center justify-center bg-white px-6">
+          <Text className="text-lg font-bold text-gray-900 mb-2">
+            Error al cargar productos
+          </Text>
+          <Text className="text-center text-gray-600 mb-4">
+            No pudimos cargar los productos. Por favor, intenta nuevamente.
+          </Text>
+          <Pressable 
+            className="bg-black px-6 py-3 rounded-lg active:opacity-80"
+            accessibilityRole="button"
+            accessibilityLabel="Reintentar carga de productos"
+          >
+            <Text className="text-white font-semibold">Reintentar</Text>
+          </Pressable>
+        </SafeAreaWrapper>
       </>
     );
   }
-
-  const handleSearchChange = (term: string) => {
-    setSearchTerm(term);
-  };
 
   return (
     <>
@@ -76,7 +89,9 @@ export default function HomeScreen() {
             {["Celiacos", "Veganos", "Sin lactosa", "Bajo en azucar"].map((label) => (
               <Pressable
                 key={label}
-                className="px-3 py-2 rounded-full bg-gray-100 border border-gray-200"
+                className="px-3 py-2 rounded-full bg-gray-100 border border-gray-200 active:bg-gray-200"
+                accessibilityRole="button"
+                accessibilityLabel={`Filtrar por ${label}`}
               >
                 <Text className="text-xs font-medium text-gray-700">{label}</Text>
               </Pressable>
@@ -95,7 +110,11 @@ export default function HomeScreen() {
                 Descubre snacks sin gluten
               </Text>
               <Text className="text-sm text-gray-200 mt-2">Hasta 30% de descuento hoy</Text>
-              <Pressable className="mt-3 self-start bg-white rounded-full px-4 py-2">
+              <Pressable 
+                className="mt-3 self-start bg-white rounded-full px-4 py-2 active:opacity-80"
+                accessibilityRole="button"
+                accessibilityLabel="Ver colección de snacks sin gluten"
+              >
                 <Text className="font-semibold text-black">Ver coleccion</Text>
               </Pressable>
             </View>
@@ -113,13 +132,6 @@ export default function HomeScreen() {
             </View>
           </View>
         </View>
-
-        {/* Estado de carga mientras se re-fetch */}
-        {isFetching && data && (
-          <View className="px-4 py-2">
-            <ActivityIndicator size="small" />
-          </View>
-        )}
 
         {/* Secciones previas cuando no hay búsqueda */}
         {!searchTerm && (

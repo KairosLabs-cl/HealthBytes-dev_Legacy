@@ -11,6 +11,8 @@ import BottomNavBar from "@/components/ui/NavBarr/BottomNavBar";
 import React, { useEffect } from "react";
 import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@/lib/cache";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { ErrorBoundary } from "@/components/layout/ErrorBoundary";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -107,15 +109,19 @@ function AuthStateMonitor() {
 
 export default function RootLayout() {
   return (
-    <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-      <ClerkLoaded>
-        <QueryClientProvider client={queryClient}>
-          <GluestackUIProvider>
-            <AuthStateMonitor />
-            <RootLayoutNav />
-          </GluestackUIProvider>
-        </QueryClientProvider>
-      </ClerkLoaded>
-    </ClerkProvider>
+    <ErrorBoundary>
+      <SafeAreaProvider>
+        <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+          <ClerkLoaded>
+            <QueryClientProvider client={queryClient}>
+              <GluestackUIProvider>
+                <AuthStateMonitor />
+                <RootLayoutNav />
+              </GluestackUIProvider>
+            </QueryClientProvider>
+          </ClerkLoaded>
+        </ClerkProvider>
+      </SafeAreaProvider>
+    </ErrorBoundary>
   );
 }
