@@ -29,7 +29,7 @@ async def test_register_user_success(db_session):
     assert result.email == "newuser@example.com"
     assert result.id is not None
     # Password should be hashed, not plaintext
-    assert result.password_hash != "secure123"
+    assert result.password != "secure123"
 
 
 @pytest.mark.asyncio
@@ -198,7 +198,7 @@ async def test_password_hashing_different_passwords(db_session):
     user1 = await register_user(mock_db, user1_data)
     user2 = await register_user(mock_db, user2_data)
     
-    assert user1.password_hash != user2.password_hash
+    assert user1.password != user2.password
 
 
 @pytest.mark.asyncio
@@ -219,7 +219,7 @@ async def test_password_hashing_same_password_different_hash(db_session):
     user2 = await register_user(mock_db, user2_data)
     
     # Same password, but hashes should be different (due to salt)
-    assert user1.password_hash != user2.password_hash
+    assert user1.password != user2.password
     
     # But both should login successfully
     login1 = await login_user(mock_db, "user1@example.com", "same123")
