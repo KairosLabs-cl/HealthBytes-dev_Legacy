@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 import logging
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -81,7 +81,10 @@ async def create_order(
 
 @router.get("/", response_model=List[OrderResponse])
 async def list_orders(
-    db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=100),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     """
     GET /orders
@@ -99,6 +102,8 @@ async def list_orders(
             stmt = select(Order)
         else:
             stmt = select(Order).where(Order.user_id == current_user.id)
+
+        stmt = stmt.order_by(Order.created_at.desc(), Order.id.desc()).offset(skip).limit(limit)
 
         result = await db.execute(stmt)
         orders = result.scalars().all()
