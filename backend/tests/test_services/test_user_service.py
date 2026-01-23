@@ -22,7 +22,7 @@ async def test_get_user_existing(db_session):
     user = User(
         id="user_123",
         email="test@example.com",
-        password_hash="hashed_password",
+        password="hashed_password",
         role="customer"
     )
     db_session.add(user)
@@ -54,7 +54,7 @@ async def test_update_user_success(db_session):
     user = User(
         id="user_456",
         email="original@example.com",
-        password_hash="hashed_password",
+        password="hashed_password",
         role="customer"
     )
     db_session.add(user)
@@ -93,7 +93,7 @@ async def test_update_user_partial(db_session):
     user = User(
         id="user_789",
         email="original@example.com",
-        password_hash="hashed_password",
+        password="hashed_password",
         role="customer"
     )
     db_session.add(user)
@@ -117,7 +117,7 @@ async def test_update_user_all_fields(db_session):
     user = User(
         id="user_999",
         email="old@example.com",
-        password_hash="old_hash",
+        password="old_hash",
         role="customer"
     )
     db_session.add(user)
@@ -144,7 +144,7 @@ async def test_delete_user_existing(db_session):
     user = User(
         id="user_delete",
         email="todelete@example.com",
-        password_hash="hashed_password",
+        password="hashed_password",
         role="customer"
     )
     db_session.add(user)
@@ -180,7 +180,7 @@ async def test_get_user_with_multiple_users(db_session):
         user = User(
             id=f"user_{i}",
             email=f"user{i}@example.com",
-            password_hash="hashed_password",
+            password="hashed_password",
             role="customer"
         )
         db_session.add(user)
