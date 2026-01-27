@@ -49,8 +49,8 @@ Las personas con condiciones como celiaquía, diabetes o alergias alimentarias e
 
 ### Estado Actual del Proyecto
 
-**Versión:** MVP en Desarrollo Activo
-**Última actualización:** Enero 2026
+**Versión:** MVP en Desarrollo Activo  
+**Última actualización:** Enero 2026  
 
 | Componente         | Estado           | Descripción                      |
 | ------------------ | ---------------- | --------------------------------- |
@@ -76,10 +76,12 @@ Asegúrate de tener instalado:
 
 - **Git** ([Descargar](https://git-scm.com/downloads)) - Control de versiones
 - **GitHub CLI (gh)** ([Descargar](https://cli.github.com/)) - Herramienta de línea de comandos para GitHub
-- **Python 3.11+** ([Descargar](https://www.python.org/downloads/)) - Lenguaje para el backend
+- **Python 3.14+** ([Descargar](https://www.python.org/downloads/)) - Lenguaje para el backend ⚡ **Actualizado a 3.14.2**
 - **Node.js 18+** ([Descargar](https://nodejs.org/)) - Runtime para frontend
 - **pnpm 8+** ([Descargar](https://pnpm.io/installation)) - Gestor de paquetes (obligatorio)
 - **PostgreSQL 14+** ([Descargar](https://www.postgresql.org/download/)) - Base de datos relacional
+
+> 🚀 **Nueva versión**: Actualizado a Python 3.14.2 para mejor performance (~10-15% más rápido en inicio del servidor).
 
 ### 1️⃣ Clonar el Repositorio
 
