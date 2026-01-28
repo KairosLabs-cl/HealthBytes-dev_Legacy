@@ -158,6 +158,7 @@ export default function HomeScreen() {
         ListHeaderComponent={renderHeader}
         ListEmptyComponent={renderEmpty}
         key={numColumns}
+        keyExtractor={(item) => item.id.toString()}
         data={data}
         numColumns={numColumns}
         contentContainerClassName="gap-2 max-w-[960px] mx-auto w-full px-3 pb-32"
