@@ -4,6 +4,7 @@ import { Text } from "@/components/ui/text"
 import { Heading } from "@/components/ui/heading"
 import { Link } from "expo-router"
 import { Pressable, View, Platform, GestureResponderEvent } from "react-native"
+import { memo } from "react";
 import type { Product } from "@/types/product"
 import { formatPrice } from "@/lib/formatPrice"
 import { ShoppingCart } from "lucide-react-native"
@@ -11,7 +12,7 @@ import { useCart } from "@/store/cartStore"
 
 type Props = { product: Product };
 
-export default function ProductListItem ({product} : Props) {
+function ProductListItem ({product} : Props) {
   const addProduct = useCart((state) => state.addProduct);
 
   const handleAddToCart = (e: GestureResponderEvent) => {
@@ -64,3 +65,5 @@ export default function ProductListItem ({product} : Props) {
     </Link>
   );
 }
+
+export default memo(ProductListItem);
