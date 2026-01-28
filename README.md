@@ -112,14 +112,23 @@ cp .env.example .env
 
 **Configurar `.env`** (ver sección [Configuración](#-configuración) para más detalles)
 
-### 3️⃣ Configurar Frontend (3 minutos)
+### 3️⃣ Configurar Frontend (1 minuto) ⚡
 
 ```bash
 cd ../frontend
 
 # Instalar dependencias (usar pnpm)
 pnpm install
+
+# Configuración automática (detecta tu IP y configura .env)
+.\setup-env.ps1
 ```
+
+**El script te preguntará:**
+- ¿Usarás solo Web, Expo Go, o ambos?
+- ¿Actualizar CORS del backend?
+
+✅ **Recomendado**: Selecciona "Ambos" (opción 3) para máxima flexibilidad
 
 ### 4️⃣ Ejecutar el Proyecto
 
@@ -298,6 +307,40 @@ HealthBytes-dev/
 ---
 
 ## 🔧 Configuración
+
+### ⚡ Configuración Automática del Frontend (Recomendado)
+
+Usamos un script PowerShell que detecta automáticamente tu IP y configura el entorno:
+
+```powershell
+cd frontend
+.\setup-env.ps1
+```
+
+**El script configurará automáticamente:**
+- ✅ Detecta tu IP local de red (192.168.x.x)
+- ✅ Configura el archivo `.env` según tu modo de desarrollo
+- ✅ Actualiza el CORS del backend (opcional)
+- ✅ Te da instrucciones claras de próximos pasos
+
+**Opciones disponibles:**
+- **[1] Solo Web**: Usa `localhost` (para desarrollo en navegador)
+- **[2] Solo Expo Go**: Usa tu IP local (para celular/tablet)
+- **[3] Ambos**: Usa tu IP local (funciona en ambos casos) ✨ **Recomendado**
+
+**¿Por qué usar tu IP local?**
+- ✅ `localhost` NO funciona en Expo Go (el celular busca su propio localhost)
+- ✅ Tu IP local (ej: `192.168.1.127`) funciona tanto en web como en Expo Go
+- ✅ Ambos dispositivos deben estar en la **misma red WiFi**
+
+**Si tu IP cambia** (cambiar de red WiFi, reiniciar router):
+```powershell
+.\setup-env.ps1  # Vuelve a ejecutar el script
+```
+
+📖 **Más detalles**: Ver [frontend/SETUP.md](frontend/SETUP.md) para configuración manual y troubleshooting
+
+---
 
 ### Variables de Entorno - Backend
 
