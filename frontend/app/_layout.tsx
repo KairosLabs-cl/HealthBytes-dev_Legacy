@@ -8,7 +8,7 @@ import { Pressable } from "react-native";
 import { useCart } from "@/store/cartStore";
 import { Text } from "@/components/ui/text";
 import BottomNavBar from "@/components/ui/NavBarr/BottomNavBar";
-import React from "react";
+import React, { useEffect } from "react";
 import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@/lib/cache";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -26,7 +26,33 @@ if (!publishableKey) {
 
 function RootLayoutNav() {
   const cartItemsNum = useCart((state) => state.items.length);
-  const { isSignedIn } = useAuth();
+  const setAuth = useCart((state) => state.setAuth);
+  const mergeAndSync = useCart((state) => state.mergeAndSync);
+  const resetCart = useCart((state) => state.resetCart);
+  
+  const { isSignedIn, getToken } = useAuth();
+
+  // Sync cart with authentication state
+  useEffect(() => {
+    const syncCart = async () => {
+      if (isSignedIn) {
+        // User logged in
+        const token = await getToken();
+        if (token) {
+          setAuth(true, token);
+          // Merge local cart with server cart
+          await mergeAndSync();
+        }
+      } else {
+        // User logged out
+        setAuth(false, null);
+        // Reset cart will be called by setAuth
+      }
+    };
+
+    syncCart();
+  }, [isSignedIn]);
+
 
   return (
     <>
