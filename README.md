@@ -58,7 +58,7 @@ Las personas con condiciones como celiaquía, diabetes o alergias alimentarias e
 | ⚙️ Backend API   | ✅ Funcional     | FastAPI + SQLAlchemy              |
 | 🗄️ Base de Datos | ✅ Funcional     | PostgreSQL con modelos core       |
 | 🔐 Autenticación  | ✅ Implementado  | JWT + Clerk (en transición)      |
-| 🧪 Tests           | ⚠️ En Progreso | Coverage parcial (ver `tests/`) |
+| 🧪 Tests           | ⚠️ En Progreso | Coverage parcial (backend ~50%, frontend inicial) |
 | 🐳 Docker          | 📝 Planeado      | Containerización pendiente       |
 | 🚀 Deploy          | 📝 Planeado      | AWS (preparado)                   |
 
@@ -512,11 +512,11 @@ pytest -v
 
 Ver más detalles en [tests/README.md](backend/tests/README.md)
 
-### Frontend Tests (Pendiente)
+### Frontend Tests
 
 ```bash
 cd frontend
-# pnpm test  # Por implementar
+pnpm test  # Ejecutar tests (Jest + RNTL)
 ```
 
 ---
@@ -690,7 +690,7 @@ git push origin feat/product-filters
 
 - ✅ Arquitectura sólida (100% backend, 90% frontend)
 - ✅ Seguridad correcta (sin credenciales hardcodeadas, JWT configurado)
-- ⚠️ Testing parcial (backend 50%, frontend 0%)
+- ⚠️ Testing parcial (backend 50%, frontend inicial)
 - ⚠️ TypeScript con 10 usos de `any` (mejorando)
 
 **Ver**: [Análisis Completo](docs/copilot-logs/status-logs/ANALISIS_PROFUNDO_2026-01-27.md)
