@@ -1,6 +1,7 @@
 module.exports = {
   root: true,
   extends: [
+    'expo',
     'eslint:recommended',
     'plugin:react/recommended',
     'plugin:react-native/all',
@@ -27,7 +28,27 @@ module.exports = {
     },
   },
   rules: {
-    "react-native/no-raw-text": "off", // Common false positive in some setups
-    "security/detect-object-injection": "off" // Often too noisy for typical React Native state/props usage
+    // Console warnings (permitir console.warn y console.error)
+    'no-console': ['warn', { allow: ['warn', 'error'] }],
+    
+    // React
+    "react/prop-types": "off", // Usamos TypeScript
+    "react/react-in-jsx-scope": "off", // No necesario en React 18
+    
+    // React Native
+    "react-native/no-raw-text": "off",
+    "react-native/no-inline-styles": "warn",
+    "react-native/no-color-literals": "off", // Usamos Tailwind
+    "react-native/sort-styles": "off",
+    
+    // TypeScript
+    '@typescript-eslint/no-explicit-any': 'error', // Prohibir 'any'
+    '@typescript-eslint/no-unused-vars': ['warn', { 
+      argsIgnorePattern: '^_',
+      varsIgnorePattern: '^_'
+    }],
+    
+    // Security
+    "security/detect-object-injection": "off" // Muchos falsos positivos
   }
 };
