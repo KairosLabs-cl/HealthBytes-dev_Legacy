@@ -13,6 +13,7 @@ import {
   Shield,
   Phone,
   LogOut,
+  User,
 } from "lucide-react-native";
 import { useClerk, useAuth, useUser } from "@clerk/clerk-expo";
 import { useEffect } from "react";
@@ -51,7 +52,7 @@ export default function ProfileScreen() {
   };
 
   // Mostrar loading mientras verifica autenticación
-  if (!isLoaded || !user) {
+  if (!isLoaded) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
         <ActivityIndicator size="large" />
@@ -79,21 +80,27 @@ export default function ProfileScreen() {
           <Text className="text-2xl font-bold text-black">👤 Perfil</Text>
         </View>
 
-        <View className="bg-gray-200 rounded-3xl p-4 mb-4">
-          <View className="flex-row items-center justify-between mb-3">
-            <View className="flex-row items-center gap-3">
-              <Image source={{ uri: user.imageUrl }} className="w-20 h-20 rounded-full" />
-              <View>
-                <Text className="text-xl font-bold text-black">{user.fullName}</Text>
-                <Text className="text-sm text-gray-700">{user.primaryEmailAddress?.emailAddress}</Text>
-              </View>
-            </View>
-            <View className="w-12 h-12 bg-black rounded-2xl items-center justify-center">
-              <Icon as={Settings} color="#ffffff" size={24} />
-            </View>
+        {/* Perfil del usuario */}
+        <View className="rounded-3xl bg-gray-100 flex-row items-center p-4 mb-4">
+          <Image 
+            source={{ uri: user?.imageUrl || 'https://via.placeholder.com/80' }} 
+            className="w-20 h-20 rounded-full" 
+          />
+          <View className="ml-4 flex-1">
+            <Text className="text-xl font-bold text-black">
+              {user?.fullName || 'Usuario'}
+            </Text>
+            <Text className="text-sm text-gray-700">
+              {user?.primaryEmailAddress?.emailAddress || 'Sin email'}
+            </Text>
           </View>
+          {/* Botón de Settings - para futuro uso */}
+          <Pressable className="w-12 h-12 bg-black rounded-2xl items-center justify-center">
+            <Icon as={Settings} color="#ffffff" size="lg" />
+          </Pressable>
+        </View>
 
-          <View className="bg-[#303030] rounded-3xl p-4">
+        <View className="bg-[#303030] rounded-3xl p-4 mb-4">
             <Text className="text-white text-lg font-semibold mb-3">🚚 Mis ordenes</Text>
             <View className="flex-row justify-between">
               {orderStatuses.map((item) => (
@@ -101,13 +108,12 @@ export default function ProfileScreen() {
                   key={item.label}
                   className="bg-white rounded-2xl px-3 py-2 items-center justify-center w-[30%]"
                 >
-                  <Icon as={item.icon} color="#1f2937" size={20} />
+                  <Icon as={item.icon} color="#1f2937" size="md" />
                   <Text className="text-xs text-black mt-1">{item.label}</Text>
                 </View>
               ))}
             </View>
           </View>
-        </View>
 
         <View className="mb-3">
           <Text className="text-xl font-bold text-black">⚙️ General</Text>
@@ -118,8 +124,8 @@ export default function ProfileScreen() {
             key={item.label}
             className="bg-black rounded-3xl flex-row items-center px-4 py-4 mb-3"
           >
-            <View className="w-12 h-12 bg-[#1f1f1f] rounded-2xl items-center justify-center mr-3">
-              <Icon as={item.icon} color="#e5e7eb" size={24} />
+            <View className="w-12 h-12 bg-gray-200 rounded-2xl items-center justify-center mr-3">
+              <Icon as={item.icon} color="#1f2937" size="lg" />
             </View>
             <Text className="text-white text-lg font-bold">{item.label}</Text>
           </View>
@@ -128,7 +134,7 @@ export default function ProfileScreen() {
         <Pressable className="rounded-3xl overflow-hidden" onPress={handleLogout}>
           <View className="bg-red-600 flex-row items-center px-4 py-4">
             <View className="w-12 h-12 bg-white rounded-2xl items-center justify-center mr-3">
-              <Icon as={LogOut} color="#d12d2d" size={24} />
+              <Icon as={LogOut} color="#d12d2d" size="lg" />
             </View>
             <Text className="text-white text-lg font-bold">
               Salir de la cuenta

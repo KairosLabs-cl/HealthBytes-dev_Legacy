@@ -8,12 +8,22 @@ import { Text } from "@/components/ui/text";
 import { useCart } from "@/store/cartStore";
 import React, { useMemo, useCallback } from "react";
 
+// Detect platform once at module level (Platform.OS never changes)
+const isMobile = Platform.OS !== 'web';
+
+// Responsive sizes based on platform - computed once at module level
+const RESPONSIVE_STYLES = {
+  containerPadding: isMobile ? "px-4 py-2" : "px-3 py-1.5",
+  buttonPadding: isMobile ? "py-2" : "py-1.5",
+  innerPadding: isMobile ? "px-3 py-2" : "px-3 py-1.5",
+  gap: isMobile ? "gap-3" : "gap-2",
+  textSize: isMobile ? "text-sm" : "text-xs",
+  iconSize: isMobile ? "lg" as const : "md" as const,
+};
+
 function BottomNavBar() {
   const pathname = usePathname();
   const cartCount = useCart((state) => state.items.length);
-
-  // Detect if we're on mobile (not web)
-  const isMobile = Platform.OS !== 'web';
 
   // Memoize tabs array to prevent recreation on every render
   const tabs = useMemo(
@@ -34,28 +44,20 @@ function BottomNavBar() {
     [pathname]
   );
 
-  // Responsive sizes based on platform
-  const containerPadding = isMobile ? "px-4 py-2" : "px-3 py-1.5";
-  const buttonPadding = isMobile ? "py-2" : "py-1.5";
-  const innerPadding = isMobile ? "px-3 py-2" : "px-3 py-1.5";
-  const gap = isMobile ? "gap-3" : "gap-2";
-  const textSize = isMobile ? "text-sm" : "text-xs";
-  const iconSize = isMobile ? "lg" : "md";
-
   return (
     <View className="absolute bottom-6 left-3 right-3 z-50">
-      <View className={`bg-black rounded-full flex-row justify-between items-center shadow-lg ${containerPadding} ${gap}`}>
+      <View className={`bg-black rounded-full flex-row justify-between items-center shadow-lg ${RESPONSIVE_STYLES.containerPadding} ${RESPONSIVE_STYLES.gap}`}>
         {tabs.map((tab) => {
           const active = isActive(tab.href);
           return (
             <Link key={tab.href} href={tab.href} asChild>
-              <Pressable className={`flex-1 items-center ${buttonPadding}`} accessibilityRole="button">
+              <Pressable className={`flex-1 items-center ${RESPONSIVE_STYLES.buttonPadding}`} accessibilityRole="button">
                 <View
-                  className={`w-full flex-row items-center justify-center gap-2 rounded-3xl ${innerPadding}`}
+                  className={`w-full flex-row items-center justify-center gap-2 rounded-3xl ${RESPONSIVE_STYLES.innerPadding}`}
                   style={{ backgroundColor: active ? "#ffffff" : "#303030" }}
                 >
                   <View className="relative">
-                    <Icon as={tab.icon} color={active ? "#000" : "#fff"} size={iconSize} />
+                    <Icon as={tab.icon} color={active ? "#000" : "#fff"} size={RESPONSIVE_STYLES.iconSize} />
                     {tab.badge ? (
                       <View className="absolute -top-2 -right-3 bg-red-500 rounded-full min-w-[18px] px-1.5 h-[18px] items-center justify-center">
                         <Text className="text-white text-[11px] font-bold">{tab.badge}</Text>
@@ -63,7 +65,7 @@ function BottomNavBar() {
                     ) : null}
                   </View>
                   <Text
-                    className={`${textSize} font-bold ${active ? "text-black" : "text-white"}`}
+                    className={`${RESPONSIVE_STYLES.textSize} font-bold ${active ? "text-black" : "text-white"}`}
                   >
                     {tab.label}
                   </Text>
