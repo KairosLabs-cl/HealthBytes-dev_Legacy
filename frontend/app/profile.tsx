@@ -14,10 +14,8 @@ import {
   Phone,
   LogOut,
 } from "lucide-react-native";
-import { useClerk, useAuth } from "@clerk/clerk-expo";
+import { useClerk, useAuth, useUser } from "@clerk/clerk-expo";
 import { useEffect } from "react";
-
-const avatarUrl = "https://www.figma.com/api/mcp/asset/2066e2fc-7dbf-4889-8a14-fab148379cb6";
 
 const orderStatuses = [
   { label: "Empacado", icon: Package },
@@ -37,6 +35,7 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { signOut } = useClerk();
   const { isSignedIn, isLoaded } = useAuth();
+  const { user } = useUser();
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
@@ -50,7 +49,7 @@ export default function ProfileScreen() {
   };
 
   // Mostrar loading mientras verifica autenticación
-  if (!isLoaded) {
+  if (!isLoaded || !user) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
         <ActivityIndicator size="large" />
@@ -76,10 +75,10 @@ export default function ProfileScreen() {
         <View className="bg-gray-200 rounded-3xl p-4 mb-4">
           <View className="flex-row items-center justify-between mb-3">
             <View className="flex-row items-center gap-3">
-              <Image source={{ uri: avatarUrl }} className="w-20 h-20 rounded-full" />
+              <Image source={{ uri: user.imageUrl }} className="w-20 h-20 rounded-full" />
               <View>
-                <Text className="text-xl font-bold text-black">Francisco Trujillo</Text>
-                <Text className="text-sm text-gray-700">franxo@hotmail.com</Text>
+                <Text className="text-xl font-bold text-black">{user.fullName}</Text>
+                <Text className="text-sm text-gray-700">{user.primaryEmailAddress?.emailAddress}</Text>
               </View>
             </View>
             <View className="w-12 h-12 bg-black rounded-2xl items-center justify-center">

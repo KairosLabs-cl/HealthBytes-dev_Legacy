@@ -12,12 +12,14 @@ import QuickFilters from "@/components/QuickFilters";
 import SectionHeader from "@/components/SectionHeader"; 
 import { useMemo, useState } from "react";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
+import { useUser } from "@clerk/clerk-expo";
 
 export default function HomeScreen() {
   // se Cambio el estado para que termino de búsqueda se guarde en el estado y se pueda usar en la pagina
   const [searchTerm, setSearchTerm] = useState("");
 
   const { items: recentlyViewedItems } = useRecentlyViewed();
+  const { user } = useUser();
 
   const { data, isLoading, error, isFetching } = useQuery({
     queryKey: ["products", searchTerm], // se agrego searchTerm para re-fetch al buscar
@@ -65,7 +67,7 @@ export default function HomeScreen() {
   const renderHeader = () => (
     <>
       {/* Header + búsqueda */}
-      <Header userName="Francisco" onSearchChange={handleSearchChange} />
+      <Header userName={user?.firstName || user?.fullName || "Usuario"} onSearchChange={handleSearchChange} />
 
       {/* Chips de dietas */}
       <View className="px-4 pb-1 bg-white">
