@@ -49,8 +49,8 @@ Las personas con condiciones como celiaquía, diabetes o alergias alimentarias e
 
 ### Estado Actual del Proyecto
 
-**Versión:** MVP en Desarrollo Activo  
-**Última actualización:** Enero 2026  
+**Versión:** MVP en Desarrollo Activo
+**Última actualización:** Enero 2026
 
 | Componente         | Estado           | Descripción                      |
 | ------------------ | ---------------- | --------------------------------- |
@@ -225,7 +225,7 @@ HealthBytes sigue una arquitectura **monolítica modular** que facilita el desar
 | Tecnología | Versión | Propósito               |
 | ----------- | -------- | ------------------------ |
 | FastAPI     | 0.109+   | Framework web moderno    |
-| Python      | 3.11+    | Lenguaje principal       |
+| Python      | 3.14+    | Lenguaje principal       |
 | SQLAlchemy  | 2.x      | ORM async                |
 | Pydantic    | 2.x      | Validación de datos     |
 | PostgreSQL  | 14+      | Base de datos relacional |
@@ -285,15 +285,15 @@ HealthBytes-dev/
 
 ### Navegación Rápida
 
-| Necesito...                 | Ve a...                                                                       |
-| --------------------------- | ----------------------------------------------------------------------------- |
+| Necesito...                 | Ve a...                                                                                   |
+| --------------------------- | ----------------------------------------------------------------------------------------- |
 | Ver estado del proyecto     | [Análisis Profundo 27/01/26](docs/copilot-logs/status-logs/ANALISIS_PROFUNDO_2026-01-27.md) |
-| Ver cambios recientes       | [Sesión 27/01/26](docs/copilot-logs/status-logs/SESSION_2026-01-27.md)           |
-| Documentación general       | [docs/README.md](docs/README.md)                         |
-| Documentación del Backend   | [backend/README.md](backend/README.md)                                           |
-| Documentación del Frontend  | [frontend/README.md](frontend/README.md)                                         |
-| Información de tests        | [backend/tests/README.md](backend/tests/README.md)                                       |
-| Convención de branches      | [Sección Contribuir](#-contribuir)                                                |
+| Ver cambios recientes       | [Sesión 27/01/26](docs/copilot-logs/status-logs/SESSION_2026-01-27.md)                      |
+| Documentación general      | [docs/README.md](docs/README.md)                                                             |
+| Documentación del Backend  | [backend/README.md](backend/README.md)                                                       |
+| Documentación del Frontend | [frontend/README.md](frontend/README.md)                                                     |
+| Información de tests       | [backend/tests/README.md](backend/tests/README.md)                                           |
+| Convención de branches     | [Sección Contribuir](#-contribuir)                                                          |
 
 ---
 
@@ -399,11 +399,11 @@ Si ves la URL de tu base de datos, ¡todo está bien! 🎉
 
 ### Documentación del Proyecto
 
-| Documento                                                                     | Descripción                               | Audiencia          |
-| ----------------------------------------------------------------------------- | ------------------------------------------ | ------------------ |
-| [Análisis Proyecto](docs/copilot-logs/status-logs/ANALISIS_PROFUNDO_2026-01-27.md) | ⭐**Estado completo** - Análisis exhaustivo (27/01/26) | Todos |
-| [Sesión 27/01](docs/copilot-logs/status-logs/SESSION_2026-01-27.md)       | Cambios y fixes recientes                  | Devs              |
-| [docs/README.md](docs/README.md)                       | Índice general de documentación            | Todos              |
+| Documento                                                                        | Descripción                                                  | Audiencia |
+| -------------------------------------------------------------------------------- | ------------------------------------------------------------- | --------- |
+| [Análisis Proyecto](docs/copilot-logs/status-logs/ANALISIS_PROFUNDO_2026-01-27.md) | ⭐**Estado completo** - Análisis exhaustivo (27/01/26) | Todos     |
+| [Sesión 27/01](docs/copilot-logs/status-logs/SESSION_2026-01-27.md)                | Cambios y fixes recientes                                     | Devs      |
+| [docs/README.md](docs/README.md)                                                    | Índice general de documentación                             | Todos     |
 
 ### READMEs Específicos
 
@@ -415,7 +415,7 @@ Si ves la URL de tu base de datos, ¡todo está bien! 🎉
 
 **Si eres un asistente de IA (Copilot, Claude, etc.) o vas usar alguna herramienta de IA, debes leer estos primero:**
 
-- **[.cursorrules](.cursorrules)** - Guard rails obligatorios para cualquier IA; define qué se puede y no se puede hacer ¡ADJUNTALO! 
+- **[.cursorrules](.cursorrules)** - Guard rails obligatorios para cualquier IA; define qué se puede y no se puede hacer ¡ADJUNTALO!
 - **[backend/AI-README.md](backend/AI-README.md)** - Reglas y patrones para generar código del backend
 - **[frontend/AI-README.md](frontend/AI-README.md)** - Reglas y patrones para generar código del frontend
 
@@ -487,29 +487,32 @@ cd frontend
 Usamos **Conventional Branch Names** - estándar en la industria, simple y legible.
 
 **Formato:**
+
 ```
 tipo/descripcion-corta
 ```
 
 **Tipos permitidos:**
 
-| Tipo | Descripción | Ejemplo |
-|------|-------------|---------|
-| `feat/` | Nueva feature | `feat/product-filters` |
-| `fix/` | Bug fix | `fix/price-validation` |
-| `docs/` | Documentación | `docs/update-readme` |
-| `refactor/` | Mejora de código | `refactor/cart-store` |
-| `test/` | Agregar tests | `test/add-auth-tests` |
-| `chore/` | Tareas de mantenimiento | `chore/update-dependencies` |
-| `perf/` | Optimización | `perf/optimize-images` |
+| Tipo          | Descripción            | Ejemplo                       |
+| ------------- | ----------------------- | ----------------------------- |
+| `feat/`     | Nueva feature           | `feat/product-filters`      |
+| `fix/`      | Bug fix                 | `fix/price-validation`      |
+| `docs/`     | Documentación          | `docs/update-readme`        |
+| `refactor/` | Mejora de código       | `refactor/cart-store`       |
+| `test/`     | Agregar tests           | `test/add-auth-tests`       |
+| `chore/`    | Tareas de mantenimiento | `chore/update-dependencies` |
+| `perf/`     | Optimización           | `perf/optimize-images`      |
 
 **Reglas:**
+
 - ✅ Usa minúsculas: `feat/product-filters`
 - ✅ Separa palabras con guión: `feat/add-allergen-filters`
 - ✅ Sé descriptivo pero conciso: `feat/cart-persistence` (no `feat/f1`)
 - ✅ No uses caracteres especiales: `feat/fix-auth` (no `feat/fix-@auth`)
 
 **Ejemplos correctos:**
+
 ```bash
 feat/product-filters
 feat/cart-persistence
@@ -558,6 +561,7 @@ git commit -m "refactor(store): improve zustand cart structure"
 ```
 
 **Formato:**
+
 ```
 tipo(scope): descripción en presente
 
@@ -566,6 +570,7 @@ tipo(scope): descripción en presente
 ```
 
 **Ejemplos:**
+
 ```bash
 feat(products): add product filtering by allergens
 
