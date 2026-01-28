@@ -395,6 +395,7 @@ pytest -v -s                    # Verbose con prints
 **Frontend:**
 ```bash
 cd frontend
+pnpm test                      # Ejecutar tests (Jest)
 pnpm run type-check            # Verificar tipos TypeScript
 ```
 
@@ -509,6 +510,7 @@ pip install --upgrade fastapi  # No actualizar sin consultar
 cd frontend
 pnpm install                   # Instalar dependencias
 pnpm start                      # Iniciar app
+pnpm test                       # Ejecutar tests
 pnpm run type-check            # Check TypeScript
 pnpm add {package}             # Agregar dependencia
 
