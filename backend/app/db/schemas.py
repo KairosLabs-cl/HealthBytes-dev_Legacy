@@ -36,7 +36,7 @@ class Order(Base):
     created_at = Column(TIMESTAMP, nullable=False, server_default=func.now())
     status = Column(String(50), nullable=False, default="New")
     total = Column(Float, nullable=False, default=0.0)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     stripe_payment_intent_id = Column(String(255), nullable=True)
 
     items = relationship("OrderItem", back_populates="order")
