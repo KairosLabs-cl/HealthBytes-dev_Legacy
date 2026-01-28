@@ -113,9 +113,8 @@ async def create_order(
     # I will commit here to ensure transaction integrity within the service method.
     
     await db.commit()
-    await db.refresh(new_order)
     
-    # Refresh items efficienty
+    # Fetch order with items in a single efficient query
     result = await db.execute(
         select(Order)
         .where(Order.id == new_order.id)
