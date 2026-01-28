@@ -35,23 +35,23 @@ function BottomNavBar() {
   );
 
   // Responsive sizes based on platform
-  const containerPadding = isMobile ? "px-4 py-3" : "px-3 py-2";
-  const buttonPadding = isMobile ? "py-3" : "py-2";
-  const innerPadding = isMobile ? "px-4 py-3" : "px-3 py-2";
+  const containerPadding = isMobile ? "px-4 py-2" : "px-3 py-1.5";
+  const buttonPadding = isMobile ? "py-2" : "py-1.5";
+  const innerPadding = isMobile ? "px-3 py-2" : "px-3 py-1.5";
   const gap = isMobile ? "gap-3" : "gap-2";
   const textSize = isMobile ? "text-sm" : "text-xs";
   const iconSize = isMobile ? "lg" : "md";
 
   return (
-    <View className="absolute bottom-3 left-3 right-3 z-50">
-      <View className={`bg-black rounded-3xl flex-row justify-between items-center shadow-lg ${containerPadding} ${gap}`}>
+    <View className="absolute bottom-6 left-3 right-3 z-50">
+      <View className={`bg-black rounded-full flex-row justify-between items-center shadow-lg ${containerPadding} ${gap}`}>
         {tabs.map((tab) => {
           const active = isActive(tab.href);
           return (
             <Link key={tab.href} href={tab.href} asChild>
               <Pressable className={`flex-1 items-center ${buttonPadding}`} accessibilityRole="button">
                 <View
-                  className={`w-full flex-row items-center justify-center gap-2 rounded-2xl ${innerPadding}`}
+                  className={`w-full flex-row items-center justify-center gap-2 rounded-3xl ${innerPadding}`}
                   style={{ backgroundColor: active ? "#ffffff" : "#303030" }}
                 >
                   <View className="relative">

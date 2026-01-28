@@ -160,7 +160,7 @@ export default function HomeScreen() {
         key={numColumns}
         data={data}
         numColumns={numColumns}
-        contentContainerClassName="gap-2 max-w-[960px] mx-auto w-full px-3 pb-8"
+        contentContainerClassName="gap-2 max-w-[960px] mx-auto w-full px-3 pb-32"
         columnWrapperClassName="gap-2"
         renderItem={({ item }) => <ProductListItem product={item} />}
       />
