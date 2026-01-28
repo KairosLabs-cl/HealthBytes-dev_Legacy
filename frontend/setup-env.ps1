@@ -13,15 +13,15 @@ Write-Host ""
 # Función para obtener la IP local de WiFi/Ethernet
 function Get-LocalIP {
     try {
-        # Obtener todas las IPs IPv4 (excluyendo localhost y VirtualBox/Docker)
+        # Obtener todas las IPs IPv4 (excluyendo localhost, link-local, Docker, VirtualBox y WSL)
         $ips = Get-NetIPAddress -AddressFamily IPv4 | 
                Where-Object { 
                    $_.IPAddress -ne "127.0.0.1" -and 
-                   $_.IPAddress -notlike "169.254.*" -and
-                   $_.IPAddress -notlike "172.17.*" -and
-                   $_.IPAddress -notlike "172.18.*" -and
-                   $_.IPAddress -notlike "172.19.*" -and
-                   $_.IPAddress -notlike "192.168.56.*"  # VirtualBox
+                   $_.IPAddress -notlike "169.254.*" -and      # Link-local
+                   $_.IPAddress -notlike "172.1[6-9].*" -and   # Docker (172.16-19.*)
+                   $_.IPAddress -notlike "172.2[0-9].*" -and   # Docker + WSL (172.20-29.*)
+                   $_.IPAddress -notlike "172.3[0-1].*" -and   # Docker (172.30-31.*)
+                   $_.IPAddress -notlike "192.168.56.*"        # VirtualBox
                } | 
                Select-Object -First 1
 
@@ -29,17 +29,27 @@ function Get-LocalIP {
             return $ips.IPAddress
         }
     } catch {
-        Write-Host "⚠️  Error auto-detecting IP" -ForegroundColor Yellow
+        Write-Host "⚠️  Error auto-detecting IP with Get-NetIPAddress" -ForegroundColor Yellow
     }
     
-    # Fallback: usar ipconfig
+    # Fallback: usar ipconfig y buscar patrones comunes de red local
     try {
+        # Buscar primero 10.* (común en redes corporativas/universitarias)
+        $ipLine = ipconfig | Select-String -Pattern "IPv4.*10\.\d+\.\d+\.\d+" | Select-Object -First 1
+        if ($ipLine) {
+            $ip = $ipLine.Line -replace ".*:\s*", ""
+            return $ip.Trim()
+        }
+        
+        # Luego buscar 192.168.* (común en redes domésticas)
         $ipLine = ipconfig | Select-String -Pattern "IPv4.*192\.168\.\d+\.\d+" | Select-Object -First 1
         if ($ipLine) {
             $ip = $ipLine.Line -replace ".*:\s*", ""
             return $ip.Trim()
         }
-    } catch {}
+    } catch {
+        Write-Host "⚠️  Error parsing ipconfig" -ForegroundColor Yellow
+    }
     
     return $null
 }
