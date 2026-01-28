@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Text } from "@/components/ui/text";
 import { useCart } from "@/store/cartStore";
 import { View, FlatList, Pressable } from "react-native";
@@ -73,6 +73,14 @@ export default function CartScreen() {
     />
   ), [addProduct, decrementProduct, removeProduct]);
 
+  const footerParam = useMemo(() => (
+    <CartFooter 
+      items={items}
+      subtotal={subtotal}
+      onCheckout={onCheckout}
+    />
+  ), [items, subtotal, onCheckout]);
+
   if (items.length === 0) {
     return (
       <View className="flex-1 items-center justify-center bg-white px-6">
@@ -103,13 +111,7 @@ export default function CartScreen() {
         showsVerticalScrollIndicator={false}
         renderItem={renderItem}
         keyExtractor={(item) => item.product.id.toString()}
-        ListFooterComponent={
-          <CartFooter 
-            items={items}
-            subtotal={subtotal}
-            onCheckout={onCheckout}
-          />
-        }
+        ListFooterComponent={footerParam}
       />
     </View>
   );
