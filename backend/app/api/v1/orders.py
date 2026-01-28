@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 import logging
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from typing import List
 
 from app.db.database import get_db
@@ -180,20 +181,18 @@ async def get_order(
     Replica of getOrder from Node.js
     """
     try:
-        # Get order
-        result = await db.execute(select(Order).where(Order.id == id))
+        # Get order with items using eager loading (single optimized query)
+        result = await db.execute(
+            select(Order)
+            .where(Order.id == id)
+            .options(selectinload(Order.items))
+        )
         order = result.scalar_one_or_none()
 
         if not order:
             raise HTTPException(status_code=404, detail="Order not found")
 
-        # Get order items
-        items_result = await db.execute(
-            select(OrderItem).where(OrderItem.order_id == id)
-        )
-        order_items = items_result.scalars().all()
-
-        # Build response
+        # Build response from eagerly loaded items
         items_response = [
             OrderItemResponse(
                 id=item.id,
@@ -202,7 +201,7 @@ async def get_order(
                 quantity=item.quantity,
                 price=item.price,
             )
-            for item in order_items
+            for item in order.items
         ]
 
         return OrderResponse(
