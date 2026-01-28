@@ -51,6 +51,9 @@ export default function RecentlyViewedBar({ items = [] }: Props) {
             showsHorizontalScrollIndicator={false}
             contentContainerClassName="px-1"
             renderItem={({ item }) => <RecentlyViewedCard product={item} />}
+            initialNumToRender={5}
+            maxToRenderPerBatch={5}
+            windowSize={5}
           />
         </View>
       </View>
