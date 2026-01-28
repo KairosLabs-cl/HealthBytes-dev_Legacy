@@ -51,6 +51,9 @@ export default function FavoritesBar({ products, limit = 8 }: Props) {
             showsHorizontalScrollIndicator={false}
             contentContainerClassName="px-1"
             renderItem={({ item }) => <FavoriteCard product={item} />}
+            initialNumToRender={5}
+            maxToRenderPerBatch={5}
+            windowSize={5}
           />
         </View>
       </View>
