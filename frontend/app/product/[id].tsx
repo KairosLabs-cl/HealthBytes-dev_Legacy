@@ -59,6 +59,7 @@ export default function ProductDetailsScreen() {
       <ScrollView 
         className="flex-1" 
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 120 }}
       >
         {/* Hero Image */}
         <View className="bg-gray-50 items-center justify-center py-8">
