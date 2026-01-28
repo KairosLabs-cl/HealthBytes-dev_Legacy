@@ -19,8 +19,10 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:8081",
+        "http://127.0.0.1:8081",
         "http://127.0.0.1:8082",
-        "http://192.168.1.124:8081",  # Replace with your local IP
+        "http://192.168.1.127:8081",  # Expo Go en tu dispositivo móvil
+        "exp://192.168.1.127:8081",   # Expo protocol
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
