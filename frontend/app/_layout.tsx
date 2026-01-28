@@ -8,7 +8,7 @@ import { Pressable } from "react-native";
 import { useCart } from "@/store/cartStore";
 import { Text } from "@/components/ui/text";
 import BottomNavBar from "@/components/ui/NavBarr/BottomNavBar";
-import React, { useEffect } from "react";
+import React from "react";
 import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@/lib/cache";
 
@@ -79,31 +79,7 @@ function RootLayoutNav() {
   );
 }
 
-function AuthStateMonitor() {
-  const { isSignedIn, isLoaded, getToken, sessionId } = useAuth();
 
-  useEffect(() => {
-    if (!isLoaded) {
-      console.log("[🔐 AUTH] Inicializando Clerk...");
-      return;
-    }
-
-    console.log("[🔐 AUTH] Estado de autenticación:");
-    console.log("  ✓ isLoaded:", isLoaded);
-    console.log("  ✓ isSignedIn:", isSignedIn);
-    console.log("  ✓ sessionId:", sessionId || "undefined");
-
-    // Verificar token si está autenticado
-    if (isSignedIn) {
-      (async () => {
-        const token = await getToken();
-        console.log("  ✓ getToken():", token ? `${token.substring(0, 20)}...` : "null");
-      })();
-    }
-  }, [isSignedIn, isLoaded, sessionId, getToken]);
-
-  return null;
-}
 
 export default function RootLayout() {
   return (
@@ -111,7 +87,7 @@ export default function RootLayout() {
       <ClerkLoaded>
         <QueryClientProvider client={queryClient}>
           <GluestackUIProvider>
-            <AuthStateMonitor />
+
             <RootLayoutNav />
           </GluestackUIProvider>
         </QueryClientProvider>
