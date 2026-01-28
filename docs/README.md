@@ -13,13 +13,16 @@ Bienvenido a la documentación de HealthBytes. Aquí encontrarás información s
 HealthBytes es una plataforma diseñada para simplificar y hacer más seguras las decisiones de compra para personas con restricciones de salud. 
 
 ## Backend
-El backend está construido con FastAPI y PostgreSQL. Para más detalles, consulta el [README del Backend](backend/README.md).
+El backend está construido con FastAPI y PostgreSQL. Para más detalles, consulta:
+- [README del Backend](../backend/README.md)
+- [AI-README del Backend](../backend/AI-README.md) (guía para asistentes de IA)
 
 ## Frontend
-El frontend está desarrollado en React Native. Para más información, revisa el [README del Frontend](frontend/README.md).
+El frontend está desarrollado en React Native (Expo). Para más información, revisa:
+- [README del Frontend](../frontend/README.md)
+- [AI-README del Frontend](../frontend/AI-README.md) (guía para asistentes de IA)
 
-## Guía Rápida
-Para comenzar rápidamente, consulta la [Guía Rápida](docs/QUICK_START.md).
-
-## Plan de Acción
-Para conocer las mejoras y acciones planificadas, revisa el [Plan de Acción](docs/PLAN_ACCION.md).
+## Logs de Estado
+Para ver el historial de cambios y estado del proyecto:
+- [Logs de Estado](Copilot-logs/status-logs/)
+- [Sesión más reciente](Copilot-logs/status-logs/SESSION_2026-01-27.md)
