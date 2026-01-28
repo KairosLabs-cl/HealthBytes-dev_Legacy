@@ -13,6 +13,8 @@ import SectionHeader from "@/components/SectionHeader";
 import { useMemo, useState } from "react";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 import { useUser } from "@clerk/clerk-expo";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
 
 export default function HomeScreen() {
   // se Cambio el estado para que termino de búsqueda se guarde en el estado y se pueda usar en la pagina
@@ -113,23 +115,20 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      {/* Estado de carga mientras se re-fetch */}
+      {/* Estado de carga mientras se re-fetch - MOVIDO AL TOP */}
       {isFetching && data && (
-        <View className="px-4 py-2">
-          <ActivityIndicator size="small" />
+        <View className="absolute top-2 left-0 right-0 items-center z-10">
+          <View className="bg-white/90 rounded-full px-4 py-2 shadow-md">
+            <ActivityIndicator size="small" />
+          </View>
         </View>
       )}
 
       {/* Secciones previas cuando no hay búsqueda */}
       {!searchTerm && (
         <>
-          <View className="px-3 mt-4">
-            <FavoritesBar products={data} />
-          </View>
-
-          <View className="px-3">
-            <RecentlyViewedBar items={recentlyViewedItems} />
-          </View>
+          <FavoritesBar products={data} />
+          <RecentlyViewedBar items={recentlyViewedItems} />
         </>
       )}
 
@@ -149,7 +148,8 @@ export default function HomeScreen() {
   );
 
   return (
-    <>
+    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
+      <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
 
       <FlatList
@@ -164,6 +164,6 @@ export default function HomeScreen() {
         columnWrapperClassName="gap-2"
         renderItem={({ item }) => <ProductListItem product={item} />}
       />
-    </>
+    </SafeAreaView>
   );
 }

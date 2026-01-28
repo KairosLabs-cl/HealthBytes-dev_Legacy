@@ -16,6 +16,8 @@ import {
 } from "lucide-react-native";
 import { useClerk, useAuth, useUser } from "@clerk/clerk-expo";
 import { useEffect } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
 
 const orderStatuses = [
   { label: "Empacado", icon: Package },
@@ -64,7 +66,8 @@ export default function ProfileScreen() {
   }
 
   return (
-    <>
+    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+      <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
 
       <ScrollView className="flex-1 bg-white px-4 pt-6 pb-28">
@@ -129,6 +132,6 @@ export default function ProfileScreen() {
           </View>
         </Pressable>
       </ScrollView>
-    </>
+    </SafeAreaView>
   );
 }
