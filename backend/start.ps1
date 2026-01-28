@@ -13,25 +13,21 @@ Write-Host " HealthBytes FastAPI - Windows Starter" -ForegroundColor Cyan
 Write-Host "===============================================" -ForegroundColor Cyan
 
 function New-Venv {
-    # Try to use Python 3.14 specifically (required for HealthBytes)
-    if (Get-Command py -ErrorAction SilentlyContinue) {
-        try {
-            Write-Host "Creating virtualenv with Python 3.14..." -ForegroundColor Yellow
-            py -3.14 -m venv .venv
-            return
-        } catch {
-            Write-Host "Python 3.14 not found, trying latest Python 3.x..." -ForegroundColor Yellow
-        }
-    }
-    # Fallback to 'python' in PATH
+    # Prefer 'python' as it's usually the pyenv-managed version
     if (Get-Command python -ErrorAction SilentlyContinue) {
         Write-Host "Creating virtualenv with 'python'..." -ForegroundColor Yellow
         python -m venv .venv
         return
     }
-    Write-Host "Error: Could not find Python 3.14+ to create virtualenv." -ForegroundColor Red
-    Write-Host "Please install Python 3.14 from python.org" -ForegroundColor Red
-    exit 1
+    # Fallback to 'py' launcher if python is not in PATH
+    if (Get-Command py -ErrorAction SilentlyContinue) {
+        try {
+            Write-Host "Creating virtualenv with 'py -3'..." -ForegroundColor Yellow
+            py -3 -m venv .venv
+            return
+        } catch {}
+    }
+    Write-Host "Error: Could not find Python to create virtualenv." -ForegroundColor Red
 }
 
 function Test-VenvValid {
