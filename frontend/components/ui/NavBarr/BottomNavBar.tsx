@@ -24,16 +24,15 @@ export default function BottomNavBar() {
 
   return (
     <View className="absolute bottom-3 left-3 right-3 z-50">
-      <View className="bg-black rounded-3xl px-3 py-2 flex-row justify-between items-center shadow-lg">
+      <View className="bg-black rounded-3xl px-3 py-2 flex-row justify-between items-center shadow-lg gap-2">
         {tabs.map((tab) => {
           const active = isActive(tab.href);
           return (
             <Link key={tab.href} href={tab.href} asChild>
               <Pressable className="flex-1 items-center py-2" accessibilityRole="button">
                 <View
-                  className={`w-full flex-row items-center justify-center gap-2 rounded-2xl px-3 py-2 ${
-                    active ? "bg-white" : "bg-transparent"
-                  }`}
+                  className={`w-full flex-row items-center justify-center gap-2 rounded-2xl px-3 py-2`}
+                  style={{ backgroundColor: active ? "#ffffff" : "#303030" }}
                 >
                   <View className="relative">
                     <Icon as={tab.icon} color={active ? "#000" : "#fff"} />
