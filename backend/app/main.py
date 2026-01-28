@@ -21,8 +21,8 @@ app.add_middleware(
         "http://localhost:8081",
         "http://127.0.0.1:8081",
         "http://127.0.0.1:8082",
-        "http://10.171.0.46:8081",  # Expo Go en tu dispositivo móvil
-        "exp://10.171.0.46:8081",   # Expo protocol
+        "http://10.89.51.33:8081",  # Expo Go en tu dispositivo móvil (WiFi)
+        "exp://10.89.51.33:8081",   # Expo protocol
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
