@@ -5,10 +5,11 @@ Verifica que el backend NO confíe en los precios enviados por el cliente.
 
 import pytest
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.db.schemas import Product, User
+from app.db.schemas import Product, User, Order
 from app.schemas.order import OrderCreate, OrderItemCreate
 
 

@@ -402,6 +402,9 @@ export default function ProductListScreen() {
 - Component: Snapshot + interacción básica (press events)
 - E2E: Detox o Maestro (futuro)
 
+✅ **Infraestructura Activa**: Jest + RNTL configurados.
+Ejecutar: `pnpm test`.
+
 Ejemplo:
 ```typescript
 describe('ProductCard', () => {
