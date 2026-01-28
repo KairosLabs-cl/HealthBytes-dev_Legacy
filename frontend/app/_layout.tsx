@@ -11,6 +11,7 @@ import BottomNavBar from "@/components/ui/NavBarr/BottomNavBar";
 import React from "react";
 import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@/lib/cache";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -83,15 +84,17 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   return (
-    <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-      <ClerkLoaded>
-        <QueryClientProvider client={queryClient}>
-          <GluestackUIProvider>
+    <SafeAreaProvider>
+      <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+        <ClerkLoaded>
+          <QueryClientProvider client={queryClient}>
+            <GluestackUIProvider>
 
-            <RootLayoutNav />
-          </GluestackUIProvider>
-        </QueryClientProvider>
-      </ClerkLoaded>
-    </ClerkProvider>
+              <RootLayoutNav />
+            </GluestackUIProvider>
+          </QueryClientProvider>
+        </ClerkLoaded>
+      </ClerkProvider>
+    </SafeAreaProvider>
   );
 }
