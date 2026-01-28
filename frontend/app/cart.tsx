@@ -1,9 +1,54 @@
+import React from "react";
 import { Text } from "@/components/ui/text";
 import { useCart } from "@/store/cartStore";
 import { View, FlatList, Image, Pressable } from "react-native";
 import { Redirect, useRouter } from "expo-router";
 import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react-native";
 import { formatPrice } from "@/lib/formatPrice";
+import { CartItem } from "@/types/cart";
+
+interface CartFooterProps {
+  items: CartItem[];
+  subtotal: number;
+  onCheckout: () => void;
+}
+
+const CartFooter = React.memo<CartFooterProps>(({ items, subtotal, onCheckout }) => {
+  return (
+    <View className="mt-2 bg-white p-5 rounded-2xl">
+      <Text className="font-bold text-lg mb-4 text-gray-900">Resumen de compra</Text>
+
+      <View className="flex-row justify-between mb-2">
+        <Text className="text-gray-600">Subtotal ({items.length} {items.length === 1 ? 'producto' : 'productos'})</Text>
+        <Text className="font-semibold text-gray-900">{formatPrice(subtotal)}</Text>
+      </View>
+
+      <View className="flex-row justify-between mb-4">
+        <Text className="text-gray-600">Envío</Text>
+        <Text className="font-semibold text-green-600">Gratis</Text>
+      </View>
+
+      <View className="h-[1px] bg-gray-200 my-3" />
+
+      <View className="flex-row justify-between items-center mb-4">
+        <Text className="font-bold text-xl text-gray-900">Total</Text>
+        <Text className="font-bold text-2xl text-gray-900">{formatPrice(subtotal)}</Text>
+      </View>
+
+      {/* Checkout Button */}
+      <Pressable
+        onPress={onCheckout}
+        className="w-full h-14 bg-black rounded-full items-center justify-center active:opacity-80"
+      >
+        <Text className="text-white font-bold text-lg">
+          Proceder al pago
+        </Text>
+      </Pressable>
+    </View>
+  );
+});
+
+CartFooter.displayName = 'CartFooter';
 
 export default function CartScreen() {
   const items = useCart((state) => state.items);
@@ -99,38 +144,13 @@ export default function CartScreen() {
             </View>
           </View>
         )}
-        ListFooterComponent={() => (
-          <View className="mt-2 bg-white p-5 rounded-2xl">
-            <Text className="font-bold text-lg mb-4 text-gray-900">Resumen de compra</Text>
-
-            <View className="flex-row justify-between mb-2">
-              <Text className="text-gray-600">Subtotal ({items.length} {items.length === 1 ? 'producto' : 'productos'})</Text>
-              <Text className="font-semibold text-gray-900">{formatPrice(subtotal)}</Text>
-            </View>
-
-            <View className="flex-row justify-between mb-4">
-              <Text className="text-gray-600">Envío</Text>
-              <Text className="font-semibold text-green-600">Gratis</Text>
-            </View>
-
-            <View className="h-[1px] bg-gray-200 my-3" />
-
-            <View className="flex-row justify-between items-center mb-4">
-              <Text className="font-bold text-xl text-gray-900">Total</Text>
-              <Text className="font-bold text-2xl text-gray-900">{formatPrice(subtotal)}</Text>
-            </View>
-
-            {/* Checkout Button */}
-            <Pressable
-              onPress={onCheckout}
-              className="w-full h-14 bg-black rounded-full items-center justify-center active:opacity-80"
-            >
-              <Text className="text-white font-bold text-lg">
-                Proceder al pago
-              </Text>
-            </Pressable>
-          </View>
-        )}
+        ListFooterComponent={
+          <CartFooter 
+            items={items}
+            subtotal={subtotal}
+            onCheckout={onCheckout}
+          />
+        }
       />
     </View>
   );
