@@ -70,7 +70,11 @@ export default function ProfileScreen() {
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
 
-      <ScrollView className="flex-1 bg-white px-4 pt-6 pb-28">
+      <ScrollView 
+        className="flex-1 bg-white px-4 pt-6"
+        contentContainerStyle={{ paddingBottom: 120 }}
+        showsVerticalScrollIndicator={false}
+      >
         <View className="mb-4">
           <Text className="text-2xl font-bold text-black">👤 Perfil</Text>
         </View>
@@ -131,6 +135,16 @@ export default function ProfileScreen() {
             </Text>
           </View>
         </Pressable>
+
+        {/* Footer simple y limpio */}
+        <View className="mt-16 mb-8 items-center">
+          <Text className="text-xs text-gray-400 mb-2">
+            Versión 1.0.0
+          </Text>
+          <Text className="text-xs text-gray-500">
+            Hecho con ❤️ por el equipo de HealthBytes
+          </Text>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
