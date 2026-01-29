@@ -130,7 +130,7 @@ export const useCart = create<CartState>((set, get) => ({
    * Add product to cart
    */
   addProduct: async (product: Product) => {
-    const { isAuthenticated, authToken } = get();
+    const { isAuthenticated, authToken, items: previousItems } = get();
     
     // Update local state first (optimistic update)
     set((state) => {
@@ -157,7 +157,8 @@ export const useCart = create<CartState>((set, get) => ({
         await cartApi.addToCart(authToken, Number(product.id), 1);
       } catch (error) {
         console.error('Failed to sync add to server:', error);
-        // Local state is already updated, so cart still works
+        // Rollback to previous state
+        set({ items: previousItems });
       }
     }
   },
@@ -167,6 +168,7 @@ export const useCart = create<CartState>((set, get) => ({
    */
   decrementProduct: async (productId: string | number) => {
     const { isAuthenticated, authToken, items } = get();
+    const previousItems = items; // Snapshot for rollback
     
     const existingItem = items.find(
       (item) => item.product.id === productId
@@ -201,6 +203,8 @@ export const useCart = create<CartState>((set, get) => ({
         }
       } catch (error) {
         console.error('Failed to sync decrement to server:', error);
+        // Rollback to previous state
+        set({ items: previousItems });
       }
     }
   },
@@ -209,7 +213,7 @@ export const useCart = create<CartState>((set, get) => ({
    * Remove product from cart
    */
   removeProduct: async (productId: string | number) => {
-    const { isAuthenticated, authToken } = get();
+    const { isAuthenticated, authToken, items: previousItems } = get();
     
     // Update local state first
     set((state) => ({
@@ -222,6 +226,8 @@ export const useCart = create<CartState>((set, get) => ({
         await cartApi.removeFromCart(authToken, Number(productId));
       } catch (error) {
         console.error('Failed to sync remove to server:', error);
+        // Rollback to previous state
+        set({ items: previousItems });
       }
     }
   },
@@ -230,7 +236,7 @@ export const useCart = create<CartState>((set, get) => ({
    * Reset/clear entire cart
    */
   resetCart: async () => {
-    const { isAuthenticated, authToken } = get();
+    const { isAuthenticated, authToken, items: previousItems } = get();
     
     // Clear local state
     set({ items: [] });
@@ -241,6 +247,8 @@ export const useCart = create<CartState>((set, get) => ({
         await cartApi.clearCart(authToken);
       } catch (error) {
         console.error('Failed to clear cart on server:', error);
+        // Rollback to previous state
+        set({ items: previousItems });
       }
     }
   },
