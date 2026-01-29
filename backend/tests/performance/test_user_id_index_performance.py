@@ -5,7 +5,7 @@ This test measures the performance impact of adding an index to Order.user_id.
 
 import pytest
 import time
-from sqlalchemy import select, event
+from sqlalchemy import event
 from typing import List
 
 from app.services.order_service import get_user_orders, create_order
@@ -258,7 +258,7 @@ async def test_get_user_orders_scalability(
         mock_db = MockAsyncSession(db_session)
         
         start_time = time.perf_counter()
-        orders = await get_user_orders(mock_db, benchmark_user.id, limit=20)
+        await get_user_orders(mock_db, benchmark_user.id, limit=20)
         elapsed = time.perf_counter() - start_time
         
         results.append({

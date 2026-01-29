@@ -28,8 +28,7 @@ function RootLayoutNav() {
   const cartItemsNum = useCart((state) => state.items.length);
   const setAuth = useCart((state) => state.setAuth);
   const mergeAndSync = useCart((state) => state.mergeAndSync);
-  const resetCart = useCart((state) => state.resetCart);
-  
+
   const { isSignedIn, getToken } = useAuth();
 
   // Sync cart with authentication state

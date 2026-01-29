@@ -67,4 +67,14 @@ const CartItem = ({ item, onIncrement, onDecrement, onRemove }: CartItemProps) =
   );
 };
 
-export default memo(CartItem);
+const areEqual = (prevProps: CartItemProps, nextProps: CartItemProps) => {
+  return (
+    prevProps.item.product.id === nextProps.item.product.id &&
+    prevProps.item.quantity === nextProps.item.quantity &&
+    prevProps.onIncrement === nextProps.onIncrement &&
+    prevProps.onDecrement === nextProps.onDecrement &&
+    prevProps.onRemove === nextProps.onRemove
+  );
+};
+
+export default memo(CartItem, areEqual);

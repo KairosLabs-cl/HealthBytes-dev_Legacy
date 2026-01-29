@@ -3,7 +3,6 @@ Cart API endpoints
 """
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List
 
 from app.db.database import get_db
 from app.db.schemas import User
