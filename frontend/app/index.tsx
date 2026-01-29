@@ -15,6 +15,10 @@ import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 import { useUser } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import { Product } from "@/types/product";
+import { Apple } from "lucide-react-native";
+
+const keyExtractor = (item: Product) => item.id.toString();
 
 export default function HomeScreen() {
   // se Cambio el estado para que termino de búsqueda se guarde en el estado y se pueda usar en la pagina
@@ -133,7 +137,7 @@ export default function HomeScreen() {
       )}
 
       <View className="mt-1">
-        <SectionHeader icon="leaf-outline" title="Para ti" />
+        <SectionHeader icon={Apple} title="Para ti" />
         <QuickFilters />
       </View>
     </>
@@ -158,6 +162,7 @@ export default function HomeScreen() {
         ListHeaderComponent={renderHeader}
         ListEmptyComponent={renderEmpty}
         key={numColumns}
+        keyExtractor={keyExtractor}
         data={data}
         numColumns={numColumns}
         contentContainerClassName="gap-2 max-w-[960px] mx-auto w-full px-3 pb-32"

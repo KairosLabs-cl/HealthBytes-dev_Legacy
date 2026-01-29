@@ -3,18 +3,18 @@ import { Image } from '@/components/ui/image';
 import { Text } from '@/components/ui/text';
 import { useQuery } from '@tanstack/react-query';
 import { fetchProductById } from '@/api/products';
-import { ActivityIndicator, View, ScrollView, Pressable } from 'react-native';
+import { ActivityIndicator, View, ScrollView, Pressable, Alert } from 'react-native';
 import { useCart } from '@/store/cartStore';
 import { useRecentlyViewed } from '@/store/recentlyViewedStore';
 import { useEffect } from 'react';
 import { Heart, ShoppingCart, Star } from 'lucide-react-native';
 import { formatPrice } from '@/lib/formatPrice';
 
-
 export default function ProductDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const addProduct = useCart((state) => state.addProduct);
+  const cartItems = useCart((state) => state.items);
 
   const {
     data: product,
@@ -24,15 +24,38 @@ export default function ProductDetailsScreen() {
     queryKey: ['products', id],
     queryFn: () => fetchProductById(Number(id)),
   });
-  // Después de la declaración de product:
+
   useEffect(() => {
     if (product) {
       useRecentlyViewed.getState().add(product);
     }
   }, [product]);
 
-  const addToCart = () => {
-    addProduct(product);
+  const addToCart = async () => {
+    try {
+      // 1. Verificar stock actualizado
+      const updatedProduct = await fetchProductById(Number(id));
+      
+      // 2. Definir cantidad actual en carrito
+      const currentInCart = cartItems.find(i => i.product.id === updatedProduct.id)?.quantity || 0;
+      
+      // 3. Validar
+      if (currentInCart + 1 > updatedProduct.stock) {
+        Alert.alert(
+          "Stock insuficiente",
+          `Solo quedan ${updatedProduct.stock} unidades disponibles.`
+        );
+        return;
+      }
+
+      // 4. Agregar si todo está bien
+      // Usamos updatedProduct para asegurar que tenemos la data más reciente
+      addProduct(updatedProduct);
+      
+    } catch (error) {
+      console.error("Error checking stock:", error);
+      Alert.alert("Error", "No se pudo verificar el stock. Intenta nuevamente.");
+    }
   };
 
   if (isLoading) {
@@ -110,24 +133,42 @@ export default function ProductDetailsScreen() {
             {formatPrice(product.price)}
           </Text>
 
-          {/* Action Buttons */}
-          <View className="flex-row gap-3 mb-6">
-            <Pressable
-              className="w-12 h-12 rounded-full border border-gray-300 items-center justify-center active:bg-gray-100"
-            >
-              <Heart size={22} color="#374151" />
-            </Pressable>
 
-            <Pressable
-              onPress={addToCart}
-              className="flex-1 h-12 rounded-full bg-black items-center justify-center flex-row gap-2 active:opacity-80"
-            >
-              <ShoppingCart size={20} color="white" />
-              <Text className="text-white font-semibold text-base">
-                Agregar al carrito
+            {/* Stock Info */}
+            <View className="flex-row items-center mb-6">
+              <View className={`w-2 h-2 rounded-full mr-2 ${product.stock > 0 ? 'bg-green-500' : 'bg-red-500'}`} />
+              <Text className="text-sm font-medium text-gray-600">
+                {product.stock > 0 
+                  ? `${product.stock} unidades disponibles` 
+                  : 'Agotado'}
               </Text>
-            </Pressable>
-          </View>
+            </View>
+
+            {/* Action Buttons */}
+            <View className="flex-row gap-3 mb-6">
+              <Pressable
+                className="w-12 h-12 rounded-full border border-gray-300 items-center justify-center active:bg-gray-100"
+              >
+                <Heart size={22} color="#374151" />
+              </Pressable>
+
+              <Pressable
+                onPress={addToCart}
+                disabled={product.stock === 0 || (cartItems.find(i => i.product.id === product.id)?.quantity || 0) >= product.stock}
+                className={`flex-1 h-12 rounded-full items-center justify-center flex-row gap-2 active:opacity-80 ${
+                  product.stock > 0 && (cartItems.find(i => i.product.id === product.id)?.quantity || 0) < product.stock ? 'bg-black' : 'bg-gray-300'
+                }`}
+              >
+                <ShoppingCart size={20} color={product.stock > 0 && (cartItems.find(i => i.product.id === product.id)?.quantity || 0) < product.stock ? "white" : "#9CA3AF"} />
+                <Text className={`font-semibold text-base ${product.stock > 0 && (cartItems.find(i => i.product.id === product.id)?.quantity || 0) < product.stock ? "text-white" : "text-gray-500"}`}>
+                  {product.stock === 0 
+                    ? 'Agotado' 
+                    : (cartItems.find(i => i.product.id === product.id)?.quantity || 0) >= product.stock
+                      ? 'Máximo alcanzado'
+                      : 'Agregar al carrito'}
+                </Text>
+              </Pressable>
+            </View>
 
           {/* Description */}
           <View className="mb-6">

@@ -8,15 +8,18 @@ import { Pressable } from "react-native";
 import { useCart } from "@/store/cartStore";
 import { Text } from "@/components/ui/text";
 import BottomNavBar from "@/components/ui/NavBarr/BottomNavBar";
-import React from "react";
+import React, { useEffect } from "react";
 import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@/lib/cache";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Toast, ToastDescription, ToastTitle, useToast } from "@/components/ui/toast";
+
+// Constants removed
 
 // Create a client
 const queryClient = new QueryClient();
 
-const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 if (!publishableKey) {
   throw new Error(
@@ -26,7 +29,55 @@ if (!publishableKey) {
 
 function RootLayoutNav() {
   const cartItemsNum = useCart((state) => state.items.length);
-  const { isSignedIn } = useAuth();
+  const setAuth = useCart((state) => state.setAuth);
+  const mergeAndSync = useCart((state) => state.mergeAndSync);
+  const error = useCart((state) => state.error);
+  const clearError = useCart((state) => state.clearError);
+  const toast = useToast();
+
+  const { isSignedIn, getToken } = useAuth();
+
+  // Handle cart errors
+  useEffect(() => {
+    if (error) {
+      toast.show({
+        placement: "top",
+        duration: 3000,
+        render: ({ id }) => {
+          const toastId = "toast-" + id;
+          return (
+            <Toast nativeID={toastId} action="error" variant="accent">
+              <ToastTitle>Error</ToastTitle>
+              <ToastDescription>{error}</ToastDescription>
+            </Toast>
+          );
+        },
+      });
+      clearError();
+    }
+  }, [error, clearError, toast]);
+
+  // Sync cart with authentication state
+  useEffect(() => {
+    const syncCart = async () => {
+      if (isSignedIn) {
+        // User logged in
+        const token = await getToken();
+        if (token) {
+          setAuth(true, token);
+          // Merge local cart with server cart
+          await mergeAndSync();
+        }
+      } else {
+        // User logged out
+        setAuth(false, null);
+        // Reset cart will be called by setAuth
+      }
+    };
+
+    syncCart();
+  }, [isSignedIn, getToken, setAuth, mergeAndSync]);
+
 
   return (
     <>

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, TIMESTAMP, func
+from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, TIMESTAMP, func, UniqueConstraint
 from sqlalchemy.orm import relationship
 from app.db.database import Base
 
@@ -36,7 +36,7 @@ class Order(Base):
     created_at = Column(TIMESTAMP, nullable=False, server_default=func.now())
     status = Column(String(50), nullable=False, default="New")
     total = Column(Float, nullable=False, default=0.0)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     stripe_payment_intent_id = Column(String(255), nullable=True)
 
     items = relationship("OrderItem", back_populates="order")
@@ -53,3 +53,24 @@ class OrderItem(Base):
     price = Column(Float, nullable=False)
 
     order = relationship("Order", back_populates="items")
+
+
+class CartItem(Base):
+    """Cart items table - Stores shopping cart items per user"""
+    __tablename__ = "cart_items"
+    
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    product_id = Column(Integer, ForeignKey("products.id", ondelete="CASCADE"), nullable=False)
+    quantity = Column(Integer, nullable=False, default=1)
+    created_at = Column(TIMESTAMP, nullable=False, server_default=func.now())
+    updated_at = Column(TIMESTAMP, nullable=False, server_default=func.now(), onupdate=func.now())
+    
+    # Relationships
+    user = relationship("User", backref="cart_items")
+    product = relationship("Product")
+    
+    # Constraint: one user can't have the same product duplicated in cart
+    __table_args__ = (
+        UniqueConstraint('user_id', 'product_id', name='uq_user_product_cart'),
+    )
