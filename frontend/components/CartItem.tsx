@@ -1,9 +1,10 @@
-import React, { memo } from "react";
-import { View, Image, Pressable } from "react-native";
+import React, { memo, useState, useCallback } from "react";
+import { View, Image, Pressable, TextInput } from "react-native";
 import { Text } from "@/components/ui/text";
 import { Trash2, Plus, Minus } from "lucide-react-native";
 import { formatPrice } from "@/lib/formatPrice";
 import { CartItem as CartItemType, Product } from "@/types/cart";
+import { useCart } from "@/store/cartStore";
 
 type CartItemProps = {
   item: CartItemType;
@@ -13,6 +14,31 @@ type CartItemProps = {
 };
 
 const CartItem = ({ item, onIncrement, onDecrement, onRemove }: CartItemProps) => {
+  const addingProducts = useCart((state) => state.addingProducts);
+  const updatingProducts = useCart((state) => state.updatingProducts);
+  const removingProducts = useCart((state) => state.removingProducts);
+  
+  const isAdding = addingProducts.has(item.product.id);
+  const isUpdating = updatingProducts.has(item.product.id);
+  const isRemoving = removingProducts.has(item.product.id);
+
+  const [quantityText, setQuantityText] = useState(item.quantity.toString());
+
+  // Update local text when item quantity changes
+  React.useEffect(() => {
+    setQuantityText(item.quantity.toString());
+  }, [item.quantity]);
+
+  const updateQuantity = useCallback(async (newQuantity: number) => {
+    if (newQuantity <= 0) {
+      onRemove(item.product.id);
+      return;
+    }
+    
+    // Use the store's updateQuantity function
+    const { updateQuantity: storeUpdateQuantity } = useCart.getState();
+    await storeUpdateQuantity(item.product.id, newQuantity);
+  }, [item.product.id, onRemove]);
   return (
     <View className="bg-white p-4 rounded-2xl flex-row gap-3">
       {/* Product Image */}
@@ -37,34 +63,55 @@ const CartItem = ({ item, onIncrement, onDecrement, onRemove }: CartItemProps) =
         <View className="flex-row items-center gap-2">
           <Pressable
             onPress={() => onDecrement(item.product.id)}
-            className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center active:bg-gray-200"
-          >
-            <Minus size={16} color="#374151" />
-          </Pressable>
-
-          <View className="px-4 py-1 bg-gray-50 rounded-lg min-w-[40px] items-center">
-            <Text className="font-semibold text-gray-900">{item.quantity}</Text>
-          </View>
-
-          <Pressable
-            onPress={() => onIncrement(item.product)}
-            disabled={item.quantity >= (item.product.stock || 0)}
+            disabled={isUpdating || isRemoving}
             className={`w-8 h-8 rounded-full items-center justify-center ${
-              item.quantity >= (item.product.stock || 0)
+              isUpdating || isRemoving
                 ? 'bg-gray-100 opacity-50' 
                 : 'bg-gray-100 active:bg-gray-200'
             }`}
           >
-            <Plus size={16} color={item.quantity >= (item.product.stock || 0) ? "#9CA3AF" : "#374151"} />
+            <Minus size={16} color={isUpdating || isRemoving ? "#9CA3AF" : "#374151"} />
+          </Pressable>
+
+          <TextInput
+            value={quantityText}
+            onChangeText={setQuantityText}
+            onBlur={() => {
+              const newQuantity = parseInt(quantityText);
+              if (!isNaN(newQuantity) && newQuantity !== item.quantity) {
+                updateQuantity(newQuantity);
+              } else {
+                // Reset to current quantity if invalid
+                setQuantityText(item.quantity.toString());
+              }
+            }}
+            keyboardType="numeric"
+            className="px-4 py-1 bg-gray-50 rounded-lg min-w-[40px] text-center font-semibold text-gray-900"
+            editable={!isUpdating && !isRemoving}
+          />
+
+          <Pressable
+            onPress={() => onIncrement(item.product)}
+            disabled={isAdding || isUpdating || isRemoving}
+            className={`w-8 h-8 rounded-full items-center justify-center ${
+              isAdding || isUpdating || isRemoving
+                ? 'bg-gray-100 opacity-50' 
+                : 'bg-gray-100 active:bg-gray-200'
+            }`}
+          >
+            <Plus size={16} color={isAdding || isUpdating || isRemoving ? "#9CA3AF" : "#374151"} />
           </Pressable>
 
           <View className="flex-1" />
 
           <Pressable
             onPress={() => onRemove(item.product.id)}
-            className="w-8 h-8 rounded-full bg-red-50 items-center justify-center active:bg-red-100"
+            disabled={isRemoving}
+            className={`w-8 h-8 rounded-full items-center justify-center ${
+              isRemoving ? 'bg-gray-100 opacity-50' : 'bg-red-50 active:bg-red-100'
+            }`}
           >
-            <Trash2 size={16} color="#DC2626" />
+            <Trash2 size={16} color={isRemoving ? "#9CA3AF" : "#DC2626"} />
           </Pressable>
         </View>
       </View>

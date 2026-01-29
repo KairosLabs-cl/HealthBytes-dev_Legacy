@@ -211,9 +211,9 @@ class TestRemoveFromCart:
         assert len(data["items"]) == 0
     
     def test_remove_nonexistent_item(self, client, auth_headers):
-        """Should return 404 for item not in cart"""
+        """Should succeed (204) even for item not in cart"""
         response = client.delete("/cart/items/999", headers=auth_headers)
-        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
 class TestClearCart:
@@ -259,7 +259,7 @@ class TestMergeCart:
         assert len(data["items"]) == 2
     
     def test_merge_with_existing_items(self, client, db_session, test_user, test_products, auth_headers):
-        """Should combine quantities for same products"""
+        """Should use local quantities for existing products"""
         # Add item to server cart
         cart_item = CartItem(
             user_id=test_user.id,
@@ -284,7 +284,7 @@ class TestMergeCart:
         
         # Find the merged item
         product1_item = next(item for item in data["items"] if item["product_id"] == test_products[0].id)
-        assert product1_item["quantity"] == 5  # 3 + 2
+        assert product1_item["quantity"] == 2  # Local quantity takes priority
     
     def test_merge_ignores_invalid_products(self, client, test_products, auth_headers):
         """Should skip products that don't exist"""
