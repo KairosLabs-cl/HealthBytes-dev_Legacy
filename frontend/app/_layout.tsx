@@ -12,11 +12,14 @@ import React, { useEffect } from "react";
 import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@/lib/cache";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Toast, ToastDescription, ToastTitle, useToast } from "@/components/ui/toast";
+
+// Constants removed
 
 // Create a client
 const queryClient = new QueryClient();
 
-const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 if (!publishableKey) {
   throw new Error(
@@ -28,8 +31,31 @@ function RootLayoutNav() {
   const cartItemsNum = useCart((state) => state.items.length);
   const setAuth = useCart((state) => state.setAuth);
   const mergeAndSync = useCart((state) => state.mergeAndSync);
+  const error = useCart((state) => state.error);
+  const clearError = useCart((state) => state.clearError);
+  const toast = useToast();
 
   const { isSignedIn, getToken } = useAuth();
+
+  // Handle cart errors
+  useEffect(() => {
+    if (error) {
+      toast.show({
+        placement: "top",
+        duration: 3000,
+        render: ({ id }) => {
+          const toastId = "toast-" + id;
+          return (
+            <Toast nativeID={toastId} action="error" variant="accent">
+              <ToastTitle>Error</ToastTitle>
+              <ToastDescription>{error}</ToastDescription>
+            </Toast>
+          );
+        },
+      });
+      clearError();
+    }
+  }, [error, clearError, toast]);
 
   // Sync cart with authentication state
   useEffect(() => {
@@ -50,7 +76,7 @@ function RootLayoutNav() {
     };
 
     syncCart();
-  }, [isSignedIn]);
+  }, [isSignedIn, getToken, setAuth, mergeAndSync]);
 
 
   return (

@@ -149,7 +149,7 @@ class TestUpdateCartItem:
     """Tests for PUT /cart/items/{product_id}"""
     
     def test_update_item_quantity(self, client, db_session, test_user, test_products, auth_headers):
-        """Shoul update quantity of existing item"""
+        """Should update quantity of existing item"""
         # Add item first
         cart_item = CartItem(
             user_id=test_user.id,

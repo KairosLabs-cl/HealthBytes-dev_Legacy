@@ -91,7 +91,7 @@ export default function CheckoutScreen() {
 
         setIsProcessing(true);
 
-        console.log("💳 handlePay: Creando orden...");
+
         createOrderMutation.mutate();
     };
 

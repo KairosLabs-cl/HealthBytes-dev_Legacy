@@ -1,18 +1,19 @@
 import React from "react";
 import { View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Icon } from "@/components/ui/icon";
+import { Star } from "lucide-react-native"; // Default icon
 import { Text } from "@/components/ui/text";
 
 type Props = { 
-  icon?: keyof typeof Ionicons.glyphMap; 
+  icon?: any; 
   title: string;
   lightText?: boolean;
 };
 
-export default function SectionHeader({ icon = "star", title, lightText = false }: Props) {
+export default function SectionHeader({ icon = Star, title, lightText = false }: Props) {
   return (
     <View className="flex-row items-center mb-2 px-3">
-      <Ionicons name={icon} size={18} color={lightText ? "#ffffff" : "#000000"} />
+      <Icon as={icon} size="md" className={lightText ? "text-white" : "text-black"} />
       <Text className={`text-lg font-bold ml-2 ${lightText ? "text-white" : "text-black"}`}>{title}</Text>
     </View>
   );
