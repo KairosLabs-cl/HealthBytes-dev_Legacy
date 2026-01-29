@@ -9,7 +9,7 @@ import sys
 sys.path.insert(0, '..')
 
 from app.db.database import engine
-from app.db.schemas import Base, CartItem  # Import CartItem to ensure it's registered
+from app.db.schemas import Base, CartItem  # noqa: F401 - CartItem is imported to register the model with SQLAlchemy metadata
 
 
 async def create_cart_table():
@@ -18,7 +18,9 @@ async def create_cart_table():
     
     async with engine.begin() as conn:
         # Create only the cart_items table
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(
+            lambda sync_conn: CartItem.__table__.create(sync_conn, checkfirst=True)
+        )
     
     print("✅ Cart table created successfully!")
     print("\nTable structure:")

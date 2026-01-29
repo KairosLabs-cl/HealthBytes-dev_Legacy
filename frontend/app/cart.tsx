@@ -9,18 +9,18 @@ import { CartItem as CartItemType } from "@/types/cart";
 import CartItem from "@/components/CartItem";
 
 interface CartFooterProps {
-  items: CartItemType[];
+  itemCount: number;
   subtotal: number;
   onCheckout: () => void;
 }
 
-const CartFooter = React.memo<CartFooterProps>(({ items, subtotal, onCheckout }) => {
+const CartFooter = React.memo<CartFooterProps>(({ itemCount, subtotal, onCheckout }) => {
   return (
     <View className="mt-2 bg-white p-5 rounded-2xl">
       <Text className="font-bold text-lg mb-4 text-gray-900">Resumen de compra</Text>
 
       <View className="flex-row justify-between mb-2">
-        <Text className="text-gray-600">Subtotal ({items.length} {items.length === 1 ? 'producto' : 'productos'})</Text>
+        <Text className="text-gray-600">Subtotal ({itemCount} {itemCount === 1 ? 'producto' : 'productos'})</Text>
         <Text className="font-semibold text-gray-900">{formatPrice(subtotal)}</Text>
       </View>
 
@@ -75,11 +75,11 @@ export default function CartScreen() {
 
   const footerParam = useMemo(() => (
     <CartFooter 
-      items={items}
+      itemCount={items.length}
       subtotal={subtotal}
       onCheckout={onCheckout}
     />
-  ), [items, subtotal, onCheckout]);
+  ), [items.length, subtotal, onCheckout]);
 
   if (items.length === 0) {
     return (
