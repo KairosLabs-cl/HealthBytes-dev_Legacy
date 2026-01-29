@@ -1,4 +1,5 @@
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+import Constants from 'expo-constants';
+const API_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_API_URL;
 
 // se agrego parametro opcional searchTerm para filtrar productos
 export async function listProducts(searchTerm?: string) {

@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { View, FlatList, Image, Pressable } from "react-native";
+import { Star } from "lucide-react-native";
 import { Text } from "@/components/ui/text";
 import SectionHeader from "@/components/SectionHeader";
 import type { Product } from "@/types/product";
@@ -43,7 +44,7 @@ export default function FavoritesBar({ products, limit = 8 }: Props) {
     <View className="mt-4 mb-4">
       <View className="bg-[#1a1a1a] rounded-3xl mx-3 overflow-hidden">
         <View className="px-3 pt-3 pb-4">
-          <SectionHeader icon="star" title="Favoritos" lightText />
+          <SectionHeader icon={Star} title="Favoritos" lightText />
           <FlatList
             horizontal
             data={favs}
