@@ -24,6 +24,7 @@ type CartState = {
   // Original functions (work locally)
   addProduct: (product: Product) => Promise<void>;
   decrementProduct: (productId: string | number) => Promise<void>;
+  updateQuantity: (productId: string | number, quantity: number) => Promise<void>;
   removeProduct: (productId: string | number) => Promise<void>;
   resetCart: () => Promise<void>;
   
@@ -36,6 +37,11 @@ type CartState = {
   error: string | null;
   setError: (error: string | null) => void;
   clearError: () => void;
+
+  // Loading states
+  addingProducts: Set<string | number>;
+  updatingProducts: Set<string | number>;
+  removingProducts: Set<string | number>;
 };
 
 export const useCart = create<CartState>((set, get) => ({
@@ -43,6 +49,9 @@ export const useCart = create<CartState>((set, get) => ({
   isAuthenticated: false,
   authToken: null,
   error: null,
+  addingProducts: new Set(),
+  updatingProducts: new Set(),
+  removingProducts: new Set(),
 
   setError: (error) => set({ error }),
   clearError: () => set({ error: null }),
@@ -142,7 +151,17 @@ export const useCart = create<CartState>((set, get) => ({
    * Add product to cart
    */
   addProduct: async (product: Product) => {
-    const { isAuthenticated, authToken, items: previousItems } = get();
+    const { isAuthenticated, authToken, items: previousItems, addingProducts } = get();
+    
+    // Prevent multiple simultaneous adds of the same product
+    if (addingProducts.has(product.id)) {
+      return;
+    }
+    
+    // Add to adding set
+    set((state) => ({
+      addingProducts: new Set(state.addingProducts).add(product.id)
+    }));
     
     // Update local state first (optimistic update)
     set((state) => {
@@ -173,13 +192,71 @@ export const useCart = create<CartState>((set, get) => ({
         set({ items: previousItems, error: "No se pudo agregar el producto al carrito. Por favor intenta de nuevo." });
       }
     }
+    
+    // Remove from adding set
+    set((state) => {
+      const newSet = new Set(state.addingProducts);
+      newSet.delete(product.id);
+      return { addingProducts: newSet };
+    });
+  },
+
+  /**
+   * Update product quantity directly
+   */
+  updateQuantity: async (productId: string | number, newQuantity: number) => {
+    const { isAuthenticated, authToken, items, updatingProducts } = get();
+    const previousItems = items; // Snapshot for rollback
+    
+    // Prevent multiple simultaneous updates of the same product
+    if (updatingProducts.has(productId)) {
+      return;
+    }
+    
+    // Validate quantity
+    if (newQuantity < 1) {
+      set({ error: "La cantidad debe ser al menos 1" });
+      return;
+    }
+    
+    // Add to updating set
+    set((state) => ({
+      updatingProducts: new Set(state.updatingProducts).add(productId)
+    }));
+    
+    // Update local state first
+    set((state) => ({
+      items: state.items.map((item) =>
+        item.product.id === productId
+          ? { ...item, quantity: newQuantity }
+          : item
+      ),
+    }));
+
+    // Sync with server
+    if (isAuthenticated && authToken) {
+      try {
+        await cartApi.updateCartItem(authToken, Number(productId), newQuantity);
+      } catch (error) {
+        console.error('Failed to sync quantity update to server:', error);
+        // Rollback to previous state
+        set({ items: previousItems, error: "No se pudo actualizar la cantidad. Por favor intenta de nuevo." });
+      }
+    }
+    
+    // Remove from updating set
+    set((state) => {
+      const newSet = new Set(state.updatingProducts);
+      newSet.delete(productId);
+      return { updatingProducts: newSet };
+    });
   },
 
   /**
    * Decrement product quantity
    */
   decrementProduct: async (productId: string | number) => {
-    const { isAuthenticated, authToken, items } = get();
+    const { isAuthenticated, authToken, items, updatingProducts } = get();
     const previousItems = items; // Snapshot for rollback
     
     const existingItem = items.find(
@@ -187,6 +264,16 @@ export const useCart = create<CartState>((set, get) => ({
     );
 
     if (!existingItem) return;
+
+    // Prevent multiple simultaneous updates of the same product
+    if (updatingProducts.has(productId)) {
+      return;
+    }
+    
+    // Add to updating set
+    set((state) => ({
+      updatingProducts: new Set(state.updatingProducts).add(productId)
+    }));
 
     const newQuantity = existingItem.quantity - 1;
 
@@ -219,20 +306,37 @@ export const useCart = create<CartState>((set, get) => ({
         set({ items: previousItems, error: "No se pudo actualizar el carrito. Por favor intenta de nuevo." });
       }
     }
+    
+    // Remove from updating set
+    set((state) => {
+      const newSet = new Set(state.updatingProducts);
+      newSet.delete(productId);
+      return { updatingProducts: newSet };
+    });
   },
 
   /**
    * Remove product from cart
    */
   removeProduct: async (productId: string | number) => {
-    const { isAuthenticated, authToken, items: previousItems } = get();
+    const { isAuthenticated, authToken, items: previousItems, removingProducts } = get();
     
-    // Update local state first
+    // Prevent multiple simultaneous removes of the same product
+    if (removingProducts.has(productId)) {
+      return;
+    }
+    
+    // Add to removing set
+    set((state) => ({
+      removingProducts: new Set(state.removingProducts).add(productId)
+    }));
+    
+    // Update local state first (optimistic update)
     set((state) => ({
       items: state.items.filter((item) => item.product.id !== productId),
     }));
 
-    // Sync with server
+    // Sync with server if authenticated
     if (isAuthenticated && authToken) {
       try {
         await cartApi.removeFromCart(authToken, Number(productId));
@@ -242,6 +346,13 @@ export const useCart = create<CartState>((set, get) => ({
         set({ items: previousItems, error: "No se pudo eliminar el producto. Por favor intenta de nuevo." });
       }
     }
+    
+    // Remove from removing set
+    set((state) => {
+      const newSet = new Set(state.removingProducts);
+      newSet.delete(productId);
+      return { removingProducts: newSet };
+    });
   },
 
   /**

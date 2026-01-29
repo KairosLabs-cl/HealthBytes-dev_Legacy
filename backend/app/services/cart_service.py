@@ -143,9 +143,7 @@ async def remove_from_cart(
         .where(CartItem.user_id == user_id, CartItem.product_id == product_id)
     )
     
-    if result.rowcount == 0:
-        raise HTTPException(status_code=404, detail="Item not found in cart")
-    
+    # Don't raise error if item not found - it's already removed
     await db.commit()
 
 
@@ -166,7 +164,7 @@ async def merge_cart_items(
 ) -> CartResponse:
     """
     Merge local cart items with server cart (on login)
-    - If product exists on server: add quantities
+    - If product exists on server: use local quantity (current session takes priority)
     - If product is new: add to server cart
     """
     for item in local_items:
@@ -190,9 +188,8 @@ async def merge_cart_items(
         existing_item = result.scalar_one_or_none()
         
         if existing_item:
-            # Add quantities, but don't exceed stock
-            new_quantity = existing_item.quantity + item.quantity
-            existing_item.quantity = min(new_quantity, product.stock)
+            # Use local quantity (user's current session takes priority over old server data)
+            existing_item.quantity = min(item.quantity, product.stock)
         else:
             # Create new item, but don't exceed stock
             final_quantity = min(item.quantity, product.stock)
