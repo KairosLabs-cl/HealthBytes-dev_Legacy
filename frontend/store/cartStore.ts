@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import * as cartApi from "@/api/cart";
+import { Alert } from "react-native";
 
 type Product = {
   id: string | number;
@@ -159,6 +160,10 @@ export const useCart = create<CartState>((set, get) => ({
         console.error('Failed to sync add to server:', error);
         // Rollback to previous state
         set({ items: previousItems });
+        Alert.alert(
+          "Error",
+          "No se pudo agregar el producto al carrito. Por favor intenta de nuevo."
+        );
       }
     }
   },
@@ -205,6 +210,10 @@ export const useCart = create<CartState>((set, get) => ({
         console.error('Failed to sync decrement to server:', error);
         // Rollback to previous state
         set({ items: previousItems });
+        Alert.alert(
+          "Error",
+          "No se pudo actualizar el carrito. Por favor intenta de nuevo."
+        );
       }
     }
   },
@@ -228,6 +237,10 @@ export const useCart = create<CartState>((set, get) => ({
         console.error('Failed to sync remove to server:', error);
         // Rollback to previous state
         set({ items: previousItems });
+        Alert.alert(
+          "Error",
+          "No se pudo eliminar el producto. Por favor intenta de nuevo."
+        );
       }
     }
   },
@@ -249,6 +262,10 @@ export const useCart = create<CartState>((set, get) => ({
         console.error('Failed to clear cart on server:', error);
         // Rollback to previous state
         set({ items: previousItems });
+        Alert.alert(
+          "Error",
+          "No se pudo vaciar el carrito. Por favor intenta de nuevo."
+        );
       }
     }
   },
