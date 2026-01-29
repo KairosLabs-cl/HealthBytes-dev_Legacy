@@ -24,7 +24,7 @@ export const options = {
 export default function LoginScreen() {
   const router = useRouter();
   const { signOut } = useClerk();
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, getToken } = useAuth();
 
   // OAuth providers
   const { startOAuthFlow: googleOAuth } = useOAuth({ strategy: "oauth_google" });
@@ -48,20 +48,20 @@ export default function LoginScreen() {
       setIsLoading(true);
       setError(null);
 
-      console.log(`🔐 Starting ${provider} OAuth...`);
+
       const { createdSessionId, setActive } = await oauthFn({
         redirectUrl: Linking.createURL("/(auth)/login", { scheme: "myapp" }),
       });
 
-      console.log(`✅ ${provider} OAuth completed. Session ID:`, createdSessionId);
+
 
       if (createdSessionId && setActive) {
-        console.log(`🔄 Setting active session...`);
+
         await setActive({ session: createdSessionId });
-        console.log(`✅ Session is now active.`);
+
         
         // Esperar a que el token esté disponible (mitigar timing issue)
-        console.log(`⏳ Waiting for token to be available in cache...`);
+
         let attempts = 0;
         const maxAttempts = 10;
         
@@ -70,7 +70,7 @@ export default function LoginScreen() {
             // Intentar obtener el token para verificar que está disponible
             const testToken = await getToken?.();
             if (testToken) {
-              console.log(`✅ Token is now available in cache. Redirecting to home...`);
+
               router.replace("/");
               return;
             }

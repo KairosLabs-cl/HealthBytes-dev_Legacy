@@ -1,11 +1,6 @@
-export type Product = {
-  id: string | number;
-  name: string;
-  price: number;
-  description?: string;
-  image?: string;
-  stock?: number;
-};
+import type { Product } from './product';
+
+export { Product };
 
 export type CartItem = {
   product: Product;

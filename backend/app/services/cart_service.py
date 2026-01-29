@@ -48,6 +48,10 @@ async def add_to_cart(
     
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
+
+    if quantity > product.stock:
+        raise HTTPException(status_code=400, detail="Insufficient stock")
+
     
     # Check if item already in cart
     result = await db.execute(
@@ -59,7 +63,14 @@ async def add_to_cart(
     
     if existing_item:
         # Increment quantity
-        existing_item.quantity += quantity
+        new_quantity = existing_item.quantity + quantity
+        if new_quantity > product.stock:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Stock insuficiente. Solo quedan {product.stock} unidades disponibles."
+            )
+            
+        existing_item.quantity = new_quantity
         await db.commit()
         await db.refresh(existing_item)
         return CartItemResponse.model_validate(existing_item)
@@ -104,6 +115,14 @@ async def update_cart_item(
     if not cart_item:
         raise HTTPException(status_code=404, detail="Item not found in cart")
     
+    # Validar stock solo si estamos aumentando la cantidad o manteniéndola
+    # Si el usuario está reduciendo la cantidad (aunque siga por encima del stock), permitimos la operación
+    if quantity > cart_item.product.stock and quantity >= cart_item.quantity:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Stock insuficiente. Solo quedan {cart_item.product.stock} unidades disponibles."
+        )
+
     cart_item.quantity = quantity
     await db.commit()
     await db.refresh(cart_item)
@@ -171,16 +190,21 @@ async def merge_cart_items(
         existing_item = result.scalar_one_or_none()
         
         if existing_item:
-            # Add quantities
-            existing_item.quantity += item.quantity
+            # Add quantities, but don't exceed stock
+            new_quantity = existing_item.quantity + item.quantity
+            existing_item.quantity = min(new_quantity, product.stock)
         else:
-            # Create new item
-            new_item = CartItem(
-                user_id=user_id,
-                product_id=item.product_id,
-                quantity=item.quantity
-            )
-            db.add(new_item)
+            # Create new item, but don't exceed stock
+            final_quantity = min(item.quantity, product.stock)
+            
+            # Only add if quantity is valid (> 0)
+            if final_quantity > 0:
+                new_item = CartItem(
+                    user_id=user_id,
+                    product_id=item.product_id,
+                    quantity=final_quantity
+                )
+                db.add(new_item)
     
     await db.commit()
     
