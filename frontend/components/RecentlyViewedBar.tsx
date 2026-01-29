@@ -1,5 +1,6 @@
 import React from "react";
 import { View, FlatList, Image } from "react-native";
+import { Clock } from "lucide-react-native";
 import { Text } from "@/components/ui/text";
 import SectionHeader from "@/components/SectionHeader";
 import type { Product } from "@/types/product";
@@ -43,7 +44,7 @@ export default function RecentlyViewedBar({ items = [] }: Props) {
     <View style={{ marginBottom: 16 }}>
       <View className="bg-[#1a1a1a] rounded-3xl mx-3 overflow-hidden">
         <View className="px-3 pt-3 pb-4">
-          <SectionHeader icon="time-outline" title="Vistos recientemente" lightText />
+          <SectionHeader icon={Clock} title="Vistos recientemente" lightText />
           <FlatList
             horizontal
             data={items}

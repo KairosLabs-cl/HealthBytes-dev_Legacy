@@ -48,9 +48,14 @@ const CartItem = ({ item, onIncrement, onDecrement, onRemove }: CartItemProps) =
 
           <Pressable
             onPress={() => onIncrement(item.product)}
-            className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center active:bg-gray-200"
+            disabled={item.quantity >= (item.product.stock || 0)}
+            className={`w-8 h-8 rounded-full items-center justify-center ${
+              item.quantity >= (item.product.stock || 0)
+                ? 'bg-gray-100 opacity-50' 
+                : 'bg-gray-100 active:bg-gray-200'
+            }`}
           >
-            <Plus size={16} color="#374151" />
+            <Plus size={16} color={item.quantity >= (item.product.stock || 0) ? "#9CA3AF" : "#374151"} />
           </Pressable>
 
           <View className="flex-1" />
