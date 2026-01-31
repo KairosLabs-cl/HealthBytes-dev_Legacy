@@ -131,8 +131,9 @@ if ($updateCors -eq "" -or $updateCors -eq "S" -or $updateCors -eq "s") {
     if (Test-Path $backendMainPath) {
         $mainContent = Get-Content $backendMainPath -Raw
         
-        # Actualizar todas las IPs viejas con la nueva
-        $mainContent = $mainContent -replace "192\.168\.\d+\.\d+", $localIP
+        # Actualizar cualquier IP (10.x, 192.168.x, 172.x) o incluso la antigua 10.89...
+        $mainContent = [System.Text.RegularExpressions.Regex]::Replace($mainContent, 'http://(?:10|192\.168|172\.(?:1[6-9]|2\d|3[01]))\.\d+\.\d+:8081', "http://${localIP}:8081")
+        $mainContent = [System.Text.RegularExpressions.Regex]::Replace($mainContent, 'exp://(?:10|192\.168|172\.(?:1[6-9]|2\d|3[01]))\.\d+\.\d+:8081', "exp://${localIP}:8081")
         
         Set-Content -Path $backendMainPath -Value $mainContent -NoNewline
         
