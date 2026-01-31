@@ -1,5 +1,4 @@
-import Constants from 'expo-constants';
-const API_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_API_URL;
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export interface CartItem {
   id: number;
