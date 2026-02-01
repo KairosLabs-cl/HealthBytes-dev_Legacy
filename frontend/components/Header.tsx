@@ -4,8 +4,8 @@ import { Search } from "lucide-react-native";
 import { useState, useEffect, useRef } from "react";
 
 type HeaderProps = {
-    userName: string;
-    onSearchChange: (searchTerm: string) => void;
+  userName: string;
+  onSearchChange: (searchTerm: string) => void;
 }
 
 export function Header({ userName, onSearchChange }: HeaderProps) {
@@ -15,15 +15,23 @@ export function Header({ userName, onSearchChange }: HeaderProps) {
 
   const handleSearchChange = (text: string) => {
     setSearchTerm(text);
-    
+
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current);
     }
-    
-    // se Cambio que espere 500ms antes de ejecutar búsqueda para mejorar rendimiento
-    debounceTimer.current = setTimeout(() => {
-      onSearchChange(text);
-    }, 500);
+
+    // Si el texto está vacío, buscar inmediatamente para limpiar resultados
+    if (text.length === 0) {
+      onSearchChange("");
+      return;
+    }
+
+    // Se aumentó el debounce a 1000ms y se requiere mínimo 3 caracteres
+    if (text.length >= 3) {
+      debounceTimer.current = setTimeout(() => {
+        onSearchChange(text);
+      }, 1000);
+    }
   };
 
   useEffect(() => {
