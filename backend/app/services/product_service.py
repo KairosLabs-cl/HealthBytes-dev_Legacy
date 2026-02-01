@@ -10,6 +10,7 @@ from app.schemas.product import ProductCreate, ProductUpdate
 
 async def list_products(
     db: AsyncSession,
+    search: str = None,
     skip: int = 0,
     limit: int = 100
 ) -> List[Product]:
@@ -18,6 +19,7 @@ async def list_products(
     
     Args:
         db: Database session
+        search: Search term for product name
         skip: Number of records to skip
         limit: Maximum number of records to return
         
@@ -28,8 +30,13 @@ async def list_products(
     skip = int(skip) if skip is not None else 0
     limit = int(limit) if limit is not None else 100
     
+    query = select(Product)
+    
+    if search:
+        query = query.where(Product.name.ilike(f"%{search}%"))
+        
     result = await db.execute(
-        select(Product)
+        query
         .offset(skip)
         .limit(limit)
     )
