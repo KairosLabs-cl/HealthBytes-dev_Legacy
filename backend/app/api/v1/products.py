@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 import logging
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List
+from typing import List, Optional
 
 from app.db.database import get_db
 from app.schemas.product import ProductCreate, ProductUpdate, ProductResponse
@@ -14,16 +14,29 @@ router = APIRouter()
 
 
 @router.get("/", response_model=List[ProductResponse])
-async def list_products(search: str = None, db: AsyncSession = Depends(get_db)):
+async def list_products(
+    search: Optional[str] = None,
+    db: AsyncSession = Depends(get_db)
+):
     """
     GET /products
-    List all products
-    Replica of listProducts from Node.js
+    GET /products?search=galletas+sin+gluten
+    
+    List all products or search products by name/description.
+    If search parameter is provided, performs full-text search.
+    Otherwise returns all products.
+    
+    Replica of listProducts from Node.js with FTS enhancement
     """
     try:
-        return await product_service.list_products(db, search=search)
+        if search:
+            # Use full-text search when search term is provided
+            return await product_service.search_products(db, search)
+        else:
+            # Return all products if no search term
+            return await product_service.list_products(db)
     except Exception as e:
-        logger.error(f"Error listing products: {str(e)}")
+        logger.error(f"Error listing/searching products: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
