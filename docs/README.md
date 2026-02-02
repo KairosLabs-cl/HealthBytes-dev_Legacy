@@ -22,6 +22,11 @@ El frontend está desarrollado en React Native (Expo). Para más información, r
 - [README del Frontend](../frontend/README.md)
 - [AI-README del Frontend](../frontend/AI-README.md) (guía para asistentes de IA)
 
+## Diagramas
+Para visualizar los flujos y arquitectura del proyecto:
+- [Infraestructura](diagramas/Infrastructura.drawio) - Diagrama de infraestructura (abrir con draw.io)
+- [Flujo B2B de Inserción de Productos](diagramas/b2b-product-insertion-flow.md) - Storyboard Mermaid del proceso de integración de proveedores
+
 ## Logs de Estado
 Para ver el historial de cambios y estado del proyecto:
 - [Logs de Estado](Copilot-logs/status-logs/)
