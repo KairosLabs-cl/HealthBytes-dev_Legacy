@@ -1,11 +1,14 @@
 """Product service - All product business logic."""
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func, desc
 from typing import List, Optional
+import logging
 
 from app.db.schemas import Product
 from app.schemas.product import ProductCreate, ProductUpdate
+
+logger = logging.getLogger(__name__)
 
 
 async def list_products(
@@ -163,3 +166,68 @@ async def delete_product(
     await db.delete(db_product)
     await db.commit()
     return db_product
+
+
+async def search_products(
+    db: AsyncSession,
+    search_query: str,
+    skip: int = 0,
+    limit: int = 100
+) -> List[Product]:
+    """
+    Search products using PostgreSQL Full-Text Search (FTS).
+    Searches in product name and description with ranking by relevance.
+    
+    Args:
+        db: Database session
+        search_query: Text to search (e.g., "galletas sin gluten")
+        skip: Pagination offset
+        limit: Maximum number of results
+        
+    Returns:
+        List of Product objects ordered by relevance (most relevant first)
+        
+    Raises:
+        N/A - returns empty list if search fails
+    """
+    # Sanitize input: remove extra whitespace
+    clean_query = search_query.strip()
+    
+    # If query is empty, return all products
+    if not clean_query:
+        return await list_products(db, skip, limit)
+    
+    try:
+        # Create tsquery using plainto_tsquery (safe from SQL injection)
+        # Supports 'spanish' language for proper stemming
+        tsquery = func.plainto_tsquery('spanish', clean_query)
+        
+        # Execute FTS query with ranking
+        # ts_rank_cd = weighted ranking (CD = cover dense)
+        result = await db.execute(
+            select(Product)
+            .where(Product.search_vector.op('@@')(tsquery))
+            .order_by(desc(func.ts_rank_cd(Product.search_vector, tsquery)))
+            .offset(int(skip) if skip else 0)
+            .limit(int(limit) if limit else 100)
+        )
+        
+        return result.scalars().all()
+    
+    except Exception as e:
+        # Log error and fallback to simple LIKE search
+        logger.warning(f"Full-text search failed, falling back to LIKE: {str(e)}")
+        
+        # Fallback: simple LIKE search in name and description
+        search_pattern = f"%{clean_query}%"
+        result = await db.execute(
+            select(Product)
+            .where(
+                (Product.name.ilike(search_pattern)) | 
+                (Product.description.ilike(search_pattern))
+            )
+            .offset(int(skip) if skip else 0)
+            .limit(int(limit) if limit else 100)
+        )
+        
+        return result.scalars().all()

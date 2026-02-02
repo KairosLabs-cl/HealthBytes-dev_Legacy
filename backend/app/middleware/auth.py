@@ -3,6 +3,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import Optional
+import logging
 import jwt
 from jwt import PyJWKClient
 
@@ -13,8 +14,13 @@ from app.config import settings
 
 security = HTTPBearer(auto_error=False)
 
+logger = logging.getLogger(__name__)
+
 # Cache for Clerk JWKS client
 _clerk_jwks_client: Optional[PyJWKClient] = None
+_jwks_client_warned = False
+_jwks_verify_warned = False
+_jwks_decode_warned = False
 
 
 def get_clerk_jwks_client() -> Optional[PyJWKClient]:
@@ -30,19 +36,27 @@ def verify_clerk_token(token: str) -> Optional[dict]:
     Verify a Clerk JWT token using JWKS
     Returns the decoded payload or None if verification fails
     """
+    global _jwks_client_warned, _jwks_verify_warned, _jwks_decode_warned
+    
     jwks_client = get_clerk_jwks_client()
     if not jwks_client:
         # If JWKS client can't be created, try to decode without verification
         # This is a fallback for development when JWKS URL is not accessible
         if settings.ENVIRONMENT == "dev":
             try:
-                print("Warning: JWKS client not available, decoding token without verification (dev mode only)")
+                if not _jwks_client_warned:
+                    logger.warning(
+                        "JWKS client not available, decoding token without verification (dev mode only)"
+                    )
+                    _jwks_client_warned = True
                 payload = jwt.decode(token, options={"verify_signature": False})
                 # Basic validation: check if it looks like a Clerk token
                 if payload.get("sub") and payload.get("iss"):
                     return payload
             except Exception as e:
-                print(f"Failed to decode token without verification: {e}")
+                if not _jwks_decode_warned:
+                    logger.warning("Failed to decode token without verification: %s", e)
+                    _jwks_decode_warned = True
         return None
     
     try:
@@ -58,17 +72,27 @@ def verify_clerk_token(token: str) -> Optional[dict]:
         )
         return payload
     except Exception as e:
-        print(f"Clerk token verification failed: {e}")
+        message = str(e)
+        if "Signature has expired" not in message:
+            if not _jwks_verify_warned:
+                logger.warning("Clerk token verification failed: %s", e)
+                _jwks_verify_warned = True
         # Fallback for development: try to decode without verification
         if settings.ENVIRONMENT == "dev":
             try:
-                print("Warning: JWKS verification failed, decoding token without verification (dev mode only)")
+                if not _jwks_client_warned:
+                    logger.warning(
+                        "JWKS verification failed, decoding token without verification (dev mode only)"
+                    )
+                    _jwks_client_warned = True
                 payload = jwt.decode(token, options={"verify_signature": False})
                 # Basic validation: check if it looks like a Clerk token
                 if payload.get("sub") and payload.get("iss"):
                     return payload
             except Exception as decode_error:
-                print(f"Failed to decode token without verification: {decode_error}")
+                if not _jwks_decode_warned:
+                    logger.warning("Failed to decode token without verification: %s", decode_error)
+                    _jwks_decode_warned = True
         return None
 
 
@@ -138,7 +162,7 @@ async def get_current_user(
                     await db.refresh(new_user)
                     return new_user
                 except Exception as e:
-                    print(f"Error creating user from Clerk token: {e}")
+                    logger.warning("Error creating user from Clerk token: %s", e)
                     # Fall through to try legacy JWT
     
     # Fallback: Try legacy JWT token
