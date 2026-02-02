@@ -3,6 +3,11 @@ Script para iniciar el servidor FastAPI con el event loop correcto para Windows
 """
 import sys
 import asyncio
+import warnings
+
+# Suprimir deprecation warnings de asyncio en Python 3.14+
+warnings.filterwarnings("ignore", category=DeprecationWarning, message=".*WindowsSelectorEventLoopPolicy.*")
+warnings.filterwarnings("ignore", category=DeprecationWarning, message=".*set_event_loop_policy.*")
 
 # CRITICAL: Fix para Windows - psycopg requiere SelectorEventLoop
 if sys.platform == "win32":
