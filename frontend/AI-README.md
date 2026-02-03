@@ -443,7 +443,23 @@ describe('ProductCard', () => {
 
 ---
 
-## 📞 Dudas
+## � Template Obligatorio de PR y Commits
+
+**⚠️ IMPORTANTE**: Al crear PRs o commits, seguir templates de README.md (líneas 580-680).
+
+**Commit format**:
+```bash
+tipo(scope): descripción en presente
+
+[body opcional]
+Closes #123
+```
+
+**PR Description**: Ver template completo en README.md líneas 650-680.
+
+---
+
+## �📞 Dudas
 
 Si algo no está claro en este documento:
 1. Revisa el README.md (documentación para devs)
