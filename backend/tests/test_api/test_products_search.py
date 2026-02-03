@@ -121,6 +121,19 @@ class TestProductSearch:
         
         # All should return same number of results
         assert len(data1) == len(data2) == len(data3)
+
+    def test_search_trims_whitespace(self, client):
+        """Test that leading/trailing whitespace is ignored."""
+        response_clean = client.get("/products?search=galletas")
+        response_spaced = client.get("/products?search=%20%20galletas%20%20")
+
+        assert response_clean.status_code == 200
+        assert response_spaced.status_code == 200
+
+        data_clean = response_clean.json()
+        data_spaced = response_spaced.json()
+
+        assert len(data_clean) == len(data_spaced)
     
     def test_search_empty_results(self, client):
         """Test search that returns no results."""

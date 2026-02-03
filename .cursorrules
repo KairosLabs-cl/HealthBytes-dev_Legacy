@@ -886,6 +886,41 @@ git push origin feat/product-filters
 
 ---
 
+## 📝 TEMPLATE OBLIGATORIO DE PR Y COMMITS
+
+**⚠️ CRÍTICO**: Al crear PRs o commits, SIEMPRE usar los templates definidos en README.md líneas 580-680.
+
+### Commit Format (Conventional Commits):
+```
+tipo(scope): descripción en presente
+
+[body opcional]
+[footer: Closes #123]
+```
+
+### PR Description Template:
+```markdown
+## 📝 Descripción
+[Qué hace y por qué]
+
+## 🎯 Tipo de Cambio
+- [x] Nueva feature / [ ] Bug fix / [ ] Breaking change / [ ] Documentación
+
+## 📸 Screenshots/Demo (si aplica)
+[Imágenes]
+
+## ✅ Checklist
+- [ ] Tests pasan
+- [ ] Código sigue convenciones
+- [ ] Documentación actualizada
+- [ ] Sin console.logs/prints
+- [ ] Branch name correcto
+```
+
+**IA: RECHAZA cualquier PR/commit que no siga este formato.**
+
+---
+
 ## 🤝 TL;DR - Reglas de Oro
 
 1. **Lee primero, modifica después** (AI-README.md + código existente)
@@ -896,6 +931,7 @@ git push origin feat/product-filters
 6. **TypeScript estricto** (no `any`, types explícitos)
 7. **Seguridad primero** (no tokens en logs, no endpoints sin auth)
 8. **Pregunta si dudas** (mejor consultar que romper)
+9. **Usa templates de PR/commits** (README líneas 580-680)
 
 ---
 
