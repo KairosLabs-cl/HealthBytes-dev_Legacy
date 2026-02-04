@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 
@@ -13,6 +13,53 @@ app = FastAPI(
     docs_url="/docs" if settings.ENVIRONMENT == "dev" else None,
     redoc_url="/redoc" if settings.ENVIRONMENT == "dev" else None
 )
+
+
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault("Referrer-Policy", "no-referrer")
+    response.headers.setdefault(
+        "Permissions-Policy",
+        "geolocation=(), microphone=(), camera=()",
+    )
+    response.headers.setdefault("Cross-Origin-Resource-Policy", "same-site")
+    if settings.ENVIRONMENT != "dev":
+        response.headers.setdefault(
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains",
+        )
+    return response
+
+
+@app.middleware("http")
+async def limit_request_body_size(request: Request, call_next):
+    if settings.MAX_REQUEST_BODY_SIZE <= 0:
+        return await call_next(request)
+
+    content_length = request.headers.get("content-length")
+    if content_length and content_length.isdigit():
+        if int(content_length) > settings.MAX_REQUEST_BODY_SIZE:
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail="Request body too large",
+            )
+    elif content_length:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail="Request body too large",
+        )
+
+    body = await request.body()
+    if len(body) > settings.MAX_REQUEST_BODY_SIZE:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail="Request body too large",
+        )
+    request._body = body
+    return await call_next(request)
 
 # CORS Configuration - Replica of Node.js CORS settings
 app.add_middleware(
@@ -44,6 +91,9 @@ async def check_jwks_health():
     """Check if the backend can access Clerk's JWKS endpoint"""
     import httpx
     from app.config import settings
+
+    if settings.ENVIRONMENT != "dev":
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
     
     result = {
         "status": "unknown",
