@@ -94,15 +94,48 @@ if (-not (Test-Path $activate)) {
 . $activate
 
 # 3) Install/update deps (unless --NoInstall)
+$installLog = @()
 if (-not $NoInstall) {
     Write-Host "Upgrading pip/setuptools/wheel..." -ForegroundColor Yellow
-    python -m pip install --upgrade pip setuptools wheel | Out-Host
+    $pipUpgradeOutput = python -m pip install --upgrade pip setuptools wheel 2>&1
+    $installLog += $pipUpgradeOutput
 
     Write-Host "Installing requirements..." -ForegroundColor Yellow
-    python -m pip install -r requirements.txt | Out-Host
+    $reqOutput = python -m pip install -r requirements.txt 2>&1
+    $installLog += $reqOutput
+    
+    # Show health summary after installation
+    Write-Host ""
+    Show-HealthSummary -Logs $installLog
 }
 
 # 4) Start server via run_server.py (configured reload excludes)
+Write-Host ""
 Write-Host "Starting FastAPI server on http://127.0.0.1:3001 ..." -ForegroundColor Green
 Write-Host "Press CTRL+C to stop." -ForegroundColor Green
+Write-Host ""
+
 python run_server.py
+
+# ============================================================================
+# HEALTH CHECK SUMMARY FUNCTION
+# ============================================================================
+function Show-HealthSummary {
+    param([array]$Logs)
+    
+    # Count metrics
+    $warningCount = ($Logs | Select-String "WARNING|⚠️|warning|deprecated" -ErrorAction SilentlyContinue).Count
+    $errorCount = ($Logs | Select-String "ERROR|❌|error|failed|Failed" -ErrorAction SilentlyContinue).Count
+    $pkgCount = ($Logs | Select-String "Successfully installed" -ErrorAction SilentlyContinue).Count
+    
+    # Overall status
+    $status = "🟢"
+    if ($errorCount -gt 0) { $status = "🔴" }
+    elseif ($warningCount -gt 5) { $status = "🟡" }
+    
+    Write-Host ""
+    Write-Host "═══ $status Health Check: " -NoNewline -ForegroundColor Cyan
+    Write-Host "📦 $pkgCount deps  |  " -NoNewline -ForegroundColor White
+    Write-Host "⚠️  $warningCount warnings  |  " -NoNewline -ForegroundColor Yellow
+    Write-Host "❌ $errorCount errors" -ForegroundColor $(if ($errorCount -gt 0) { "Red" } else { "Green" })
+}
