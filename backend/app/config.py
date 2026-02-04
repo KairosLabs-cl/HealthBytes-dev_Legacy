@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "dev"
     HOST: str = "0.0.0.0"
     PORT: int = 3001
+    MAX_REQUEST_BODY_SIZE: int = 2 * 1024 * 1024  # 2 MB
     
     @property
     def clerk_jwks_url(self) -> str:
@@ -71,4 +72,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-
