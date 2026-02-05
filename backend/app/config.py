@@ -28,7 +28,12 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "dev"
     HOST: str = "0.0.0.0"
     PORT: int = 3001
-    MAX_REQUEST_BODY_SIZE: int = 2 * 1024 * 1024  # 2 MB
+    # Default max request body size for general API requests.
+    # 10 MB supports typical e-commerce JSON payloads and small media.
+    # Larger per-route limits (e.g., for image/document uploads) should be
+    # configured using FastAPI's upload mechanisms and not rely on this default.
+    MAX_REQUEST_BODY_SIZE: int = 10 * 1024 * 1024  # 10 MB
+    ENABLE_DIAGNOSTIC_ENDPOINTS: bool = False
     
     @property
     def clerk_jwks_url(self) -> str:

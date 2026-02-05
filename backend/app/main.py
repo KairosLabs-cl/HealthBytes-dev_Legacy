@@ -58,7 +58,6 @@ async def limit_request_body_size(request: Request, call_next):
             status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
             detail="Request body too large",
         )
-    request._body = body
     return await call_next(request)
 
 # CORS Configuration - Replica of Node.js CORS settings
@@ -92,7 +91,7 @@ async def check_jwks_health():
     import httpx
     from app.config import settings
 
-    if settings.ENVIRONMENT != "dev":
+    if settings.ENVIRONMENT != "dev" and not settings.ENABLE_DIAGNOSTIC_ENDPOINTS:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
     
     result = {
