@@ -16,6 +16,7 @@ Comprende cómo está construido HealthBytes:
 - Estructura de carpetas detallada
 - Decisiones técnicas y patrones
 - Stack tecnológico
+- **[API_DESIGN_ANALYSIS.md](./architecture/API_DESIGN_ANALYSIS.md)** - Análisis completo del REST API
 
 ### ✨ [features/](./features/) - Características Implementadas
 Documentación detallada de features del proyecto:
@@ -29,6 +30,7 @@ Información sobre seguridad y mejoras implementadas:
 
 ### 👨‍💻 [development/](./development/) - Para Desarrolladores
 Guías para trabajar en el código:
+- **[testing-report.md](./development/testing-report.md)** - Reporte de pruebas (2026-02-05)
 - **[testing-guide.md](./development/testing-guide.md)** - Estrategia de testing
 - **[git-workflow.md](./development/git-workflow.md)** - Flujo de git y commits
 - **[code-standards.md](./development/code-standards.md)** - Estándares de código

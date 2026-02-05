@@ -4,6 +4,14 @@ Comprende cómo está construido HealthBytes y por qué tomamos estas decisiones
 
 ## 📋 Contenido
 
+### 📄 Documentos de Arquitectura
+
+- **[API_DESIGN_ANALYSIS.md](./API_DESIGN_ANALYSIS.md)** - Análisis completo del diseño REST API
+  - Problemas identificados y soluciones
+  - Recomendaciones prioritizadas (crítico, importante, nice-to-have)
+  - Benchmarks y métricas de performance
+  - Basado en: `api-design-principles` skill
+
 ### Stack Tecnológico
 
 **Backend:**

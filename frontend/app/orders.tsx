@@ -5,7 +5,7 @@ import { Text } from "@/components/ui/text";
 import { useOrders } from "@/store/orderStore";
 import { OrderStatus } from "@/types/order";
 import { useAuth } from "@clerk/clerk-expo";
-import { Stack, useRouter, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { AlertCircle, Package } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -29,7 +29,12 @@ export default function OrdersScreen() {
   const [selectedFilter, setSelectedFilter] = useState<
     "all" | OrderStatus | "messages"
   >(() => {
-    if (filter && ["pending", "packed", "in_transit", "delivered", "cancelled"].includes(filter)) {
+    if (
+      filter &&
+      ["pending", "packed", "in_transit", "delivered", "cancelled"].includes(
+        filter
+      )
+    ) {
       return filter as OrderStatus;
     }
     return "all";
@@ -96,8 +101,10 @@ export default function OrdersScreen() {
       const filterStatus = selectedFilter.toLowerCase().replace(/_/g, "");
 
       // Para "pending" también incluir "packed"
-      if (selectedFilter === "pending" &&
-          (normalizedStatus === "pending" || normalizedStatus === "packed")) {
+      if (
+        selectedFilter === "pending" &&
+        (normalizedStatus === "pending" || normalizedStatus === "packed")
+      ) {
         return true;
       }
 
@@ -156,7 +163,8 @@ export default function OrdersScreen() {
   }
 
   // Empty filtered results
-  const showEmptyFilter = !isLoading && filteredOrders.length === 0 && orders.length > 0;
+  const showEmptyFilter =
+    !isLoading && filteredOrders.length === 0 && orders.length > 0;
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
@@ -193,9 +201,7 @@ export default function OrdersScreen() {
             {filters.map((filter) => (
               <Pressable
                 key={filter.id}
-                onPress={() =>
-                  setSelectedFilter(filter.id as OrderStatus)
-                }
+                onPress={() => setSelectedFilter(filter.id as OrderStatus)}
                 className={`px-4 py-2 rounded-full border ${
                   selectedFilter === filter.id
                     ? "bg-black border-black"
@@ -226,13 +232,13 @@ export default function OrdersScreen() {
               <Icon
                 as={Package}
                 size="sm"
-                className={selectedFilter === "messages" ? "text-white" : "text-gray-700"}
+                className={
+                  selectedFilter === "messages" ? "text-white" : "text-gray-700"
+                }
               />
               <Text
                 className={`font-semibold ${
-                  selectedFilter === "messages"
-                    ? "text-white"
-                    : "text-gray-700"
+                  selectedFilter === "messages" ? "text-white" : "text-gray-700"
                 }`}
               >
                 Mensajes del vendedor
@@ -244,7 +250,8 @@ export default function OrdersScreen() {
         {/* Contador de resultados */}
         <View className="mb-4">
           <Text className="text-gray-600">
-            {filteredOrders.length} orden{filteredOrders.length !== 1 ? "es" : ""}
+            {filteredOrders.length} orden
+            {filteredOrders.length !== 1 ? "es" : ""}
             {selectedFilter !== "all" && " encontradas"}
           </Text>
         </View>
