@@ -29,11 +29,11 @@
     "python.analysis.extraPaths": [
       "${workspaceFolder:🐍 Backend (FastAPI)}/app"
     ],
-    
+
     // TypeScript settings (frontend)
     "typescript.tsdk": "${workspaceFolder:⚛️ Frontend (React Native)}/node_modules/typescript/lib",
     "typescript.enablePromptUseWorkspaceTsdk": true,
-    
+
     // Editor settings
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
@@ -41,7 +41,7 @@
       "source.organizeImports": "explicit"
     },
     "editor.rulers": [88, 120],
-    
+
     // Language-specific formatters
     "[python]": {
       "editor.defaultFormatter": "ms-python.black-formatter",
@@ -74,13 +74,13 @@
         "other": "off"
       }
     },
-    
+
     // File associations
     "files.associations": {
       ".cursorrules": "markdown",
       "*.code-workspace": "jsonc"
     },
-    
+
     // Exclude from explorer
     "files.exclude": {
       "**/__pycache__": true,
@@ -89,7 +89,7 @@
       "**/.venv": true,
       "**/*.pyc": true
     },
-    
+
     // Search exclusions
     "search.exclude": {
       "**/node_modules": true,
@@ -97,14 +97,14 @@
       "**/htmlcov": true,
       "**/__pycache__": true
     },
-    
+
     // Terminal settings
     "terminal.integrated.cwd": "${workspaceFolder}",
     "terminal.integrated.defaultProfile.windows": "PowerShell",
-    
+
     // Git settings
     "git.ignoreLimitWarning": true,
-    
+
     // Copilot settings
     "github.copilot.enable": {
       "*": true,
@@ -119,17 +119,17 @@
       "ms-python.python",
       "ms-python.black-formatter",
       "ms-python.vscode-pylance",
-      
+
       // TypeScript/React (Frontend)
       "dbaeumer.vscode-eslint",
       "esbenp.prettier-vscode",
-      
+
       // General
       "github.copilot",
       "github.copilot-chat",
       "eamodio.gitlens",
       "editorconfig.editorconfig",
-      
+
       // Database
       "mtxr.sqltools",
       "mtxr.sqltools-driver-pg"
