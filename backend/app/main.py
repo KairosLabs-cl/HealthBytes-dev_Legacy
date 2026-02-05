@@ -85,16 +85,22 @@ async def limit_request_body_size(request: Request, call_next):
     return await call_next(request)
 
 # CORS Configuration - Replica of Node.js CORS settings
+cors_origins = [
+    "http://localhost:8081",
+    "http://127.0.0.1:8081",
+    "http://127.0.0.1:8082",
+    "http://0.0.0.0:8081",      # Web (local)
+    "http://10.98.204.33:8081", # Tu IP actual (Wi-Fi)
+    "exp://10.98.204.33:8081",  # Expo Protocol
+]
+
+# En dev, permitir desde cualquier origen para facilitar testing
+if settings.ENVIRONMENT == "dev":
+    cors_origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:8081",
-        "http://127.0.0.1:8081",
-        "http://127.0.0.1:8082",
-        "http://0.0.0.0:8081",      # Web (local)
-        "http://10.89.51.33:8081", # Tu IP actual (Web/Expo)
-        "exp://10.89.51.33:8081",  # Expo Protocol
-    ],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Content-Type", "Authorization"],

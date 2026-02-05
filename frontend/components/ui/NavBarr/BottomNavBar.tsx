@@ -46,14 +46,23 @@ function BottomNavBar() {
 
   return (
     <View className="absolute bottom-6 left-3 right-3 z-50">
-      <View className={`bg-black rounded-full flex-row justify-between items-center shadow-lg ${RESPONSIVE_STYLES.containerPadding} ${RESPONSIVE_STYLES.gap}`}>
+      <View
+        className={`bg-black rounded-full flex-row justify-between items-center ${RESPONSIVE_STYLES.containerPadding} ${RESPONSIVE_STYLES.gap}`}
+        style={{
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.12,
+          shadowRadius: 6,
+          elevation: 5,
+        }}
+      >
         {tabs.map((tab) => {
           const active = isActive(tab.href);
           return (
             <Link key={tab.href} href={tab.href} asChild>
               <Pressable className={`flex-1 items-center ${RESPONSIVE_STYLES.buttonPadding}`} accessibilityRole="button">
                 <View
-                  className={`w-full flex-row items-center justify-center gap-2 rounded-3xl ${RESPONSIVE_STYLES.innerPadding}`}
+                  className={`w-full flex-row items-center justify-center gap-2 rounded-full ${RESPONSIVE_STYLES.innerPadding}`}
                   style={{ backgroundColor: active ? "#ffffff" : "#303030" }}
                 >
                   <View className="relative">

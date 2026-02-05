@@ -10,6 +10,12 @@ httpx>=0.24.0
 ruff>=0.0.280
 black>=23.7.0
 mypy>=1.4.0
+flake8>=7.0.0
+isort>=5.13.2
+bandit[toml]>=1.7.6
+
+# Pre-commit hooks
+pre-commit>=3.6.0
 
 # Development tools
 ipython>=8.14.0

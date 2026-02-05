@@ -1,8 +1,9 @@
 import React, { useCallback, useMemo } from "react";
 import { Text } from "@/components/ui/text";
+import { Icon } from "@/components/ui/icon";
 import { useCart } from "@/store/cartStore";
-import { View, FlatList, Pressable } from "react-native";
-import { useRouter } from "expo-router";
+import { View, FlatList, Pressable, Platform } from "react-native";
+import { Stack, useRouter } from "expo-router";
 import { ShoppingBag } from "lucide-react-native";
 import { formatPrice } from "@/lib/formatPrice";
 import { CartItem as CartItemType } from "@/types/cart";
@@ -83,28 +84,33 @@ export default function CartScreen() {
 
   if (items.length === 0) {
     return (
-      <View className="flex-1 items-center justify-center bg-white px-6">
-        <View className="w-24 h-24 rounded-full bg-gray-100 items-center justify-center mb-4">
-          <ShoppingBag size={40} color="#9CA3AF" />
+      <>
+        <Stack.Screen options={{ title: "Carrito de Compras" }} />
+        <View className="flex-1 items-center justify-center bg-white px-6">
+          <View className="w-24 h-24 rounded-full bg-gray-100 items-center justify-center mb-4">
+            <ShoppingBag size={40} color="#9CA3AF" />
+          </View>
+          <Text className="text-xl font-bold text-gray-900 mb-2">
+            Tu carrito está vacío
+          </Text>
+          <Text className="text-center text-gray-500 mb-6">
+            Agrega productos para comenzar tu compra
+          </Text>
+          <Pressable
+            onPress={() => router.push("/")}
+            className="px-6 py-3 bg-black rounded-full active:opacity-80"
+          >
+            <Text className="text-white font-semibold">Explorar productos</Text>
+          </Pressable>
         </View>
-        <Text className="text-xl font-bold text-gray-900 mb-2">
-          Tu carrito está vacío
-        </Text>
-        <Text className="text-center text-gray-500 mb-6">
-          Agrega productos para comenzar tu compra
-        </Text>
-        <Pressable
-          onPress={() => router.push("/")}
-          className="px-6 py-3 bg-black rounded-full active:opacity-80"
-        >
-          <Text className="text-white font-semibold">Explorar productos</Text>
-        </Pressable>
-      </View>
+      </>
     );
   }
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <>
+      <Stack.Screen options={{ title: "Carrito de Compras" }} />
+      <View className="flex-1 bg-gray-50">
       <FlatList
         data={items}
         contentContainerClassName="gap-3 p-4 pb-32"
@@ -113,6 +119,7 @@ export default function CartScreen() {
         keyExtractor={(item) => item.product.id.toString()}
         ListFooterComponent={footerParam}
       />
-    </View>
+      </View>
+    </>
   );
 }
