@@ -3,11 +3,11 @@
 > **📚 Documentation Map**: This file provides the "big picture" architecture and workflows. For detailed rules, check the **Skills** directory:
 > 
 > ### 🎯 **Developer Skills** (Reference These!)
-> - **Backend Patterns & Testing** → [skills/healthbytes-backend-patterns.md](skills/healthbytes-backend-patterns.md)
+> - **Backend Patterns & Testing** → [skills/healthbytes-backend-patterns.md](skills/healthbytes-backend-patterns.md) *(includes pre-commit hooks)*
 > - **Frontend Patterns & Testing** → [skills/healthbytes-frontend-patterns.md](skills/healthbytes-frontend-patterns.md)
-> - **Project Rules & Structure** → [skills/healthbytes-project-rules.md](skills/healthbytes-project-rules.md)
+> - **Project Rules & Structure** → [skills/healthbytes-project-rules.md](skills/healthbytes-project-rules.md) *(includes development workflow)*
 > - **Security & Best Practices** → [skills/healthbytes-security-practices.md](skills/healthbytes-security-practices.md)
-> - **Installation Guide** → [skills/INSTALL.md](skills/INSTALL.md)
+> - **Development Tools Setup** → [skills/INSTALL.md](skills/INSTALL.md) *(includes VS Code workspace & pre-commit hooks)*
 > 
 > **📌 Quick Navigation**: See [skills/README.md](skills/README.md) for overview and [skills/](skills/) for the full skill set.
 
@@ -301,6 +301,8 @@ Frontend shows errors via `@gluestack-ui/toast` (already configured in `_layout.
 | Project rules & prohibitions | [skills/healthbytes-project-rules.md](skills/healthbytes-project-rules.md) |
 | Where to place new files | [skills/healthbytes-project-rules.md](skills/healthbytes-project-rules.md) (Section: FILE PLACEMENT RULES) |
 | Security patterns & testing | [skills/healthbytes-security-practices.md](skills/healthbytes-security-practices.md) |
+| **Development tools setup** | **[skills/INSTALL.md](skills/INSTALL.md)** (VS Code workspace, pre-commit hooks) |
+| **Pre-commit hooks & formatters** | **[skills/healthbytes-backend-patterns.md](skills/healthbytes-backend-patterns.md)** (Section: Code Quality Automation) |
 
 ## 🤖 Using Skills with Copilot
 
@@ -366,6 +368,7 @@ Skills are your source of truth for:
 - ✅ Services layer with business logic
 - ✅ Full-text search implementation
 - ✅ Testing & Security guidelines (see skills/)
+- ✅ **Development tools** (VS Code workspace, pre-commit hooks)
 - ⚠️ Testing coverage at ~70% (see `docs/ai-logs/latest/`)
 - 📝 Planned: Docker containerization, AWS deployment, payment flow completion
 | Authentication flow | [backend/app/middleware/auth.py](../backend/app/middleware/auth.py) |

@@ -39,4 +39,3 @@ export const tokenCache = Platform.OS !== 'web' ? createTokenCache() : undefined
 
 // Debug: Verificar si tokenCache está configurado
 console.log(`[CACHE] Platform: ${Platform.OS}, tokenCache enabled: ${!!tokenCache}`);
-

@@ -9,17 +9,17 @@ $ErrorActionPreference = "Stop"
 # ============================================================================
 function Show-HealthSummary {
     param([array]$Logs)
-    
+
     # Count metrics
     $warningCount = ($Logs | Select-String "WARNING|⚠️|warning|deprecated" -ErrorAction SilentlyContinue).Count
     $errorCount = ($Logs | Select-String "ERROR|❌|error|failed|Failed" -ErrorAction SilentlyContinue).Count
     $pkgCount = ($Logs | Select-String "Successfully installed" -ErrorAction SilentlyContinue).Count
-    
+
     # Overall status
     $status = "🟢"
     if ($errorCount -gt 0) { $status = "🔴" }
     elseif ($warningCount -gt 5) { $status = "🟡" }
-    
+
     Write-Host ""
     Write-Host "═══ $status Health Check: " -NoNewline -ForegroundColor Cyan
     Write-Host "📦 $pkgCount deps  |  " -NoNewline -ForegroundColor White
@@ -126,7 +126,7 @@ if (-not $NoInstall) {
     Write-Host "Installing requirements..." -ForegroundColor Yellow
     $reqOutput = python -m pip install -r requirements.txt 2>&1
     $installLog += $reqOutput
-    
+
     # Show health summary after installation
     Write-Host ""
     Show-HealthSummary -Logs $installLog

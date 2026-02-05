@@ -101,7 +101,7 @@ export default function ProfileSettingsScreen() {
         "Cambio de Contraseña",
         "El cambio de contraseña debe realizarse a través de los ajustes de seguridad de tu cuenta en Clerk. Por tu seguridad, se te redirigirá a la página de seguridad."
       );
-      
+
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");

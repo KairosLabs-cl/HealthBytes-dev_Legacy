@@ -1,12 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException
 import logging
-from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
 
 from app.db.database import get_db
-from app.schemas.product import ProductCreate, ProductUpdate, ProductResponse
 from app.middleware.auth import verify_seller
+from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate
 from app.services import product_service
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
@@ -14,18 +14,15 @@ router = APIRouter()
 
 
 @router.get("/", response_model=List[ProductResponse])
-async def list_products(
-    search: Optional[str] = None,
-    db: AsyncSession = Depends(get_db)
-):
+async def list_products(search: Optional[str] = None, db: AsyncSession = Depends(get_db)):
     """
     GET /products
     GET /products?search=galletas+sin+gluten
-    
+
     List all products or search products by name/description.
     If search parameter is provided, performs full-text search.
     Otherwise returns all products.
-    
+
     Replica of listProducts from Node.js with FTS enhancement
     """
     try:
@@ -73,9 +70,7 @@ async def get_product_by_id(id: int, db: AsyncSession = Depends(get_db)):
         product = await product_service.get_product(db, id)
 
         if not product:
-            raise HTTPException(
-                status_code=404, detail={"message": "Product not found"}
-            )
+            raise HTTPException(status_code=404, detail={"message": "Product not found"})
 
         return product
     except HTTPException:
@@ -119,9 +114,7 @@ async def update_product(
         product = await product_service.update_product(db, id, product_data)
 
         if not product:
-            raise HTTPException(
-                status_code=404, detail={"message": "Product was not found"}
-            )
+            raise HTTPException(status_code=404, detail={"message": "Product was not found"})
 
         return product
     except HTTPException:
@@ -144,9 +137,7 @@ async def delete_product(
         deleted = await product_service.delete_product(db, id)
 
         if not deleted:
-            raise HTTPException(
-                status_code=404, detail={"message": "Product was not found"}
-            )
+            raise HTTPException(status_code=404, detail={"message": "Product was not found"})
 
         return None
     except HTTPException:

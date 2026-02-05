@@ -157,7 +157,104 @@ User: How should I structure the payment service?
 
 ---
 
-## 🔄 Keeping Skills Updated
+## �️ Development Tools Setup
+
+### VS Code Workspace (Recommended)
+
+The project includes a multi-root workspace file (`HealthBytes.code-workspace`) with optimized configurations.
+
+**Features**:
+- **4 organized folders**: Backend, Frontend, Docs, Root
+- **Debugger preconfig**: FastAPI debugger ready (F5)
+- **Integrated tasks**: Start backend/frontend from task menu
+- **Per-folder settings**: Python/TypeScript formatters configured
+- **Extension recommendations**: Auto-suggests useful extensions
+
+**How to use**:
+```bash
+# Open workspace instead of folder
+code HealthBytes.code-workspace
+
+# Or: File → Open Workspace from File
+```
+
+**Quick actions**:
+- **Debug**: Place breakpoints, press F5
+- **Run tasks**: Ctrl+Shift+P → "Tasks: Run Task" → Select backend/frontend
+- **Install extensions**: Accept workspace recommendations
+
+**Structure**:
+```
+HealthBytes (Workspace)
+├── Backend    → backend/      (Python, FastAPI, pytest)
+├── Frontend   → frontend/     (React Native, TypeScript, Jest)
+├── Docs       → docs/         (Documentation)
+└── Root       → ./            (General config)
+```
+
+### Pre-commit Hooks (Code Quality Automation)
+
+Automated code quality checks run **before every commit**.
+
+**Tools**:
+- **Black**: Auto-formatter (max line: 100)
+- **Flake8**: Linter (errors + bad practices)
+- **isort**: Import sorter/organizer
+- **Bandit**: Security vulnerability scanner
+
+**Installation** (one-time):
+```powershell
+# Windows
+cd backend
+.\setup-hooks.ps1
+
+# Linux/Mac
+cd backend
+chmod +x setup-hooks.sh
+./setup-hooks.sh
+```
+
+**Daily workflow**:
+```bash
+# 1. Make changes
+vim app/api/v1/products.py
+
+# 2. Stage files
+git add app/api/v1/products.py
+
+# 3. Commit (hooks run automatically)
+git commit -m "feat: add product filter"
+
+# If hooks fail:
+# - Black/isort auto-fix → re-add files
+# - Flake8/Bandit report only → fix manually
+```
+
+**Configuration files**:
+- `backend/.pre-commit-config.yaml` - Hook definitions
+- `backend/pyproject.toml` - Tool settings (Black, pytest, isort, Bandit)
+
+**Manual format** (without commit):
+```bash
+cd backend
+pre-commit run --all-files              # Format all
+pre-commit run --files app/api/v1/*.py  # Specific files
+```
+
+**Update hooks**:
+```bash
+cd backend
+pre-commit autoupdate  # Get latest versions
+```
+
+⚠️ **Skip hooks** (emergencies only):
+```bash
+git commit --no-verify -m "WIP"
+```
+
+---
+
+## �🔄 Keeping Skills Updated
 
 When project rules change:
 
@@ -194,4 +291,3 @@ A: Copy the `.md` files and paste them in your editor's rules/guidelines section
 **Found an outdated rule?**
 - Create an issue or comment in #dev-guidelines
 - PR updates to skill files welcome
-

@@ -20,14 +20,14 @@ type CartState = {
   items: CartItem[];
   isAuthenticated: boolean;
   authToken: string | null;
-  
+
   // Original functions (work locally)
   addProduct: (product: Product) => Promise<void>;
   decrementProduct: (productId: string | number) => Promise<void>;
   updateQuantity: (productId: string | number, quantity: number) => Promise<void>;
   removeProduct: (productId: string | number) => Promise<void>;
   resetCart: () => Promise<void>;
-  
+
   // New auth/sync functions
   setAuth: (isAuth: boolean, token: string | null) => void;
   syncWithServer: () => Promise<void>;
@@ -61,7 +61,7 @@ export const useCart = create<CartState>((set, get) => ({
    */
   setAuth: (isAuth: boolean, token: string | null) => {
     set({ isAuthenticated: isAuth, authToken: token });
-    
+
     // If logging out, clear cart
     if (!isAuth) {
       set({ items: [] });
@@ -73,14 +73,14 @@ export const useCart = create<CartState>((set, get) => ({
    */
   syncWithServer: async () => {
     const { isAuthenticated, authToken } = get();
-    
+
     if (!isAuthenticated || !authToken) {
       return;
     }
 
     try {
       const cart = await cartApi.getCart(authToken);
-      
+
       // Convert API response to local format
       const items: CartItem[] = cart.items.map((item) => ({
         product: {
@@ -93,7 +93,7 @@ export const useCart = create<CartState>((set, get) => ({
         },
         quantity: item.quantity,
       }));
-      
+
       set({ items });
     } catch (error) {
       console.error('Failed to sync cart from server:', error);
@@ -106,7 +106,7 @@ export const useCart = create<CartState>((set, get) => ({
    */
   mergeAndSync: async () => {
     const { isAuthenticated, authToken, items } = get();
-    
+
     if (!isAuthenticated || !authToken) {
       return;
     }
@@ -118,9 +118,9 @@ export const useCart = create<CartState>((set, get) => ({
           product_id: Number(item.product.id),
           quantity: item.quantity,
         }));
-        
+
         const mergedCart = await cartApi.mergeCart(authToken, localItems);
-        
+
         // Update local state with merged cart
         const mergedItems: CartItem[] = mergedCart.items.map((item) => ({
           product: {
@@ -133,7 +133,7 @@ export const useCart = create<CartState>((set, get) => ({
           },
           quantity: item.quantity,
         }));
-        
+
         set({ items: mergedItems });
       } else {
         // No local items, just sync from server
@@ -152,17 +152,17 @@ export const useCart = create<CartState>((set, get) => ({
    */
   addProduct: async (product: Product) => {
     const { isAuthenticated, authToken, items: previousItems, addingProducts } = get();
-    
+
     // Prevent multiple simultaneous adds of the same product
     if (addingProducts.has(product.id)) {
       return;
     }
-    
+
     // Add to adding set
     set((state) => ({
       addingProducts: new Set(state.addingProducts).add(product.id)
     }));
-    
+
     // Update local state first (optimistic update)
     set((state) => {
       const existingItem = state.items.find(
@@ -192,7 +192,7 @@ export const useCart = create<CartState>((set, get) => ({
         set({ items: previousItems, error: "No se pudo agregar el producto al carrito. Por favor intenta de nuevo." });
       }
     }
-    
+
     // Remove from adding set
     set((state) => {
       const newSet = new Set(state.addingProducts);
@@ -207,23 +207,23 @@ export const useCart = create<CartState>((set, get) => ({
   updateQuantity: async (productId: string | number, newQuantity: number) => {
     const { isAuthenticated, authToken, items, updatingProducts } = get();
     const previousItems = items; // Snapshot for rollback
-    
+
     // Prevent multiple simultaneous updates of the same product
     if (updatingProducts.has(productId)) {
       return;
     }
-    
+
     // Validate quantity
     if (newQuantity < 1) {
       set({ error: "La cantidad debe ser al menos 1" });
       return;
     }
-    
+
     // Add to updating set
     set((state) => ({
       updatingProducts: new Set(state.updatingProducts).add(productId)
     }));
-    
+
     // Update local state first
     set((state) => ({
       items: state.items.map((item) =>
@@ -243,7 +243,7 @@ export const useCart = create<CartState>((set, get) => ({
         set({ items: previousItems, error: "No se pudo actualizar la cantidad. Por favor intenta de nuevo." });
       }
     }
-    
+
     // Remove from updating set
     set((state) => {
       const newSet = new Set(state.updatingProducts);
@@ -258,7 +258,7 @@ export const useCart = create<CartState>((set, get) => ({
   decrementProduct: async (productId: string | number) => {
     const { isAuthenticated, authToken, items, updatingProducts } = get();
     const previousItems = items; // Snapshot for rollback
-    
+
     const existingItem = items.find(
       (item) => item.product.id === productId
     );
@@ -269,7 +269,7 @@ export const useCart = create<CartState>((set, get) => ({
     if (updatingProducts.has(productId)) {
       return;
     }
-    
+
     // Add to updating set
     set((state) => ({
       updatingProducts: new Set(state.updatingProducts).add(productId)
@@ -306,7 +306,7 @@ export const useCart = create<CartState>((set, get) => ({
         set({ items: previousItems, error: "No se pudo actualizar el carrito. Por favor intenta de nuevo." });
       }
     }
-    
+
     // Remove from updating set
     set((state) => {
       const newSet = new Set(state.updatingProducts);
@@ -320,17 +320,17 @@ export const useCart = create<CartState>((set, get) => ({
    */
   removeProduct: async (productId: string | number) => {
     const { isAuthenticated, authToken, items: previousItems, removingProducts } = get();
-    
+
     // Prevent multiple simultaneous removes of the same product
     if (removingProducts.has(productId)) {
       return;
     }
-    
+
     // Add to removing set
     set((state) => ({
       removingProducts: new Set(state.removingProducts).add(productId)
     }));
-    
+
     // Update local state first (optimistic update)
     set((state) => ({
       items: state.items.filter((item) => item.product.id !== productId),
@@ -346,7 +346,7 @@ export const useCart = create<CartState>((set, get) => ({
         set({ items: previousItems, error: "No se pudo eliminar el producto. Por favor intenta de nuevo." });
       }
     }
-    
+
     // Remove from removing set
     set((state) => {
       const newSet = new Set(state.removingProducts);
@@ -360,7 +360,7 @@ export const useCart = create<CartState>((set, get) => ({
    */
   resetCart: async () => {
     const { isAuthenticated, authToken, items: previousItems } = get();
-    
+
     // Clear local state
     set({ items: [] });
 

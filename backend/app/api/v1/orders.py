@@ -1,15 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
 import logging
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from sqlalchemy.orm import selectinload
 from typing import List
 
 from app.db.database import get_db
 from app.db.schemas import Order, OrderItem, Product, User
-from app.schemas.order import OrderCreate, OrderResponse, OrderUpdate, OrderItemResponse
 from app.middleware.auth import get_current_user
+from app.schemas.order import OrderCreate, OrderItemResponse, OrderResponse, OrderUpdate
 from app.services import order_service
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 logger = logging.getLogger(__name__)
 
@@ -31,23 +31,18 @@ async def create_order(
         user_id = current_user.id
 
         if not user_id:
-            raise HTTPException(
-                status_code=400, detail={"message": "Invalid order data"}
-            )
-        
+            raise HTTPException(status_code=400, detail={"message": "Invalid order data"})
+
         try:
             new_order = await order_service.create_order(
-                db=db,
-                user_id=user_id,
-                order_in=order_data
+                db=db, user_id=user_id, order_in=order_data
             )
         except ValueError as e:
             await db.rollback()
             raise HTTPException(
-                status_code=404 if "not found" in str(e).lower() else 400,
-                detail=str(e)
+                status_code=404 if "not found" in str(e).lower() else 400, detail=str(e)
             )
-        
+
         # Build response
         # Using selectinload in service means items are already populated
         items_response = [
@@ -75,6 +70,7 @@ async def create_order(
     except Exception as e:
         logger.error(f"Error creating order: {type(e).__name__}: {str(e)}")
         import traceback
+
         logger.error(f"Traceback: {traceback.format_exc()}")
         await db.rollback()
         raise HTTPException(status_code=400, detail={"message": f"Error: {str(e)[:200]}"})
@@ -142,9 +138,7 @@ async def delete_order(
     """
     try:
         if current_user.role != "admin":
-            raise HTTPException(
-                status_code=403, detail="Not authorized to delete orders"
-            )
+            raise HTTPException(status_code=403, detail="Not authorized to delete orders")
 
         result = await db.execute(select(Order).where(Order.id == id))
         order = result.scalar_one_or_none()
@@ -183,9 +177,7 @@ async def get_order(
     try:
         # Get order with items using eager loading (single optimized query)
         result = await db.execute(
-            select(Order)
-            .where(Order.id == id)
-            .options(selectinload(Order.items))
+            select(Order).where(Order.id == id).options(selectinload(Order.items))
         )
         order = result.scalar_one_or_none()
 

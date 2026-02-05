@@ -28,4 +28,3 @@ stripe>=14.2.0
 
 # AWS Lambda adapter
 mangum>=0.20.0
-
