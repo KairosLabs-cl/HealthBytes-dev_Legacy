@@ -22,7 +22,20 @@ El frontend está desarrollado en React Native (Expo). Para más información, r
 - [README del Frontend](../frontend/README.md)
 - [AI-README del Frontend](../frontend/AI-README.md) (guía para asistentes de IA)
 
-## Logs de Estado
-Para ver el historial de cambios y estado del proyecto:
-- [Logs de Estado](Copilot-logs/status-logs/)
-- [Sesión más reciente](Copilot-logs/status-logs/SESSION_2026-01-27.md)
+## 📑 Documentación Organizada
+
+### Copilot AI Logs
+Documentación completa de sesiones de desarrollo asistidas por IA:
+- [Índice principal](./copilot-logs/README.md) ← **Comienza aquí**
+- [Estado del proyecto](./copilot-logs/status-logs/)
+- [Mejoras de seguridad](./copilot-logs/security-improvements-logs/)
+- [Autenticación](./copilot-logs/auth-logs/)
+
+### Búsqueda Full-Text
+Documentación completa sobre la implementación de búsqueda:
+- [Índice de búsqueda](./search-logs/README.md)
+- [Resumen técnico](./search-logs/SUMMARY.md)
+- [Guía de setup](./search-logs/SETUP.md)
+
+### Diagramas y Arquitectura
+- [Diagramas técnicos](./diagramas/)

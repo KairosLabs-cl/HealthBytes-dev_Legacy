@@ -203,7 +203,7 @@ App muestra resultados
 
 | Archivo | Contenido |
 |---------|-----------|
-| `backend/IMPLEMENTATION_SUMMARY.md` | Resumen técnico de cambios |
+| `SUMMARY.md` | Resumen técnico de cambios |
 | `backend/migrations/FULLTEXT_SEARCH_README.md` | Guía completa + troubleshooting |
 | `backend/tests/test_api/test_products_search.py` | 10 tests y ejemplos |
 | Este archivo | Guía rápida en español |
