@@ -262,6 +262,7 @@ async def test_delete_product_not_found(db_session):
     assert result is None
 
 
+@pytest.mark.search
 @pytest.mark.asyncio
 async def test_search_products_empty_query_returns_all(db_session):
     """Test search returns all products on empty query"""
@@ -288,6 +289,7 @@ async def test_search_products_empty_query_returns_all(db_session):
     assert len(result) == 2
 
 
+@pytest.mark.search
 @pytest.mark.asyncio
 async def test_search_products_fallback_like_on_sqlite(db_session):
     """Test search falls back to LIKE on SQLite and finds matches"""
@@ -315,6 +317,7 @@ async def test_search_products_fallback_like_on_sqlite(db_session):
     assert result[0].name == "Galletas Sin Gluten"
 
 
+@pytest.mark.search
 @pytest.mark.asyncio
 async def test_search_products_case_insensitive_like(db_session):
     """Test search is case-insensitive via LIKE fallback"""
