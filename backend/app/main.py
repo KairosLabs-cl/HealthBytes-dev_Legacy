@@ -17,15 +17,27 @@ app = FastAPI(
 
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
+    """Apply baseline security headers to all responses, mirroring the Node.js API.
+    
+    NOTE: Headers are applied AFTER downstream handler executes. This is acceptable because
+    HTTP headers are still applied before browser processes response. However, exceptions
+    raised by route handlers may bypass this middleware. Test error cases to ensure they
+    also include security headers.
+    """
     response = await call_next(request)
+    # Prevent MIME sniffing and clickjacking across clients
     response.headers.setdefault("X-Content-Type-Options", "nosniff")
     response.headers.setdefault("X-Frame-Options", "DENY")
+    # Reduce referrer leakage for privacy
     response.headers.setdefault("Referrer-Policy", "no-referrer")
+    # Disable sensitive browser features by default
     response.headers.setdefault(
         "Permissions-Policy",
         "geolocation=(), microphone=(), camera=()",
     )
+    # Restrict cross-origin resource policy to same-site
     response.headers.setdefault("Cross-Origin-Resource-Policy", "same-site")
+    # Enforce HSTS only outside dev to avoid local HTTPS issues
     if settings.ENVIRONMENT != "dev":
         response.headers.setdefault(
             "Strict-Transport-Security",
@@ -36,22 +48,34 @@ async def add_security_headers(request: Request, call_next):
 
 @app.middleware("http")
 async def limit_request_body_size(request: Request, call_next):
+    """Limit request body size to prevent memory exhaustion attacks."""
+    # Skip body size enforcement when configured to be disabled
     if settings.MAX_REQUEST_BODY_SIZE <= 0:
         return await call_next(request)
 
+    # Validate Content-Length when present to fail fast on oversized payloads
     content_length = request.headers.get("content-length")
-    if content_length and content_length.isdigit():
-        if int(content_length) > settings.MAX_REQUEST_BODY_SIZE:
+    if content_length is not None:
+        try:
+            length = int(content_length)
+        except (TypeError, ValueError):
+            # Non-numeric Content-Length is malformed header (400 Bad Request), not oversized payload (413)
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid Content-Length header",
+            )
+        # Reject negative values or values exceeding limit
+        if length < 0 or length > settings.MAX_REQUEST_BODY_SIZE:
             raise HTTPException(
                 status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
                 detail="Request body too large",
             )
-    elif content_length:
-        raise HTTPException(
-            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-            detail="Request body too large",
-        )
 
+    # Read and validate actual body size (covers chunked transfer encoding)
+    # WARNING: This loads the entire request into memory. For requests near MAX_REQUEST_BODY_SIZE,
+    # this could cause memory pressure under high concurrency. Chunked requests without Content-Length
+    # will buffer up to MAX_REQUEST_BODY_SIZE before being rejected.
+    # Consider capacity planning: 10 MB default * concurrent requests = memory footprint
     body = await request.body()
     if len(body) > settings.MAX_REQUEST_BODY_SIZE:
         raise HTTPException(
