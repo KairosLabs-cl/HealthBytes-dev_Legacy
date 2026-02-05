@@ -1,0 +1,60 @@
+repos:
+  # Python formatting with Black
+  - repo: https://github.com/psf/black
+    rev: 24.1.1
+    hooks:
+      - id: black
+        language_version: python3.14
+        args: [--line-length=100]
+
+  # Python linting with Flake8
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        args: 
+          - --max-line-length=100
+          - --extend-ignore=E203,W503
+          - --exclude=.venv,__pycache__,*.pyc
+
+  # Import sorting with isort
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: [--profile, black, --line-length, "100"]
+
+  # Check for common issues
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^(.*\.md|.*\.txt)$
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+        args: [--maxkb=1000]
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: check-case-conflict
+
+  # Security checks
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.6
+    hooks:
+      - id: bandit
+        args: [-c, pyproject.toml, -r, app/]
+        additional_dependencies: ["bandit[toml]"]
+
+  # Run tests before commit (optional, can be slow)
+  - repo: local
+    hooks:
+      - id: pytest-check
+        name: pytest
+        entry: pytest
+        language: system
+        pass_filenames: false
+        always_run: false  # Set to true to run on every commit
+        args: [tests/, -v, --tb=short]
+        stages: [push]  # Only run on push, not on every commit

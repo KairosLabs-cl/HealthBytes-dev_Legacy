@@ -1,22 +1,23 @@
-import { ScrollView, View, Image, Pressable, ActivityIndicator } from "react-native";
+import { ScrollView, View, Image, Pressable, ActivityIndicator, Platform } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { Text } from "@/components/ui/text";
+import { useEffect } from "react";
 import { Icon } from "@/components/ui/icon";
 import {
   Settings,
+  PackageOpen,
   Package,
   Truck,
   CheckCircle2,
   MessageSquare,
   Heart,
   CreditCard,
-  Shield,
+  MapPin,
   Phone,
-  LogOut,
   User,
+  LogOut,
 } from "lucide-react-native";
 import { useClerk, useAuth, useUser } from "@clerk/clerk-expo";
-import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 
@@ -39,16 +40,19 @@ const orderStatuses = [
 ];
 
 const options = [
-  { label: "Mensaje del vendedor", icon: MessageSquare, href: "/messages" },
-  { label: "Lista de deseos", icon: Heart, href: "/wishlist" },
+  { label: "Direcciones", icon: MapPin, href: "/addresses" },
   { label: "Metodos de pago", icon: CreditCard, href: "/payments" },
-  { label: "Seguridad", icon: Shield, href: "/security" },
+  { label: "Lista de deseos", icon: Heart, href: "/wishlist" },
   { label: "Contactate con soporte", icon: Phone, href: "/support" },
 ];
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { signOut } = useClerk();
+
+  useEffect(() => {
+    // This just ensures the header is properly styled
+  }, []);
   const { isSignedIn, isLoaded } = useAuth();
   const { user } = useUser();
 
@@ -81,17 +85,13 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       <StatusBar style="dark" />
-      <Stack.Screen options={{ headerShown: false }} />
+      <Stack.Screen options={{ title: "Mi Perfil" }} />
 
       <ScrollView 
-        className="flex-1 bg-white px-4 pt-6"
-        contentContainerStyle={{ paddingBottom: 120 }}
+        className="flex-1 bg-white px-4"
+        contentContainerStyle={{ paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
       >
-        <View className="mb-4">
-          <Text className="text-2xl font-bold text-black">👤 Perfil</Text>
-        </View>
-
         {/* Perfil del usuario */}
         <View className="rounded-3xl bg-gray-100 flex-row items-center p-4 mb-4">
           <Image 
@@ -116,7 +116,10 @@ export default function ProfileScreen() {
         </View>
 
         <View className="bg-[#303030] rounded-3xl p-4 mb-4">
-            <Text className="text-white text-lg font-semibold mb-1">🚚 Mis órdenes</Text>
+            <View className="flex-row items-center mb-1">
+              <Icon as={PackageOpen} color="#ffffff" size="lg" />
+              <Text className="text-white text-lg font-semibold ml-2">Mis órdenes</Text>
+            </View>
             <Text className="text-gray-300 text-xs mb-3">
               Ve el estado de tus compras!
             </Text>
@@ -132,17 +135,27 @@ export default function ProfileScreen() {
                     })
                   }
                 >
-                  <Icon as={item.icon} color="#1f2937" size="md" />
-                  <Text className="text-[11px] text-black mt-1 font-semibold text-center">
+                  <Icon as={item.icon} color="#1f2937" size="lg" className="mb-1" />
+                  <Text className="text-[11px] text-black font-semibold text-center">
                     {item.label}
                   </Text>
                 </Pressable>
               ))}
             </View>
+            <Pressable
+              className="bg-white rounded-2xl px-3 py-2 mt-3 flex-row items-center justify-center"
+              onPress={() => router.push("/messages")}
+            >
+              <Icon as={MessageSquare} color="#1f2937" size="lg" />
+              <Text className="text-[12px] text-black font-semibold ml-2">
+                Mensajes del vendedor
+              </Text>
+            </Pressable>
           </View>
 
-        <View className="mb-3">
-          <Text className="text-xl font-bold text-black">⚙️ General</Text>
+        <View className="mb-3 flex-row items-center">
+          <Icon as={Settings} color="#000000" size="lg" className="mr-2" />
+          <Text className="text-xl font-bold text-black">General</Text>
         </View>
 
         {options.map((item) => (

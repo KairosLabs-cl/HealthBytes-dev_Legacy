@@ -1,9 +1,15 @@
 # HealthBytes AI Agent Instructions
 
-> **📚 Documentation Map**: This file provides the "big picture" architecture and workflows. For detailed rules:
-> - **Backend patterns & security**: [backend/AI-README.md](../backend/AI-README.md)
-> - **Frontend patterns & UX**: [frontend/AI-README.md](../frontend/AI-README.md)  
-> - **Strict prohibitions & file placement**: [.cursorrules](../.cursorrules)
+> **📚 Documentation Map**: This file provides the "big picture" architecture and workflows. For detailed rules, check the **Skills** directory:
+> 
+> ### 🎯 **Developer Skills** (Reference These!)
+> - **Backend Patterns & Testing** → [skills/healthbytes-backend-patterns.md](skills/healthbytes-backend-patterns.md)
+> - **Frontend Patterns & Testing** → [skills/healthbytes-frontend-patterns.md](skills/healthbytes-frontend-patterns.md)
+> - **Project Rules & Structure** → [skills/healthbytes-project-rules.md](skills/healthbytes-project-rules.md)
+> - **Security & Best Practices** → [skills/healthbytes-security-practices.md](skills/healthbytes-security-practices.md)
+> - **Installation Guide** → [skills/INSTALL.md](skills/INSTALL.md)
+> 
+> **📌 Quick Navigation**: See [skills/README.md](skills/README.md) for overview and [skills/](skills/) for the full skill set.
 
 ## Project Overview
 HealthBytes is a mobile-first e-commerce platform for health-restricted individuals. **Dual-stack architecture**: FastAPI backend + React Native (Expo) frontend, targeting people with dietary restrictions (celiac, diabetes, allergies).
@@ -290,10 +296,78 @@ Frontend shows errors via `@gluestack-ui/toast` (already configured in `_layout.
 
 | Need to know... | Check file... |
 |---|---|
-| How to structure backend code | [backend/AI-README.md](../backend/AI-README.md) |
-| Frontend UX patterns | [frontend/AI-README.md](../frontend/AI-README.md) |
-| What's absolutely forbidden | [.cursorrules](../.cursorrules) |
-| Where to place new files | [.cursorrules](../.cursorrules) (lines 25-150) |
+| How to structure backend code | [skills/healthbytes-backend-patterns.md](skills/healthbytes-backend-patterns.md) |
+| Frontend UX patterns | [skills/healthbytes-frontend-patterns.md](skills/healthbytes-frontend-patterns.md) |
+| Project rules & prohibitions | [skills/healthbytes-project-rules.md](skills/healthbytes-project-rules.md) |
+| Where to place new files | [skills/healthbytes-project-rules.md](skills/healthbytes-project-rules.md) (Section: FILE PLACEMENT RULES) |
+| Security patterns & testing | [skills/healthbytes-security-practices.md](skills/healthbytes-security-practices.md) |
+
+## 🤖 Using Skills with Copilot
+
+All detailed development guidelines are available as **modular skills** in the `skills/` folder. Copilot automatically loads these files.
+
+### How Copilot Uses Skills
+
+1. **Automatic Loading**: Copilot reads `.github/copilot-instructions.md` and references to skills/
+2. **Quick Reference**: When building features, Copilot suggests patterns from the relevant skill
+3. **Testing Guidance**: Skills include complete pytest and Jest examples
+4. **Security First**: Authorization, validation, and testing patterns are integrated
+
+### When to Reference Each Skill
+
+- **Backend implementation** → Use `healthbytes-backend-patterns.md`
+  - Service layer structure
+  - Database async patterns
+  - pytest fixtures and mocking
+  - API endpoint design
+
+- **Frontend implementation** → Use `healthbytes-frontend-patterns.md`
+  - Component architecture
+  - Zustand store patterns
+  - API client organization
+  - Jest testing examples
+
+- **Architecture decisions** → Use `healthbytes-project-rules.md`
+  - Folder structure
+  - File placement rules
+  - Technology stack (locked)
+  - Dependency management
+
+- **Security implementation** → Use `healthbytes-security-practices.md`
+  - Authentication (Clerk + JWT)
+  - Authorization (RBAC, ownership checks)
+  - Input validation
+  - Testing security boundaries
+
+### Working with Skills in Chat
+
+```
+You: "Build a new product discount feature"
+
+Copilot response includes:
+✅ Backend: Service in /services/, router in /api/v1/
+✅ Frontend: API client in /api/, store in /store/, component in /components/
+✅ Testing: pytest examples + Jest examples
+✅ Security: Input validation + authorization checks
+```
+
+Skills are your source of truth for:
+- ✅ Exact folder structures
+- ✅ Testing patterns (pytest + Jest)
+- ✅ Security best practices
+- ✅ Code organization
+- ✅ Naming conventions
+
+---
+
+## Status & Roadmap
+- ✅ Core CRUD endpoints (products, orders, users)
+- ✅ Authentication (Clerk + JWT fallback)
+- ✅ Services layer with business logic
+- ✅ Full-text search implementation
+- ✅ Testing & Security guidelines (see skills/)
+- ⚠️ Testing coverage at ~70% (see `docs/ai-logs/latest/`)
+- 📝 Planned: Docker containerization, AWS deployment, payment flow completion
 | Authentication flow | [backend/app/middleware/auth.py](../backend/app/middleware/auth.py) |
 | API client patterns | [frontend/api/products.ts](../frontend/api/products.ts) |
 | State management examples | [frontend/store/cartStore.ts](../frontend/store/cartStore.ts) |
