@@ -87,16 +87,16 @@ export default function ProfileScreen() {
       <StatusBar style="dark" />
       <Stack.Screen options={{ title: "Mi Perfil" }} />
 
-      <ScrollView 
+      <ScrollView
         className="flex-1 bg-white px-4"
         contentContainerStyle={{ paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Perfil del usuario */}
         <View className="rounded-3xl bg-gray-100 flex-row items-center p-4 mb-4">
-          <Image 
-            source={{ uri: user?.imageUrl || 'https://via.placeholder.com/80' }} 
-            className="w-20 h-20 rounded-full" 
+          <Image
+            source={{ uri: user?.imageUrl || 'https://via.placeholder.com/80' }}
+            className="w-20 h-20 rounded-full"
           />
           <View className="ml-4 flex-1">
             <Text className="text-xl font-bold text-black">

@@ -24,10 +24,10 @@ export async function createOrder(items: any[], getToken: () => Promise<string |
   if (!res.ok) {
     console.log("❌ Error del servidor - Status:", res.status);
     console.log("❌ Error del servidor - Response:", JSON.stringify(data, null, 2));
-    
+
     /* Lanzar error específico del backend para mostrar en la UI */
     let errorMsg = `Error ${res.status}`;
-    
+
     // Intentar extraer mensaje de error del backend
     if (typeof data.detail === 'string') {
       errorMsg = data.detail;
@@ -38,7 +38,7 @@ export async function createOrder(items: any[], getToken: () => Promise<string |
     } else if (data.error) {
       errorMsg = data.error;
     }
-    
+
     console.error("❌ Error finalizado:", errorMsg);
     throw new Error(errorMsg);
   }

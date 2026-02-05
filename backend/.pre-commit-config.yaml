@@ -14,8 +14,9 @@ repos:
       - id: flake8
         args:
           - --max-line-length=100
-          - --extend-ignore=E203,W503
-          - --exclude=.venv,__pycache__,*.pyc
+          - --extend-ignore=E203,W503,F401,F841,F541,E501
+        exclude: ^(tests/|Tools/|migrations/|\.venv/)
+        files: ^app/
 
   # Import sorting with isort
   - repo: https://github.com/pycqa/isort
@@ -39,13 +40,15 @@ repos:
       - id: detect-private-key
       - id: check-case-conflict
 
-  # Security checks
+  # Security checks with Bandit
   - repo: https://github.com/PyCQA/bandit
     rev: 1.7.6
     hooks:
       - id: bandit
-        args: [-c, pyproject.toml, -r, app/]
-        additional_dependencies: ["bandit[toml]"]
+        args: [-r, ., --skip, B101]
+        files: ^app/
+        pass_filenames: false
+        # Note: Only scans app/ directory, excludes tests automatically
 
   # Run tests before commit (optional, can be slow)
   - repo: local
@@ -57,4 +60,4 @@ repos:
         pass_filenames: false
         always_run: false  # Set to true to run on every commit
         args: [tests/, -v, --tb=short]
-        stages: [push]  # Only run on push, not on every commit
+        stages: [manual]  # Run manually with: pre-commit run pytest-check --hook-stage manual

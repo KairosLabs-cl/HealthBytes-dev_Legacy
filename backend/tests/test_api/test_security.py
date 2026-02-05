@@ -1,8 +1,8 @@
 """Security tests for FastAPI middleware and headers."""
 
 import pytest
-from fastapi.testclient import TestClient
 from app.main import app
+from fastapi.testclient import TestClient
 
 client = TestClient(app)
 
@@ -72,9 +72,7 @@ class TestRequestSizeLimiting:
         # Create a request with ~1 KB of data (well under 2 MB limit)
         small_data = "x" * 1024
         response = client.post(
-            "/",
-            json={"data": small_data},
-            headers={"Content-Type": "application/json"}
+            "/", json={"data": small_data}, headers={"Content-Type": "application/json"}
         )
         # Should be accepted (may be 404 or 405 since / doesn't accept POST, but not 413)
         assert response.status_code != 413
@@ -86,9 +84,7 @@ class TestRequestSizeLimiting:
         large_data = "x" * (3 * 1024 * 1024)
 
         response = client.post(
-            "/products",
-            json={"data": large_data},
-            headers={"Content-Type": "application/json"}
+            "/products", json={"data": large_data}, headers={"Content-Type": "application/json"}
         )
 
         # Should return 413 Request Entity Too Large
@@ -99,9 +95,7 @@ class TestRequestSizeLimiting:
         """Test Content-Length header validation."""
         # Create a small request with oversized Content-Length header
         response = client.post(
-            "/",
-            json={"test": "data"},
-            headers={"Content-Length": str(3 * 1024 * 1024)}
+            "/", json={"test": "data"}, headers={"Content-Length": str(3 * 1024 * 1024)}
         )
         # Status may vary (413 or other error)
         # The important thing is it doesn't crash
@@ -116,7 +110,7 @@ class TestRequestSizeLimiting:
         response = client.post(
             "/products",
             json={"data": exact_limit_data},
-            headers={"Content-Type": "application/json"}
+            headers={"Content-Type": "application/json"},
         )
 
         # Should not return 413 (it's at the limit, not over)
@@ -182,6 +176,7 @@ class TestSecurityIntegration:
 # ============================================================================
 # Pytest Markers for Test Organization
 # ============================================================================
+
 
 @pytest.mark.security
 def test_security_headers_completeness():

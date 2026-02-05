@@ -49,7 +49,7 @@ export default function CheckoutScreen() {
 
     const handlePay = async () => {
 
-        
+
         /* Validar Autenticación: Impedir checkout si no hay sesión */
         if (!isSignedIn) {
 
@@ -63,15 +63,15 @@ export default function CheckoutScreen() {
         // Verificar que el token esté disponible ANTES de procesar pago
 
         let token = await getToken();
-        
+
         // Si el token no está disponible, intentar esperar un poco (timing issue mitigation)
         if (!token) {
 
-            
+
             for (let attempt = 1; attempt <= 3; attempt++) {
                 await new Promise(resolve => setTimeout(resolve, 500));
                 token = await getToken();
-                
+
                 if (token) {
 
                     break;
@@ -80,7 +80,7 @@ export default function CheckoutScreen() {
                 }
             }
         }
-        
+
         if (!token) {
 
             alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");

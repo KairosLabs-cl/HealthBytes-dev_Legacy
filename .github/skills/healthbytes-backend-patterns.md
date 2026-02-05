@@ -144,6 +144,135 @@ backend/app/
 └─ main.py              ← FastAPI app & router registration
 ```
 
+## Code Quality Automation
+
+### Pre-commit Hooks
+
+All backend code passes through automated quality checks **before commit**.
+
+**✅ Configured Tools**:
+
+| Tool      | Purpose                           | Action             |
+|-----------|-----------------------------------|-----------------|
+| **Black** | Code formatter (line-length: 100) | Auto-fixes      |
+| **Flake8**| Linting (PEP8, errors, complexity)| Reports only    |
+| **isort** | Import organization               | Auto-fixes      |
+| **Bandit**| Security vulnerability scan       | Reports only    |
+
+**Installation**:
+```bash
+cd backend
+.\setup-hooks.ps1  # Windows
+# or
+./setup-hooks.sh   # Linux/Mac
+```
+
+**Configuration**:
+- `.pre-commit-config.yaml` - Hook definitions
+- `pyproject.toml` - Tool settings:
+  ```toml
+  [tool.black]
+  line-length = 100
+  target-version = ['py314']
+  
+  [tool.isort]
+  profile = "black"
+  line_length = 100
+  
+  [tool.bandit]
+  exclude_dirs = ["tests"]
+  ```
+
+**Workflow**:
+```bash
+# 1. Write code
+vim app/services/product_service.py
+
+# 2. Stage changes
+git add app/services/product_service.py
+
+# 3. Commit (hooks run automatically)
+git commit -m "feat: add product search"
+
+# If Black/isort fix formatting:
+# → Files modified, re-add them:
+git add app/services/product_service.py
+git commit -m "feat: add product search"
+
+# If Flake8 reports errors:
+# → Fix manually:
+# app/services/product_service.py:15:1: F401 'random' imported but unused
+```
+
+**Manual formatting** (no commit):
+```bash
+cd backend
+pre-commit run --all-files  # Format everything
+pre-commit run --files app/api/v1/products.py  # Specific file
+```
+
+**Common Flake8 errors**:
+- `F401` - Imported but unused
+- `E501` - Line too long (>100 chars)
+- `F841` - Variable assigned but never used
+- `E302` - Expected 2 blank lines, found 1
+
+**Skip hooks** (emergencies only):
+```bash
+git commit --no-verify -m "WIP: work in progress"
+```
+
+### IDE Integration
+
+Configure your editor to match pre-commit settings:
+
+**VS Code** (`settings.json`):
+```json
+{
+  "python.formatting.provider": "black",
+  "python.formatting.blackArgs": ["--line-length", "100"],
+  "editor.formatOnSave": true,
+  "python.linting.flake8Enabled": true,
+  "[python]": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    }
+  }
+}
+```
+
+**PyCharm/IntelliJ**:
+1. Settings → Tools → Black → Enable
+2. Settings → Tools → External Tools → Add Flake8
+3. Settings → Editor → Code Style → Python → Line length: 100
+
+### Code Style Enforcement
+
+**Line length**: 100 characters max (Black + Flake8)
+**Import order**:
+1. Standard library
+2. Third-party packages
+3. Local imports
+
+**Example**:
+```python
+# ✅ CORRECT (after isort)
+import os
+from typing import List
+
+from fastapi import HTTPException
+from sqlalchemy import select
+
+from app.db.models.product import Product
+from app.services.user_service import get_user
+
+# ❌ WRONG (before isort)
+from app.services.user_service import get_user
+import os
+from fastapi import HTTPException
+from app.db.models.product import Product
+```
+
 ## Testing Patterns
 
 ### Test Structure
@@ -346,4 +475,3 @@ Check existing tests:
 - `backend/tests/test_api/` - API endpoint examples
 - `backend/tests/test_services/` - Service logic examples
 - `backend/tests/conftest.py` - Fixture patterns
-

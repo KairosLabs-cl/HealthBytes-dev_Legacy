@@ -488,7 +488,158 @@ Si ves la URL de tu base de datos, ¡todo está bien! 🎉
 
 ---
 
-## 📚 Documentación
+## �️ Herramientas de Desarrollo
+
+### VS Code Workspace (Recomendado)
+
+Este proyecto incluye un archivo de workspace multi-root (`HealthBytes.code-workspace`) que organiza el proyecto en carpetas específicas y proporciona configuraciones optimizadas.
+
+**✨ Beneficios del Workspace:**
+- **4 carpetas separadas**: Backend, Frontend, Docs y Root (organización clara)
+- **Debugger preconfigurado**: Depurador de FastAPI listo para usar (F5)
+- **Tasks integradas**: Comandos para iniciar backend/frontend desde el menú de tareas
+- **Configuración por carpeta**: Formatters y linters específicos para Python/TypeScript
+- **Extensiones recomendadas**: Lista automática de extensiones útiles
+
+**🚀 Cómo usarlo:**
+
+1. **Abrir el workspace** (en lugar del proyecto):
+   ```bash
+   # Opción 1: Desde la línea de comandos
+   code HealthBytes.code-workspace
+   
+   # Opción 2: Desde VS Code
+   File → Open Workspace from File → HealthBytes.code-workspace
+   ```
+
+2. **Instalar extensiones recomendadas**:
+   - VS Code mostrará una notificación automáticamente
+   - O ve a Extensions (Ctrl+Shift+X) y busca "Workspace Recommendations"
+
+3. **Usar el debugger** (Backend):
+   - Coloca breakpoints en tu código Python
+   - Presiona `F5` o ve a Run → Start Debugging
+   - El servidor arrancará en modo debug con hot reload
+
+4. **Ejecutar tasks**:
+   - `Ctrl+Shift+P` → "Tasks: Run Task"
+   - Selecciona "Start Backend" o "Start Frontend"
+
+**📁 Estructura del Workspace:**
+```
+HealthBytes (Workspace)
+├── Backend    → backend/      (Python, FastAPI, pytest)
+├── Frontend   → frontend/     (React Native, TypeScript, Jest)
+├── Docs       → docs/         (Documentación del proyecto)
+└── Root       → ./            (Configuración general)
+```
+
+**💡 Tip**: Si prefieres otro editor (WebStorm, Zed, etc.), la estructura del proyecto funciona igual sin el workspace.
+
+---
+
+### Pre-commit Hooks (Control de Calidad Automático)
+
+Los pre-commit hooks ejecutan verificaciones automáticas **antes de cada commit** para mantener la calidad del código.
+
+**🔧 Herramientas incluidas:**
+
+| Tool      | Propósito                                      | Ejemplo                                    |
+|-----------|------------------------------------------------|--------------------------------------------|
+| **Black** | Formateador automático (líneas máx: 100)      | Corrige indentación y espaciado            |
+| **Flake8**| Linter que detecta errores y malas prácticas  | "Variable no usada", "Import sin usar"     |
+| **isort** | Ordena y organiza imports automáticamente      | Agrupa imports en stdlib, third-party, local |
+| **Bandit**| Escanea vulnerabilidades de seguridad         | Detecta `eval()`, contraseñas hardcoded    |
+
+**📦 Instalación (una sola vez):**
+
+```powershell
+# Windows (PowerShell)
+cd backend
+.\setup-hooks.ps1
+
+# Linux/Mac
+cd backend
+chmod +x setup-hooks.sh
+./setup-hooks.sh
+```
+
+El script hace 3 cosas:
+1. Instala `pre-commit` (si no lo tienes)
+2. Instala los hooks en tu repositorio local
+3. Verifica que todo funcione correctamente
+
+**✅ Workflow diario con hooks:**
+
+```bash
+# 1. Haces cambios en tu código
+vim app/api/v1/products.py
+
+# 2. Agregas al staging
+git add app/api/v1/products.py
+
+# 3. Haces commit (los hooks se ejecutan AUTOMÁTICAMENTE)
+git commit -m "feat: agregar búsqueda de productos"
+
+# Si los hooks detectan problemas:
+# - Black/isort los corrigen automáticamente → debes volver a agregar los archivos
+# - Flake8/Bandit solo reportan → debes corregir manualmente
+```
+
+**🚨 Si un hook falla:**
+
+```bash
+# Ejemplo de salida cuando Flake8 encuentra un error
+[INFO] Flake8..............................................Failed
+- hook id: flake8
+- exit code: 1
+
+app/api/v1/products.py:15:1: F401 'random' imported but unused
+
+# Corriges el error (eliminar el import)
+# Vuelves a agregar y commit
+git add app/api/v1/products.py
+git commit -m "feat: agregar búsqueda de productos"
+```
+
+**⚙️ Configuración:**
+
+Los hooks están configurados en:
+- `backend/.pre-commit-config.yaml` - Qué herramientas ejecutar
+- `backend/pyproject.toml` - Configuración de Black, pytest, isort y Bandit
+
+**🔄 Actualizar hooks:**
+
+```bash
+cd backend
+pre-commit autoupdate  # Actualiza a las últimas versiones
+```
+
+**⏭️ Saltarse hooks (solo en emergencias):**
+
+```bash
+git commit --no-verify -m "WIP: trabajo en progreso"
+```
+
+**⚠️ No se recomienda**: Los hooks existen para prevenir bugs y problemas de seguridad.
+
+**💡 Formato adicional:**
+
+Si quieres formatear archivos sin hacer commit:
+
+```bash
+cd backend
+
+# Formatear todos los archivos
+pre-commit run --all-files
+
+# Formatear solo archivos específicos
+pre-commit run --files app/api/v1/products.py
+```
+
+---
+
+## �📚 Documentación
 
 ### Documentación del Proyecto
 

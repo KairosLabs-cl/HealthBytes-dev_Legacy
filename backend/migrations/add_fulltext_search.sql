@@ -11,13 +11,13 @@
 -- ============================================================================
 -- 1. Drop existing search_vector column if it exists (to handle GENERATED case)
 -- ============================================================================
-ALTER TABLE products 
+ALTER TABLE products
 DROP COLUMN IF EXISTS search_vector CASCADE;
 
 -- ============================================================================
 -- 2. Add search_vector column to products table (tsvector type)
 -- ============================================================================
-ALTER TABLE products 
+ALTER TABLE products
 ADD COLUMN search_vector tsvector;
 
 COMMENT ON COLUMN products.search_vector IS 'Full-text search vector for name and description (PostgreSQL tsvector)';
@@ -27,8 +27,8 @@ COMMENT ON COLUMN products.search_vector IS 'Full-text search vector for name an
 -- ============================================================================
 -- Weights: 'A' for name (higher relevance), 'B' for description (lower relevance)
 -- Uses Spanish dictionary for proper stemming (galleta = galletas)
-UPDATE products 
-SET search_vector = 
+UPDATE products
+SET search_vector =
     setweight(to_tsvector('spanish', COALESCE(name, '')), 'A') ||
     setweight(to_tsvector('spanish', COALESCE(description, '')), 'B');
 
@@ -37,7 +37,7 @@ SET search_vector =
 -- ============================================================================
 -- GIN (Generalized Inverted Index) is optimal for tsvector columns
 -- Dramatically speeds up @@ (match) operator queries
-CREATE INDEX IF NOT EXISTS idx_product_search 
+CREATE INDEX IF NOT EXISTS idx_product_search
 ON products USING gin(search_vector);
 
 -- ============================================================================
@@ -45,7 +45,7 @@ ON products USING gin(search_vector);
 -- ============================================================================
 -- This function is called before INSERT or UPDATE on products table
 -- It automatically regenerates search_vector from name and description
-CREATE OR REPLACE FUNCTION products_search_trigger() 
+CREATE OR REPLACE FUNCTION products_search_trigger()
 RETURNS trigger AS $$
 BEGIN
   -- Only update if name or description changed
@@ -69,9 +69,9 @@ $$ LANGUAGE plpgsql;
 -- ============================================================================
 DROP TRIGGER IF EXISTS tsvector_update ON products;
 
-CREATE TRIGGER tsvector_update 
+CREATE TRIGGER tsvector_update
 BEFORE INSERT OR UPDATE ON products
-FOR EACH ROW 
+FOR EACH ROW
 EXECUTE FUNCTION products_search_trigger();
 
 -- ============================================================================
@@ -85,8 +85,8 @@ VACUUM ANALYZE products;
 -- 8. Verify migration success
 -- ============================================================================
 -- Query to verify the index was created:
--- SELECT schemaname, tablename, indexname 
--- FROM pg_indexes 
+-- SELECT schemaname, tablename, indexname
+-- FROM pg_indexes
 -- WHERE indexname = 'idx_product_search';
 --
 -- Query to verify the trigger was created:
@@ -125,7 +125,7 @@ VACUUM ANALYZE products;
 -- PASO 2: Schedule automatic VACUUM ANALYZE weekly
 -- ============================================================================
 -- Run this in Supabase SQL Editor:
--- 
+--
 -- SELECT cron.schedule(
 --   'vacuum-products-weekly',
 --   '0 2 * * 0',  -- Sunday at 2 AM

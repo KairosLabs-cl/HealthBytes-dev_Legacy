@@ -34,11 +34,11 @@ export async function getCart(token: string): Promise<Cart> {
       'Authorization': token,
     },
   });
-  
+
   if (!res.ok) {
     throw new Error('Failed to fetch cart');
   }
-  
+
   return res.json();
 }
 
@@ -61,11 +61,11 @@ export async function addToCart(
       quantity,
     }),
   });
-  
+
   if (!res.ok) {
     throw new Error('Failed to add item to cart');
   }
-  
+
   return res.json();
 }
 
@@ -85,11 +85,11 @@ export async function updateCartItem(
     },
     body: JSON.stringify({ quantity }),
   });
-  
+
   if (!res.ok) {
     throw new Error('Failed to update cart item');
   }
-  
+
   return res.json();
 }
 
@@ -106,7 +106,7 @@ export async function removeFromCart(
       'Authorization': token,
     },
   });
-  
+
   if (!res.ok) {
     throw new Error('Failed to remove item from cart');
   }
@@ -122,7 +122,7 @@ export async function clearCart(token: string): Promise<void> {
       'Authorization': token,
     },
   });
-  
+
   if (!res.ok) {
     throw new Error('Failed to clear cart');
   }
@@ -143,10 +143,10 @@ export async function mergeCart(
     },
     body: JSON.stringify({ items: localItems }),
   });
-  
+
   if (!res.ok) {
     throw new Error('Failed to merge cart');
   }
-  
+
   return res.json();
 }

@@ -14,15 +14,15 @@ Write-Host ""
 function Get-LocalIP {
     try {
         # Obtener todas las IPs IPv4 (excluyendo localhost, link-local, Docker, VirtualBox y WSL)
-        $ips = Get-NetIPAddress -AddressFamily IPv4 | 
-               Where-Object { 
-                   $_.IPAddress -ne "127.0.0.1" -and 
+        $ips = Get-NetIPAddress -AddressFamily IPv4 |
+               Where-Object {
+                   $_.IPAddress -ne "127.0.0.1" -and
                    $_.IPAddress -notlike "169.254.*" -and      # Link-local
                    $_.IPAddress -notlike "172.1[6-9].*" -and   # Docker (172.16-19.*)
                    $_.IPAddress -notlike "172.2[0-9].*" -and   # Docker + WSL (172.20-29.*)
                    $_.IPAddress -notlike "172.3[0-1].*" -and   # Docker (172.30-31.*)
                    $_.IPAddress -notlike "192.168.56.*"        # VirtualBox
-               } | 
+               } |
                Select-Object -First 1
 
         if ($ips) {
@@ -31,7 +31,7 @@ function Get-LocalIP {
     } catch {
         Write-Host "⚠️  Error auto-detecting IP with Get-NetIPAddress" -ForegroundColor Yellow
     }
-    
+
     # Fallback: usar ipconfig y buscar patrones comunes de red local
     try {
         # Buscar primero 10.* (común en redes corporativas/universitarias)
@@ -40,7 +40,7 @@ function Get-LocalIP {
             $ip = $ipLine.Line -replace ".*:\s*", ""
             return $ip.Trim()
         }
-        
+
         # Luego buscar 192.168.* (común en redes domésticas)
         $ipLine = ipconfig | Select-String -Pattern "IPv4.*192\.168\.\d+\.\d+" | Select-Object -First 1
         if ($ipLine) {
@@ -50,7 +50,7 @@ function Get-LocalIP {
     } catch {
         Write-Host "⚠️  Error parsing ipconfig" -ForegroundColor Yellow
     }
-    
+
     return $null
 }
 
@@ -80,7 +80,7 @@ $apiUrl = switch ($choice) {
     "1" { "http://localhost:3001" }
     "2" { "http://${localIP}:3001" }
     "3" { "http://${localIP}:3001" }
-    default { 
+    default {
         Write-Host "❌ Opción inválida. Usando IP local por defecto." -ForegroundColor Red
         "http://${localIP}:3001"
     }
@@ -127,16 +127,16 @@ $updateCors = Read-Host
 
 if ($updateCors -eq "" -or $updateCors -eq "S" -or $updateCors -eq "s") {
     $backendMainPath = Join-Path (Split-Path $PSScriptRoot -Parent) "backend\app\main.py"
-    
+
     if (Test-Path $backendMainPath) {
         $mainContent = Get-Content $backendMainPath -Raw
-        
+
         # Actualizar cualquier IP (10.x, 192.168.x, 172.x) o incluso la antigua 10.89...
         $mainContent = [System.Text.RegularExpressions.Regex]::Replace($mainContent, 'http://(?:10|192\.168|172\.(?:1[6-9]|2\d|3[01]))\.\d+\.\d+:8081', "http://${localIP}:8081")
         $mainContent = [System.Text.RegularExpressions.Regex]::Replace($mainContent, 'exp://(?:10|192\.168|172\.(?:1[6-9]|2\d|3[01]))\.\d+\.\d+:8081', "exp://${localIP}:8081")
-        
+
         Set-Content -Path $backendMainPath -Value $mainContent -NoNewline
-        
+
         Write-Host "✅ CORS del backend actualizado con IP: $localIP" -ForegroundColor Green
         Write-Host ""
         Write-Host "⚠️  IMPORTANTE: Reinicia el backend para aplicar cambios de CORS" -ForegroundColor Yellow

@@ -17,7 +17,7 @@ const CartItem = ({ item, onIncrement, onDecrement, onRemove }: CartItemProps) =
   const addingProducts = useCart((state) => state.addingProducts);
   const updatingProducts = useCart((state) => state.updatingProducts);
   const removingProducts = useCart((state) => state.removingProducts);
-  
+
   const isAdding = addingProducts.has(item.product.id);
   const isUpdating = updatingProducts.has(item.product.id);
   const isRemoving = removingProducts.has(item.product.id);
@@ -34,7 +34,7 @@ const CartItem = ({ item, onIncrement, onDecrement, onRemove }: CartItemProps) =
       onRemove(item.product.id);
       return;
     }
-    
+
     // Use the store's updateQuantity function
     const { updateQuantity: storeUpdateQuantity } = useCart.getState();
     await storeUpdateQuantity(item.product.id, newQuantity);
@@ -66,7 +66,7 @@ const CartItem = ({ item, onIncrement, onDecrement, onRemove }: CartItemProps) =
             disabled={isUpdating || isRemoving}
             className={`w-8 h-8 rounded-full items-center justify-center ${
               isUpdating || isRemoving
-                ? 'bg-gray-100 opacity-50' 
+                ? 'bg-gray-100 opacity-50'
                 : 'bg-gray-100 active:bg-gray-200'
             }`}
           >
@@ -95,7 +95,7 @@ const CartItem = ({ item, onIncrement, onDecrement, onRemove }: CartItemProps) =
             disabled={isAdding || isUpdating || isRemoving}
             className={`w-8 h-8 rounded-full items-center justify-center ${
               isAdding || isUpdating || isRemoving
-                ? 'bg-gray-100 opacity-50' 
+                ? 'bg-gray-100 opacity-50'
                 : 'bg-gray-100 active:bg-gray-200'
             }`}
           >

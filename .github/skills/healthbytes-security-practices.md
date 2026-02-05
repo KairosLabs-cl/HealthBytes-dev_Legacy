@@ -557,4 +557,3 @@ describe("Security", () => {
 - [ ] Database backups encrypted
 - [ ] Monitoring and alerting configured
 - [ ] Security tests pass (401, 403, 404, auth boundaries)
-
