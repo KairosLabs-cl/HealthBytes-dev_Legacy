@@ -16,16 +16,22 @@ HealthBytes-dev/
 │   ├── app/
 │   │   ├── api/v1/       # HTTP routers (endpoints only, no business logic)
 │   │   │   ├── auth.py   # Login, register
-│   │   │   ├── products.py  # Product CRUD
+│   │   │   ├── products.py  # Product CRUD with search
 │   │   │   ├── orders.py    # Order management
-│   │   │   └── users.py     # User endpoints
-│   │   ├── services/     # Business logic layer (currently empty, to be populated)
+│   │   │   ├── users.py     # User endpoints
+│   │   │   └── cart.py      # Shopping cart endpoints
+│   │   ├── services/     # Business logic layer
+│   │   │   ├── product_service.py
+│   │   │   ├── order_service.py
+│   │   │   ├── user_service.py
+│   │   │   ├── auth_service.py
+│   │   │   └── cart_service.py
 │   │   ├── schemas/      # Pydantic request/response models
 │   │   │   ├── product.py
 │   │   │   ├── order.py
 │   │   │   └── user.py
 │   │   ├── db/
-│   │   │   ├── models/   # SQLAlchemy ORM (user.py, product.py, order.py)
+│   │   │   ├── models/   # SQLAlchemy ORM
 │   │   │   ├── database.py  # DB connection & session
 │   │   │   └── schemas.py   # Shared enums
 │   │   ├── core/
@@ -39,8 +45,13 @@ HealthBytes-dev/
 │   │   ├── conftest.py   # Fixtures, MockAsyncSession
 │   │   ├── test_api/     # Endpoint tests
 │   │   └── test_services/  # Business logic tests
+│   ├── migrations/       # Database migrations
 │   ├── start.ps1         # Windows dev server launcher
-│   └── requirements.txt
+│   ├── start.sh          # Unix dev server launcher
+│   ├── run_server.py     # FastAPI server runner
+│   ├── README.md         # Backend documentation
+│   ├── AI-README.md      # IA developer guidelines
+│   └── requirements.txt  # Python dependencies
 │
 ├── frontend/              # React Native (Expo) mobile app
 │   ├── app/              # Screens (Expo Router file-based routing)
@@ -57,6 +68,7 @@ HealthBytes-dev/
 │   ├── api/              # HTTP client functions (fetch wrappers)
 │   │   ├── products.ts
 │   │   ├── orders.ts
+│   │   ├── cart.ts
 │   │   └── auth.ts
 │   ├── store/            # Zustand state management
 │   │   ├── cartStore.ts
@@ -65,18 +77,47 @@ HealthBytes-dev/
 │   │   └── cache.ts      # Clerk token caching (AsyncStorage)
 │   ├── types/
 │   │   └── product.ts    # TypeScript interfaces
+│   ├── README.md         # Frontend documentation
+│   ├── AI-README.md      # IA developer guidelines
+│   ├── setup-env.ps1     # Environment setup script
 │   └── package.json      # pnpm dependencies
 │
 ├── docs/
+│   ├── README.md         # Documentation index
+│   ├── IMPLEMENTATION_SUMMARY.md     # Full-text search implementation
+│   ├── SECURITY.md       # Security improvements & headers
 │   ├── copilot-logs/     # AI session documentation
-│   │   ├── test-logs/    # Testing coverage status
-│   │   └── status-logs/  # Project state tracking
+│   │   ├── README.md     # Copilot logs index
+│   │   ├── status-logs/  # Project state tracking
+│   │   ├── auth-logs/    # Authentication debugging
+│   │   ├── security-improvements-logs/
+│   │   └── ...
+│   ├── frontend/
+│   │   └── SETUP.md      # Frontend setup guide
+│   ├── search-logs/      # Full-text search documentation
 │   └── diagramas/        # Architecture diagrams
+│
+├── Tools/
+│   ├── README.md         # Tools index
+│   ├── backend/
+│   │   ├── setup/        # Server startup documentation
+│   │   ├── database/     # DB migrations & management
+│   │   │   ├── run_migration.py
+│   │   │   ├── recreate_db.py
+│   │   │   └── create_cart_table.py
+│   │   ├── seeding/      # Database population
+│   │   │   ├── seed_products.py
+│   │   │   ├── seed_simple.sql
+│   │   │   └── README.md
+│   │   └── testing/      # Test utilities (reserved)
+│   └── frontend/
+│       └── testing/      # Frontend test utilities (reserved)
 │
 ├── .cursorrules          # Strict rules & prohibitions
 ├── .github/
 │   └── copilot-instructions.md  # This file
-└── docker-compose.yml    # (Empty, planned for future)
+├── README.md             # Project overview
+└── docker-compose.yml    # Docker orchestration (empty, reserved for future)
 
 ## Critical Architecture Patterns
 
