@@ -21,17 +21,29 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 
 const orderStatuses = [
-  { label: "Empacado", icon: Package },
-  { label: "En transito", icon: Truck },
-  { label: "Entregado", icon: CheckCircle2 },
+  {
+    label: "Preparando",
+    icon: Package,
+    status: "packed",
+  },
+  {
+    label: "En tránsito",
+    icon: Truck,
+    status: "in_transit",
+  },
+  {
+    label: "Entregado o por entregar",
+    icon: CheckCircle2,
+    status: "delivered",
+  },
 ];
 
 const options = [
-  { label: "Mensaje del vendedor", icon: MessageSquare },
-  { label: "Lista de deseos", icon: Heart },
-  { label: "Metodos de pago", icon: CreditCard },
-  { label: "Seguridad", icon: Shield },
-  { label: "Contactate con soporte", icon: Phone },
+  { label: "Mensaje del vendedor", icon: MessageSquare, href: "/messages" },
+  { label: "Lista de deseos", icon: Heart, href: "/wishlist" },
+  { label: "Metodos de pago", icon: CreditCard, href: "/payments" },
+  { label: "Seguridad", icon: Shield, href: "/security" },
+  { label: "Contactate con soporte", icon: Phone, href: "/support" },
 ];
 
 export default function ProfileScreen() {
@@ -95,22 +107,36 @@ export default function ProfileScreen() {
             </Text>
           </View>
           {/* Botón de Settings - para futuro uso */}
-          <Pressable className="w-12 h-12 bg-black rounded-2xl items-center justify-center">
+          <Pressable
+            className="w-12 h-12 bg-black rounded-2xl items-center justify-center"
+            onPress={() => router.push("/profile-settings")}
+          >
             <Icon as={Settings} color="#ffffff" size="lg" />
           </Pressable>
         </View>
 
         <View className="bg-[#303030] rounded-3xl p-4 mb-4">
-            <Text className="text-white text-lg font-semibold mb-3">🚚 Mis ordenes</Text>
+            <Text className="text-white text-lg font-semibold mb-1">🚚 Mis órdenes</Text>
+            <Text className="text-gray-300 text-xs mb-3">
+              Ve el estado de tus compras!
+            </Text>
             <View className="flex-row justify-between">
               {orderStatuses.map((item) => (
-                <View
+                <Pressable
                   key={item.label}
                   className="bg-white rounded-2xl px-3 py-2 items-center justify-center w-[30%]"
+                  onPress={() =>
+                    router.push({
+                      pathname: "/orders",
+                      params: { status: item.status },
+                    })
+                  }
                 >
                   <Icon as={item.icon} color="#1f2937" size="md" />
-                  <Text className="text-xs text-black mt-1">{item.label}</Text>
-                </View>
+                  <Text className="text-[11px] text-black mt-1 font-semibold text-center">
+                    {item.label}
+                  </Text>
+                </Pressable>
               ))}
             </View>
           </View>
@@ -120,15 +146,16 @@ export default function ProfileScreen() {
         </View>
 
         {options.map((item) => (
-          <View
+          <Pressable
             key={item.label}
             className="bg-black rounded-3xl flex-row items-center px-4 py-4 mb-3"
+            onPress={() => router.push(item.href)}
           >
             <View className="w-12 h-12 bg-gray-200 rounded-2xl items-center justify-center mr-3">
               <Icon as={item.icon} color="#1f2937" size="lg" />
             </View>
             <Text className="text-white text-lg font-bold">{item.label}</Text>
-          </View>
+          </Pressable>
         ))}
 
         <Pressable className="rounded-3xl overflow-hidden" onPress={handleLogout}>
