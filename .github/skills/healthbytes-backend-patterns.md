@@ -222,6 +222,66 @@ pre-commit run --files app/api/v1/products.py  # Specific file
 git commit --no-verify -m "WIP: work in progress"
 ```
 
+### Security Scanning with Bandit
+
+**What Bandit detects**:
+Bandit scans your code for common security vulnerabilities:
+
+| Vulnerability | Example | Severity |
+|---|---|---|
+| **Hardcoded secrets** | `password = "admin123"` | 🔴 Critical |
+| **SQL injection** | `query = f"SELECT * FROM users WHERE id = {user_id}"` | 🔴 Critical |
+| **Weak hashing** | `hashlib.md5()` instead of bcrypt | 🔴 Critical |
+| **Unsafe deserialization** | `pickle.loads(untrusted_data)` | 🔴 Critical |
+| **Insecure SSL/TLS** | `verify=False` in requests | 🟠 High |
+| **Dangerous functions** | `eval()`, `exec()` with user input | 🔴 Critical |
+| **Flask debug mode** | `app.run(debug=True)` in production | 🟠 High |
+| **Random for security** | `import random` for tokens | 🟠 High |
+| **YAML unsafe load** | `yaml.load()` without Loader | 🔴 Critical |
+
+**Running Bandit manually**:
+```bash
+# Check entire app/ directory
+pre-commit run bandit --all-files
+
+# Check specific file
+bandit app/core/security.py
+
+# Get detailed report
+bandit -r app/ -v
+
+# Output formats
+bandit -r app/ -f json -o report.json
+bandit -r app/ -f html -o report.html
+```
+
+**Example: Bandit catching a vulnerability**:
+```python
+# ❌ VULNERABLE CODE - Bandit will catch this
+import hashlib
+password_hash = hashlib.md5(user_password).hexdigest()
+# Warning: B324 probable use of insecure hash functions
+```
+
+```python
+# ✅ SECURE - Bandit approves
+from app.core.security import hash_password
+password_hash = hash_password(user_password)
+```
+
+**Common Bandit warnings in HealthBytes**:
+- **B101**: Check for use of `assert` (skip in tests, OK below)
+- **B601**: Paramiko call with policy set to auto add (check SSH configs)
+- **B602**: Shell injection via `shell=True` (avoid with subprocess)
+- **B611**: Flask debug true (must be False in production)
+
+**Ignoring false positives** (rare):
+If Bandit flags a false positive, you can ignore it:
+```python
+# Bandit: disable=B602
+result = subprocess.run(cmd, shell=True)  # We validated cmd internally
+```
+
 ### IDE Integration
 
 Configure your editor to match pre-commit settings:
