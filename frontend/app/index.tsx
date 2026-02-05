@@ -8,8 +8,8 @@ import FavoritesBar from "@/components/FavoritesBar";
 import RecentlyViewedBar from "@/components/RecentlyViewedBar";
 import { Header } from "@/components/Header";
 import { Stack } from "expo-router";
-import QuickFilters from "@/components/QuickFilters"; 
-import SectionHeader from "@/components/SectionHeader"; 
+import QuickFilters from "@/components/QuickFilters";
+import SectionHeader from "@/components/SectionHeader";
 import { useMemo, useState } from "react";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 import { useUser } from "@clerk/clerk-expo";
@@ -21,17 +21,13 @@ import { Apple } from "lucide-react-native";
 const keyExtractor = (item: Product) => item.id.toString();
 
 export default function HomeScreen() {
-  // se Cambio el estado para que termino de búsqueda se guarde en el estado y se pueda usar en la pagina
-  const [searchTerm, setSearchTerm] = useState("");
 
   const { items: recentlyViewedItems } = useRecentlyViewed();
   const { user } = useUser();
 
   const { data, isLoading, error, isFetching } = useQuery({
-    queryKey: ["products", searchTerm], // se agrego searchTerm para re-fetch al buscar
-    queryFn: () => listProducts(searchTerm), // Pasa término de búsqueda a la API
-    // mantiene datos anteriores mientrss carga para evitar que desaparezcan
-    placeholderData: (previousData) => previousData,
+    queryKey: ["products"],
+    queryFn: () => listProducts(),
   });
 
   const numColumns = useBreakpointValue({
@@ -66,14 +62,10 @@ export default function HomeScreen() {
     );
   }
 
-  const handleSearchChange = (term: string) => {
-    setSearchTerm(term);
-  };
-
   const renderHeader = () => (
     <>
       {/* Header + búsqueda */}
-      <Header userName={user?.firstName || user?.fullName || "Usuario"} onSearchChange={handleSearchChange} />
+      <Header userName={user?.firstName || user?.fullName || "Usuario"} />
 
       {/* Chips de dietas */}
       <View className="px-4 pb-1 bg-white">
@@ -129,12 +121,8 @@ export default function HomeScreen() {
       )}
 
       {/* Secciones previas cuando no hay búsqueda */}
-      {!searchTerm && (
-        <>
-          <FavoritesBar products={data} />
-          <RecentlyViewedBar items={recentlyViewedItems} />
-        </>
-      )}
+      <FavoritesBar products={data} />
+      <RecentlyViewedBar items={recentlyViewedItems} />
 
       <View className="mt-1">
         <SectionHeader icon={Apple} title="Para ti" />
@@ -146,7 +134,7 @@ export default function HomeScreen() {
   const renderEmpty = () => (
     <View className="flex-1 items-center justify-center p-8">
       <Text className="text-center text-gray-500">
-        {searchTerm ? "No se encontraron productos" : "No hay productos disponibles"}
+        No hay productos disponibles
       </Text>
     </View>
   );
