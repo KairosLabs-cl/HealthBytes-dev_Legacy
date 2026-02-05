@@ -82,22 +82,7 @@ function RootLayoutNav() {
 
   return (
     <>
-      <Stack
-        screenOptions={{
-          headerRight: () =>
-            cartItemsNum > 0 && (
-              <Link href={"/cart"} asChild>
-                <Pressable
-                  className="flex-row gap-2"
-                  style={{ marginRight: 40 }}
-                >
-                  <Icon as={ShoppingCart} />
-                  <Text>{cartItemsNum}</Text>
-                </Pressable>
-              </Link>
-            ),
-        }}
-      >
+      <Stack>
         <Stack.Screen name="index" options={{ title: "HealthBytes" }} />
         <Stack.Screen
           name="(auth)/login"

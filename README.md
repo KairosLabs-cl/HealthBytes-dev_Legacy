@@ -70,6 +70,23 @@ Las personas con condiciones como celiaquía, diabetes o alergias alimentarias e
 
 ¿Quieres empezar a desarrollar en menos de 10 minutos? Sigue estos pasos:
 
+### 🎯 Opción Recomendada: VS Code Workspace
+
+Abre el proyecto con configuración multi-root optimizada:
+
+```bash
+# Después de clonar el repo
+code HealthBytes.code-workspace
+```
+
+**Incluye**:
+- ✅ Backend + Frontend + Docs en carpetas separadas
+- ✅ Debugger preconfigured para FastAPI
+- ✅ Tasks para iniciar servicios
+- ✅ Formateo automático (Black + Prettier)
+- ✅ Extensions recomendadas
+- ✅ Terminal configurado por contexto
+
 ### Prerrequisitos
 
 Asegúrate de tener instalado:
