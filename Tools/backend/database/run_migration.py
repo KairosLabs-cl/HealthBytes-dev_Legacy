@@ -6,7 +6,7 @@ import psycopg
 
 async def run_migration():
     """Execute the fulltext search migration SQL."""
-    migration_file = Path(__file__).parent / "migrations" / "add_fulltext_search.sql"
+    migration_file = Path(__file__).parent.parent / "migrations" / "add_fulltext_search.sql"
     
     print(f"📄 Reading migration file: {migration_file}")
     

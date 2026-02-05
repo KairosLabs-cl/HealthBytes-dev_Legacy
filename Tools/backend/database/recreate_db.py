@@ -4,10 +4,15 @@
 import asyncio
 import os
 import selectors
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker
+import sys
+from pathlib import Path
+
+# Add parent directories to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "backend"))
+
 from app.db.database import Base, DATABASE_URL
 from app.db.schemas import Product, User, Order, OrderItem
+from sqlalchemy.ext.asyncio import create_async_engine
 
 async def recreate_db():
     """Drop and recreate all tables"""
