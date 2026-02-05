@@ -1,17 +1,23 @@
 """
 Test for order pagination.
 """
+
+import time
+
 import pytest
 from app.db.schemas import Order
-from app.middleware.auth import get_current_user
 from app.main import app
+from app.middleware.auth import get_current_user
 from tests.conftest import create_test_user
-import time
+
 
 @pytest.fixture
 def test_user(db_session):
     """Create a test user."""
-    return create_test_user(db_session, email="pagination@example.com", role="user", clerk_id="user_pag_1")
+    return create_test_user(
+        db_session, email="pagination@example.com", role="user", clerk_id="user_pag_1"
+    )
+
 
 def test_list_orders_pagination(client, db_session, test_user):
     """Test pagination for GET /orders."""
@@ -26,11 +32,10 @@ def test_list_orders_pagination(client, db_session, test_user):
                 user_id=test_user.id,
                 status="New",
                 total=10.0 * (i + 1),
-                stripe_payment_intent_id=f"pi_{i}"
+                stripe_payment_intent_id=f"pi_{i}",
             )
             db_session.add(order)
-            db_session.commit() # Commit to generate ID and created_at
-
+            db_session.commit()  # Commit to generate ID and created_at
 
         # Verify total orders
         response = client.get("/orders")

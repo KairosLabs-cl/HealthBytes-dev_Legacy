@@ -15,11 +15,11 @@ export function Header({ userName, onSearchChange }: HeaderProps) {
 
   const handleSearchChange = (text: string) => {
     setSearchTerm(text);
-    
+
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current);
     }
-    
+
     // se Cambio que espere 500ms antes de ejecutar búsqueda para mejorar rendimiento
     debounceTimer.current = setTimeout(() => {
       onSearchChange(text);

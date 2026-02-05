@@ -1,14 +1,15 @@
 """
 Cart service - Business logic for shopping cart operations
 """
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete
-from sqlalchemy.orm import joinedload
-from fastapi import HTTPException
+
 from typing import List
 
 from app.db.schemas import CartItem, Product
-from app.schemas.cart import CartItemCreate, CartResponse, CartItemResponse
+from app.schemas.cart import CartItemCreate, CartItemResponse, CartResponse
+from fastapi import HTTPException
+from sqlalchemy import delete, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 
 async def get_cart(user_id: int, db: AsyncSession) -> CartResponse:
@@ -16,43 +17,34 @@ async def get_cart(user_id: int, db: AsyncSession) -> CartResponse:
     Get user's cart with all items and product details
     """
     result = await db.execute(
-        select(CartItem)
-        .where(CartItem.user_id == user_id)
-        .options(joinedload(CartItem.product))
+        select(CartItem).where(CartItem.user_id == user_id).options(joinedload(CartItem.product))
     )
     cart_items = result.scalars().all()
-    
+
     # Calculate total
     total = sum(item.quantity * item.product.price for item in cart_items)
-    
+
     return CartResponse(
-        items=[CartItemResponse.model_validate(item) for item in cart_items],
-        total=total
+        items=[CartItemResponse.model_validate(item) for item in cart_items], total=total
     )
 
 
 async def add_to_cart(
-    user_id: int, 
-    product_id: int, 
-    quantity: int, 
-    db: AsyncSession
+    user_id: int, product_id: int, quantity: int, db: AsyncSession
 ) -> CartItemResponse:
     """
     Add item to cart or increment quantity if already exists
     """
     # Check if product exists
-    product_result = await db.execute(
-        select(Product).where(Product.id == product_id)
-    )
+    product_result = await db.execute(select(Product).where(Product.id == product_id))
     product = product_result.scalar_one_or_none()
-    
+
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
     if quantity > product.stock:
         raise HTTPException(status_code=400, detail="Insufficient stock")
 
-    
     # Check if item already in cart
     result = await db.execute(
         select(CartItem)
@@ -60,47 +52,38 @@ async def add_to_cart(
         .options(joinedload(CartItem.product))
     )
     existing_item = result.scalar_one_or_none()
-    
+
     if existing_item:
         # Increment quantity
         new_quantity = existing_item.quantity + quantity
         if new_quantity > product.stock:
             raise HTTPException(
-                status_code=400, 
-                detail=f"Stock insuficiente. Solo quedan {product.stock} unidades disponibles."
+                status_code=400,
+                detail=f"Stock insuficiente. Solo quedan {product.stock} unidades disponibles.",
             )
-            
+
         existing_item.quantity = new_quantity
         await db.commit()
         await db.refresh(existing_item)
         return CartItemResponse.model_validate(existing_item)
-    
+
     # Create new cart item
-    new_item = CartItem(
-        user_id=user_id,
-        product_id=product_id,
-        quantity=quantity
-    )
+    new_item = CartItem(user_id=user_id, product_id=product_id, quantity=quantity)
     db.add(new_item)
     await db.commit()
     await db.refresh(new_item)
-    
+
     # Load product relationship
     result = await db.execute(
-        select(CartItem)
-        .where(CartItem.id == new_item.id)
-        .options(joinedload(CartItem.product))
+        select(CartItem).where(CartItem.id == new_item.id).options(joinedload(CartItem.product))
     )
     new_item = result.scalar_one()
-    
+
     return CartItemResponse.model_validate(new_item)
 
 
 async def update_cart_item(
-    user_id: int,
-    product_id: int,
-    quantity: int,
-    db: AsyncSession
+    user_id: int, product_id: int, quantity: int, db: AsyncSession
 ) -> CartItemResponse:
     """
     Update quantity of a cart item
@@ -111,38 +94,33 @@ async def update_cart_item(
         .options(joinedload(CartItem.product))
     )
     cart_item = result.scalar_one_or_none()
-    
+
     if not cart_item:
         raise HTTPException(status_code=404, detail="Item not found in cart")
-    
+
     # Validar stock solo si estamos aumentando la cantidad o manteniéndola
     # Si el usuario está reduciendo la cantidad (aunque siga por encima del stock), permitimos la operación
     if quantity > cart_item.product.stock and quantity >= cart_item.quantity:
         raise HTTPException(
-            status_code=400, 
-            detail=f"Stock insuficiente. Solo quedan {cart_item.product.stock} unidades disponibles."
+            status_code=400,
+            detail=f"Stock insuficiente. Solo quedan {cart_item.product.stock} unidades disponibles.",
         )
 
     cart_item.quantity = quantity
     await db.commit()
     await db.refresh(cart_item)
-    
+
     return CartItemResponse.model_validate(cart_item)
 
 
-async def remove_from_cart(
-    user_id: int,
-    product_id: int,
-    db: AsyncSession
-) -> None:
+async def remove_from_cart(user_id: int, product_id: int, db: AsyncSession) -> None:
     """
     Remove item from cart
     """
     result = await db.execute(
-        delete(CartItem)
-        .where(CartItem.user_id == user_id, CartItem.product_id == product_id)
+        delete(CartItem).where(CartItem.user_id == user_id, CartItem.product_id == product_id)
     )
-    
+
     # Don't raise error if item not found - it's already removed
     await db.commit()
 
@@ -151,16 +129,12 @@ async def clear_cart(user_id: int, db: AsyncSession) -> None:
     """
     Clear all items from user's cart
     """
-    await db.execute(
-        delete(CartItem).where(CartItem.user_id == user_id)
-    )
+    await db.execute(delete(CartItem).where(CartItem.user_id == user_id))
     await db.commit()
 
 
 async def merge_cart_items(
-    user_id: int,
-    local_items: List[CartItemCreate],
-    db: AsyncSession
+    user_id: int, local_items: List[CartItemCreate], db: AsyncSession
 ) -> CartResponse:
     """
     Merge local cart items with server cart (on login)
@@ -169,41 +143,36 @@ async def merge_cart_items(
     """
     for item in local_items:
         # Check if product exists
-        product_result = await db.execute(
-            select(Product).where(Product.id == item.product_id)
-        )
+        product_result = await db.execute(select(Product).where(Product.id == item.product_id))
         product = product_result.scalar_one_or_none()
-        
+
         if not product:
             # Skip invalid products from local cart
             continue
-        
+
         # Check if item already in server cart
         result = await db.execute(
             select(CartItem).where(
-                CartItem.user_id == user_id,
-                CartItem.product_id == item.product_id
+                CartItem.user_id == user_id, CartItem.product_id == item.product_id
             )
         )
         existing_item = result.scalar_one_or_none()
-        
+
         if existing_item:
             # Use local quantity (user's current session takes priority over old server data)
             existing_item.quantity = min(item.quantity, product.stock)
         else:
             # Create new item, but don't exceed stock
             final_quantity = min(item.quantity, product.stock)
-            
+
             # Only add if quantity is valid (> 0)
             if final_quantity > 0:
                 new_item = CartItem(
-                    user_id=user_id,
-                    product_id=item.product_id,
-                    quantity=final_quantity
+                    user_id=user_id, product_id=item.product_id, quantity=final_quantity
                 )
                 db.add(new_item)
-    
+
     await db.commit()
-    
+
     # Return merged cart
     return await get_cart(user_id, db)

@@ -112,7 +112,7 @@ describe('HomeScreen Structural Test', () => {
 
     // Check if products are rendered
     expect(await screen.findAllByTestId('product-list-item')).toHaveLength(2);
-    
+
     // Check if Header is rendered
     expect(screen.getByTestId('header')).toBeTruthy();
   });

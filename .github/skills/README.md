@@ -8,11 +8,11 @@ All guidelines are stored in this **`.github/skills/`** directory:
 
 | Skill | File | Purpose |
 |-------|------|---------||
-| 🏗️ **Backend Patterns** | [healthbytes-backend-patterns.md](healthbytes-backend-patterns.md) | FastAPI, services layer, database, async patterns, pytest testing |
+| 🏗️ **Backend Patterns** | [healthbytes-backend-patterns.md](healthbytes-backend-patterns.md) | FastAPI, services layer, database, async patterns, pytest testing, **pre-commit hooks** |
 | 🎨 **Frontend Patterns** | [healthbytes-frontend-patterns.md](healthbytes-frontend-patterns.md) | React Native, Zustand, components, Jest testing |
-| 📋 **Project Rules** | [healthbytes-project-rules.md](healthbytes-project-rules.md) | Folder structure, prohibitions, file placement, security checklist |
+| 📋 **Project Rules** | [healthbytes-project-rules.md](healthbytes-project-rules.md) | Folder structure, prohibitions, file placement, security checklist, **development workflow** |
 | 🔒 **Security Practices** | [healthbytes-security-practices.md](healthbytes-security-practices.md) | Auth, RBAC, validation, password hashing, security testing |
-| 📖 **Installation Guide** | [INSTALL.md](INSTALL.md) | How to install skills in your editor |
+| 🛠️ **Development Tools** | [INSTALL.md](INSTALL.md) | Editor setup, **VS Code workspace**, **pre-commit hooks**, skill installation |
 
 ---
 
@@ -85,11 +85,34 @@ Now, help me build a new service...
 - Naming conventions
 - What goes where (api/, services/, components/, stores/, etc)
 
+✅ **Development Tools** 🆕
+- VS Code multi-root workspace setup (debugger, tasks, per-folder settings)
+- Pre-commit hooks (Black, Flake8, isort, Bandit)
+- Code quality automation workflow
+- IDE integration guides
+
 ---
 
 ## 🔄 Example: Building a Feature
 
 **Scenario**: Add a product discount system
+
+### Step 0: Setup Development Environment 🆕
+→ Reference [INSTALL.md](.github/skills/INSTALL.md)
+```bash
+# Open workspace for optimized workflow
+code HealthBytes.code-workspace
+
+# Install pre-commit hooks (one-time)
+cd backend
+.\setup-hooks.ps1  # Windows
+# or ./setup-hooks.sh  # Linux/Mac
+
+# Benefits:
+# - Debugger ready (F5)
+# - Auto-formatting on commit (Black, isort)
+# - Code quality checks (Flake8, Bandit)
+```
 
 ### Step 1: Check Rules
 → Open [healthbytes-project-rules.md](.github/skills/healthbytes-project-rules.md)
@@ -120,6 +143,19 @@ Now, help me build a new service...
 - Admin-only discount creation? → RBAC check
 - Input validation on price? → Pydantic validators
 - Frontend tests for auth? → Yes, include in Jest
+```
+
+### Step 5: Commit Changes 🆕
+→ Pre-commit hooks run automatically
+```bash
+git add .
+git commit -m "feat: add discount system"
+
+# Hooks will:
+# ✅ Format code (Black, isort)
+# ✅ Check lint errors (Flake8)
+# ✅ Scan security (Bandit)
+# ⚠️ If hooks fail → fix issues → commit again
 ```
 
 ---
@@ -219,4 +255,3 @@ A: **healthbytes-project-rules.md** - gives you the big picture.
 
 **Last Updated**: Feb 5, 2026
 **Skills Version**: 2.0 (with Testing)
-

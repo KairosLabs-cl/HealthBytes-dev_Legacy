@@ -295,6 +295,58 @@ When implementing ANY feature, ensure:
 
 ---
 
+## �️ Development Workflow
+
+### VS Code Workspace (Recommended)
+
+Use the multi-root workspace file for optimized development:
+
+```bash
+code HealthBytes.code-workspace
+```
+
+**Benefits**:
+- Organized folders (Backend, Frontend, Docs, Root)
+- Debugger preconfigured for FastAPI
+- Tasks to start backend/frontend services
+- Per-folder formatter/linter settings
+- Extension recommendations
+
+**Quick actions**:
+- Debug: Place breakpoint → F5
+- Tasks: Ctrl+Shift+P → "Tasks: Run Task"
+- Extensions: Accept workspace recommendations
+
+### Pre-commit Hooks (Backend)
+
+Code quality automation runs **before every commit**:
+- **Black**: Auto-formatter (100 chars/line)
+- **Flake8**: Linter (PEP8 + errors)
+- **isort**: Import organizer
+- **Bandit**: Security scanner
+
+**Setup** (one-time):
+```bash
+cd backend
+.\setup-hooks.ps1  # Windows
+./setup-hooks.sh   # Linux/Mac
+```
+
+**Daily workflow**:
+```bash
+git add .
+git commit -m "feat: new feature"  # Hooks run automatically
+# If hooks fail → fix issues → commit again
+```
+
+**Configuration**:
+- `backend/.pre-commit-config.yaml` - Hook definitions
+- `backend/pyproject.toml` - Tool settings
+
+ℹ️ **Details**: See [INSTALL.md](INSTALL.md) for complete setup guide
+
+---
+
 ## 🔄 Decision-Making Framework
 
 When you're unsure about something:
@@ -303,7 +355,8 @@ When you're unsure about something:
 2. **Is it related to frontend?** → Check `healthbytes-frontend-patterns.md`
 3. **Is it about security?** → Check `healthbytes-security-practices.md`
 4. **Is it about project structure?** → Check this file
-5. **Is it about dependencies?** → Ask for approval before installing
+5. **Is it about development tools?** → Check `INSTALL.md`
+6. **Is it about dependencies?** → Ask for approval before installing
 
 ---
 
@@ -319,4 +372,3 @@ When you're unsure about something:
 | How do API calls work? | [frontend/api/products.ts](../frontend/api/products.ts) |
 | How do I write backend tests? | [backend/tests/conftest.py](../backend/tests/conftest.py) |
 | How do I test components? | [frontend/jest.config.js](../frontend/jest.config.js) |
-

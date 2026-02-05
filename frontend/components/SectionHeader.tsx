@@ -4,8 +4,8 @@ import { Icon } from "@/components/ui/icon";
 import { Star } from "lucide-react-native"; // Default icon
 import { Text } from "@/components/ui/text";
 
-type Props = { 
-  icon?: any; 
+type Props = {
+  icon?: any;
   title: string;
   lightText?: boolean;
 };

@@ -40,7 +40,7 @@ function ProductListItem ({product} : Props) {
             <Heading size="md" className="mb-4">
               {formatPrice(product.price)}
             </Heading>
-            
+
             <Pressable
               onPress={handleAddToCart}
               className="w-10 h-10 rounded-full bg-black items-center justify-center active:opacity-80"

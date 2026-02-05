@@ -35,10 +35,10 @@ export default function ProductDetailsScreen() {
     try {
       // 1. Verificar stock actualizado
       const updatedProduct = await fetchProductById(Number(id));
-      
+
       // 2. Definir cantidad actual en carrito
       const currentInCart = cartItems.find(i => i.product.id === updatedProduct.id)?.quantity || 0;
-      
+
       // 3. Validar
       if (currentInCart + 1 > updatedProduct.stock) {
         Alert.alert(
@@ -51,7 +51,7 @@ export default function ProductDetailsScreen() {
       // 4. Agregar si todo está bien
       // Usamos updatedProduct para asegurar que tenemos la data más reciente
       addProduct(updatedProduct);
-      
+
     } catch (error) {
       console.error("Error checking stock:", error);
       Alert.alert("Error", "No se pudo verificar el stock. Intenta nuevamente.");
@@ -79,8 +79,8 @@ export default function ProductDetailsScreen() {
     <View className="flex-1 bg-white">
       <Stack.Screen options={{ title: product.name, headerShown: true }} />
 
-      <ScrollView 
-        className="flex-1" 
+      <ScrollView
+        className="flex-1"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 120 }}
       >
@@ -138,8 +138,8 @@ export default function ProductDetailsScreen() {
             <View className="flex-row items-center mb-6">
               <View className={`w-2 h-2 rounded-full mr-2 ${product.stock > 0 ? 'bg-green-500' : 'bg-red-500'}`} />
               <Text className="text-sm font-medium text-gray-600">
-                {product.stock > 0 
-                  ? `${product.stock} unidades disponibles` 
+                {product.stock > 0
+                  ? `${product.stock} unidades disponibles`
                   : 'Agotado'}
               </Text>
             </View>
@@ -161,8 +161,8 @@ export default function ProductDetailsScreen() {
               >
                 <ShoppingCart size={20} color={product.stock > 0 && (cartItems.find(i => i.product.id === product.id)?.quantity || 0) < product.stock ? "white" : "#9CA3AF"} />
                 <Text className={`font-semibold text-base ${product.stock > 0 && (cartItems.find(i => i.product.id === product.id)?.quantity || 0) < product.stock ? "text-white" : "text-gray-500"}`}>
-                  {product.stock === 0 
-                    ? 'Agotado' 
+                  {product.stock === 0
+                    ? 'Agotado'
                     : (cartItems.find(i => i.product.id === product.id)?.quantity || 0) >= product.stock
                       ? 'Máximo alcanzado'
                       : 'Agregar al carrito'}

@@ -466,4 +466,3 @@ EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 - **Use `pnpm` ONLY** (not npm or yarn)
 - Check bundle size for new dependencies
 - Get approval before installing external packages
-

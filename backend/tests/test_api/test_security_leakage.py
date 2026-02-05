@@ -1,14 +1,13 @@
+from unittest.mock import AsyncMock, patch
+
 import pytest
-from unittest.mock import patch, AsyncMock
 
 
 @pytest.mark.unit
 def test_product_error_leakage(client):
     """Test that internal error details are not leaked in API error responses."""
     with patch("app.services.product_service.list_products") as mock_list:
-        sensitive_error = (
-            "Database Connection Failed: postgres://user:password@localhost:5432/db"
-        )
+        sensitive_error = "Database Connection Failed: postgres://user:password@localhost:5432/db"
         mock_list.side_effect = Exception(sensitive_error)
 
         response = client.get("/products/")

@@ -60,7 +60,7 @@ export default function CartScreen() {
   const router = useRouter();
 
   const subtotal = items.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
-  
+
   const onCheckout = useCallback(() => {
     router.push("/checkout");
   }, [router]);
@@ -75,7 +75,7 @@ export default function CartScreen() {
   ), [addProduct, decrementProduct, removeProduct]);
 
   const footerParam = useMemo(() => (
-    <CartFooter 
+    <CartFooter
       itemCount={items.length}
       subtotal={subtotal}
       onCheckout={onCheckout}

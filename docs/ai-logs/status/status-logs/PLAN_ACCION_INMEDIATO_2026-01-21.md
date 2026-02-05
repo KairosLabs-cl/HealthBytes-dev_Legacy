@@ -485,4 +485,3 @@ Contacto: Check #dev-backend Slack
 **Autor:** AI Copilot  
 **Aprobado:** Pendiente  
 **Próxima revisión:** Diariamente durante Sprint 1
-
