@@ -34,3 +34,7 @@ backend/.pytest_cache/
 # IDEs
 .vscode/
 .idea/
+
+# AI Skills (junctions to .agents/)
+.agent/
+.cursor/
