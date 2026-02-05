@@ -67,6 +67,7 @@ frontend/
 ├── api/                          # Clientes API (data layer)
 │   ├── auth.ts                   # Endpoints de auth
 │   ├── products.ts               # Endpoints de productos
+│   ├── cart.ts                   # Endpoints de carrito
 │   └── orders.ts                 # Endpoints de órdenes
 │
 ├── store/                        # Zustand stores (estado global)
@@ -78,11 +79,12 @@ frontend/
 │   └── product.ts                # Tipos de producto
 │
 ├── lib/                          # Utilidades
-│   └── cache.ts                  # Cache utilities
+│   └── cache.ts                  # Cache utilities (Clerk tokens)
 │
 ├── assets/                       # Recursos estáticos
 │   └── products.json             # Seed data
 │
+├── setup-env.ps1                 # Environment setup (punto de entrada)
 ├── global.css                    # Estilos globales
 ├── tailwind.config.js            # Tailwind config
 ├── metro.config.js               # Metro bundler config
@@ -90,7 +92,11 @@ frontend/
 ├── app.json                      # Expo app config
 ├── tsconfig.json                 # TypeScript config
 ├── package.json                  # Dependencias
-└── README.md                     # Este archivo
+├── README.md                     # Este archivo
+└── AI-README.md                  # Guía para asistentes de IA
+
+🛠️ Scripts Utilitarios → Ver [Tools/frontend/](../../Tools/frontend/)
+   - Testing: configuración y utilidades
 ```
 
 ---
