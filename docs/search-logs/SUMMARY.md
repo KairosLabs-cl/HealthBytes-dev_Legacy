@@ -196,9 +196,9 @@ pnpm start
 
 | Archivo | Propósito |
 |---------|-----------|
-| [IMPLEMENTATION_SUMMARY.md](./backend/IMPLEMENTATION_SUMMARY.md) | Resumen de cambios |
-| [FULLTEXT_SEARCH_README.md](./backend/migrations/FULLTEXT_SEARCH_README.md) | Guía completa de instalación |
-| [test_products_search.py](./backend/tests/test_api/test_products_search.py) | 10 tests funcionales |
+| [IMPLEMENTATION_SUMMARY.md](../../backend/IMPLEMENTATION_SUMMARY.md) | Resumen de cambios |
+| [FULLTEXT_SEARCH_README.md](../../backend/migrations/FULLTEXT_SEARCH_README.md) | Guía completa de instalación |
+| [test_products_search.py](../../backend/tests/test_api/test_products_search.py) | 10 tests funcionales |
 
 ---
 
@@ -243,7 +243,7 @@ pnpm start
 
 **Solo necesitas ejecutar la migración SQL y reiniciar el backend.**
 
-Documentación: Ver `backend/migrations/FULLTEXT_SEARCH_README.md`
+Documentación: Ver `SETUP.md` en esta carpeta
 
 ---
 

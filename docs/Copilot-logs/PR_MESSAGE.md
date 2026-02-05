@@ -100,6 +100,6 @@ Reducidas dependencias del useEffect a `[isSignedIn]` únicamente. Funciones com
 ---
 
 ## 📚 Referencias de Documentación
-- [Security improvements detailed log](../../copilot-logs/security-improvements-logs/2026-02-04_security-and-search-improvements.md)
+- [Security improvements detailed log](./security-improvements-logs/2026-02-04_security-and-search-improvements.md)
 - Backend AI guide: `backend/AI-README.md`
 - Frontend AI guide: `frontend/AI-README.md`
