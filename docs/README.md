@@ -1,33 +1,112 @@
 # 📚 Documentación de HealthBytes
 
-Bienvenido a la documentación de HealthBytes. Aquí encontrarás información sobre la estructura del proyecto, cómo contribuir y detalles técnicos para facilitar tu trabajo.
+Bienvenido a la documentación centralizada de HealthBytes. Aquí encontrarás información completa sobre la arquitectura, desarrollo y operación del proyecto.
 
-## Índice
-- [Introducción](#introducción)
-- [Backend](#backend)
-- [Frontend](#frontend)
-- [Guía Rápida](#guía-rápida)
-- [Plan de Acción](#plan-de-acción)
+## 📖 Índice Rápido
 
-## Introducción
-HealthBytes es una plataforma diseñada para simplificar y hacer más seguras las decisiones de compra para personas con restricciones de salud. 
+### Para Desarrolladores
+- **[Backend](../backend/README.md)** - FastAPI, SQLAlchemy, PostgreSQL
+- **[Frontend](../frontend/README.md)** - React Native, Expo, TypeScript
+- **[Tools](../Tools/README.md)** - Scripts de utilidad organizados por categoría
 
-## Backend
-El backend está construido con FastAPI y PostgreSQL. Para más detalles, consulta:
-- [README del Backend](../backend/README.md)
-- [AI-README del Backend](../backend/AI-README.md) (guía para asistentes de IA)
+### Para Asistentes de IA
+- **[Backend AI Guide](../backend/AI-README.md)** - Patrones y reglas del backend
+- **[Frontend AI Guide](../frontend/AI-README.md)** - Patrones y reglas del frontend
+- **[Strict Rules](../.cursorrules)** - Prohibiciones y reglas obligatorias
 
-## Frontend
-El frontend está desarrollado en React Native (Expo). Para más información, revisa:
-- [README del Frontend](../frontend/README.md)
-- [AI-README del Frontend](../frontend/AI-README.md) (guía para asistentes de IA)
+### Documentación Técnica
+- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Full-Text Search implementado
+- **[SECURITY.md](SECURITY.md)** - Security headers y protecciones
+- **[Copilot Logs](./Copilot-logs/README.md)** - Sesiones de desarrollo con IA
 
-## 📑 Documentación Organizada
+### Guías de Configuración
+- **[Frontend Setup](./frontend/SETUP.md)** - Configuración del frontend
 
-### Copilot AI Logs
-Documentación completa de sesiones de desarrollo asistidas por IA:
-- [Índice principal](./copilot-logs/README.md) ← **Comienza aquí**
-- [Estado del proyecto](./copilot-logs/status-logs/)
+---
+
+## 🗂️ Estructura de Documentación
+
+```
+docs/
+├── README.md                                    ← Estás aquí
+├── IMPLEMENTATION_SUMMARY.md                    ← Full-Text Search
+├── SECURITY.md                                  ← Security headers & protecciones
+├── Copilot-logs/                               ← Logs de sesiones de IA
+│   ├── status-logs/                            ← Estado del proyecto
+│   ├── auth-logs/                              ← Autenticación
+│   ├── security-improvements-logs/             ← Mejoras de seguridad
+│   └── README.md                               ← Índice de logs
+├── frontend/
+│   └── SETUP.md                                ← Guía de setup del frontend
+├── search-logs/                                ← Full-text search docs
+│   ├── README.md
+│   ├── SETUP.md
+│   └── SUMMARY.md
+└── diagramas/                                  ← Diagramas técnicos
+```
+
+---
+
+## 🚀 Quick Start
+
+### Backend
+```bash
+cd backend
+.\start.ps1                # Windows
+./start.sh                 # Linux/Mac
+```
+
+### Frontend
+```bash
+cd frontend
+pnpm install               # Instalar dependencias
+pnpm start                 # Iniciar Expo
+```
+
+---
+
+## 📚 Documentación por Tópico
+
+### Full-Text Search (Búsqueda)
+- **Estado**: ✅ Implementado y testeado
+- **Features**: Búsqueda con FTS en PostgreSQL, fallback LIKE para SQLite
+- **Ver**: [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)
+
+### Seguridad
+- **Estado**: ✅ Security headers implementados
+- **Features**: HSTS, X-Frame-Options, CORS, Rate limiting
+- **Ver**: [SECURITY.md](SECURITY.md)
+
+### Autenticación
+- **Estado**: ✅ Clerk + JWT (dual system)
+- **Documentación**: [auth-logs/](./Copilot-logs/auth-logs/)
+
+---
+
+## 🛠️ Tools Scripts
+
+Los scripts de utilidad están organizados en [Tools/](../Tools/):
+
+| Carpeta | Contenido |
+|---------|-----------|
+| `Tools/backend/setup/` | Documentación de servidor (start.ps1, start.sh) |
+| `Tools/backend/database/` | Migraciones y gestión BD |
+| `Tools/backend/seeding/` | Scripts para poblar datos |
+| `Tools/frontend/testing/` | Test utilities (reservado) |
+
+---
+
+## 📞 Referencias Rápidas
+
+- **Requisitos**: Python 3.14+, Node.js 18+, PostgreSQL 14+
+- **Lenguajes**: Python (backend), TypeScript (frontend)
+- **Arquitectura**: FastAPI + React Native (Expo)
+- **Base de Datos**: PostgreSQL (prod), SQLite (testing)
+
+---
+
+**Última actualización**: Febrero 4, 2026  
+**Status**: ✅ Proyecto activo
 - [Mejoras de seguridad](./copilot-logs/security-improvements-logs/)
 - [Autenticación](./copilot-logs/auth-logs/)
 
