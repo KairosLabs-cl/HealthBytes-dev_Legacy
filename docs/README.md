@@ -1,102 +1,80 @@
-# 📚 Documentación de HealthBytes
+# 📚 HealthBytes - Documentación Centralizada
 
-Bienvenido a la documentación centralizada de HealthBytes. Aquí encontrarás información completa sobre la arquitectura, desarrollo y operación del proyecto.
-
-## 📖 Índice Rápido
-
-### Para Desarrolladores
-- **[Backend](../backend/README.md)** - FastAPI, SQLAlchemy, PostgreSQL
-- **[Frontend](../frontend/README.md)** - React Native, Expo, TypeScript
-- **[Tools](../Tools/README.md)** - Scripts de utilidad organizados por categoría
-
-### Para Asistentes de IA
-- **[Backend AI Guide](../backend/AI-README.md)** - Patrones y reglas del backend
-- **[Frontend AI Guide](../frontend/AI-README.md)** - Patrones y reglas del frontend
-- **[Strict Rules](../.cursorrules)** - Prohibiciones y reglas obligatorias
-
-### Documentación Técnica
-- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Full-Text Search implementado
-- **[SECURITY.md](SECURITY.md)** - Security headers y protecciones
-- **[Copilot Logs](./Copilot-logs/README.md)** - Sesiones de desarrollo con IA
-
-### Guías de Configuración
-- **[Frontend Setup](./frontend/SETUP.md)** - Configuración del frontend
-
----
+Bienvenido a la documentación de **HealthBytes**. Esta carpeta contiene toda la información necesaria para entender, desarrollar y mejorar el proyecto.
 
 ## 🗂️ Estructura de Documentación
 
-```
-docs/
-├── README.md                                    ← Estás aquí
-├── IMPLEMENTATION_SUMMARY.md                    ← Full-Text Search
-├── SECURITY.md                                  ← Security headers & protecciones
-├── Copilot-logs/                               ← Logs de sesiones de IA
-│   ├── status-logs/                            ← Estado del proyecto
-│   ├── auth-logs/                              ← Autenticación
-│   ├── security-improvements-logs/             ← Mejoras de seguridad
-│   └── README.md                               ← Índice de logs
-├── frontend/
-│   └── SETUP.md                                ← Guía de setup del frontend
-├── search-logs/                                ← Full-text search docs
-│   ├── README.md
-│   ├── SETUP.md
-│   └── SUMMARY.md
-└── diagramas/                                  ← Diagramas técnicos
-```
+Hemos organizado toda la documentación de forma **intuitiva y por tópicos**:
+
+### 🚀 [setup/](./setup/) - Configuración e Instalación
+Guías paso a paso para configurar el entorno de desarrollo:
+- **[frontend-setup.md](./setup/frontend-setup.md)** - Configuración del frontend
+- **[environment-variables.md](./setup/environment-variables.md)** - Variables de entorno
+
+### 🏗️ [architecture/](./architecture/) - Arquitectura y Decisiones
+Comprende cómo está construido HealthBytes:
+- Estructura de carpetas detallada
+- Decisiones técnicas y patrones
+- Stack tecnológico
+
+### ✨ [features/](./features/) - Características Implementadas
+Documentación detallada de features del proyecto:
+- **[full-text-search.md](./features/full-text-search.md)** - Búsqueda FTS en PostgreSQL
+- **[authentication.md](./features/authentication.md)** - Sistema de autenticación
+- **[cart-system.md](./features/cart-system.md)** - Sistema de carrito
+
+### 🔐 [security/](./security/) - Seguridad
+Información sobre seguridad y mejoras implementadas:
+- **[security-improvements.md](./security/security-improvements.md)** - Security headers y protecciones
+
+### 👨‍💻 [development/](./development/) - Para Desarrolladores
+Guías para trabajar en el código:
+- **[testing-guide.md](./development/testing-guide.md)** - Estrategia de testing
+- **[git-workflow.md](./development/git-workflow.md)** - Flujo de git y commits
+- **[code-standards.md](./development/code-standards.md)** - Estándares de código
+
+### 🤖 [ai-logs/](./ai-logs/) - Sesiones de Desarrollo con IA
+Documentación de sesiones con Copilot y análisis del proyecto:
+
+**⭐ Acceso Rápido:**
+- **[ai-logs/latest/](./ai-logs/latest/)** - Reportes más recientes
+- **[ai-logs/status/](./ai-logs/status/)** - Estado del proyecto
+- **[ai-logs/features/](./ai-logs/features/)** - Features desarrolladas
+- **[ai-logs/auth/](./ai-logs/auth/)** - Autenticación
+- **[ai-logs/security/](./ai-logs/security/)** - Mejoras de seguridad
 
 ---
 
-## 🚀 Quick Start
+## 🎯 Navegación Rápida
 
-### Backend
-```bash
-cd backend
-.\start.ps1                # Windows
-./start.sh                 # Linux/Mac
-```
-
-### Frontend
-```bash
-cd frontend
-pnpm install               # Instalar dependencias
-pnpm start                 # Iniciar Expo
-```
+| Necesito | Ir a |
+|----------|------|
+| 🚀 Empezar rápido | [setup/](./setup/) |
+| 🏗️ Entender arquitectura | [architecture/](./architecture/) |
+| ✨ Ver features | [features/](./features/) |
+| 🔐 Seguridad | [security/](./security/) |
+| 👨‍💻 Contribuir | [development/](./development/) |
+| 📊 Estado del proyecto | [ai-logs/status/](./ai-logs/status/) |
 
 ---
 
-## 📚 Documentación por Tópico
+## 📖 Documentación en Otros Lugares
 
-### Full-Text Search (Búsqueda)
-- **Estado**: ✅ Implementado y testeado
-- **Features**: Búsqueda con FTS en PostgreSQL, fallback LIKE para SQLite
-- **Ver**: [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)
+**En la raíz:**
+- [README.md](../README.md) - Overview del proyecto
+- [.cursorrules](../.cursorrules) - Reglas para IA
+- [.github/copilot-instructions.md](../.github/copilot-instructions.md) - Instrucciones para IA
 
-### Seguridad
-- **Estado**: ✅ Security headers implementados
-- **Features**: HSTS, X-Frame-Options, CORS, Rate limiting
-- **Ver**: [SECURITY.md](SECURITY.md)
-
-### Autenticación
-- **Estado**: ✅ Clerk + JWT (dual system)
-- **Documentación**: [auth-logs/](./Copilot-logs/auth-logs/)
+**En las carpetas de código:**
+- [backend/README.md](../backend/README.md) - Backend
+- [backend/AI-README.md](../backend/AI-README.md) - Backend para IA
+- [frontend/README.md](../frontend/README.md) - Frontend
+- [frontend/AI-README.md](../frontend/AI-README.md) - Frontend para IA
+- [Tools/README.md](../Tools/README.md) - Scripts y herramientas
 
 ---
 
-## 🛠️ Tools Scripts
-
-Los scripts de utilidad están organizados en [Tools/](../Tools/):
-
-| Carpeta | Contenido |
-|---------|-----------|
-| `Tools/backend/setup/` | Documentación de servidor (start.ps1, start.sh) |
-| `Tools/backend/database/` | Migraciones y gestión BD |
-| `Tools/backend/seeding/` | Scripts para poblar datos |
-| `Tools/frontend/testing/` | Test utilities (reservado) |
-
----
-
-## 📞 Referencias Rápidas
+**Última actualización:** Feb 4, 2026 ✅
 
 - **Requisitos**: Python 3.14+, Node.js 18+, PostgreSQL 14+
 - **Lenguajes**: Python (backend), TypeScript (frontend)
