@@ -1,15 +1,16 @@
 import logging
 from typing import List
 
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+
 from app.db.database import get_db
 from app.db.schemas import Order, OrderItem, Product, User
 from app.middleware.auth import get_current_user
 from app.schemas.order import OrderCreate, OrderItemResponse, OrderResponse, OrderUpdate
 from app.services import order_service
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
 logger = logging.getLogger(__name__)
 
@@ -100,6 +101,8 @@ async def list_orders(
         else:
             stmt = select(Order).where(Order.user_id == current_user.id)
 
+        # Load items relationship eagerly
+        stmt = stmt.options(selectinload(Order.items))
         stmt = stmt.order_by(Order.created_at.desc(), Order.id.desc()).offset(skip).limit(limit)
 
         result = await db.execute(stmt)
@@ -108,6 +111,16 @@ async def list_orders(
         # Convert to response format
         orders_response = []
         for order in orders:
+            items_response = [
+                OrderItemResponse(
+                    id=item.id,
+                    order_id=item.order_id,
+                    product_id=item.product_id,
+                    quantity=item.quantity,
+                    price=item.price,
+                )
+                for item in (order.items or [])
+            ]
             orders_response.append(
                 OrderResponse(
                     id=order.id,
@@ -115,7 +128,7 @@ async def list_orders(
                     created_at=order.created_at,
                     status=order.status,
                     stripe_payment_intent_id=order.stripe_payment_intent_id,
-                    items=[],
+                    items=items_response,
                 )
             )
 
@@ -123,6 +136,58 @@ async def list_orders(
 
     except Exception as e:
         logger.error(f"Error listing orders: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+@router.get("/{id}", response_model=OrderResponse)
+async def get_order(
+    id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    GET /orders/{id}
+    Get a specific order by ID
+    - Admin: Can get any order
+    - User: Can only get their own orders
+    """
+    try:
+        stmt = select(Order).where(Order.id == id)
+        if current_user.role != "admin":
+            stmt = stmt.where(Order.user_id == current_user.id)
+
+        stmt = stmt.options(selectinload(Order.items))
+        result = await db.execute(stmt)
+        order = result.scalar_one_or_none()
+
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+
+        # Build response with items
+        items_response = [
+            OrderItemResponse(
+                id=item.id,
+                order_id=item.order_id,
+                product_id=item.product_id,
+                quantity=item.quantity,
+                price=item.price,
+            )
+            for item in (order.items or [])
+        ]
+
+        return OrderResponse(
+            id=order.id,
+            user_id=order.user_id,
+            created_at=order.created_at,
+            status=order.status,
+            stripe_payment_intent_id=order.stripe_payment_intent_id,
+            items=items_response,
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching order {id}: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
