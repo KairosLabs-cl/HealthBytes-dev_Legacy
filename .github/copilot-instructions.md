@@ -84,18 +84,18 @@ HealthBytes-dev/
 │
 ├── docs/
 │   ├── README.md         # Documentation index
-│   ├── IMPLEMENTATION_SUMMARY.md     # Full-text search implementation
-│   ├── SECURITY.md       # Security improvements & headers
-│   ├── copilot-logs/     # AI session documentation
-│   │   ├── README.md     # Copilot logs index
-│   │   ├── status-logs/  # Project state tracking
-│   │   ├── auth-logs/    # Authentication debugging
-│   │   ├── security-improvements-logs/
-│   │   └── ...
-│   ├── frontend/
-│   │   └── SETUP.md      # Frontend setup guide
-│   ├── search-logs/      # Full-text search documentation
-│   └── diagramas/        # Architecture diagrams
+│   ├── setup/            # Installation & configuration guides
+│   ├── architecture/     # Design & architecture decisions
+│   ├── features/         # Implemented features documentation
+│   ├── security/         # Security improvements & guidelines
+│   ├── development/      # Developer guides (testing, git, code standards)
+│   └── ai-logs/          # AI session documentation
+│       ├── README.md     # AI logs index & navigation
+│       ├── latest/       # Most recent session reports
+│       ├── status/       # Project state (ARQUITECTURA, ESTADO, PLAN, RESUMEN)
+│       ├── features/     # Feature development logs
+│       ├── auth/         # Authentication debugging logs
+│       └── security/     # Security improvements logs
 │
 ├── Tools/
 │   ├── README.md         # Tools index
@@ -269,7 +269,6 @@ Frontend shows errors via `@gluestack-ui/toast` (already configured in `_layout.
 - Don't modify `docker-compose.yml` (currently empty, reserved for future use)
 - Don't use `localStorage` in React Native (use `AsyncStorage`)
 - Don't mix authentication systems (respect Clerk-first, JWT-fallback order)
-- Don't create services folder without populating it (currently empty—add when extracting logic from routers)
 - Don't use `npm` or `yarn` for frontend (pnpm enforced via lockfile)
 
 ## Common Gotchas
@@ -282,8 +281,9 @@ Frontend shows errors via `@gluestack-ui/toast` (already configured in `_layout.
 ## Status & Roadmap
 - ✅ Core CRUD endpoints (products, orders, users)
 - ✅ Authentication (Clerk + JWT fallback)
-- ⚠️ Testing at ~40% coverage (see `docs/copilot-logs/test-logs/`)
-- ⚠️ Services layer empty—business logic currently in routers (tech debt)
+- ✅ Services layer with business logic
+- ✅ Full-text search implementation
+- ⚠️ Testing at ~70% coverage (see `docs/ai-logs/latest/`)
 - 📝 Planned: Docker containerization, AWS deployment, payment flow completion
 
 ## Where to Find What
