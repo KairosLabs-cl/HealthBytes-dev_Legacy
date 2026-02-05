@@ -79,3 +79,5 @@ exclude_lines = [
 [tool.bandit]
 exclude_dirs = ["tests", ".venv", "migrations"]
 skips = ["B101"]  # Skip assert_used (we use asserts in tests)
+# Bandit detects: hardcoded secrets, SQL injection, weak crypto, unsafe deserialization,
+# insecure SSL/TLS, dangerous functions (eval/exec), flask debug mode, and more

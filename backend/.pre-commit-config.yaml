@@ -45,10 +45,15 @@ repos:
     rev: 1.7.6
     hooks:
       - id: bandit
-        args: [-r, ., --skip, B101]
-        files: ^app/
+        name: bandit (security scan)
+        args: [
+          -r, app/,
+          --skip, B101,
+          -ll,
+          -v
+        ]
+        exclude: ^(tests/|migrations/)
         pass_filenames: false
-        # Note: Only scans app/ directory, excludes tests automatically
 
   # Run tests before commit (optional, can be slow)
   - repo: local
