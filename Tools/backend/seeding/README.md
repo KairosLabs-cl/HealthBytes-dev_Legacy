@@ -5,10 +5,21 @@ Scripts para poblar la base de datos con datos de prueba.
 ## 📋 Scripts Disponibles
 
 ### `seed_products.py`
-Inserta productos de ejemplo en la base de datos.
+Inserta productos de ejemplo en la base de datos (Python).
 
 ```bash
 python seed_products.py
+```
+
+### `seed_simple.sql`
+Inserta productos de ejemplo usando SQL directo (PostgreSQL/SQLite).
+
+```bash
+# PostgreSQL
+psql -U postgres -d healthbytes -f seed_simple.sql
+
+# SQLite
+sqlite3 database.db < seed_simple.sql
 ```
 
 **Qué inserta**:
