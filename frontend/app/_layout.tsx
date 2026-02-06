@@ -76,7 +76,8 @@ function RootLayoutNav() {
     };
 
     syncCart();
-  }, [isSignedIn, getToken, setAuth, mergeAndSync]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSignedIn]);
 
 
   return (

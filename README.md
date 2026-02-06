@@ -76,7 +76,7 @@ Asegúrate de tener instalado:
 
 - **Git** ([Descargar](https://git-scm.com/downloads)) - Control de versiones
 - **GitHub CLI (gh)** ([Descargar](https://cli.github.com/)) - Herramienta de línea de comandos para GitHub
-- **Python 3.14+** ([Descargar](https://www.python.org/downloads/)) - Lenguaje para el backend ⚡ **Actualizado a 3.14.2**
+- **Python 3.14+** ([Descargar](https://www.python.org/downloads/)) - Lenguaje para el backend (🆕 3.14.2 requerido por seguridad)
 - **Node.js 18+** ([Descargar](https://nodejs.org/)) - Runtime para frontend
 - **pnpm 8+** ([Descargar](https://pnpm.io/installation)) - Gestor de paquetes (obligatorio)
 - **PostgreSQL 14+** ([Descargar](https://www.postgresql.org/download/)) - Base de datos relacional
@@ -95,8 +95,17 @@ cd HealthBytes-dev
 ```bash
 cd backend
 
-# Crear entorno virtual
+# Windows PowerShell (recomendado):
+.\start.ps1
+
+# O manual:
 python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+python run_server.py
+```
+
+**Backend disponible en**: `http://localhost:3001`
 
 # Activar entorno virtual
 .\venv\Scripts\Activate.ps1  # Windows PowerShell
@@ -292,17 +301,41 @@ HealthBytes-dev/
 - [frontend/README.md](frontend/README.md)
 - [backend/README.md](backend/README.md)
 
+---
+
+## 📚 Documentación
+
+### Para Humanos 👨‍💻
+
+| Documento | Para Qué |
+|-----------|----------|
+| [frontend/README.md](frontend/README.md) | Guía completa del frontend |
+| [backend/README.md](backend/README.md) | Guía completa del backend |
+| [docs/README.md](docs/README.md) | Índice centralizado de toda documentación |
+| [docs/frontend/SETUP.md](docs/frontend/SETUP.md) | Configuración del frontend (setup-env.ps1) |
+| [docs/SECURITY.md](docs/SECURITY.md) | Mejoras de seguridad implementadas |
+| [docs/IMPLEMENTATION_SUMMARY.md](docs/IMPLEMENTATION_SUMMARY.md) | Full-Text Search implementado |
+
+### Para Asistentes de IA 🤖
+
+| Documento | Para Qué |
+|-----------|----------|
+| [backend/AI-README.md](backend/AI-README.md) | Patrones, reglas y arquitectura del backend |
+| [frontend/AI-README.md](frontend/AI-README.md) | Patrones, reglas y arquitectura del frontend |
+| [.cursorrules](.cursorrules) | **CRÍTICO**: Reglas obligatorias y prohibiciones |
+| [.github/copilot-instructions.md](.github/copilot-instructions.md) | Instrucciones globales para IA |
+
 ### Navegación Rápida
 
 | Necesito...                 | Ve a...                                                                                   |
 | --------------------------- | ----------------------------------------------------------------------------------------- |
-| Ver estado del proyecto     | [Análisis Profundo 27/01/26](docs/copilot-logs/status-logs/ANALISIS_PROFUNDO_2026-01-27.md) |
-| Ver cambios recientes       | [Sesión 27/01/26](docs/copilot-logs/status-logs/SESSION_2026-01-27.md)                      |
-| Documentación general      | [docs/README.md](docs/README.md)                                                             |
-| Documentación del Backend  | [backend/README.md](backend/README.md)                                                       |
-| Documentación del Frontend | [frontend/README.md](frontend/README.md)                                                     |
-| Información de tests       | [backend/tests/README.md](backend/tests/README.md)                                           |
-| Convención de branches     | [Sección Contribuir](#-contribuir)                                                          |
+| Documentación principal     | [docs/README.md](docs/README.md) |
+| Ver estado del proyecto     | [docs/Copilot-logs/status-logs/](docs/Copilot-logs/status-logs/) |
+| Backend info                | [backend/README.md](backend/README.md) |
+| Frontend info               | [frontend/README.md](frontend/README.md) |
+| Tools scripts               | [Tools/README.md](Tools/README.md) |
+| Reglas para IA              | [.cursorrules](.cursorrules) |
+| Convención de branches      | [Sección Contribuir](#-contribuir) |
 
 ---
 
