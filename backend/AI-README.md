@@ -24,7 +24,7 @@ Este archivo define reglas, patrones y principios que debes seguir cuando genere
 ### Stack Requerido
 
 - **Framework**: FastAPI
-- **Lenguaje**: Python 3.11+
+- **Lenguaje**: Python 3.14+ (recomendado: 3.14.2)
 - **ORM**: SQLAlchemy 2.x (async)
 - **Validación**: Pydantic v2
 - **Base de Datos**: PostgreSQL 14+
@@ -610,7 +610,25 @@ async def create_order(
 
 ---
 
-## 📞 Dudas
+## � Template Obligatorio de PR y Commits
+
+**⚠️ IMPORTANTE**: Al crear PRs o commits, seguir templates de README.md (líneas 580-680).
+
+**Commit format (Conventional Commits)**:
+```bash
+tipo(scope): descripción en presente
+
+[body opcional]
+Closes #123
+```
+
+**Tipos**: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `perf`
+
+**PR Description**: Ver template completo en README.md líneas 650-680.
+
+---
+
+## �📞 Dudas
 
 Si algo no está claro:
 1. Revisa README.md (documentación para devs)

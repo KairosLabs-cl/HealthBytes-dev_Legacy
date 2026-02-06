@@ -3,8 +3,14 @@
 
 import asyncio
 import selectors
+import sys
+from pathlib import Path
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
+
+# Add parent directories to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "backend"))
+
 from app.db.database import DATABASE_URL
 from app.db.schemas import Product
 

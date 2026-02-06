@@ -213,7 +213,7 @@
         <mxCell id="PdsGdNTqpH3i4h124yjP-22" parent="PdsGdNTqpH3i4h124yjP-19" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=#9673a6;fillColor=#e1d5e7;" value="Opcional: Base de datos: PostgreSQL" vertex="1">
           <mxGeometry height="30" width="230" x="25" y="140" as="geometry" />
         </mxCell>
-        <mxCell id="PdsGdNTqpH3i4h124yjP-23" parent="1" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;⚠️Consideraciones&lt;/h1&gt;&lt;p&gt;Este no es el listado final de frameworks, esto evolucionara con el tiempo.&lt;/p&gt;" vertex="1">
+        <mxCell id="PdsGdNTqpH3i4h124yjP-23" parent="1" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;⚠️Conssideraciones&lt;/h1&gt;&lt;p&gt;Este no es el listado final de frameworks, esto evolucionara con el tiempo.&lt;/p&gt;" vertex="1">
           <mxGeometry height="150" width="250" x="744" y="240" as="geometry" />
         </mxCell>
       </root>
