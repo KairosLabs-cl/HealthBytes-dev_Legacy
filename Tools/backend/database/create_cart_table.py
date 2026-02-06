@@ -1,12 +1,14 @@
+#!/usr/bin/env python
 """
 Create cart_items table migration
 Run this script to add the cart_items table to your database
 """
 import asyncio
 import sys
+from pathlib import Path
 
-# Add parent directory to path for imports
-sys.path.insert(0, '..')
+# Add parent directories to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "backend"))
 
 from app.db.database import engine
 from app.db.schemas import Base, CartItem  # noqa: F401 - CartItem is imported to register the model with SQLAlchemy metadata
@@ -39,4 +41,3 @@ if __name__ == "__main__":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     
     asyncio.run(create_cart_table())
-

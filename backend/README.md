@@ -91,13 +91,20 @@ backend/
 │   ├── conftest.py               # Fixtures pytest
 │   └── README.md                 # Guía de testing
 │
-├── scripts/                      # Scripts utilitarios
-├── migrations/                   # Alembic migrations
+├── migrations/                   # Database migrations
+├── start.ps1                     # Windows dev launcher (punto de entrada)
+├── start.sh                      # Unix dev launcher (punto de entrada)
+├── run_server.py                 # FastAPI server runner
 ├── requirements.txt              # Dependencias
 ├── requirements-dev.txt          # Dependencias de desarrollo
 ├── pytest.ini                    # Configuración pytest
-├── run_server.py                 # Script para ejecutar servidor
-└── README.md                     # Este archivo
+├── README.md                     # Este archivo
+└── AI-README.md                  # Guía para asistentes de IA
+
+🛠️ Scripts Utilitarios → Ver [Tools/backend/](../../Tools/backend/)
+   - Database: migraciones, recreate, cart table creation
+   - Seeding: datos de prueba
+   - Testing: configuración y utilidades
 ```
 
 ---

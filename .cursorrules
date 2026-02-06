@@ -117,6 +117,38 @@ lib/                    ← Utilidades y helpers
 └─ {utility}.ts         ← Cache, formatters, etc.
 ```
 
+### Tools Utilities (`Tools/`)
+
+**Regla Crítica: Scripts en Tools usan la estructura del origen**
+
+```
+Tools/
+├── backend/             ← Scripts de utilidad BACKEND
+│   ├── database/        ← Migraciones, DB management
+│   ├── seeding/         ← Data population scripts
+│   ├── testing/         ← Test utilities (conftest, fixtures)
+│   └── setup/           ← Documentación del startup
+│
+└── frontend/            ← Scripts de utilidad FRONTEND
+    ├── testing/         ← Test utilities, jest configs
+    └── build/           ← Build/packaging scripts (futuro)
+```
+
+**REGLA DE ASIGNACIÓN**:
+- ✅ Si el script es **para backend** → va a `Tools/backend/{categoria}/`
+- ✅ Si el script es **para frontend** → va a `Tools/frontend/{categoria}/`
+- ✅ **Excepción**: Scripts de entrada (start.ps1, setup-env.ps1) **SIEMPRE** en `backend/` o `frontend/`
+- ❌ NUNCA mezclar: un script backend en Tools/frontend/
+- ❌ NUNCA poner entry points en Tools/
+
+**Ejemplos**:
+- `run_migration.py` (backend DB script) → `Tools/backend/database/` ✅
+- `seed_products.py` (backend data script) → `Tools/backend/seeding/` ✅
+- `jest.config.js` (frontend test config) → `Tools/frontend/testing/` ✅
+- `test_products.py` (backend test) → `Tools/backend/testing/` ✅
+- `start.ps1` (entry point) → `backend/` ✅
+- `setup-env.ps1` (entry point) → `frontend/` ✅
+
 **Reglas Estrictas Frontend:**
 - ✅ Componentes son presentacionales (UI + props)
 - ✅ Lógica de negocio va en stores o custom hooks
@@ -129,74 +161,176 @@ lib/                    ← Utilidades y helpers
 
 ### Documentación (`docs/`)
 
+**Nueva estructura reorganizada por categorías intuitivas:**
+
 ```
 docs/
-├─ README.md                   ← Índice general
-├─ copilot-logs/               ← Logs de trabajo con IA
-│  ├─ status-logs/             ← Estado del proyecto
-│  ├─ test-logs/               ← Documentación de testing
-│  ├─ auth-logs/               ← Autenticación y seguridad
-│  ├─ database-logs/           ← Esquemas y migraciones DB
-│  ├─ api-logs/                ← Endpoints y servicios
-│  ├─ ui-logs/                 ← Componentes y UX
-│  ├─ deployment-logs/         ← Docker y despliegues
-│  └─ {topico}-logs/           ← Logs específicos por tópico
-└─ diagramas/                  ← Diagramas técnicos (.drawio, .png)
+├─ README.md                   ← 🏠 Índice principal (navegación)
+│
+├─ setup/                      ← 🚀 Configuración e instalación
+│  ├─ README.md
+│  ├─ environment-variables.md
+│  └─ frontend-setup.md
+│
+├─ architecture/               ← 🏗️  Diseño y decisiones
+│  ├─ README.md
+│  └─ (contenido técnico)
+│
+├─ features/                   ← ✨ Features implementadas
+│  ├─ README.md
+│  ├─ full-text-search.md
+│  ├─ authentication.md
+│  └─ cart-system.md
+│
+├─ security/                   ← 🔐 Seguridad
+│  ├─ README.md
+│  └─ security-improvements.md
+│
+├─ development/                ← 👨‍💻 Guías para desarrolladores
+│  ├─ README.md
+│  ├─ git-workflow.md
+│  ├─ testing-guide.md
+│  └─ code-standards.md
+│
+└─ ai-logs/                    ← 🤖 Sesiones de IA
+   ├─ README.md
+   ├─ latest/                  ← ⭐ Reportes más recientes
+   ├─ status/                  ← Estado del proyecto (ARQUITECTURA, ESTADO, PLAN, RESUMEN)
+   ├─ features/                ← Features documentadas
+   ├─ auth/                    ← Autenticación
+   └─ security/                ← Mejoras de seguridad
 ```
 
-**Reglas Documentación:**
-- ✅ Logs de IA van en `copilot-logs/{topico}-logs/`
-- ✅ Cada carpeta de logs debe tener README.md como índice
-- ✅ Usar nombres descriptivos: `YYYY-MM-DD_descripcion.md`
-- ✅ Diagramas técnicos en `diagramas/`
-- ✅ Crear RESUMEN.md para tópicos extensos
-- ❌ NUNCA documentar en raíz del proyecto (usar `docs/`)
-- ❌ NUNCA borrar documentación existente sin consultar
-- ❌ NUNCA crear docs sin solicitud explícita (excepto cambios arquitectónicos)
+**Reglas de Documentación (OBLIGATORIAS):**
 
-**📁 Documentos Canónicos en `docs/copilot-logs/status-logs/`:**
+#### 1. Ubicación de Documentos
+- ✅ Guías de setup → `setup/`
+- ✅ Arquitectura y decisiones → `architecture/`
+- ✅ Features completadas → `features/`
+- ✅ Seguridad → `security/`
+- ✅ Dev guides (testing, git, código) → `development/`
+- ✅ Logs de IA → `ai-logs/{categoria}/`
+- ❌ NUNCA documentar en raíz de proyecto
+- ❌ NUNCA crear carpetas nuevas sin consultar
 
-Solo deben existir 4 archivos canónicos. Cualquier otro archivo nuevo requiere aprobación previa.
+#### 2. Archivos Canónicos en `docs/ai-logs/status/`
+Solo pueden existir 4 archivos canónicos (sin otra aprobación):
 
-| Prioridad | Archivo | Propósito | Cuándo Modificar |
-|-----------|---------|-----------|------------------|
-| 1️⃣ | `ARQUITECTURA.md` | Diagramas técnicos, stack, estructura de capas, decisiones arquitectónicas | Primero en caso de cambios estructurales |
-| 2️⃣ | `ESTADO.md` | **Estado profundo del proyecto para devs**: métricas, scorecard, commits recientes, features por fase, bloqueadores, checklists técnicos | Después de arquitectura, refleja el "cómo estamos" |
-| 3️⃣ | `PLAN_DE_ACCION.md` | Roadmap detallado, estimaciones, dependencias entre tareas, sprints planeados | Define el "hacia dónde vamos" |
-| 4️⃣ | `RESUMEN_EJECUTIVO.md` | Vista de alto nivel para stakeholders, KPIs, hitos alcanzados | Último, resume los otros 3 docs |
+| # | Archivo | Propósito | Cuándo Actualizar |
+|---|---------|-----------|------------------|
+| 1️⃣ | `ARQUITECTURA.md` | Stack, diagramas, capas, decisiones técnicas | Cambios estructurales PRIMERO |
+| 2️⃣ | `ESTADO.md` | Scorecard, tests, features, bloqueadores actuales | Después de arquitectura |
+| 3️⃣ | `PLAN_DE_ACCION.md` | Roadmap, tareas, estimaciones, dependencias | Define "hacia dónde" |
+| 4️⃣ | `RESUMEN_EJECUTIVO.md` | Alto nivel, KPIs, hitos, para stakeholders | Resumen final |
 
 **Orden de actualización ante cambios mayores:**
 ```
-ARQUITECTURA.md → ESTADO.md → PLAN_DE_ACCION.md → RESUMEN_EJECUTIVO.md
+1. ARQUITECTURA.md    (cambios estructurales)
+   ↓
+2. ESTADO.md          (refleja realidad)
+   ↓
+3. PLAN_DE_ACCION.md  (qué hacer)
+   ↓
+4. RESUMEN_EJECUTIVO.md (comunicar resultado)
 ```
 
-**📄 Contenido Requerido por Documento:**
+#### 3. Logs Temáticos en `docs/ai-logs/`
+Para documentar sesiones específicas:
 
-**`ARQUITECTURA.md` - Estructura Técnica:**
-- Diagrama ASCII de alto nivel (cliente → backend → DB → servicios externos)
-- Estructura de carpetas detallada con estado de cada componente (✅/⚠️/❌)
-- Patrón de capas obligatorio (routers → services → models)
-- Flujo de autenticación visual (Clerk + JWT)
-- Esquema SQL de todas las tablas con campos faltantes marcados
-- Tabla de endpoints con status actual
-- Brechas arquitectónicas identificadas con código de ejemplo
+```
+ai-logs/
+├─ latest/            ← Reportes más nuevos (acceso rápido)
+├─ status/            ← Estado del proyecto (archivos canónicos)
+├─ features/          ← Feature development docs
+├─ auth/              ← Autenticación & debugging
+└─ security/          ← Security improvements
+```
 
-**`ESTADO.md` - Estado Profundo para Devs:**
-- Scorecard visual ASCII del proyecto (% por área: seguridad, funcionalidad, testing, etc.)
-- Resultados de última ejecución de tests (passed/failed/errors con causas)
-- Desglose de fallos agrupados por categoría
-- Archivos con 0% coverage listados
-- Tabla de implementaciones confirmadas (backend/frontend)
-- Problemas activos con archivos afectados y solución propuesta
-- Commits recientes con hashes
-- Métricas objetivo vs actual
-- Checklist de próximos pasos con prioridad
+**Reglas de logs:**
+- ✅ Nombres: `YYYY-MM-DD_descripcion-corta.md`
+- ✅ Incluir decisiones, cambios y resultados
+- ✅ Crear README.md en cada carpeta nueva
+- ✅ Actualizar ai-logs/README.md como índice
+- ❌ No crear archivos sin descripción clara
+- ❌ No dejar logs incompletos o en borrador
 
-**`PLAN_DE_ACCION.md` - Roadmap Detallado:**
-- Roadmap visual ASCII con sprints y fechas
-- Tabla de tareas por sprint con: #, tarea, esfuerzo, dependencia, asignado
-- Criterios de éxito por sprint (checkboxes)
-- Archivos a modificar listados por sprint
+#### 4. README.md en Cada Carpeta
+**OBLIGATORIO:** Cada carpeta debe tener `README.md` que:
+- Describe qué contiene
+- Lista archivos y su propósito
+- Proporciona navegación rápida
+- Enlaza a documentación relacionada
+
+Ejemplo:
+```markdown
+# 🚀 Setup
+
+Guías de instalación y configuración.
+
+## Contenido
+- [environment-variables.md](./environment-variables.md) - Variables .env
+- [frontend-setup.md](./frontend-setup.md) - Setup React Native
+
+## Inicio Rápido
+...
+```
+
+#### 5. Convención de Actualización
+Al actualizar documentación:
+
+1. **Cambios estructurales** → Actualiza `ARQUITECTURA.md` PRIMERO
+2. **Después** → Actualiza `ESTADO.md` con nuevas métricas
+3. **Luego** → Actualiza `PLAN_DE_ACCION.md` si cambia roadmap
+4. **Finalmente** → Actualiza `RESUMEN_EJECUTIVO.md`
+
+#### 6. Contenido Específico por Sección
+
+**setup/README.md:**
+- Quickstart de backend y frontend
+- Variables de entorno críticas
+- Troubleshooting común
+
+**architecture/README.md:**
+- Stack tecnológico
+- Decisiones de diseño (por qué FastAPI, Zustand, etc.)
+- Diagramas de capas
+- Flujos de datos principales
+
+**features/README.md:**
+- Lista de features con status
+- Links a documentación detallada
+- Métricas (endpoints, tests, coverage)
+
+**security/README.md:**
+- Medidas implementadas
+- Checklist de seguridad
+- Best practices
+
+**development/README.md:**
+- Git workflow (branches, commits)
+- Testing strategy
+- Code standards (Python, TypeScript)
+- PR process
+
+**ai-logs/README.md:**
+- Navegación de logs
+- Cómo se genera documentación
+- Links a últimas sesiones
+
+#### 7. ¿Cuándo Crear Nueva Documentación?
+
+✅ **CREAR docs si:**
+- Feature completado requiere documentación
+- Decisión arquitectónica importante tomada
+- Bug significativo resuelto (para futura referencia)
+- Session con IA produce insights importantes
+
+❌ **NO CREAR docs si:**
+- Cambio trivial (typo, pequeño refactor)
+- Duplica documentación existente
+- Sin solicitud explícita del usuario
+
+---- Archivos a modificar listados por sprint
 - Calendario visual del mes
 - Diagrama de dependencias entre tareas
 - Riesgos y mitigaciones
@@ -268,32 +402,29 @@ ARQUITECTURA.md → ESTADO.md → PLAN_DE_ACCION.md → RESUMEN_EJECUTIVO.md
 
 **Estructura de documentación:**
 ```
-docs/copilot-logs/
-├─ status-logs/          ← Estado general del proyecto
-├─ test-logs/            ← Testing y QA
-├─ {topico}-logs/        ← Logs específicos de tópico
-│  ├─ README.md          ← Índice del tópico
-│  ├─ {fecha}_{descripcion}.md
-│  └─ RESUMEN.md         ← Resumen ejecutivo
+docs/ai-logs/
+├─ latest/            ← Reportes más nuevos (acceso rápido)
+├─ status/            ← Estado del proyecto (ARQUITECTURA, ESTADO, PLAN, RESUMEN)
+├─ features/          ← Feature development docs
+├─ auth/              ← Autenticación & debugging
+└─ security/          ← Security improvements
 ```
 
 **Reglas de documentación:**
-- ✅ Usar formato: `docs/copilot-logs/{topico}-logs/`
-- ✅ Nombres descriptivos: `2026-01-19_implementacion_autenticacion.md`
-- ✅ Incluir contexto, decisiones y resultados
-- ✅ Crear README.md e índice en carpeta nueva
-- ❌ No documentar en raíz del proyecto
-- ❌ No crear docs para cambios triviales sin solicitud
+- ✅ Nombres: `YYYY-MM-DD_descripcion-corta.md`
+- ✅ Incluir decisiones, cambios y resultados
+- ✅ Crear README.md en cada carpeta nueva
+- ✅ Actualizar ai-logs/README.md como índice
+- ❌ No crear archivos sin descripción clara
+- ❌ No dejar logs incompletos o en borrador
 
-**Ejemplos de tópicos:**
-```
-docs/copilot-logs/
-├─ auth-logs/            ← Autenticación y seguridad
-├─ database-logs/        ← Migraciones y esquemas DB
-├─ api-logs/             ← Cambios en endpoints
-├─ ui-logs/              ← Componentes y UX
-└─ deployment-logs/      ← Docker y despliegues
-```
+**Secciones de documentación:**
+- **setup/** - Guías de instalación
+- **architecture/** - Diseño y decisiones
+- **features/** - Features implementadas
+- **security/** - Seguridad
+- **development/** - Guías para desarrolladores
+- **ai-logs/** - Sesiones de IA
 
 ### 5. Al Instalar Dependencias
 
@@ -886,6 +1017,41 @@ git push origin feat/product-filters
 
 ---
 
+## 📝 TEMPLATE OBLIGATORIO DE PR Y COMMITS
+
+**⚠️ CRÍTICO**: Al crear PRs o commits, SIEMPRE usar los templates definidos en README.md líneas 580-680.
+
+### Commit Format (Conventional Commits):
+```
+tipo(scope): descripción en presente
+
+[body opcional]
+[footer: Closes #123]
+```
+
+### PR Description Template:
+```markdown
+## 📝 Descripción
+[Qué hace y por qué]
+
+## 🎯 Tipo de Cambio
+- [x] Nueva feature / [ ] Bug fix / [ ] Breaking change / [ ] Documentación
+
+## 📸 Screenshots/Demo (si aplica)
+[Imágenes]
+
+## ✅ Checklist
+- [ ] Tests pasan
+- [ ] Código sigue convenciones
+- [ ] Documentación actualizada
+- [ ] Sin console.logs/prints
+- [ ] Branch name correcto
+```
+
+**IA: RECHAZA cualquier PR/commit que no siga este formato.**
+
+---
+
 ## 🤝 TL;DR - Reglas de Oro
 
 1. **Lee primero, modifica después** (AI-README.md + código existente)
@@ -896,6 +1062,7 @@ git push origin feat/product-filters
 6. **TypeScript estricto** (no `any`, types explícitos)
 7. **Seguridad primero** (no tokens en logs, no endpoints sin auth)
 8. **Pregunta si dudas** (mejor consultar que romper)
+9. **Usa templates de PR/commits** (README líneas 580-680)
 
 ---
 
