@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, TIMESTAMP, func, UniqueConstraint, Index, TypeDecorator, Numeric
+from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, TIMESTAMP, DateTime, func, UniqueConstraint, Index, TypeDecorator, Numeric
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
 from app.db.database import Base
 
@@ -23,6 +24,8 @@ class Product(Base):
     image = Column(String(255), nullable=True)
     price = Column(Numeric(10, 2), nullable=False)
     stock = Column(Integer, nullable=False, default=0)
+    category = Column(String(100), nullable=True, index=True)
+    dietary_tags = Column(ARRAY(String), nullable=True, default=[])
     
     # Full-text search column
     # PostgreSQL: TSVECTOR with GIN index, populated by trigger
@@ -48,6 +51,28 @@ class User(Base):
     name = Column(String(255), nullable=True)
     address = Column(Text, nullable=True)
     clerk_id = Column(String(255), unique=True, nullable=True, index=True)  # Clerk user ID
+    
+    # Relationship with favorites
+    favorites = relationship("UserFavorite", back_populates="user", cascade="all, delete-orphan")
+
+
+class UserFavorite(Base):
+    """User favorites table - Many-to-many relationship between users and products"""
+    __tablename__ = "user_favorites"
+    
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    product_id = Column(Integer, ForeignKey("products.id", ondelete="CASCADE"), nullable=False, index=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    user = relationship("User", back_populates="favorites")
+    product = relationship("Product")
+    
+    # Constraints
+    __table_args__ = (
+        UniqueConstraint('user_id', 'product_id', name='unique_user_product_favorite'),
+    )
 
 
 class Order(Base):

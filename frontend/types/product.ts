@@ -6,4 +6,6 @@ export type Product = {
   image?: string;
   description?: string;
   stock?: number;
+  category?: string;
+  dietary_tags?: string[];
 };

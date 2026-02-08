@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 
 
 class ProductBase(BaseModel):
@@ -9,6 +9,8 @@ class ProductBase(BaseModel):
     image: Optional[str] = Field(None, max_length=255)
     price: float = Field(..., gt=0)
     stock: int = Field(0, ge=0)
+    category: Optional[str] = Field(None, max_length=100)
+    dietary_tags: Optional[List[str]] = []
 
 
 class ProductCreate(ProductBase):
@@ -23,6 +25,8 @@ class ProductUpdate(BaseModel):
     image: Optional[str] = Field(None, max_length=255)
     price: Optional[float] = Field(None, gt=0)
     stock: Optional[int] = Field(None, ge=0)
+    category: Optional[str] = Field(None, max_length=100)
+    dietary_tags: Optional[List[str]] = None
 
 
 class ProductResponse(ProductBase):
