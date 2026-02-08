@@ -28,10 +28,8 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
     },
 
     toggleFavorite: async (productId: number, token: string) => {
-        console.log('[Favorites] Toggle called for product:', productId);
         const { favoriteIds } = get();
         const wasFavorite = favoriteIds.has(productId);
-        console.log('[Favorites] Was favorite:', wasFavorite);
 
         // Optimistic update - UI changes immediately
         const newIds = new Set(favoriteIds);
@@ -41,16 +39,13 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
             newIds.add(productId);
         }
         set({ favoriteIds: newIds });
-        console.log('[Favorites] New favorites count:', newIds.size);
 
         // API request in background
         try {
             if (wasFavorite) {
                 await removeFavorite(productId, token);
-                console.log('[Favorites] Removed from backend');
             } else {
                 await addFavorite(productId, token);
-                console.log('[Favorites] Added to backend');
             }
         } catch (error) {
             console.error('Error toggling favorite:', error);

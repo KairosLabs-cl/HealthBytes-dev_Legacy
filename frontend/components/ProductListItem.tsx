@@ -23,20 +23,22 @@ function ProductListItem({ product }: Props) {
   };
 
   return (
-    <View className="flex-1">
-      {/* Favorite button overlayed on top - OUTSIDE the Link/Pressable */}
+    <View className="flex-1 relative">
+      {/* Favorite button - positioned absolutely but with proper z-index */}
       <View
-        className="absolute top-7 right-7 z-50"
-        style={{ pointerEvents: 'box-none' }}
+        style={{
+          position: 'absolute',
+          top: 28,
+          right: 28,
+          zIndex: 100,
+        }}
       >
-        <View style={{ pointerEvents: 'auto' }}>
-          <FavoriteButton productId={Number(product.id)} size={20} />
-        </View>
+        <FavoriteButton productId={Number(product.id)} size={20} />
       </View>
 
       <Link href={`/product/${product.id}`} asChild>
         <Pressable className="flex-1">
-          <Card className="p-5 rounded-lg flex-1 relative">
+          <Card className="p-5 rounded-lg flex-1">
             <Image
               source={{
                 uri: product.image,
