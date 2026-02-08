@@ -10,11 +10,10 @@ import { Header } from "@/components/Header";
 import { Stack } from "expo-router";
 import QuickFilters from "@/components/QuickFilters";
 import SectionHeader from "@/components/SectionHeader";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 import { useProductFilters } from "@/store/productFiltersStore";
-import { useFavoritesStore } from "@/store/favoritesStore";
-import { useUser, useAuth } from "@clerk/clerk-expo";
+import { useUser } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Product } from "@/types/product";
@@ -27,19 +26,6 @@ export default function HomeScreen() {
   const { items: recentlyViewedItems } = useRecentlyViewed();
   const { dietaryTags, toggleDietaryTag } = useProductFilters();
   const { user } = useUser();
-  const { getToken } = useAuth();
-  const loadFavorites = useFavoritesStore((state) => state.loadFavorites);
-
-  // Load favorites when user is authenticated
-  useEffect(() => {
-    if (user) {
-      getToken().then((token) => {
-        if (token) {
-          loadFavorites(token);
-        }
-      });
-    }
-  }, [user]);
 
   const { data, isLoading, error, isFetching } = useQuery({
     queryKey: ["products", searchTerm, dietaryTags], // Re-fetch al cambiar búsqueda o filtros
