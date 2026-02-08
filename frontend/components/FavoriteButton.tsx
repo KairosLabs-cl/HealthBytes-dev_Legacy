@@ -1,4 +1,4 @@
-import { Pressable } from 'react-native';
+import { TouchableOpacity, Platform } from 'react-native';
 import { Heart } from 'lucide-react-native';
 import { useAuth } from '@clerk/clerk-expo';
 import { useFavoritesStore } from '@/store/favoritesStore';
@@ -17,30 +17,37 @@ export default function FavoriteButton({
     const { getToken } = useAuth();
     const { isFavorite, toggleFavorite } = useFavoritesStore();
 
-    const handlePress = async (e: any) => {
-        console.log('[FavoriteButton] Button pressed!', productId);
-        // Prevent the click from triggering the parent Link
-        e?.preventDefault?.();
-        e?.stopPropagation?.();
-
+    const handlePress = async () => {
         const token = await getToken();
         if (!token) {
             console.warn('[FavoriteButton] User not authenticated');
             return;
         }
 
-        console.log('[FavoriteButton] Calling toggleFavorite');
         await toggleFavorite(productId, token);
     };
 
     const favorited = isFavorite(productId);
-    console.log('[FavoriteButton] Render - Product:', productId, 'Is favorite:', favorited);
+
+    // For web, we use onClick directly on the element
+    const webProps = Platform.OS === 'web' ? {
+        onClick: (e: any) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handlePress();
+        }
+    } : {};
 
     return (
-        <Pressable
+        <TouchableOpacity
             onPress={handlePress}
-            className={`p-2 rounded-full bg-white/80 backdrop-blur ${className}`}
-            hitSlop={8}
+            activeOpacity={0.7}
+            style={{
+                padding: 8,
+                borderRadius: 999,
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            }}
+            {...webProps}
         >
             <Heart
                 size={size}
@@ -48,6 +55,6 @@ export default function FavoriteButton({
                 fill={favorited ? "#ef4444" : "none"}
                 strokeWidth={2}
             />
-        </Pressable>
+        </TouchableOpacity>
     );
 }
