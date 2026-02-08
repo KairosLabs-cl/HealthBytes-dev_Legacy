@@ -8,11 +8,13 @@ import FavoritesBar from "@/components/FavoritesBar";
 import RecentlyViewedBar from "@/components/RecentlyViewedBar";
 import { Header } from "@/components/Header";
 import { Stack } from "expo-router";
-import QuickFilters from "@/components/QuickFilters"; 
-import SectionHeader from "@/components/SectionHeader"; 
-import { useMemo, useState } from "react";
+import QuickFilters from "@/components/QuickFilters";
+import SectionHeader from "@/components/SectionHeader";
+import { useMemo, useState, useEffect } from "react";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
-import { useUser } from "@clerk/clerk-expo";
+import { useProductFilters } from "@/store/productFiltersStore";
+import { useFavoritesStore } from "@/store/favoritesStore";
+import { useUser, useAuth } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Product } from "@/types/product";
@@ -21,16 +23,30 @@ import { Apple } from "lucide-react-native";
 const keyExtractor = (item: Product) => item.id.toString();
 
 export default function HomeScreen() {
-  // se Cambio el estado para que termino de búsqueda se guarde en el estado y se pueda usar en la pagina
   const [searchTerm, setSearchTerm] = useState("");
-
   const { items: recentlyViewedItems } = useRecentlyViewed();
+  const { dietaryTags, toggleDietaryTag } = useProductFilters();
   const { user } = useUser();
+  const { getToken } = useAuth();
+  const loadFavorites = useFavoritesStore((state) => state.loadFavorites);
+
+  // Load favorites when user is authenticated
+  useEffect(() => {
+    if (user) {
+      getToken().then((token) => {
+        if (token) {
+          loadFavorites(token);
+        }
+      });
+    }
+  }, [user]);
 
   const { data, isLoading, error, isFetching } = useQuery({
-    queryKey: ["products", searchTerm], // se agrego searchTerm para re-fetch al buscar
-    queryFn: () => listProducts(searchTerm), // Pasa término de búsqueda a la API
-    // mantiene datos anteriores mientrss carga para evitar que desaparezcan
+    queryKey: ["products", searchTerm, dietaryTags], // Re-fetch al cambiar búsqueda o filtros
+    queryFn: () => listProducts({
+      search: searchTerm || undefined,
+      dietary: dietaryTags.length > 0 ? dietaryTags : undefined
+    }),
     placeholderData: (previousData) => previousData,
   });
 
@@ -78,14 +94,26 @@ export default function HomeScreen() {
       {/* Chips de dietas */}
       <View className="px-4 pb-1 bg-white">
         <View className="flex-row flex-wrap gap-2 mt-2">
-          {["Celiacos", "Veganos", "Sin lactosa", "Bajo en azucar"].map((label) => (
-            <Pressable
-              key={label}
-              className="px-3 py-2 rounded-full bg-gray-100 border border-gray-200"
-            >
-              <Text className="text-xs font-medium text-gray-700">{label}</Text>
-            </Pressable>
-          ))}
+          {[
+            { label: "Celiacos", tag: "sin-gluten" as const },
+            { label: "Veganos", tag: "vegano" as const },
+            { label: "Sin lactosa", tag: "sin-lactosa" as const },
+            { label: "Bajo en azucar", tag: "bajo-en-azucar" as const }
+          ].map(({ label, tag }) => {
+            const isActive = dietaryTags.includes(tag);
+            return (
+              <Pressable
+                key={label}
+                onPress={() => toggleDietaryTag(tag)}
+                className={`px-3 py-2 rounded-full border ${isActive ? 'bg-green-500 border-green-600' : 'bg-gray-100 border-gray-200'
+                  }`}
+              >
+                <Text className={`text-xs font-medium ${isActive ? 'text-white' : 'text-gray-700'}`}>
+                  {label}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
       </View>
 
