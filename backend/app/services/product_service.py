@@ -1,7 +1,7 @@
 """Product service - All product business logic."""
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, desc
+from sqlalchemy import select, func, desc, text
 from typing import List, Optional
 import logging
 
@@ -15,21 +15,34 @@ async def list_products(
     db: AsyncSession,
     search: str = None,
     skip: int = 0,
-    limit: int = 100
+    limit: int = 100,
+    category: Optional[str] = None,
+    dietary_tags: Optional[List[str]] = None,
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None
 ) -> List[Product]:
     """
-    Get all products with pagination.
-    
-    Args:
-        db: Database session
-        search: Search term for product name
-        skip: Number of records to skip
-        limit: Maximum number of records to return
-        
-    Returns:
-        List of Product objects
+    Get all products with dynamic filtering and pagination.
     """
-    # Ensure skip and limit are Python integers to avoid PostgreSQL cast issues
+    query = select(Product)
+    
+    # Apply category filter
+    if category:
+        query = query.where(Product.category == category)
+        
+    # Apply dietary tags filter using raw SQL with ANY operator
+    if dietary_tags:
+        for tag in dietary_tags:
+            # Use raw SQL to avoid type casting issues
+            query = query.where(text(":tag = ANY(products.dietary_tags)").bindparams(tag=tag))
+            
+    # Apply price range filters
+    if min_price is not None:
+        query = query.where(Product.price >= min_price)
+    if max_price is not None:
+        query = query.where(Product.price <= max_price)
+    
+    # Ensure skip and limit are Python integers
     skip = int(skip) if skip is not None else 0
     limit = int(limit) if limit is not None else 100
     

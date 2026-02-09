@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 
 from app.config import settings
-from app.api.v1 import products, auth, orders, stripe, users, cart
+from app.api.v1 import products, auth, orders, stripe, users, cart, favorites
 
 # Create FastAPI application
 app = FastAPI(
@@ -183,6 +183,7 @@ app.include_router(orders.router, prefix="/orders", tags=["Orders"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(stripe.router, prefix="/stripe", tags=["Stripe"])
 app.include_router(cart.router, prefix="/cart", tags=["Cart"])
+app.include_router(favorites.router, prefix="/favorites", tags=["Favorites"])
 
 
 # For local development

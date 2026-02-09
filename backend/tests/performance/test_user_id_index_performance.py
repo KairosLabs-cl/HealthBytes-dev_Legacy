@@ -4,6 +4,7 @@ This test measures the performance impact of adding an index to Order.user_id.
 """
 
 import pytest
+from decimal import Decimal
 import time
 from sqlalchemy import event
 from typing import List
@@ -70,7 +71,7 @@ def benchmark_product(db_session):
         id=get_unique_id(3000),
         name=f"Benchmark Product {get_unique_id()}",
         description="Test product for performance benchmarking",
-        price=100.00,
+        price=Decimal("100.00"),
         image="https://example.com/product.jpg",
         stock=10000  # High stock
     )
@@ -91,7 +92,7 @@ async def create_orders_for_user(
     
     for i in range(count):
         order_data = OrderCreate(
-            items=[OrderItemCreate(product_id=product_id, quantity=1, price=100.0)]
+            items=[OrderItemCreate(product_id=product_id, quantity=1, price=Decimal("100.0"))]
         )
         order = await create_order(mock_db, user_id, order_data)
         orders.append(order)
