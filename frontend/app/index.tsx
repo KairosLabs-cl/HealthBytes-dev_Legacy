@@ -8,15 +8,14 @@ import FavoritesBar from "@/components/FavoritesBar";
 import RecentlyViewedBar from "@/components/RecentlyViewedBar";
 import { Header } from "@/components/Header";
 import { Stack } from "expo-router";
-import QuickFilters from "@/components/QuickFilters"; 
-import SectionHeader from "@/components/SectionHeader"; 
+
 import { useMemo, useState } from "react";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 import { useUser } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Product } from "@/types/product";
-import { Apple } from "lucide-react-native";
+
 
 const keyExtractor = (item: Product) => item.id.toString();
 
@@ -136,10 +135,7 @@ export default function HomeScreen() {
         </>
       )}
 
-      <View className="mt-1">
-        <SectionHeader icon={Apple} title="Para ti" />
-        <QuickFilters />
-      </View>
+
     </>
   );
 
