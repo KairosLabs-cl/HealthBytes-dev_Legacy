@@ -113,9 +113,7 @@ export default function OrdersScreen() {
   }, [orders, selectedFilter]);
 
   const handleOrderPress = (orderId: string | number) => {
-    // Navigator a una pantalla de detalle de orden (crear después)
-    console.log("Order pressed:", orderId);
-    // Próximamente: router.push(`/(tabs)/orders/${orderId}`);
+    router.push(`/orders/${orderId}`);
   };
 
   // Loading state

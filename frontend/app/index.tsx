@@ -10,7 +10,7 @@ import { Header } from "@/components/Header";
 import { Stack } from "expo-router";
 import QuickFilters from "@/components/QuickFilters";
 import SectionHeader from "@/components/SectionHeader";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 import { useUser } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,16 +20,31 @@ import { Apple } from "lucide-react-native";
 
 const keyExtractor = (item: Product) => item.id.toString();
 
+// Dietary filter chips with API tag names
+const DIET_FILTERS = [
+  { label: "Celiacos", tag: "gluten_free" },
+  { label: "Veganos", tag: "vegan" },
+  { label: "Sin lactosa", tag: "lactose_free" },
+  { label: "Bajo en azúcar", tag: "low_sugar" },
+] as const;
+
 export default function HomeScreen() {
   // se Cambio el estado para que termino de búsqueda se guarde en el estado y se pueda usar en la pagina
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
 
   const { items: recentlyViewedItems } = useRecentlyViewed();
   const { user } = useUser();
 
+  // Build filter string for API
+  const filterString = useMemo(
+    () => (selectedFilters.length > 0 ? selectedFilters.join(",") : undefined),
+    [selectedFilters]
+  );
+
   const { data, isLoading, error, isFetching } = useQuery({
-    queryKey: ["products", searchTerm], // se agrego searchTerm para re-fetch al buscar
-    queryFn: () => listProducts(searchTerm), // Pasa término de búsqueda a la API
+    queryKey: ["products", searchTerm, filterString], // re-fetch when filters change
+    queryFn: () => listProducts(searchTerm, filterString), // Pass filters to API
     // mantiene datos anteriores mientrss carga para evitar que desaparezcan
     placeholderData: (previousData) => previousData,
   });
@@ -41,6 +56,13 @@ export default function HomeScreen() {
   }) as number;
 
   const heroProduct = useMemo(() => data?.[0], [data]);
+
+  // Toggle filter selection
+  const handleFilterToggle = useCallback((tag: string) => {
+    setSelectedFilters((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  }, []);
 
   // Solo muestra loading completo en primera carga no durante búsqueda
   if (isLoading && !data) {
@@ -75,17 +97,31 @@ export default function HomeScreen() {
       {/* Header + búsqueda */}
       <Header userName={user?.firstName || user?.fullName || "Usuario"} onSearchChange={handleSearchChange} />
 
-      {/* Chips de dietas */}
+      {/* Chips de dietas - ahora interactivos */}
       <View className="px-4 pb-1 bg-white">
         <View className="flex-row flex-wrap gap-2 mt-2">
-          {["Celiacos", "Veganos", "Sin lactosa", "Bajo en azucar"].map((label) => (
-            <Pressable
-              key={label}
-              className="px-3 py-2 rounded-full bg-gray-100 border border-gray-200"
-            >
-              <Text className="text-xs font-medium text-gray-700">{label}</Text>
-            </Pressable>
-          ))}
+          {DIET_FILTERS.map(({ label, tag }) => {
+            const isSelected = selectedFilters.includes(tag);
+            return (
+              <Pressable
+                key={tag}
+                onPress={() => handleFilterToggle(tag)}
+                className={`px-3 py-2 rounded-full border ${
+                  isSelected
+                    ? "bg-green-600 border-green-600"
+                    : "bg-gray-100 border-gray-200"
+                }`}
+              >
+                <Text
+                  className={`text-xs font-medium ${
+                    isSelected ? "text-white" : "text-gray-700"
+                  }`}
+                >
+                  {label}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
       </View>
 

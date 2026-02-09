@@ -3,22 +3,26 @@
 import logging
 from typing import List, Optional
 
-from app.db.schemas import Product
+from app.db.schemas import DietaryTag, Product
 from app.schemas.product import ProductCreate, ProductUpdate
 from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 logger = logging.getLogger(__name__)
 
 
-async def list_products(db: AsyncSession, skip: int = 0, limit: int = 100) -> List[Product]:
+async def list_products(
+    db: AsyncSession, skip: int = 0, limit: int = 100, dietary_tags: Optional[List[str]] = None
+) -> List[Product]:
     """
-    Get all products with pagination.
+    Get all products with pagination, optionally filtered by dietary tags.
 
     Args:
         db: Database session
         skip: Number of records to skip
         limit: Maximum number of records to return
+        dietary_tags: Optional list of tag names to filter by (e.g., ["gluten_free", "vegan"])
 
     Returns:
         List of Product objects
@@ -27,13 +31,19 @@ async def list_products(db: AsyncSession, skip: int = 0, limit: int = 100) -> Li
     skip = int(skip) if skip is not None else 0
     limit = int(limit) if limit is not None else 100
 
-    result = await db.execute(select(Product).offset(skip).limit(limit))
+    stmt = select(Product).options(selectinload(Product.dietary_tags))
+
+    # Filter by dietary tags if provided
+    if dietary_tags:
+        stmt = stmt.join(Product.dietary_tags).where(DietaryTag.name.in_(dietary_tags))
+
+    result = await db.execute(stmt.distinct().offset(skip).limit(limit))
     return result.scalars().all()
 
 
 async def get_product(db: AsyncSession, product_id: int) -> Optional[Product]:
     """
-    Get product by ID.
+    Get product by ID with dietary tags loaded.
 
     Args:
         db: Database session
@@ -42,13 +52,15 @@ async def get_product(db: AsyncSession, product_id: int) -> Optional[Product]:
     Returns:
         Product object or None if not found
     """
-    result = await db.execute(select(Product).where(Product.id == product_id))
+    result = await db.execute(
+        select(Product).options(selectinload(Product.dietary_tags)).where(Product.id == product_id)
+    )
     return result.scalar_one_or_none()
 
 
 async def get_products_by_ids(db: AsyncSession, product_ids: List[int]) -> List[Product]:
     """
-    Get multiple products by IDs.
+    Get multiple products by IDs with dietary tags loaded.
 
     Args:
         db: Database session
@@ -57,7 +69,11 @@ async def get_products_by_ids(db: AsyncSession, product_ids: List[int]) -> List[
     Returns:
         List of Product objects
     """
-    result = await db.execute(select(Product).where(Product.id.in_(product_ids)))
+    result = await db.execute(
+        select(Product)
+        .options(selectinload(Product.dietary_tags))
+        .where(Product.id.in_(product_ids))
+    )
     return result.scalars().all()
 
 
@@ -166,6 +182,7 @@ async def search_products(
         # ts_rank_cd = weighted ranking (CD = cover dense)
         result = await db.execute(
             select(Product)
+            .options(selectinload(Product.dietary_tags))
             .where(Product.search_vector.op("@@")(tsquery))
             .order_by(desc(func.ts_rank_cd(Product.search_vector, tsquery)))
             .offset(int(skip) if skip else 0)
@@ -182,6 +199,7 @@ async def search_products(
         search_pattern = f"%{clean_query}%"
         result = await db.execute(
             select(Product)
+            .options(selectinload(Product.dietary_tags))
             .where(
                 (Product.name.ilike(search_pattern)) | (Product.description.ilike(search_pattern))
             )

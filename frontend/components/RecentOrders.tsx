@@ -1,4 +1,5 @@
 import { Text } from "@/components/ui/text";
+import { formatPrice } from "@/lib/formatPrice";
 import {
   Order,
   STATUS_BADGE_COLORS,
@@ -86,13 +87,12 @@ export function RecentOrders({
               </View>
               <View className="items-end">
                 <Text className="text-sm font-bold text-black">
-                  $
-                  {(
+                  {formatPrice(
                     order.items?.reduce(
                       (sum, item) => sum + item.price * item.quantity,
                       0
                     ) || 0
-                  ).toFixed(2)}
+                  )}
                 </Text>
               </View>
             </Pressable>

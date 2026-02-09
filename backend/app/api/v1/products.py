@@ -14,24 +14,35 @@ router = APIRouter()
 
 
 @router.get("/", response_model=List[ProductResponse])
-async def list_products(search: Optional[str] = None, db: AsyncSession = Depends(get_db)):
+async def list_products(
+    search: Optional[str] = None,
+    filter: Optional[str] = None,
+    db: AsyncSession = Depends(get_db),
+):
     """
     GET /products
     GET /products?search=galletas+sin+gluten
+    GET /products?filter=gluten_free,vegan
 
-    List all products or search products by name/description.
-    If search parameter is provided, performs full-text search.
-    Otherwise returns all products.
+    List all products or search/filter products.
+    - If search parameter is provided, performs full-text search.
+    - If filter parameter is provided, filters by dietary tags (comma-separated).
+    - Otherwise returns all products.
 
-    Replica of listProducts from Node.js with FTS enhancement
+    Replica of listProducts from Node.js with FTS and filter enhancement
     """
     try:
+        # Parse comma-separated dietary tag filters
+        dietary_tags = None
+        if filter:
+            dietary_tags = [tag.strip() for tag in filter.split(",") if tag.strip()]
+
         if search:
             # Use full-text search when search term is provided
             return await product_service.search_products(db, search)
         else:
-            # Return all products if no search term
-            return await product_service.list_products(db)
+            # Return products with optional dietary tag filter
+            return await product_service.list_products(db, dietary_tags=dietary_tags)
     except Exception as e:
         logger.error(f"Error listing/searching products: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal Server Error")

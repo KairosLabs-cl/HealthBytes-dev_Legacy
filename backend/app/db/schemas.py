@@ -45,8 +45,51 @@ class Product(Base):
     # Do NOT set this column in Python - let the database trigger handle it
     search_vector = Column(SearchVector, nullable=True)
 
+    # Many-to-many relationship with DietaryTag
+    dietary_tags = relationship(
+        "DietaryTag", secondary="product_dietary_tags", back_populates="products"
+    )
+
     # GIN index for PostgreSQL full-text search (ignored in SQLite)
     __table_args__ = (Index("idx_product_search", "search_vector", postgresql_using="gin"),)
+
+
+# Association table for Product <-> DietaryTag many-to-many
+product_dietary_tags = Base.metadata.tables.get("product_dietary_tags")
+if product_dietary_tags is None:
+    from sqlalchemy import Table
+
+    product_dietary_tags = Table(
+        "product_dietary_tags",
+        Base.metadata,
+        Column(
+            "product_id", Integer, ForeignKey("products.id", ondelete="CASCADE"), primary_key=True
+        ),
+        Column(
+            "dietary_tag_id",
+            Integer,
+            ForeignKey("dietary_tags.id", ondelete="CASCADE"),
+            primary_key=True,
+        ),
+    )
+
+
+class DietaryTag(Base):
+    """Dietary tags table - Stores dietary restriction tags (gluten-free, vegan, etc.)"""
+
+    __tablename__ = "dietary_tags"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    name = Column(
+        String(50), unique=True, nullable=False, index=True
+    )  # e.g., "gluten_free", "vegan"
+    display_name = Column(String(100), nullable=False)  # e.g., "Sin gluten", "Vegano"
+    color = Column(String(20), nullable=True)  # e.g., "green", "blue" for badge styling
+
+    # Back-reference to products
+    products = relationship(
+        "Product", secondary="product_dietary_tags", back_populates="dietary_tags"
+    )
 
 
 class User(Base):
