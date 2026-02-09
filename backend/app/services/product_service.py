@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 async def list_products(
     db: AsyncSession,
+    search: str = None,
     skip: int = 0,
     limit: int = 100,
     category: Optional[str] = None,
@@ -45,8 +46,15 @@ async def list_products(
     skip = int(skip) if skip is not None else 0
     limit = int(limit) if limit is not None else 100
     
+    query = select(Product)
+    
+    if search:
+        query = query.where(Product.name.ilike(f"%{search}%"))
+        
     result = await db.execute(
-        query.offset(skip).limit(limit)
+        query
+        .offset(skip)
+        .limit(limit)
     )
     return result.scalars().all()
 

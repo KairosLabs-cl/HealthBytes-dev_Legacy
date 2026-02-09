@@ -17,7 +17,7 @@ import { useUser } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Product } from "@/types/product";
-import { Apple } from "lucide-react-native";
+
 
 const keyExtractor = (item: Product) => item.id.toString();
 
@@ -68,14 +68,10 @@ export default function HomeScreen() {
     );
   }
 
-  const handleSearchChange = (term: string) => {
-    setSearchTerm(term);
-  };
-
   const renderHeader = () => (
     <>
       {/* Header + búsqueda */}
-      <Header userName={user?.firstName || user?.fullName || "Usuario"} onSearchChange={handleSearchChange} />
+      <Header userName={user?.firstName || user?.fullName || "Usuario"} />
 
       {/* Chips de dietas */}
       <View className="px-4 pb-1 bg-white">
@@ -143,24 +139,17 @@ export default function HomeScreen() {
       )}
 
       {/* Secciones previas cuando no hay búsqueda */}
-      {!searchTerm && (
-        <>
-          <FavoritesBar products={data} />
-          <RecentlyViewedBar items={recentlyViewedItems} />
-        </>
-      )}
+      <FavoritesBar products={data} />
+      <RecentlyViewedBar items={recentlyViewedItems} />
 
-      <View className="mt-1">
-        <SectionHeader icon={Apple} title="Para ti" />
-        <QuickFilters />
-      </View>
+
     </>
   );
 
   const renderEmpty = () => (
     <View className="flex-1 items-center justify-center p-8">
       <Text className="text-center text-gray-500">
-        {searchTerm ? "No se encontraron productos" : "No hay productos disponibles"}
+        No hay productos disponibles
       </Text>
     </View>
   );

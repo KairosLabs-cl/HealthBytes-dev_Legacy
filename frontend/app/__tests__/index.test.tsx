@@ -58,13 +58,7 @@ jest.mock('@/components/RecentlyViewedBar', () => {
   return Component;
 });
 
-jest.mock('@/components/QuickFilters', () => {
-  const React = require('react');
-  const { View } = require('react-native');
-  const Component = (props: any) => React.createElement(View, props, 'QuickFilters');
-  Component.displayName = 'QuickFilters';
-  return Component;
-});
+
 
 jest.mock('@/components/SectionHeader', () => {
   const React = require('react');
@@ -112,7 +106,7 @@ describe('HomeScreen Structural Test', () => {
 
     // Check if products are rendered
     expect(await screen.findAllByTestId('product-list-item')).toHaveLength(2);
-    
+
     // Check if Header is rendered
     expect(screen.getByTestId('header')).toBeTruthy();
   });
