@@ -9,6 +9,7 @@ import { useRecentlyViewed } from '@/store/recentlyViewedStore';
 import { useEffect } from 'react';
 import { Heart, ShoppingCart, Star } from 'lucide-react-native';
 import { formatPrice } from '@/lib/formatPrice';
+import { DietaryBadgeList } from '@/components/DietaryBadge';
 
 export default function ProductDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -96,18 +97,8 @@ export default function ProductDetailsScreen() {
 
         {/* Product Info */}
         <View className="px-5 py-6">
-          {/* Badges */}
-          <View className="flex-row flex-wrap gap-2 mb-4">
-            <View className="px-3 py-1 rounded-full bg-green-100">
-              <Text className="text-xs font-medium text-green-700">Sin gluten</Text>
-            </View>
-            <View className="px-3 py-1 rounded-full bg-blue-100">
-              <Text className="text-xs font-medium text-blue-700">Vegano</Text>
-            </View>
-            <View className="px-3 py-1 rounded-full bg-orange-100">
-              <Text className="text-xs font-medium text-orange-700">Sin lactosa</Text>
-            </View>
-          </View>
+          {/* Badges - Dynamic from API */}
+          <DietaryBadgeList tags={product.dietary_tags} />
 
           {/* Title and Rating */}
           <Text className="text-2xl font-bold text-gray-900 mb-2">
