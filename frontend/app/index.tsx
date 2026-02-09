@@ -16,7 +16,7 @@ import { useUser } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Product } from "@/types/product";
-import { Apple } from "lucide-react-native";
+
 
 const keyExtractor = (item: Product) => item.id.toString();
 
@@ -124,10 +124,7 @@ export default function HomeScreen() {
       <FavoritesBar products={data} />
       <RecentlyViewedBar items={recentlyViewedItems} />
 
-      <View className="mt-1">
-        <SectionHeader icon={Apple} title="Para ti" />
-        <QuickFilters />
-      </View>
+
     </>
   );
 
