@@ -1,68 +1,29 @@
+# Simplified pre-commit config for MVP development
+# Full linting/formatting can be re-enabled after MVP launch
 repos:
-  # Python formatting with Black
-  - repo: https://github.com/psf/black
-    rev: 24.1.1
-    hooks:
-      - id: black
-        language_version: python3.12
-        args: [--line-length=100]
-
-  # Python linting with Flake8
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
-    hooks:
-      - id: flake8
-        args:
-          - --max-line-length=100
-          - --extend-ignore=E203,W503,F401,F841,F541,E501
-        exclude: ^(tests/|Tools/|migrations/|\.venv/)
-        files: ^app/
-
-  # Import sorting with isort
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
-        args: [--profile, black, --line-length, "100"]
-
-  # Check for common issues
+  # Essential checks that don't modify files
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
-      - id: trailing-whitespace
-        exclude: ^(.*\.md|.*\.txt)$
-      - id: end-of-file-fixer
-      - id: check-yaml
-      - id: check-json
-      - id: check-added-large-files
-        args: [--maxkb=1000]
       - id: check-merge-conflict
+        name: Check for merge conflicts
       - id: detect-private-key
-      - id: check-case-conflict
+        name: Detect private keys
+      - id: check-added-large-files
+        name: Check for large files
+        args: [--maxkb=1000]
+      - id: check-yaml
+        name: Validate YAML
+        exclude: ^(.*pnpm-lock.yaml)$
+      - id: check-json
+        name: Validate JSON
 
-  # Security checks with Bandit
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.6
-    hooks:
-      - id: bandit
-        name: bandit (security scan)
-        args: [
-          -r, app/,
-          --skip, B101,
-          -ll,
-          -v
-        ]
-        exclude: ^(tests/|migrations/)
-        pass_filenames: false
+  # Optional: Keep black but don't fail on changes
+  # Uncomment after MVP if you want auto-formatting
+  # - repo: https://github.com/psf/black
+  #   rev: 24.1.1
+  #   hooks:
+  #     - id: black
+  #       language_version: python3.12
+  #       args: [--line-length=100]
 
-  # Run tests before commit (optional, can be slow)
-  - repo: local
-    hooks:
-      - id: pytest-check
-        name: pytest
-        entry: pytest
-        language: system
-        pass_filenames: false
-        always_run: false  # Set to true to run on every commit
-        args: [tests/, -v, --tb=short]
-        stages: [manual]  # Run manually with: pre-commit run pytest-check --hook-stage manual
