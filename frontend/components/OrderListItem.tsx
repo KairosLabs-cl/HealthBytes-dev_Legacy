@@ -1,5 +1,6 @@
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
+import { formatPrice } from "@/lib/formatPrice";
 import {
   Order,
   STATUS_BADGE_COLORS,
@@ -70,7 +71,7 @@ export function OrderListItem({ order, onPress }: OrderListItemProps) {
               {totalItems} producto{totalItems !== 1 ? "s" : ""}
             </Text>
             <Text className="font-bold text-black">
-              ${totalPrice.toFixed(2)}
+              {formatPrice(totalPrice)}
             </Text>
           </View>
         </View>

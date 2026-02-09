@@ -9,7 +9,7 @@ from app.schemas.cart import CartItemCreate, CartItemResponse, CartResponse
 from fastapi import HTTPException
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 
 
 async def get_cart(user_id: int, db: AsyncSession) -> CartResponse:
@@ -17,7 +17,9 @@ async def get_cart(user_id: int, db: AsyncSession) -> CartResponse:
     Get user's cart with all items and product details
     """
     result = await db.execute(
-        select(CartItem).where(CartItem.user_id == user_id).options(joinedload(CartItem.product))
+        select(CartItem)
+        .where(CartItem.user_id == user_id)
+        .options(joinedload(CartItem.product).selectinload(Product.dietary_tags))
     )
     cart_items = result.scalars().all()
 
@@ -49,7 +51,7 @@ async def add_to_cart(
     result = await db.execute(
         select(CartItem)
         .where(CartItem.user_id == user_id, CartItem.product_id == product_id)
-        .options(joinedload(CartItem.product))
+        .options(joinedload(CartItem.product).selectinload(Product.dietary_tags))
     )
     existing_item = result.scalar_one_or_none()
 
@@ -64,7 +66,13 @@ async def add_to_cart(
 
         existing_item.quantity = new_quantity
         await db.commit()
-        await db.refresh(existing_item)
+        # Re-load with dietary_tags after commit
+        result = await db.execute(
+            select(CartItem)
+            .where(CartItem.id == existing_item.id)
+            .options(joinedload(CartItem.product).selectinload(Product.dietary_tags))
+        )
+        existing_item = result.scalar_one()
         return CartItemResponse.model_validate(existing_item)
 
     # Create new cart item
@@ -73,9 +81,11 @@ async def add_to_cart(
     await db.commit()
     await db.refresh(new_item)
 
-    # Load product relationship
+    # Load product relationship with dietary_tags
     result = await db.execute(
-        select(CartItem).where(CartItem.id == new_item.id).options(joinedload(CartItem.product))
+        select(CartItem)
+        .where(CartItem.id == new_item.id)
+        .options(joinedload(CartItem.product).selectinload(Product.dietary_tags))
     )
     new_item = result.scalar_one()
 
@@ -91,7 +101,7 @@ async def update_cart_item(
     result = await db.execute(
         select(CartItem)
         .where(CartItem.user_id == user_id, CartItem.product_id == product_id)
-        .options(joinedload(CartItem.product))
+        .options(joinedload(CartItem.product).selectinload(Product.dietary_tags))
     )
     cart_item = result.scalar_one_or_none()
 
@@ -108,7 +118,13 @@ async def update_cart_item(
 
     cart_item.quantity = quantity
     await db.commit()
-    await db.refresh(cart_item)
+    # Re-load with dietary_tags after commit
+    result = await db.execute(
+        select(CartItem)
+        .where(CartItem.id == cart_item.id)
+        .options(joinedload(CartItem.product).selectinload(Product.dietary_tags))
+    )
+    cart_item = result.scalar_one()
 
     return CartItemResponse.model_validate(cart_item)
 

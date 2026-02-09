@@ -1,6 +1,18 @@
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
+
+
+class DietaryTagResponse(BaseModel):
+    """Dietary tag response schema"""
+
+    id: int
+    name: str
+    display_name: str
+    color: Optional[str] = None
+
+    class Config:
+        from_attributes = True
 
 
 class ProductBase(BaseModel):
@@ -16,7 +28,7 @@ class ProductBase(BaseModel):
 class ProductCreate(ProductBase):
     """Schema for creating a product - Replica of createProductSchema"""
 
-    pass
+    dietary_tag_ids: Optional[List[int]] = Field(default_factory=list)
 
 
 class ProductUpdate(BaseModel):
@@ -27,12 +39,14 @@ class ProductUpdate(BaseModel):
     image: Optional[str] = Field(None, max_length=255)
     price: Optional[float] = Field(None, gt=0)
     stock: Optional[int] = Field(None, ge=0)
+    dietary_tag_ids: Optional[List[int]] = None
 
 
 class ProductResponse(ProductBase):
     """Product response schema"""
 
     id: int
+    dietary_tags: List[DietaryTagResponse] = Field(default_factory=list)
 
     class Config:
         from_attributes = True
