@@ -5,7 +5,7 @@ from typing import List, Optional
 
 from app.db.schemas import DietaryTag, Product
 from app.schemas.product import ProductCreate, ProductUpdate
-from sqlalchemy import desc, func, select
+from sqlalchemy import select, func, desc, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -13,31 +13,50 @@ logger = logging.getLogger(__name__)
 
 
 async def list_products(
-    db: AsyncSession, skip: int = 0, limit: int = 100, dietary_tags: Optional[List[str]] = None
+    db: AsyncSession,
+    search: str = None,
+    skip: int = 0,
+    limit: int = 100,
+    category: Optional[str] = None,
+    dietary_tags: Optional[List[str]] = None,
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None
 ) -> List[Product]:
     """
-    Get all products with pagination, optionally filtered by dietary tags.
-
-    Args:
-        db: Database session
-        skip: Number of records to skip
-        limit: Maximum number of records to return
-        dietary_tags: Optional list of tag names to filter by (e.g., ["gluten_free", "vegan"])
-
-    Returns:
-        List of Product objects
+    Get all products with dynamic filtering and pagination.
     """
-    # Ensure skip and limit are Python integers to avoid PostgreSQL cast issues
+    query = select(Product)
+    
+    # Apply category filter
+    if category:
+        query = query.where(Product.category == category)
+        
+    # Apply dietary tags filter using raw SQL with ANY operator
+    if dietary_tags:
+        for tag in dietary_tags:
+            # Use raw SQL to avoid type casting issues
+            query = query.where(text(":tag = ANY(products.dietary_tags)").bindparams(tag=tag))
+            
+    # Apply price range filters
+    if min_price is not None:
+        query = query.where(Product.price >= min_price)
+    if max_price is not None:
+        query = query.where(Product.price <= max_price)
+    
+    # Ensure skip and limit are Python integers
     skip = int(skip) if skip is not None else 0
     limit = int(limit) if limit is not None else 100
-
-    stmt = select(Product).options(selectinload(Product.dietary_tags))
-
-    # Filter by dietary tags if provided
-    if dietary_tags:
-        stmt = stmt.join(Product.dietary_tags).where(DietaryTag.name.in_(dietary_tags))
-
-    result = await db.execute(stmt.distinct().offset(skip).limit(limit))
+    
+    query = select(Product)
+    
+    if search:
+        query = query.where(Product.name.ilike(f"%{search}%"))
+        
+    result = await db.execute(
+        query
+        .offset(skip)
+        .limit(limit)
+    )
     return result.scalars().all()
 
 

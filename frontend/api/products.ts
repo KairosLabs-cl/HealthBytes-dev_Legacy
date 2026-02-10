@@ -1,18 +1,37 @@
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-/**
- * List products with optional search and filter parameters
- * @param searchTerm - Optional search term for full-text search
- * @param filter - Optional comma-separated dietary tag names (e.g., "gluten_free,vegan")
- */
-export async function listProducts(searchTerm?: string, filter?: string) {
-  // Build URL with query parameters
-  const params = new URLSearchParams();
-  if (searchTerm) params.append("search", searchTerm);
-  if (filter) params.append("filter", filter);
+export type ProductFilters = {
+  search?: string;
+  category?: string;
+  dietary?: string[];  // Array de etiquetas como ["vegano", "sin-gluten"]
+  minPrice?: number;
+  maxPrice?: number;
+};
 
-  const queryString = params.toString();
-  const url = queryString ? `${API_URL}/products?${queryString}` : `${API_URL}/products`;
+// Función mejorada que acepta múltiples filtros
+export async function listProducts(filters?: ProductFilters) {
+  // Construir query string dinámicamente
+  const params = new URLSearchParams();
+
+  if (filters?.search) {
+    params.append('search', filters.search);
+  }
+  if (filters?.category) {
+    params.append('category', filters.category);
+  }
+  if (filters?.dietary && filters.dietary.length > 0) {
+    params.append('dietary', filters.dietary.join(','));
+  }
+  if (filters?.minPrice !== undefined) {
+    params.append('min_price', filters.minPrice.toString());
+  }
+  if (filters?.maxPrice !== undefined) {
+    params.append('max_price', filters.maxPrice.toString());
+  }
+
+  const url = params.toString()
+    ? `${API_URL}/products?${params.toString()}`
+    : `${API_URL}/products`;
 
   const res = await fetch(url);
   const data = await res.json();

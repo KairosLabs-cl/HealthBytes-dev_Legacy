@@ -13,6 +13,7 @@ import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@/lib/cache";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Toast, ToastDescription, ToastTitle, useToast } from "@/components/ui/toast";
+import { useFavoritesStore } from "@/store/favoritesStore";
 
 // Constants removed
 
@@ -57,7 +58,10 @@ function RootLayoutNav() {
     }
   }, [error, clearError, toast]);
 
-  // Sync cart with authentication state
+  // Sync cart and favorites with authentication state
+  const loadFavorites = useFavoritesStore((state) => state.loadFavorites);
+  const clearFavorites = useFavoritesStore((state) => state.clearFavorites);
+
   useEffect(() => {
     const syncCart = async () => {
       if (isSignedIn) {
@@ -67,10 +71,13 @@ function RootLayoutNav() {
           setAuth(true, token);
           // Merge local cart with server cart
           await mergeAndSync();
+          // Load user favorites
+          await loadFavorites(token);
         }
       } else {
         // User logged out
         setAuth(false, null);
+        clearFavorites();
         // Reset cart will be called by setAuth
       }
     };

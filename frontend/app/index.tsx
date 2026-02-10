@@ -12,11 +12,12 @@ import QuickFilters from "@/components/QuickFilters";
 import SectionHeader from "@/components/SectionHeader";
 import { useCallback, useMemo, useState } from "react";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
+import { useProductFilters } from "@/store/productFiltersStore";
 import { useUser } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Product } from "@/types/product";
-import { Apple } from "lucide-react-native";
+
 
 const keyExtractor = (item: Product) => item.id.toString();
 
@@ -29,11 +30,11 @@ const DIET_FILTERS = [
 ] as const;
 
 export default function HomeScreen() {
-  // se Cambio el estado para que termino de búsqueda se guarde en el estado y se pueda usar en la pagina
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
 
   const { items: recentlyViewedItems } = useRecentlyViewed();
+  const { dietaryTags, toggleDietaryTag } = useProductFilters();
   const { user } = useUser();
 
   // Build filter string for API
@@ -43,9 +44,11 @@ export default function HomeScreen() {
   );
 
   const { data, isLoading, error, isFetching } = useQuery({
-    queryKey: ["products", searchTerm, filterString], // re-fetch when filters change
-    queryFn: () => listProducts(searchTerm, filterString), // Pass filters to API
-    // mantiene datos anteriores mientrss carga para evitar que desaparezcan
+    queryKey: ["products", searchTerm, dietaryTags], // Re-fetch al cambiar búsqueda o filtros
+    queryFn: () => listProducts({
+      search: searchTerm || undefined,
+      dietary: dietaryTags.length > 0 ? dietaryTags : undefined
+    }),
     placeholderData: (previousData) => previousData,
   });
 
@@ -88,35 +91,29 @@ export default function HomeScreen() {
     );
   }
 
-  const handleSearchChange = (term: string) => {
-    setSearchTerm(term);
-  };
-
   const renderHeader = () => (
     <>
       {/* Header + búsqueda */}
-      <Header userName={user?.firstName || user?.fullName || "Usuario"} onSearchChange={handleSearchChange} />
+      <Header userName={user?.firstName || user?.fullName || "Usuario"} />
 
       {/* Chips de dietas - ahora interactivos */}
       <View className="px-4 pb-1 bg-white">
         <View className="flex-row flex-wrap gap-2 mt-2">
-          {DIET_FILTERS.map(({ label, tag }) => {
-            const isSelected = selectedFilters.includes(tag);
+          {[
+            { label: "Celiacos", tag: "sin-gluten" as const },
+            { label: "Veganos", tag: "vegano" as const },
+            { label: "Sin lactosa", tag: "sin-lactosa" as const },
+            { label: "Bajo en azucar", tag: "bajo-en-azucar" as const }
+          ].map(({ label, tag }) => {
+            const isActive = dietaryTags.includes(tag);
             return (
               <Pressable
-                key={tag}
-                onPress={() => handleFilterToggle(tag)}
-                className={`px-3 py-2 rounded-full border ${
-                  isSelected
-                    ? "bg-green-600 border-green-600"
-                    : "bg-gray-100 border-gray-200"
-                }`}
-              >
-                <Text
-                  className={`text-xs font-medium ${
-                    isSelected ? "text-white" : "text-gray-700"
+                key={label}
+                onPress={() => toggleDietaryTag(tag)}
+                className={`px-3 py-2 rounded-full border ${isActive ? 'bg-green-500 border-green-600' : 'bg-gray-100 border-gray-200'
                   }`}
-                >
+              >
+                <Text className={`text-xs font-medium ${isActive ? 'text-white' : 'text-gray-700'}`}>
                   {label}
                 </Text>
               </Pressable>
@@ -165,24 +162,17 @@ export default function HomeScreen() {
       )}
 
       {/* Secciones previas cuando no hay búsqueda */}
-      {!searchTerm && (
-        <>
-          <FavoritesBar products={data} />
-          <RecentlyViewedBar items={recentlyViewedItems} />
-        </>
-      )}
+      <FavoritesBar products={data} />
+      <RecentlyViewedBar items={recentlyViewedItems} />
 
-      <View className="mt-1">
-        <SectionHeader icon={Apple} title="Para ti" />
-        <QuickFilters />
-      </View>
+
     </>
   );
 
   const renderEmpty = () => (
     <View className="flex-1 items-center justify-center p-8">
       <Text className="text-center text-gray-500">
-        {searchTerm ? "No se encontraron productos" : "No hay productos disponibles"}
+        No hay productos disponibles
       </Text>
     </View>
   );
