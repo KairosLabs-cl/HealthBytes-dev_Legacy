@@ -28,6 +28,24 @@ FastAPI + Python 3.14 + SQLAlchemy REST API para HealthBytes.
 
 ## 🚀 Quick Start
 
+### Opción 1: VS Code Workspace (Recomendado)
+
+Abre el archivo `HealthBytes.code-workspace` en VS Code para tener backend, frontend y docs organizados en un solo workspace con configuración optimizada.
+
+```powershell
+# Desde la raíz del proyecto
+code HealthBytes.code-workspace
+```
+
+**Incluye**:
+- ✅ Configuración Python/TypeScript automática
+- ✅ Debugger preconfigured para FastAPI
+- ✅ Tasks para iniciar backend/frontend
+- ✅ Formateo automático con Black/Prettier
+- ✅ Testing integrado
+
+### Opción 2: Inicio Rápido con Scripts
+
 ### Windows (PowerShell)
 
 ```powershell
@@ -67,6 +85,40 @@ cp .env.example .env
 
 # Ejecutar
 python run_server.py
+```
+
+### Configurar Pre-commit Hooks (Recomendado)
+
+Los pre-commit hooks formatean y validan tu código antes de cada commit:
+
+```powershell
+# Instalar dependencias de desarrollo
+pip install -r requirements-dev.txt
+
+# Ejecutar script de configuración
+.\setup-hooks.ps1
+
+# O manualmente
+pre-commit install
+```
+
+**Qué hace**:
+- ✅ Black: Formatea código Python automáticamente
+- ✅ isort: Organiza imports
+- ✅ Flake8: Detecta problemas de estilo
+- ✅ Bandit: Escanea vulnerabilidades de seguridad
+- ✅ Checks básicos: trailing whitespace, archivos grandes, etc.
+
+**Uso**:
+```bash
+# Se ejecuta automáticamente en cada commit
+git commit -m "mensaje"
+
+# Ejecutar manualmente en todos los archivos
+pre-commit run --all-files
+
+# Saltar hooks temporalmente (no recomendado)
+git commit --no-verify -m "mensaje"
 ```
 
 ---

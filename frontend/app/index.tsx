@@ -10,7 +10,7 @@ import { Header } from "@/components/Header";
 import { Stack } from "expo-router";
 import QuickFilters from "@/components/QuickFilters";
 import SectionHeader from "@/components/SectionHeader";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 import { useProductFilters } from "@/store/productFiltersStore";
 import { useUser } from "@clerk/clerk-expo";
@@ -21,11 +21,27 @@ import { Product } from "@/types/product";
 
 const keyExtractor = (item: Product) => item.id.toString();
 
+// Dietary filter chips with API tag names
+const DIET_FILTERS = [
+  { label: "Celiacos", tag: "gluten_free" },
+  { label: "Veganos", tag: "vegan" },
+  { label: "Sin lactosa", tag: "lactose_free" },
+  { label: "Bajo en azúcar", tag: "low_sugar" },
+] as const;
+
 export default function HomeScreen() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+
   const { items: recentlyViewedItems } = useRecentlyViewed();
   const { dietaryTags, toggleDietaryTag } = useProductFilters();
   const { user } = useUser();
+
+  // Build filter string for API
+  const filterString = useMemo(
+    () => (selectedFilters.length > 0 ? selectedFilters.join(",") : undefined),
+    [selectedFilters]
+  );
 
   const { data, isLoading, error, isFetching } = useQuery({
     queryKey: ["products", searchTerm, dietaryTags], // Re-fetch al cambiar búsqueda o filtros
@@ -43,6 +59,13 @@ export default function HomeScreen() {
   }) as number;
 
   const heroProduct = useMemo(() => data?.[0], [data]);
+
+  // Toggle filter selection
+  const handleFilterToggle = useCallback((tag: string) => {
+    setSelectedFilters((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  }, []);
 
   // Solo muestra loading completo en primera carga no durante búsqueda
   if (isLoading && !data) {
@@ -73,7 +96,7 @@ export default function HomeScreen() {
       {/* Header + búsqueda */}
       <Header userName={user?.firstName || user?.fullName || "Usuario"} />
 
-      {/* Chips de dietas */}
+      {/* Chips de dietas - ahora interactivos */}
       <View className="px-4 pb-1 bg-white">
         <View className="flex-row flex-wrap gap-2 mt-2">
           {[

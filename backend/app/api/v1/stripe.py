@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Request, HTTPException
 import stripe
 from app.config import settings
+from fastapi import APIRouter, HTTPException, Request
 
 router = APIRouter()
 
@@ -18,7 +18,7 @@ async def get_keys():
     """
     raise HTTPException(
         status_code=503,
-        detail={"message": "Stripe desactivado temporalmente para pruebas de base de datos."}
+        detail={"message": "Stripe desactivado temporalmente para pruebas de base de datos."},
     )
 
 
@@ -31,7 +31,7 @@ async def create_payment_intent():
     """
     raise HTTPException(
         status_code=503,
-        detail={"message": "Stripe desactivado temporalmente para pruebas de base de datos."}
+        detail={"message": "Stripe desactivado temporalmente para pruebas de base de datos."},
     )
 
 
@@ -41,12 +41,12 @@ async def webhook(request: Request):
     POST /stripe/webhook
     Handle Stripe webhook events
     Replica of webhook from Node.js - Currently disabled
-    
+
     Note: FastAPI makes it easy to get raw body for Stripe signature verification
     raw_body = await request.body()
     signature = request.headers.get("stripe-signature")
     """
     raise HTTPException(
         status_code=503,
-        detail={"message": "Stripe desactivado temporalmente para pruebas de base de datos."}
+        detail={"message": "Stripe desactivado temporalmente para pruebas de base de datos."},
     )

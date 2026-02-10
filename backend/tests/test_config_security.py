@@ -1,7 +1,9 @@
-import pytest
-from pydantic import ValidationError
-from app.config import Settings
 import os
+
+import pytest
+from app.config import Settings
+from pydantic import ValidationError
+
 
 def test_jwt_secret_required(monkeypatch):
     """Test that the application fails to start if JWT_SECRET is missing."""
@@ -22,6 +24,7 @@ def test_jwt_secret_required(monkeypatch):
 
     assert jwt_secret_error is not None, "JWT_SECRET should be a required field"
     assert jwt_secret_error["type"] == "missing", "JWT_SECRET should be missing"
+
 
 def test_jwt_secret_configured(monkeypatch):
     """Test that the application starts if JWT_SECRET is provided."""

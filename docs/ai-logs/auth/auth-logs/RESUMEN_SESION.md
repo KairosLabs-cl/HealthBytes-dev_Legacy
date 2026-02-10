@@ -221,4 +221,3 @@ Posibles soluciones:
 **Última actualización:** 2026-01-19 18:35  
 **Estado:** Awaiting testing in simulator environment  
 **Blocker:** Token caching issue in OAuth flow
-

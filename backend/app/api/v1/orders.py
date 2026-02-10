@@ -1,18 +1,24 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+"""
+Orders API Endpoints
+Standard error responses + Proper authorization checks
+"""
+
 import logging
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from sqlalchemy.orm import selectinload
 from typing import List
 
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+
 from app.db.database import get_db
-from app.db.schemas import Order, OrderItem, Product, User
-from app.schemas.order import OrderCreate, OrderResponse, OrderUpdate, OrderItemResponse
+from app.db.schemas import Order, OrderItem, User
 from app.middleware.auth import get_current_user
+from app.schemas.error import ErrorDetail, ErrorResponse
+from app.schemas.order import OrderCreate, OrderItemResponse, OrderResponse, OrderUpdate
 from app.services import order_service
 
 logger = logging.getLogger(__name__)
-
 router = APIRouter()
 
 
@@ -23,33 +29,50 @@ async def create_order(
     current_user: User = Depends(get_current_user),
 ):
     """
-    POST /orders
-    Create a new order
-    Replica of createOrder from Node.js
+    POST /api/v1/orders
+    Create a new order with validation
     """
     try:
         user_id = current_user.id
 
         if not user_id:
-            raise HTTPException(
-                status_code=400, detail={"message": "Invalid order data"}
+            error = ErrorResponse.validation_error(
+                message="Cannot create order without authenticated user",
+                path="/api/v1/orders",
+                details=[
+                    ErrorDetail(
+                        code="NO_USER",
+                        message="User ID is missing from authentication",
+                        suggestion="Ensure you are logged in",
+                    )
+                ],
             )
-        
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error.dict())
+
         try:
             new_order = await order_service.create_order(
-                db=db,
-                user_id=user_id,
-                order_in=order_data
+                db=db, user_id=user_id, order_in=order_data
             )
         except ValueError as e:
             await db.rollback()
-            raise HTTPException(
-                status_code=404 if "not found" in str(e).lower() else 400,
-                detail=str(e)
+            is_not_found = "not found" in str(e).lower()
+            error = ErrorResponse.validation_error(
+                message="Order creation failed",
+                path="/api/v1/orders",
+                details=[
+                    ErrorDetail(
+                        code="PRODUCT_NOT_FOUND" if is_not_found else "INVALID_VALUE",
+                        message=str(e),
+                        suggestion="Verify all product IDs are valid" if is_not_found else None,
+                    )
+                ],
             )
-        
+            error_status = (
+                status.HTTP_404_NOT_FOUND if is_not_found else status.HTTP_422_UNPROCESSABLE_ENTITY
+            )
+            raise HTTPException(status_code=error_status, detail=error.dict())
+
         # Build response
-        # Using selectinload in service means items are already populated
         items_response = [
             OrderItemResponse(
                 id=item.id,
@@ -74,44 +97,61 @@ async def create_order(
         raise
     except Exception as e:
         logger.error(f"Error creating order: {type(e).__name__}: {str(e)}")
-        import traceback
-        logger.error(f"Traceback: {traceback.format_exc()}")
         await db.rollback()
-        raise HTTPException(status_code=400, detail={"message": f"Error: {str(e)[:200]}"})
+        error = ErrorResponse.server_error(
+            message="An unexpected error occurred while creating the order",
+            path="/api/v1/orders",
+        )
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.dict())
 
 
 @router.get("/", response_model=List[OrderResponse])
 async def list_orders(
     skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=100),
+    limit: int = Query(20, ge=1, le=50, description="Max 50 items per request"),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     """
-    GET /orders
-    List all orders
+    GET /api/v1/orders
+    List orders with role-based filtering
     - Admin: All orders
-    - Seller: Orders containing their products
     - User: Their own orders
+    - Seller: Orders with their products (TODO)
     """
     try:
         if current_user.role == "admin":
             stmt = select(Order)
         elif current_user.role == "seller":
-            # For now sellers see all orders, logic to filter by seller needs complex join
-            # Future improvement: Filter orders where order items belong to seller's products
+            # TODO: Filter by seller's products
             stmt = select(Order)
         else:
             stmt = select(Order).where(Order.user_id == current_user.id)
 
-        stmt = stmt.order_by(Order.created_at.desc(), Order.id.desc()).offset(skip).limit(limit)
+        # Eager load items
+        stmt = (
+            stmt.options(selectinload(Order.items))
+            .order_by(Order.created_at.desc(), Order.id.desc())
+            .offset(skip)
+            .limit(limit)
+        )
 
         result = await db.execute(stmt)
         orders = result.scalars().all()
 
-        # Convert to response format
+        # Convert to response
         orders_response = []
         for order in orders:
+            items_response = [
+                OrderItemResponse(
+                    id=item.id,
+                    order_id=item.order_id,
+                    product_id=item.product_id,
+                    quantity=item.quantity,
+                    price=item.price,
+                )
+                for item in (order.items or [])
+            ]
             orders_response.append(
                 OrderResponse(
                     id=order.id,
@@ -119,54 +159,21 @@ async def list_orders(
                     created_at=order.created_at,
                     status=order.status,
                     stripe_payment_intent_id=order.stripe_payment_intent_id,
-                    items=[],
+                    items=items_response,
                 )
             )
 
         return orders_response
 
-    except Exception as e:
-        logger.error(f"Error listing orders: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal Server Error")
-
-
-@router.delete("/{id}", status_code=204)
-async def delete_order(
-    id: int,
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    """
-    DELETE /orders/:id
-    Delete an order (Admin only)
-    """
-    try:
-        if current_user.role != "admin":
-            raise HTTPException(
-                status_code=403, detail="Not authorized to delete orders"
-            )
-
-        result = await db.execute(select(Order).where(Order.id == id))
-        order = result.scalar_one_or_none()
-
-        if not order:
-            raise HTTPException(status_code=404, detail="Order not found")
-
-        # Delete order items first (cascade should handle this but explicit is safer without cascade set)
-        await db.execute(select(OrderItem).where(OrderItem.order_id == id))
-        # Note: SQLAlchemy flush/commit handles deletion if cascade is set,
-        # but pure SQL delete might be needed if not. Assuming basic delete of parent works.
-
-        await db.delete(order)
-        await db.commit()
-
-        return None
     except HTTPException:
         raise
     except Exception as e:
-        await db.rollback()
-        logger.error(f"Error deleting order {id}: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        logger.error(f"Error listing orders: {str(e)}")
+        error = ErrorResponse.server_error(
+            message="An error occurred while fetching orders",
+            path="/api/v1/orders",
+        )
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.dict())
 
 
 @router.get("/{id}", response_model=OrderResponse)
@@ -176,23 +183,30 @@ async def get_order(
     current_user: User = Depends(get_current_user),
 ):
     """
-    GET /orders/:id
-    Get order by ID with items
-    Replica of getOrder from Node.js
+    GET /api/v1/orders/{id}
+    Get specific order
+    - Admin: Any order
+    - User: Only their own
     """
     try:
-        # Get order with items using eager loading (single optimized query)
-        result = await db.execute(
-            select(Order)
-            .where(Order.id == id)
-            .options(selectinload(Order.items))
-        )
+        stmt = select(Order).where(Order.id == id)
+
+        # Authorization: non-admin users can only see their own orders
+        if current_user.role != "admin":
+            stmt = stmt.where(Order.user_id == current_user.id)
+
+        stmt = stmt.options(selectinload(Order.items))
+        result = await db.execute(stmt)
         order = result.scalar_one_or_none()
 
         if not order:
-            raise HTTPException(status_code=404, detail="Order not found")
+            error = ErrorResponse.not_found(
+                message="Order not found",
+                path=f"/api/v1/orders/{id}",
+            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.dict())
 
-        # Build response from eagerly loaded items
+        # Build response
         items_response = [
             OrderItemResponse(
                 id=item.id,
@@ -201,7 +215,7 @@ async def get_order(
                 quantity=item.quantity,
                 price=item.price,
             )
-            for item in order.items
+            for item in (order.items or [])
         ]
 
         return OrderResponse(
@@ -216,8 +230,12 @@ async def get_order(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error getting order {id}: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        logger.error(f"Error fetching order {id}: {str(e)}")
+        error = ErrorResponse.server_error(
+            message="An error occurred while fetching the order",
+            path=f"/api/v1/orders/{id}",
+        )
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.dict())
 
 
 @router.put("/{id}", response_model=OrderResponse)
@@ -228,22 +246,46 @@ async def update_order(
     current_user: User = Depends(get_current_user),
 ):
     """
-    PUT /orders/:id
-    Update order status
-    Replica of updateOrder from Node.js
+    PUT /api/v1/orders/{id}
+    Update order status (Admin only)
     """
     try:
-        result = await db.execute(select(Order).where(Order.id == id))
+        # Authorization: only admins can update orders
+        if current_user.role != "admin":
+            error = ErrorResponse.forbidden(
+                message="You do not have permission to update orders",
+                path=f"/api/v1/orders/{id}",
+            )
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=error.dict())
+
+        result = await db.execute(
+            select(Order).where(Order.id == id).options(selectinload(Order.items))
+        )
         order = result.scalar_one_or_none()
 
         if not order:
-            raise HTTPException(status_code=404, detail="Order not found")
+            error = ErrorResponse.not_found(
+                message="Order not found",
+                path=f"/api/v1/orders/{id}",
+            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.dict())
 
         # Update status
         order.status = order_data.status
-
         await db.commit()
         await db.refresh(order)
+
+        # Build response
+        items_response = [
+            OrderItemResponse(
+                id=item.id,
+                order_id=item.order_id,
+                product_id=item.product_id,
+                quantity=item.quantity,
+                price=item.price,
+            )
+            for item in (order.items or [])
+        ]
 
         return OrderResponse(
             id=order.id,
@@ -251,7 +293,7 @@ async def update_order(
             created_at=order.created_at,
             status=order.status,
             stripe_payment_intent_id=order.stripe_payment_intent_id,
-            items=[],
+            items=items_response,
         )
 
     except HTTPException:
@@ -259,4 +301,53 @@ async def update_order(
     except Exception as e:
         await db.rollback()
         logger.error(f"Error updating order {id}: {str(e)}")
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        error = ErrorResponse.server_error(
+            message="An error occurred while updating the order",
+            path=f"/api/v1/orders/{id}",
+        )
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.dict())
+
+
+@router.delete("/{id}", status_code=204)
+async def delete_order(
+    id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    DELETE /api/v1/orders/{id}
+    Delete order (Admin only)
+    """
+    try:
+        # Authorization: only admins can delete orders
+        if current_user.role != "admin":
+            error = ErrorResponse.forbidden(
+                message="You do not have permission to delete orders",
+                path=f"/api/v1/orders/{id}",
+            )
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=error.dict())
+
+        result = await db.execute(select(Order).where(Order.id == id))
+        order = result.scalar_one_or_none()
+
+        if not order:
+            error = ErrorResponse.not_found(
+                message="Order not found",
+                path=f"/api/v1/orders/{id}",
+            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.dict())
+
+        await db.delete(order)
+        await db.commit()
+        return None
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        await db.rollback()
+        logger.error(f"Error deleting order {id}: {str(e)}")
+        error = ErrorResponse.server_error(
+            message="An error occurred while deleting the order",
+            path=f"/api/v1/orders/{id}",
+        )
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.dict())

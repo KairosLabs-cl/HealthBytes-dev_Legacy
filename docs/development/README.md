@@ -4,6 +4,15 @@ Reglas, patrones y procesos para trabajar en HealthBytes.
 
 ## 📋 Contenido
 
+### 📄 Reportes y Análisis
+
+- **[testing-report.md](./testing-report.md)** - Reporte completo de pruebas del sistema
+  - Backend tests (health check, endpoints)
+  - Frontend structure y archivos creados
+  - Integration flow y color system
+  - Test coverage y problemas resueltos
+  - Preparado: 2026-02-05
+
 ### [git-workflow.md](./git-workflow.md)
 **Convenciones de git y flujo de contribución**
 

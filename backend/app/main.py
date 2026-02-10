@@ -1,9 +1,8 @@
+from app.api.v1 import auth, cart, orders, products, stripe, users, favorites
+from app.config import settings
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
-
-from app.config import settings
-from app.api.v1 import products, auth, orders, stripe, users, cart, favorites
 
 # Create FastAPI application
 app = FastAPI(
@@ -11,14 +10,14 @@ app = FastAPI(
     version="2.0.0",
     description="FastAPI replica of Node.js Express API",
     docs_url="/docs" if settings.ENVIRONMENT == "dev" else None,
-    redoc_url="/redoc" if settings.ENVIRONMENT == "dev" else None
+    redoc_url="/redoc" if settings.ENVIRONMENT == "dev" else None,
 )
 
 
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
     """Apply baseline security headers to all responses, mirroring the Node.js API.
-    
+
     NOTE: Headers are applied AFTER downstream handler executes. This is acceptable because
     HTTP headers are still applied before browser processes response. However, exceptions
     raised by route handlers may bypass this middleware. Test error cases to ensure they
@@ -84,17 +83,24 @@ async def limit_request_body_size(request: Request, call_next):
         )
     return await call_next(request)
 
+
 # CORS Configuration - Replica of Node.js CORS settings
+cors_origins = [
+    "http://localhost:8081",
+    "http://127.0.0.1:8081",
+    "http://127.0.0.1:8082",
+    "http://0.0.0.0:8081",  # Web (local)
+    "http://10.98.204.33:8081",  # Tu IP actual (Wi-Fi)
+    "exp://10.98.204.33:8081",  # Expo Protocol
+]
+
+# En dev, permitir desde cualquier origen para facilitar testing
+if settings.ENVIRONMENT == "dev":
+    cors_origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:8081",
-        "http://127.0.0.1:8081",
-        "http://127.0.0.1:8082",
-        "http://0.0.0.0:8081",      # Web (local)
-        "http://10.89.51.33:8081", # Tu IP actual (Web/Expo)
-        "exp://10.89.51.33:8081",  # Expo Protocol
-    ],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Content-Type", "Authorization"],
@@ -117,20 +123,15 @@ async def check_jwks_health():
 
     if settings.ENVIRONMENT != "dev" and not settings.ENABLE_DIAGNOSTIC_ENDPOINTS:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
-    
-    result = {
-        "status": "unknown",
-        "jwks_url": None,
-        "error": None,
-        "details": {}
-    }
-    
+
+    result = {"status": "unknown", "jwks_url": None, "error": None, "details": {}}
+
     # Check if publishable key is set
     if not settings.CLERK_PUBLISHABLE_KEY:
         result["status"] = "error"
         result["error"] = "CLERK_PUBLISHABLE_KEY not configured"
         return result
-    
+
     # Generate JWKS URL
     try:
         jwks_url = settings.clerk_jwks_url
@@ -140,12 +141,12 @@ async def check_jwks_health():
         result["status"] = "error"
         result["error"] = f"Failed to generate JWKS URL: {str(e)}"
         return result
-    
+
     # Try to access JWKS endpoint
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             response = await client.get(jwks_url)
-            
+
             if response.status_code == 200:
                 result["status"] = "success"
                 jwks_data = response.json()
@@ -156,7 +157,7 @@ async def check_jwks_health():
                         result["details"]["first_key"] = {
                             "kid": first_key.get("kid"),
                             "alg": first_key.get("alg"),
-                            "kty": first_key.get("kty")
+                            "kty": first_key.get("kty"),
                         }
             else:
                 result["status"] = "error"
@@ -172,7 +173,7 @@ async def check_jwks_health():
     except Exception as e:
         result["status"] = "error"
         result["error"] = f"Unexpected error: {str(e)}"
-    
+
     return result
 
 
@@ -188,19 +189,20 @@ app.include_router(favorites.router, prefix="/favorites", tags=["Favorites"])
 
 # For local development
 if __name__ == "__main__":
-    import uvicorn
     import asyncio
     import sys
-    
+
+    import uvicorn
+
     # Fix for Windows: Use SelectorEventLoop for psycopg compatibility
     if sys.platform == "win32":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    
+
     uvicorn.run(
         "app.main:app",
         host=settings.HOST,
         port=settings.PORT,  # Configured in config.py
-        reload=True if settings.ENVIRONMENT == "dev" else False
+        reload=True if settings.ENVIRONMENT == "dev" else False,
     )
 
 

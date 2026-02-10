@@ -1,12 +1,10 @@
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker, declarative_base
 from app.config import settings
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 # Convert postgresql:// to postgresql+psycopg://
 # Note: Using psycopg instead of asyncpg for Python 3.14 compatibility
-DATABASE_URL = settings.DATABASE_URL.replace(
-    "postgresql://", "postgresql+psycopg://"
-)
+DATABASE_URL = settings.DATABASE_URL.replace("postgresql://", "postgresql+psycopg://")
 
 engine = create_async_engine(
     DATABASE_URL, 
@@ -17,11 +15,7 @@ engine = create_async_engine(
     pool_recycle=3600      # Avoid stale connections
 )
 
-AsyncSessionLocal = sessionmaker(
-    engine, 
-    class_=AsyncSession, 
-    expire_on_commit=False
-)
+AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 Base = declarative_base()
 

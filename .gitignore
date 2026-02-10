@@ -1,9 +1,14 @@
 # General
 .DS_Store
-node_modules/
 dist/
 build/
 *.log
+
+# Node modules (ONLY in frontend/)
+/node_modules/
+/package-lock.json
+/pnpm-lock.yaml
+frontend/node_modules/
 
 # Python
 __pycache__/
@@ -14,12 +19,22 @@ env/
 .env
 .venv314
 
-# Testing & Coverage
-.coverage
-htmlcov/
-.pytest_cache/
-test.db
+# Testing & Coverage (prevent in root, allow in backend/)
+/.coverage
+/htmlcov/
+/.pytest_cache/
+/test.db
+backend/.coverage
+backend/htmlcov/
+backend/.pytest_cache/
+
+# Pre-commit
+.pre-commit-cache/
 
 # IDEs
 .vscode/
 .idea/
+
+# AI Skills (junctions to .agents/)
+.agent/
+.cursor/

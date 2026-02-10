@@ -9,6 +9,7 @@ import { useRecentlyViewed } from '@/store/recentlyViewedStore';
 import { useEffect } from 'react';
 import { ShoppingCart, Star } from 'lucide-react-native';
 import { formatPrice } from '@/lib/formatPrice';
+import { DietaryBadgeList } from '@/components/DietaryBadge';
 import FavoriteButton from '@/components/FavoriteButton';
 
 export default function ProductDetailsScreen() {
@@ -97,18 +98,8 @@ export default function ProductDetailsScreen() {
 
         {/* Product Info */}
         <View className="px-5 py-6">
-          {/* Badges */}
-          <View className="flex-row flex-wrap gap-2 mb-4">
-            <View className="px-3 py-1 rounded-full bg-green-100">
-              <Text className="text-xs font-medium text-green-700">Sin gluten</Text>
-            </View>
-            <View className="px-3 py-1 rounded-full bg-blue-100">
-              <Text className="text-xs font-medium text-blue-700">Vegano</Text>
-            </View>
-            <View className="px-3 py-1 rounded-full bg-orange-100">
-              <Text className="text-xs font-medium text-orange-700">Sin lactosa</Text>
-            </View>
-          </View>
+          {/* Badges - Dynamic from API */}
+          <DietaryBadgeList tags={product.dietary_tags} />
 
           {/* Title and Rating */}
           <Text className="text-2xl font-bold text-gray-900 mb-2">
@@ -156,17 +147,17 @@ export default function ProductDetailsScreen() {
               disabled={product.stock === 0 || (cartItems.find(i => i.product.id === product.id)?.quantity || 0) >= product.stock}
               className={`flex-1 h-12 rounded-full items-center justify-center flex-row gap-2 active:opacity-80 ${product.stock > 0 && (cartItems.find(i => i.product.id === product.id)?.quantity || 0) < product.stock ? 'bg-black' : 'bg-gray-300'
                 }`}
-            >
-              <ShoppingCart size={20} color={product.stock > 0 && (cartItems.find(i => i.product.id === product.id)?.quantity || 0) < product.stock ? "white" : "#9CA3AF"} />
-              <Text className={`font-semibold text-base ${product.stock > 0 && (cartItems.find(i => i.product.id === product.id)?.quantity || 0) < product.stock ? "text-white" : "text-gray-500"}`}>
-                {product.stock === 0
-                  ? 'Agotado'
-                  : (cartItems.find(i => i.product.id === product.id)?.quantity || 0) >= product.stock
-                    ? 'Máximo alcanzado'
-                    : 'Agregar al carrito'}
-              </Text>
-            </Pressable>
-          </View>
+              >
+                <ShoppingCart size={20} color={product.stock > 0 && (cartItems.find(i => i.product.id === product.id)?.quantity || 0) < product.stock ? "white" : "#9CA3AF"} />
+                <Text className={`font-semibold text-base ${product.stock > 0 && (cartItems.find(i => i.product.id === product.id)?.quantity || 0) < product.stock ? "text-white" : "text-gray-500"}`}>
+                  {product.stock === 0
+                    ? 'Agotado'
+                    : (cartItems.find(i => i.product.id === product.id)?.quantity || 0) >= product.stock
+                      ? 'Máximo alcanzado'
+                      : 'Agregar al carrito'}
+                </Text>
+              </Pressable>
+            </View>
 
           {/* Description */}
           <View className="mb-6">

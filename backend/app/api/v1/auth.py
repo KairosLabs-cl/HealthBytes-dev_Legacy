@@ -1,11 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-
+from app.core.security import create_access_token, get_password_hash, verify_password
 from app.db.database import get_db
 from app.db.schemas import User
 from app.schemas.user import UserCreate, UserLogin, UserResponse, UserWithToken
-from app.core.security import get_password_hash, verify_password, create_access_token
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 
@@ -21,43 +20,36 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
         # Check if email already exists
         result = await db.execute(select(User).where(User.email == user_data.email))
         existing_user = result.scalar_one_or_none()
-        
+
         if existing_user:
-            raise HTTPException(
-                status_code=400,
-                detail="Something went wrong"
-            )
-        
+            raise HTTPException(status_code=400, detail="Something went wrong")
+
         # Hash password
         hashed_password = get_password_hash(user_data.password)
-        
+
         # Create user with default role 'user'
         user = User(
             email=user_data.email,
             password=hashed_password,
             name=user_data.name,
             address=user_data.address,
-            role="user"
+            role="user",
         )
-        
+
         db.add(user)
         await db.commit()
         await db.refresh(user)
-        
+
         # Generate JWT token
         token = create_access_token({"userId": user.id, "role": user.role})
-        
+
         # Return user without password
         user_response = UserResponse(
-            id=user.id,
-            email=user.email,
-            role=user.role,
-            name=user.name,
-            address=user.address
+            id=user.id, email=user.email, role=user.role, name=user.name, address=user.address
         )
-        
+
         return {"user": user_response, "token": token}
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -75,38 +67,26 @@ async def login(credentials: UserLogin, db: AsyncSession = Depends(get_db)):
     """
     try:
         # Find user by email
-        result = await db.execute(
-            select(User).where(User.email == credentials.email)
-        )
+        result = await db.execute(select(User).where(User.email == credentials.email))
         user = result.scalar_one_or_none()
-        
+
         if not user:
-            raise HTTPException(
-                status_code=401,
-                detail={"error": "Authentication failed"}
-            )
-        
+            raise HTTPException(status_code=401, detail={"error": "Authentication failed"})
+
         # Verify password
         if not verify_password(credentials.password, user.password):
-            raise HTTPException(
-                status_code=401,
-                detail={"error": "Authentication failed"}
-            )
-        
+            raise HTTPException(status_code=401, detail={"error": "Authentication failed"})
+
         # Generate JWT token
         token = create_access_token({"userId": user.id, "role": user.role})
-        
+
         # Return user without password
         user_response = UserResponse(
-            id=user.id,
-            email=user.email,
-            role=user.role,
-            name=user.name,
-            address=user.address
+            id=user.id, email=user.email, role=user.role, name=user.name, address=user.address
         )
-        
+
         return {"token": token, "user": user_response}
-        
+
     except HTTPException:
         raise
     except Exception as e:
