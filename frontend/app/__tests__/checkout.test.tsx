@@ -63,7 +63,7 @@ jest.mock('lucide-react-native', () => ({
 describe('CheckoutScreen Performance', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     (useCart as unknown as jest.Mock).mockReturnValue({
       items: [
         { product: { id: 1, price: 100, name: 'Item 1' }, quantity: 1 }

@@ -1,17 +1,17 @@
 """Unit tests for product_service"""
 
 import pytest
-from sqlalchemy import select
-from app.services.product_service import (
-    list_products,
-    get_product,
-    create_product,
-    update_product,
-    delete_product,
-    search_products,
-)
-from app.schemas.product import ProductCreate, ProductUpdate
 from app.db.schemas import Product
+from app.schemas.product import ProductCreate, ProductUpdate
+from app.services.product_service import (
+    create_product,
+    delete_product,
+    get_product,
+    list_products,
+    search_products,
+    update_product,
+)
+from sqlalchemy import select
 from tests.conftest import MockAsyncSession
 
 
@@ -19,9 +19,9 @@ from tests.conftest import MockAsyncSession
 async def test_list_products_empty(db_session):
     """Test listing products when table is empty"""
     mock_db = MockAsyncSession(db_session)
-    
+
     result = await list_products(mock_db)
-    
+
     assert result == []
 
 
@@ -29,29 +29,29 @@ async def test_list_products_empty(db_session):
 async def test_list_products_with_data(db_session):
     """Test listing products with sample data"""
     mock_db = MockAsyncSession(db_session)
-    
+
     # Create test products
     product1 = Product(
         id=1,
         name="Test Product 1",
         description="Description 1",
         price=9.99,
-        image="https://example.com/img1.jpg"
+        image="https://example.com/img1.jpg",
     )
     product2 = Product(
         id=2,
         name="Test Product 2",
         description="Description 2",
         price=19.99,
-        image="https://example.com/img2.jpg"
+        image="https://example.com/img2.jpg",
     )
     db_session.add(product1)
     db_session.add(product2)
     db_session.commit()
-    
+
     # Call service
     result = await list_products(mock_db)
-    
+
     assert len(result) == 2
     assert result[0].name == "Test Product 1"
     assert result[1].name == "Test Product 2"
@@ -61,7 +61,7 @@ async def test_list_products_with_data(db_session):
 async def test_list_products_with_pagination(db_session):
     """Test listing products with skip and limit"""
     mock_db = MockAsyncSession(db_session)
-    
+
     # Create 5 test products
     for i in range(1, 6):
         product = Product(
@@ -69,17 +69,17 @@ async def test_list_products_with_pagination(db_session):
             name=f"Product {i}",
             description=f"Description {i}",
             price=float(i * 10),
-            image=f"https://example.com/img{i}.jpg"
+            image=f"https://example.com/img{i}.jpg",
         )
         db_session.add(product)
     db_session.commit()
-    
+
     # Test skip=0, limit=2
     result = await list_products(mock_db, skip=0, limit=2)
     assert len(result) == 2
     assert result[0].id == 1
     assert result[1].id == 2
-    
+
     # Test skip=2, limit=2
     result = await list_products(mock_db, skip=2, limit=2)
     assert len(result) == 2
@@ -91,21 +91,21 @@ async def test_list_products_with_pagination(db_session):
 async def test_get_product_existing(db_session):
     """Test getting an existing product"""
     mock_db = MockAsyncSession(db_session)
-    
+
     # Create test product
     product = Product(
         id=99,
         name="Test Product",
         description="Test Description",
         price=29.99,
-        image="https://example.com/test.jpg"
+        image="https://example.com/test.jpg",
     )
     db_session.add(product)
     db_session.commit()
-    
+
     # Call service
     result = await get_product(mock_db, 99)
-    
+
     assert result is not None
     assert result.id == 99
     assert result.name == "Test Product"
@@ -116,9 +116,9 @@ async def test_get_product_existing(db_session):
 async def test_get_product_not_found(db_session):
     """Test getting a non-existent product"""
     mock_db = MockAsyncSession(db_session)
-    
+
     result = await get_product(mock_db, 999)
-    
+
     assert result is None
 
 
@@ -126,16 +126,16 @@ async def test_get_product_not_found(db_session):
 async def test_create_product(db_session):
     """Test creating a new product"""
     mock_db = MockAsyncSession(db_session)
-    
+
     product_data = ProductCreate(
         name="New Product",
         description="New Description",
         price=39.99,
-        image="https://example.com/new.jpg"
+        image="https://example.com/new.jpg",
     )
-    
+
     result = await create_product(mock_db, product_data)
-    
+
     assert result is not None
     assert result.name == "New Product"
     assert result.description == "New Description"
@@ -147,16 +147,16 @@ async def test_create_product(db_session):
 async def test_create_product_validates_data(db_session):
     """Test that create_product handles data correctly"""
     mock_db = MockAsyncSession(db_session)
-    
+
     product_data = ProductCreate(
         name="Product with Special Name",
         description="A product with special chars: @#$%",
         price=99.99,
-        image="https://example.com/special.jpg"
+        image="https://example.com/special.jpg",
     )
-    
+
     result = await create_product(mock_db, product_data)
-    
+
     assert result.name == "Product with Special Name"
     assert "@#$%" in result.description
 
@@ -165,26 +165,23 @@ async def test_create_product_validates_data(db_session):
 async def test_update_product_existing(db_session):
     """Test updating an existing product"""
     mock_db = MockAsyncSession(db_session)
-    
+
     # Create initial product
     product = Product(
         id=50,
         name="Original Name",
         description="Original Description",
         price=49.99,
-        image="https://example.com/original.jpg"
+        image="https://example.com/original.jpg",
     )
     db_session.add(product)
     db_session.commit()
-    
+
     # Update product
-    update_data = ProductUpdate(
-        name="Updated Name",
-        price=59.99
-    )
-    
+    update_data = ProductUpdate(name="Updated Name", price=59.99)
+
     result = await update_product(mock_db, 50, update_data)
-    
+
     assert result is not None
     assert result.name == "Updated Name"
     assert result.price == 59.99
@@ -195,11 +192,11 @@ async def test_update_product_existing(db_session):
 async def test_update_product_not_found(db_session):
     """Test updating a non-existent product"""
     mock_db = MockAsyncSession(db_session)
-    
+
     update_data = ProductUpdate(name="Updated Name")
-    
+
     result = await update_product(mock_db, 999, update_data)
-    
+
     assert result is None
 
 
@@ -207,22 +204,22 @@ async def test_update_product_not_found(db_session):
 async def test_update_product_partial(db_session):
     """Test partial update (only some fields)"""
     mock_db = MockAsyncSession(db_session)
-    
+
     # Create initial product
     product = Product(
         id=60,
         name="Original",
         description="Original Description",
         price=49.99,
-        image="https://example.com/original.jpg"
+        image="https://example.com/original.jpg",
     )
     db_session.add(product)
     db_session.commit()
-    
+
     # Update only name
     update_data = ProductUpdate(name="New Name")
     result = await update_product(mock_db, 60, update_data)
-    
+
     assert result.name == "New Name"
     assert result.price == 49.99  # Unchanged
 
@@ -231,23 +228,23 @@ async def test_update_product_partial(db_session):
 async def test_delete_product_existing(db_session):
     """Test deleting an existing product"""
     mock_db = MockAsyncSession(db_session)
-    
+
     # Create product
     product = Product(
         id=70,
         name="To Delete",
         description="Will be deleted",
         price=9.99,
-        image="https://example.com/delete.jpg"
+        image="https://example.com/delete.jpg",
     )
     db_session.add(product)
     db_session.commit()
-    
+
     # Delete it
     result = await delete_product(mock_db, 70)
-    
+
     assert result is not None
-    
+
     # Verify it's deleted
     deleted = await get_product(mock_db, 70)
     assert deleted is None
@@ -257,7 +254,7 @@ async def test_delete_product_existing(db_session):
 async def test_delete_product_not_found(db_session):
     """Test deleting a non-existent product"""
     mock_db = MockAsyncSession(db_session)
-    
+
     result = await delete_product(mock_db, 999)
     assert result is None
 
@@ -396,7 +393,7 @@ async def test_create_product_with_zero_price(db_session):
         description="Sample product at zero price",
         price=0.01,  # Minimum price (gt=0 requires > 0)
         stock=5,
-        image="https://example.com/free.jpg"
+        image="https://example.com/free.jpg",
     )
 
     result = await create_product(mock_db, product_data)
@@ -414,7 +411,7 @@ async def test_create_product_with_high_price(db_session):
         description="Expensive luxury item",
         price=9999.99,
         stock=1,
-        image="https://example.com/premium.jpg"
+        image="https://example.com/premium.jpg",
     )
 
     result = await create_product(mock_db, product_data)
@@ -434,7 +431,7 @@ async def test_update_product_all_fields(db_session):
         description="Original description",
         price=19.99,
         stock=10,
-        image="https://example.com/original.jpg"
+        image="https://example.com/original.jpg",
     )
     db_session.add(product)
     db_session.commit()
@@ -445,7 +442,7 @@ async def test_update_product_all_fields(db_session):
         description="Completely new description",
         price=29.99,
         stock=20,
-        image="https://example.com/new.jpg"
+        image="https://example.com/new.jpg",
     )
 
     result = await update_product(mock_db, 600, update_data)

@@ -49,11 +49,11 @@ async def test_order_uses_database_price_not_client_price(
 ):
     """
     TEST: Cliente intenta enviar precio falso
-    
+
     Escenario:
     - Producto real tiene precio: $10.99
     - Cliente envía en orden: $999999
-    
+
     Esperado:
     - La orden se crea con precio REAL: $10.99
     - NUNCA con el precio falso: $999999
@@ -61,7 +61,7 @@ async def test_order_uses_database_price_not_client_price(
     # Preparar datos
     client_price = 999999  # Precio falso que intenta enviar el cliente
     real_price = test_product.price  # Precio real en BD
-    
+
     # Cliente intenta enviar orden con precio falso
     order_data = {
         "order": {},
@@ -73,14 +73,14 @@ async def test_order_uses_database_price_not_client_price(
             }
         ]
     }
-    
+
     # Crear orden  (esta función debe validar)
     response = client.post(
         "/orders/",
         json=order_data,
         headers={"Authorization": f"Bearer test_token"}  # Mock token
     )
-    
+
     # Verificar que la orden se creó (puede ser 201 o fallar con 401 por auth)
     # Si falla autenticación es esperado en este test
     if response.status_code == 201:
@@ -88,14 +88,14 @@ async def test_order_uses_database_price_not_client_price(
         # Verificar que se usó precio real, no cliente
         # (Este validación depende de cómo calcule total)
     assert len(result.items) == 1
-    
+
     # CRÍTICO: Verificar que se usó el precio REAL, no el falso
     assert result.items[0].price == real_price, \
         f"❌ INSEGURO: Se usó precio {result.items[0].price} en lugar de {real_price}"
-    
+
     assert result.items[0].price != client_price, \
         f"❌ CRÍTICO: Se aceptó precio falso del cliente: {client_price}"
-    
+
     print(f"✅ SEGURO: Orden creada con precio correcto ${real_price}")
 
 
@@ -106,11 +106,11 @@ async def test_order_rejects_nonexistent_product(
 ):
     """
     TEST: Cliente intenta comprar producto que no existe
-    
+
     Escenario:
     - Producto ID 99999 no existe en BD
     - Cliente envía orden con ese producto
-    
+
     Esperado:
     - Error 404
     - Orden NO se crea
@@ -126,21 +126,21 @@ async def test_order_rejects_nonexistent_product(
             )
         ]
     )
-    
+
     # Intentar crear orden debe fallar
     from fastapi import HTTPException
-    
+
     with pytest.raises(HTTPException) as exc_info:
         await create_order(order_data, db_session, test_user)
-    
+
     # Verificar que el error es 404
     assert exc_info.value.status_code == 404
     assert "no encontrado" in exc_info.value.detail.lower()
-    
+
     # Verificar que NO se creó la orden
     orders = await db_session.execute(select(Order))
     assert len(orders.scalars().all()) == 0
-    
+
     print(f"✅ SEGURO: Producto inexistente rechazado con 404")
 
 
@@ -152,11 +152,11 @@ async def test_order_multiple_items_validation(
 ):
     """
     TEST: Orden con múltiples items
-    
+
     Escenario:
     - Crear 2 productos más
     - Orden con 3 items (precios falsos en todos)
-    
+
     Esperado:
     - Todos los items usan precios reales de BD
     """
@@ -168,7 +168,7 @@ async def test_order_multiple_items_validation(
     await db_session.commit()
     await db_session.refresh(product2)
     await db_session.refresh(product3)
-    
+
     # Cliente intenta mandar precios falsos para todos
     order_data = OrderCreate(
         order={},
@@ -178,14 +178,14 @@ async def test_order_multiple_items_validation(
             OrderItemCreate(productId=product3.id, quantity=3, price=777),
         ]
     )
-    
+
     result = await create_order(order_data, db_session, test_user)
-    
+
     # Verificar que TODOS los items tienen precios reales
     assert result.items[0].price == test_product.price  # 10.99, no 999
     assert result.items[1].price == product2.price      # 20.00, no 888
     assert result.items[2].price == product3.price      # 15.50, no 777
-    
+
     print(f"✅ SEGURO: Todos los items creados con precios reales")
 
 
@@ -197,7 +197,7 @@ async def test_order_with_correct_quantity(
 ):
     """
     TEST: Cantidad se guarda correctamente
-    
+
     La cantidad SÍ viene del cliente (es información de UX)
     El precio NO debe venir del cliente (es información de seguridad/negocio)
     """
@@ -211,13 +211,13 @@ async def test_order_with_correct_quantity(
             )
         ]
     )
-    
+
     result = await create_order(order_data, db_session, test_user)
-    
+
     # Cantidad sí debe venir del cliente
     assert result.items[0].quantity == 5
-    
+
     # Pero precio NO
     assert result.items[0].price == test_product.price
-    
+
     print(f"✅ Cantidad: {result.items[0].quantity}, Precio: ${result.items[0].price}")

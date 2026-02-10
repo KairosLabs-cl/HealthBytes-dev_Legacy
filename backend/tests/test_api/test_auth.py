@@ -16,8 +16,8 @@ def test_register_user(client, sample_user_data):
 @pytest.mark.auth
 def test_login_user(client, sample_user_data):
     """Test POST /auth/login endpoint."""
-    response = client.post("/auth/login", json={
-        "email": sample_user_data["email"],
-        "password": sample_user_data["password"]
-    })
+    response = client.post(
+        "/auth/login",
+        json={"email": sample_user_data["email"], "password": sample_user_data["password"]},
+    )
     assert response.status_code in [200, 401, 404]
