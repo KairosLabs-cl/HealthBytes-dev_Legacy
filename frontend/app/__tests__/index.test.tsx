@@ -58,13 +58,7 @@ jest.mock('@/components/RecentlyViewedBar', () => {
   return Component;
 });
 
-jest.mock('@/components/QuickFilters', () => {
-  const React = require('react');
-  const { View } = require('react-native');
-  const Component = (props: any) => React.createElement(View, props, 'QuickFilters');
-  Component.displayName = 'QuickFilters';
-  return Component;
-});
+
 
 jest.mock('@/components/SectionHeader', () => {
   const React = require('react');

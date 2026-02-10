@@ -95,6 +95,9 @@ Documentación completa sobre la implementación de búsqueda:
 - [Índice de búsqueda](./search-logs/README.md)
 - [Resumen técnico](./search-logs/SUMMARY.md)
 - [Guía de setup](./search-logs/SETUP.md)
-
-### Diagramas y Arquitectura
+  
+## Diagramas
+Para visualizar los flujos y arquitectura del proyecto:
 - [Diagramas técnicos](./diagramas/)
+- [Infraestructura](diagramas/Infrastructura.drawio) - Diagrama de infraestructura (abrir con draw.io)
+- [Flujo B2B de Inserción de Productos](diagramas/b2b-product-insertion-flow.md) - Storyboard Mermaid del proceso de integración de proveedores

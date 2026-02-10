@@ -2,6 +2,14 @@
 
 import pytest
 from app.db.schemas import Order, Product, User
+from sqlalchemy import select
+from decimal import Decimal
+from app.services.order_service import (
+    create_order,
+    get_user_orders,
+    get_order,
+    update_order_status,
+)
 from app.schemas.order import OrderCreate, OrderItemCreate
 from app.schemas.user import UserCreate
 from app.services.auth_service import register_user
@@ -27,7 +35,7 @@ def test_products(db_session):
             id=1,
             name="Product 1",
             description="Test Product 1",
-            price=10.00,
+            price=Decimal("10.00"),
             image="https://example.com/1.jpg",
             stock=100,
         ),
@@ -35,7 +43,7 @@ def test_products(db_session):
             id=2,
             name="Product 2",
             description="Test Product 2",
-            price=20.00,
+            price=Decimal("20.00"),
             image="https://example.com/2.jpg",
             stock=100,
         ),
@@ -64,7 +72,7 @@ async def test_create_order_success(db_session, test_user, test_products):
     assert result.user_id == 1
     assert result.status in ["pending", "New"]  # Allow both status values
     # Price should be 10*2 + 20*1 = 40
-    assert result.total == 40.0
+    assert result.total == Decimal("40.0")
 
 
 @pytest.mark.asyncio
@@ -77,7 +85,7 @@ async def test_create_order_insufficient_stock(db_session, test_user):
         id=10,
         name="Limited Product",
         description="Only 1 in stock",
-        price=5000,
+        price=Decimal("5000"),
         image="https://example.com/limited.jpg",
         stock=1,
     )
@@ -131,7 +139,7 @@ async def test_create_order_uses_current_price(db_session, test_user):
     result = await create_order(mock_db, test_user.id, order_data)
 
     # Should use DB price (100), not any client-provided price
-    assert result.total == 100.0
+    assert result.total == Decimal("100.0")
 
 
 @pytest.mark.asyncio
@@ -144,7 +152,7 @@ async def test_create_order_reduces_stock(db_session, test_user):
         id=30,
         name="Stock Test",
         description="Test",
-        price=50.00,
+        price=Decimal("50.00"),
         image="https://example.com/test.jpg",
         stock=10,
     )
@@ -178,8 +186,18 @@ async def test_get_user_orders_with_data(db_session, test_user, test_products):
     mock_db = MockAsyncSession(db_session)
 
     # Create orders
-    order1 = Order(id=1, user_id=test_user.id, total=30.0, status="pending")
-    order2 = Order(id=2, user_id=test_user.id, total=50.0, status="completed")
+    order1 = Order(
+        id=1,
+        user_id=test_user.id,
+        total=Decimal("30.0"),
+        status="pending"
+    )
+    order2 = Order(
+        id=2,
+        user_id=test_user.id,
+        total=Decimal("50.0"),
+        status="completed"
+    )
     db_session.add(order1)
     db_session.add(order2)
     db_session.commit()
@@ -208,7 +226,7 @@ async def test_get_order_existing(db_session, test_user):
     result = await get_order(mock_db, 1, test_user.id)
 
     assert result is not None
-    assert result.total == 75.0
+    assert result.total == Decimal("75.0")
     assert result.status == "pending"
 
 
@@ -255,7 +273,12 @@ async def test_update_order_status_invalid_transition(db_session, test_user):
     mock_db = MockAsyncSession(db_session)
 
     # Create order
-    order = Order(id=1, user_id=test_user.id, total=50.0, status="completed")
+    order = Order(
+        id=1,
+        user_id=test_user.id,
+        total=Decimal("50.0"),
+        status="completed"
+    )
     db_session.add(order)
     db_session.commit()
 

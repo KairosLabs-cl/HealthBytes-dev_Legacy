@@ -1,12 +1,12 @@
 """Order service - Order management and validation logic."""
 
 from typing import List, Optional
-
 from app.db.schemas import Order, OrderItem, Product
 from app.schemas.order import OrderCreate
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+from decimal import Decimal
 
 
 async def create_order(db: AsyncSession, user_id: int, order_in: OrderCreate) -> Order:
@@ -43,7 +43,7 @@ async def create_order(db: AsyncSession, user_id: int, order_in: OrderCreate) ->
     products_map = {p.id: p for p in products}
 
     # 3. Validate items and calculate total
-    total = 0.0
+    total = Decimal("0.0")
     validated_items = []
 
     # Check if all requested products exist
