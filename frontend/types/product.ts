@@ -14,5 +14,6 @@ export type Product = {
   image?: string;
   description?: string;
   stock?: number;
-  dietary_tags?: DietaryTag[];
+  category?: string;
+  dietary_tags?: string[];
 };

@@ -16,33 +16,37 @@ router = APIRouter()
 @router.get("/", response_model=List[ProductResponse])
 async def list_products(
     search: Optional[str] = None,
-    filter: Optional[str] = None,
-    db: AsyncSession = Depends(get_db),
+    category: Optional[str] = None,
+    dietary: Optional[str] = None,  # Comma-separated tags: "vegano,sin-gluten"
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
+    skip: int = 0,
+    limit: int = 100,
+    db: AsyncSession = Depends(get_db)
 ):
     """
     GET /products
-    GET /products?search=galletas+sin+gluten
-    GET /products?filter=gluten_free,vegan
-
-    List all products or search/filter products.
-    - If search parameter is provided, performs full-text search.
-    - If filter parameter is provided, filters by dietary tags (comma-separated).
-    - Otherwise returns all products.
-
-    Replica of listProducts from Node.js with FTS and filter enhancement
+    GET /products?search=galletas
+    GET /products?category=Snacks&dietary=vegano,sin-gluten&min_price=1000
     """
     try:
-        # Parse comma-separated dietary tag filters
-        dietary_tags = None
-        if filter:
-            dietary_tags = [tag.strip() for tag in filter.split(",") if tag.strip()]
-
+        # If search is provided, we use the FTS search (which currently doesn't combine with filters in service)
+        # TODO: Enhance search_products to also accept filters if needed
         if search:
-            # Use full-text search when search term is provided
-            return await product_service.search_products(db, search)
-        else:
-            # Return products with optional dietary tag filter
-            return await product_service.list_products(db, dietary_tags=dietary_tags)
+            return await product_service.search_products(db, search, skip=skip, limit=limit)
+        
+        # Parse dietary tags string into a list
+        dietary_tags = [t.strip() for t in dietary.split(",") if t.strip()] if dietary else None
+        
+        return await product_service.list_products(
+            db, 
+            skip=skip, 
+            limit=limit, 
+            category=category, 
+            dietary_tags=dietary_tags,
+            min_price=min_price,
+            max_price=max_price
+        )
     except Exception as e:
         logger.error(f"Error listing/searching products: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal Server Error")

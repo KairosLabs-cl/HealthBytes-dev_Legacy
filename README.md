@@ -678,6 +678,7 @@ Una vez que el backend esté corriendo, accede a:
 Los diagramas de arquitectura están en `docs/diagramas/`:
 
 - `Infrastructura.drawio` - Diagrama de infraestructura (abrir con draw.io)
+- `b2b-product-insertion-flow.md` - Flujo B2B de inserción de productos (Mermaid diagram)
 
 ---
 
