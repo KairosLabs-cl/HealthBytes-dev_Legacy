@@ -432,7 +432,7 @@ PROJECT_NAME="HealthBytes API"
 
 ### 🔑 Obtener Keys y Credenciales
 
-Las credenciales y API keys (Clerk, Stripe, etc.) están documentadas en ClickUp:
+Las credenciales y API keys (Clerk, Venti, Mercado Pago, etc.) están documentadas en ClickUp:
 
 **📋 [Documento de Keys en ClickUp](https://app.clickup.com/90131597357/v/dc/2ky4621d-2233)**
 
