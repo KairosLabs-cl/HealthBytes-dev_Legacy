@@ -49,7 +49,7 @@ Sistema de carrito con sincronización entre cliente y servidor.
 | Reviews y ratings | 📋 | Media |
 | Wishlist | 📋 | Baja |
 | Push notifications | 📋 | Media |
-| Payment processing (Stripe) | ⚠️ | Alta |
+| Payment processing (Venti + Mercado Pago) | ⚠️ | Alta |
 
 ---
 
@@ -65,4 +65,4 @@ Sistema de carrito con sincronización entre cliente y servidor.
 
 ---
 
-Última actualización: Feb 4, 2026
+Última actualización: Feb 10, 2026

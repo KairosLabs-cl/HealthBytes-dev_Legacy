@@ -231,8 +231,8 @@ Frontend [actualiza Zustand store]
 | 5 | Full-Text Search | ✅ DONE |
 | 6 | Docker containerization | 📋 PLANNED |
 | 7 | CI/CD (GitHub Actions) | 📋 PLANNED |
-| 8 | Payment integration (Stripe) | 📋 PLANNED |
+| 8 | Payment integration (Venti + Mercado Pago) | 📋 PLANNED |
 
 ---
 
-Última actualización: Feb 4, 2026
+Última actualización: Feb 10, 2026
