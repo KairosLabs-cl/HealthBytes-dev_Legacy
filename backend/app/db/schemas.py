@@ -41,7 +41,6 @@ class Product(Base):
     price = Column(Numeric(10, 2), nullable=False)
     stock = Column(Integer, nullable=False, default=0)
     category = Column(String(100), nullable=True, index=True)
-    dietary_tags = Column(ARRAY(String), nullable=True, default=[])
 
     # Full-text search column
     # PostgreSQL: TSVECTOR with GIN index, populated by trigger
