@@ -30,7 +30,7 @@ describe('CartScreen', () => {
 
   it('renders empty state when cart is empty', () => {
     (useCart as unknown as jest.Mock).mockImplementation((selector) => {
-      const state = { 
+      const state = {
         items: [],
         addProduct: jest.fn(),
         decrementProduct: jest.fn(),
@@ -40,7 +40,7 @@ describe('CartScreen', () => {
     });
 
     render(<CartScreen />);
-    
+
     expect(screen.getByText('Tu carrito está vacío')).toBeTruthy();
   });
 
@@ -51,7 +51,7 @@ describe('CartScreen', () => {
     ];
 
     (useCart as unknown as jest.Mock).mockImplementation((selector) => {
-      const state = { 
+      const state = {
         items: mockItems,
         addProduct: jest.fn(),
         decrementProduct: jest.fn(),

@@ -1,14 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
 import logging
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 from typing import List
 
+from app.core.security import get_password_hash
 from app.db.database import get_db
 from app.db.schemas import User
-from app.schemas.user import UserResponse, UserUpdate
 from app.middleware.auth import get_current_user, verify_admin
-from app.core.security import get_password_hash
+from app.schemas.user import UserResponse, UserUpdate
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
@@ -58,9 +58,7 @@ async def get_user_by_id(
     try:
         # Check permissions: Admin or Own Profile
         if current_user.role != "admin" and current_user.id != id:
-            raise HTTPException(
-                status_code=403, detail="Not authorized to access this profile"
-            )
+            raise HTTPException(status_code=403, detail="Not authorized to access this profile")
 
         result = await db.execute(select(User).where(User.id == id))
         user = result.scalar_one_or_none()
@@ -96,9 +94,7 @@ async def update_user(
     try:
         # Check permissions: Admin or Own Profile
         if current_user.role != "admin" and current_user.id != id:
-            raise HTTPException(
-                status_code=403, detail="Not authorized to update this profile"
-            )
+            raise HTTPException(status_code=403, detail="Not authorized to update this profile")
 
         result = await db.execute(select(User).where(User.id == id))
         user = result.scalar_one_or_none()

@@ -3,8 +3,21 @@ from typing import Optional, List, Annotated
 from decimal import Decimal
 
 
+class DietaryTagResponse(BaseModel):
+    """Dietary tag response schema"""
+
+    id: int
+    name: str
+    display_name: str
+    color: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
 class ProductBase(BaseModel):
     """Base product schema"""
+
     name: str = Field(..., min_length=1, max_length=255)
     description: Optional[str] = None
     image: Optional[str] = Field(None, max_length=255)
@@ -24,23 +37,27 @@ class ProductBase(BaseModel):
 
 class ProductCreate(ProductBase):
     """Schema for creating a product - Replica of createProductSchema"""
-    pass
+
+    dietary_tag_ids: Optional[List[int]] = Field(default_factory=list)
 
 
 class ProductUpdate(BaseModel):
     """Schema for updating a product - Replica of updateProductSchema (partial)"""
+
     name: Optional[str] = Field(None, min_length=1, max_length=255)
     description: Optional[str] = None
     image: Optional[str] = Field(None, max_length=255)
     price: Optional[float] = Field(None, gt=0)
     stock: Optional[int] = Field(None, ge=0)
+    dietary_tag_ids: Optional[List[int]] = None # si esto llega a fallar se tiene que usar sin _ids debido a que en master estaba buscado de esta manera
     category: Optional[str] = Field(None, max_length=100)
-    dietary_tags: Optional[List[str]] = None
 
 
 class ProductResponse(ProductBase):
     """Product response schema"""
+
     id: int
-    
+    dietary_tags: List[DietaryTagResponse] = Field(default_factory=list)
+
     class Config:
         from_attributes = True

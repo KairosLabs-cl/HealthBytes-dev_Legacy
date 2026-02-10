@@ -1,0 +1,29 @@
+# Simplified pre-commit config for MVP development
+# Full linting/formatting can be re-enabled after MVP launch
+repos:
+  # Essential checks that don't modify files
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-merge-conflict
+        name: Check for merge conflicts
+      - id: detect-private-key
+        name: Detect private keys
+      - id: check-added-large-files
+        name: Check for large files
+        args: [--maxkb=1000]
+      - id: check-yaml
+        name: Validate YAML
+        exclude: ^(.*pnpm-lock.yaml)$
+      - id: check-json
+        name: Validate JSON
+
+  # Optional: Keep black but don't fail on changes
+  # Uncomment after MVP if you want auto-formatting
+  # - repo: https://github.com/psf/black
+  #   rev: 24.1.1
+  #   hooks:
+  #     - id: black
+  #       language_version: python3.12
+  #       args: [--line-length=100]
+

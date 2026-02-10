@@ -1,12 +1,15 @@
 """
 Script para iniciar el servidor FastAPI con el event loop correcto para Windows
 """
-import sys
+
 import asyncio
+import sys
 import warnings
 
 # Suprimir deprecation warnings de asyncio en Python 3.14+
-warnings.filterwarnings("ignore", category=DeprecationWarning, message=".*WindowsSelectorEventLoopPolicy.*")
+warnings.filterwarnings(
+    "ignore", category=DeprecationWarning, message=".*WindowsSelectorEventLoopPolicy.*"
+)
 warnings.filterwarnings("ignore", category=DeprecationWarning, message=".*set_event_loop_policy.*")
 
 # CRITICAL: Fix para Windows - psycopg requiere SelectorEventLoop
@@ -14,18 +17,19 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 if __name__ == "__main__":
-    import uvicorn
     from pathlib import Path
-    
-    print("="*70)
+
+    import uvicorn
+
+    print("=" * 70)
     print("Iniciando HealthBytes FastAPI Server")
-    print("="*70)
+    print("=" * 70)
     print(f"Servidor: http://127.0.0.1:3001")
     print(f"Docs: http://127.0.0.1:3001/docs")
     print(f"ReDoc: http://127.0.0.1:3001/redoc")
-    print("="*70)
+    print("=" * 70)
     print("\nPresiona CTRL+C para detener el servidor\n")
-    
+
     project_root = Path(__file__).parent
     app_dir = project_root / "app"
 

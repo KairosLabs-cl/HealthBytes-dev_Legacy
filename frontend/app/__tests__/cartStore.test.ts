@@ -35,10 +35,10 @@ describe('Cart Store Logic', () => {
     await useCart.getState().addProduct(product);
 
     // Expectation:
-    // 1. Optimistic update happened (we can't easily check 'during' without async hacks, 
+    // 1. Optimistic update happened (we can't easily check 'during' without async hacks,
     //    but we check that it TRIED to call API)
     expect(cartApi.addToCart).toHaveBeenCalledWith('fake-token', 1, 1);
-    
+
     // 2. Final state should be empty (rolled back)
     expect(useCart.getState().items).toHaveLength(0);
   });
@@ -57,7 +57,7 @@ describe('Cart Store Logic', () => {
 
     // Expectation:
     expect(cartApi.removeFromCart).toHaveBeenCalledWith('fake-token', 1);
-    
+
     // Final state should still have the item (rolled back)
     expect(useCart.getState().items).toHaveLength(1);
     expect(useCart.getState().items[0].product.id).toBe(1);
@@ -77,7 +77,7 @@ describe('Cart Store Logic', () => {
 
     // Expectation:
     expect(cartApi.updateCartItem).toHaveBeenCalledWith('fake-token', 1, 1);
-    
+
     // Final state should still have quantity 2 (rolled back)
     expect(useCart.getState().items[0].quantity).toBe(2);
   });
@@ -96,11 +96,11 @@ describe('Cart Store Logic', () => {
 
     // Expectation:
     expect(cartApi.removeFromCart).toHaveBeenCalledWith('fake-token', 1);
-    
+
     // Final state should still have item (rolled back)
     expect(useCart.getState().items).toHaveLength(1);
   });
-  
+
   test('resetCart rolls back on API failure', async () => {
     // Setup initial state with items
     useCart.setState({
@@ -115,7 +115,7 @@ describe('Cart Store Logic', () => {
 
     // Expectation:
     expect(cartApi.clearCart).toHaveBeenCalledWith('fake-token');
-    
+
     // Final state should still have items (rolled back)
     expect(useCart.getState().items).toHaveLength(1);
   });

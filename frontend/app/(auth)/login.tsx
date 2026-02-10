@@ -59,12 +59,12 @@ export default function LoginScreen() {
 
         await setActive({ session: createdSessionId });
 
-        
+
         // Esperar a que el token esté disponible (mitigar timing issue)
 
         let attempts = 0;
         const maxAttempts = 10;
-        
+
         while (attempts < maxAttempts) {
           try {
             // Intentar obtener el token para verificar que está disponible
@@ -83,7 +83,7 @@ export default function LoginScreen() {
             attempts++;
           }
         }
-        
+
         // Si después de varios intentos el token no está disponible, redirigir de todas formas
         console.warn(`⚠️ Token not available after ${maxAttempts} attempts, redirecting anyway...`);
         router.replace("/");

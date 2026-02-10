@@ -11,19 +11,20 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "backend"))
 
 from app.db.database import engine
-from app.db.schemas import Base, CartItem  # noqa: F401 - CartItem is imported to register the model with SQLAlchemy metadata
+from app.db.schemas import (  # noqa: F401 - CartItem is imported to register the model with SQLAlchemy metadata
+    Base,
+    CartItem,
+)
 
 
 async def create_cart_table():
     """Create cart_items table if it doesn't exist"""
     print("Creating cart_items table...")
-    
+
     async with engine.begin() as conn:
         # Create only the cart_items table
-        await conn.run_sync(
-            lambda sync_conn: CartItem.__table__.create(sync_conn, checkfirst=True)
-        )
-    
+        await conn.run_sync(lambda sync_conn: CartItem.__table__.create(sync_conn, checkfirst=True))
+
     print("✅ Cart table created successfully!")
     print("\nTable structure:")
     print("- id (PK)")
@@ -39,5 +40,5 @@ if __name__ == "__main__":
     # Fix for Windows: Use SelectorEventLoop
     if sys.platform == "win32":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    
+
     asyncio.run(create_cart_table())
