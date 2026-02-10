@@ -1,7 +1,7 @@
 """Favorite service - Business logic for user favorites"""
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, exists
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 from typing import List, Optional
 import logging
 
@@ -40,10 +40,12 @@ async def add_favorite(
         await db.commit()
         await db.refresh(favorite)
         
-        # Load product relationship
+        # Load product relationship with dietary_tags
         result = await db.execute(
             select(UserFavorite)
-            .options(joinedload(UserFavorite.product))
+            .options(
+                joinedload(UserFavorite.product).selectinload(Product.dietary_tags)
+            )
             .where(UserFavorite.id == favorite.id)
         )
         favorite_with_product = result.scalar_one()
@@ -105,7 +107,9 @@ async def get_user_favorites(
     try:
         result = await db.execute(
             select(UserFavorite)
-            .options(joinedload(UserFavorite.product))
+            .options(
+                joinedload(UserFavorite.product).selectinload(Product.dietary_tags)
+            )
             .where(UserFavorite.user_id == user_id)
             .order_by(UserFavorite.created_at.desc())
             .offset(skip)
