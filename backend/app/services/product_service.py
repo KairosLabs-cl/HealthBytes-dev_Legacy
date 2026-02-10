@@ -20,43 +20,39 @@ async def list_products(
     category: Optional[str] = None,
     dietary_tags: Optional[List[str]] = None,
     min_price: Optional[float] = None,
-    max_price: Optional[float] = None
+    max_price: Optional[float] = None,
 ) -> List[Product]:
     """
     Get all products with dynamic filtering and pagination.
     """
     # Eagerly load dietary_tags relationship
     query = select(Product).options(selectinload(Product.dietary_tags))
-    
+
     # Apply search filter
     if search:
         query = query.where(Product.name.ilike(f"%{search}%"))
-    
+
     # Apply category filter
     if category:
         query = query.where(Product.category == category)
-        
+
     # Apply dietary tags filter using raw SQL with ANY operator
     if dietary_tags:
         for tag in dietary_tags:
             # Use raw SQL to avoid type casting issues
             query = query.where(text(":tag = ANY(products.dietary_tags)").bindparams(tag=tag))
-            
+
     # Apply price range filters
     if min_price is not None:
         query = query.where(Product.price >= min_price)
     if max_price is not None:
         query = query.where(Product.price <= max_price)
-    
+
     # Ensure skip and limit are Python integers
     skip = int(skip) if skip is not None else 0
     limit = int(limit) if limit is not None else 100
-        
-    result = await db.execute(
-        query
-        .offset(skip)
-        .limit(limit)
-    )
+
+    result = await db.execute(query.offset(skip).limit(limit))
     return result.scalars().all()
 
 
