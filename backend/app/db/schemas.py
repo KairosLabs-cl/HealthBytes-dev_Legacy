@@ -1,11 +1,14 @@
 from app.db.database import Base
 from sqlalchemy import (
+    ARRAY,
     TIMESTAMP,
     Column,
+    DateTime,
     Float,
     ForeignKey,
     Index,
     Integer,
+    Numeric,
     String,
     Text,
     TypeDecorator,

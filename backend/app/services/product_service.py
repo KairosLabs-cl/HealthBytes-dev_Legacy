@@ -25,7 +25,12 @@ async def list_products(
     """
     Get all products with dynamic filtering and pagination.
     """
-    query = select(Product)
+    # Eagerly load dietary_tags relationship
+    query = select(Product).options(selectinload(Product.dietary_tags))
+    
+    # Apply search filter
+    if search:
+        query = query.where(Product.name.ilike(f"%{search}%"))
     
     # Apply category filter
     if category:
@@ -46,11 +51,6 @@ async def list_products(
     # Ensure skip and limit are Python integers
     skip = int(skip) if skip is not None else 0
     limit = int(limit) if limit is not None else 100
-    
-    query = select(Product)
-    
-    if search:
-        query = query.where(Product.name.ilike(f"%{search}%"))
         
     result = await db.execute(
         query
