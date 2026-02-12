@@ -37,6 +37,18 @@ Sistema de carrito con sincronización entre cliente y servidor.
 - Sincronización con Zustand
 - Validación de stock
 
+### [wishlist.md](./wishlist.md)
+**Estado:** ✅ Implementado
+Sistema de lista de deseos para guardar productos favoritos.
+
+### [ui-ux-improvements.md](./ui-ux-improvements.md)
+**Estado:** ✅ Implementado
+Mejoras de experiencia de usuario: Skeletons, Stock Badges, Empty States, Truncado de texto.
+
+### [nutritional-info.md](./nutritional-info.md)
+**Estado:** ✅ Implementado
+Visualización de información nutricional en detalle de producto (Backend + Frontend).
+
 ---
 
 ## 🎯 Features Planificadas
@@ -47,7 +59,6 @@ Sistema de carrito con sincronización entre cliente y servidor.
 | Sistema de recomendaciones | 📋 | Media |
 | Historial de órdenes | 📋 | Alta |
 | Reviews y ratings | 📋 | Media |
-| Wishlist | 📋 | Baja |
 | Push notifications | 📋 | Media |
 | Payment processing (Venti + Mercado Pago) | ⚠️ | Alta |
 
@@ -60,9 +71,10 @@ Sistema de carrito con sincronización entre cliente y servidor.
 | Full-Text Search | 1 | 8+ | 85% |
 | Auth | 2 | 10+ | 90% |
 | Cart | 5 | 12+ | 80% |
-| Products | 4 | 15+ | 75% |
+| Products | 5 | 16+ | 78% |
 | Orders | 4 | 8+ | 70% |
+| Wishlist | 2 | 4+ | 75% |
 
 ---
 
-Última actualización: Feb 10, 2026
+Última actualización: Feb 10, 2026 (Quick Wins UI/UX)
