@@ -1,4 +1,5 @@
-import { ActivityIndicator, FlatList, ScrollView, View, Image, Pressable } from "react-native";
+import { ActivityIndicator, FlatList, View, Image, Pressable } from "react-native";
+import HomeSkeleton from "@/components/HomeSkeleton";
 import { useQuery } from "@tanstack/react-query";
 import { Text } from "@/components/ui/text";
 import { useBreakpointValue } from "@/components/ui/utils/use-break-point-value";
@@ -8,45 +9,76 @@ import FavoritesBar from "@/components/FavoritesBar";
 import RecentlyViewedBar from "@/components/RecentlyViewedBar";
 import { Header } from "@/components/Header";
 import { Stack } from "expo-router";
-import QuickFilters from "@/components/QuickFilters";
-import SectionHeader from "@/components/SectionHeader";
-import { useCallback, useMemo, useState } from "react";
+import { RefreshCw } from "lucide-react-native";
+
+import { useCallback, useMemo } from "react";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 import { useProductFilters } from "@/store/productFiltersStore";
 import { useUser } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Product } from "@/types/product";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+} from "react-native-reanimated";
 
+function AnimatedFilterChip({
+  label,
+  isActive,
+  onPress,
+}: {
+  label: string;
+  isActive: boolean;
+  onPress: () => void;
+}) {
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handlePress = () => {
+    scale.value = withTiming(0.97, { duration: 80, easing: Easing.out(Easing.ease) }, () => {
+      scale.value = withTiming(1, { duration: 150, easing: Easing.out(Easing.ease) });
+    });
+    onPress();
+  };
+
+  return (
+    <Animated.View style={animatedStyle}>
+      <Pressable
+        onPress={handlePress}
+        className={`px-4 py-3 rounded-full border ${isActive ? 'bg-green-500 border-green-600' : 'bg-gray-100 border-gray-200'}`}
+        style={{ minHeight: 44 }}
+      >
+        <Text className={`text-sm font-medium ${isActive ? 'text-white' : 'text-gray-700'}`}>
+          {label}
+        </Text>
+      </Pressable>
+    </Animated.View>
+  );
+}
+
+const DIET_FILTERS = [
+  { label: "Celiacos", tag: "sin-gluten" },
+  { label: "Veganos", tag: "vegano" },
+  { label: "Sin lactosa", tag: "sin-lactosa" },
+  { label: "Bajo en azucar", tag: "bajo-en-azucar" },
+] as const;
 
 const keyExtractor = (item: Product) => item.id.toString();
 
-// Dietary filter chips with API tag names
-const DIET_FILTERS = [
-  { label: "Celiacos", tag: "gluten_free" },
-  { label: "Veganos", tag: "vegan" },
-  { label: "Sin lactosa", tag: "lactose_free" },
-  { label: "Bajo en azúcar", tag: "low_sugar" },
-] as const;
-
 export default function HomeScreen() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
-
   const { items: recentlyViewedItems } = useRecentlyViewed();
   const { dietaryTags, toggleDietaryTag } = useProductFilters();
   const { user } = useUser();
 
-  // Build filter string for API
-  const filterString = useMemo(
-    () => (selectedFilters.length > 0 ? selectedFilters.join(",") : undefined),
-    [selectedFilters]
-  );
-
-  const { data, isLoading, error, isFetching } = useQuery({
-    queryKey: ["products", searchTerm, dietaryTags], // Re-fetch al cambiar búsqueda o filtros
+  const { data, isLoading, error, isFetching, refetch } = useQuery({
+    queryKey: ["products", dietaryTags],
     queryFn: () => listProducts({
-      search: searchTerm || undefined,
       dietary: dietaryTags.length > 0 ? dietaryTags : undefined
     }),
     placeholderData: (previousData) => previousData,
@@ -60,65 +92,27 @@ export default function HomeScreen() {
 
   const heroProduct = useMemo(() => data?.[0], [data]);
 
-  // Toggle filter selection
-  const handleFilterToggle = useCallback((tag: string) => {
-    setSelectedFilters((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    );
-  }, []);
+  const renderItem = useCallback(
+    ({ item }: { item: Product }) => <ProductListItem product={item} />,
+    []
+  );
 
-  // Solo muestra loading completo en primera carga no durante búsqueda
-  if (isLoading && !data) {
-    return (
-      <>
-        <Stack.Screen options={{ headerShown: false }} />
-        <View className="flex-1 items-center justify-center bg-white">
-          <ActivityIndicator />
-          <Text className="mt-4 text-gray-500">Cargando productos...</Text>
-        </View>
-      </>
-    );
-  }
-
-  if (error) {
-    return (
-      <>
-        <Stack.Screen options={{ headerShown: false }} />
-        <View className="flex-1 items-center justify-center bg-white">
-          <Text className="text-red-500">Error cargando productos</Text>
-        </View>
-      </>
-    );
-  }
-
-  const renderHeader = () => (
+  const renderHeader = useMemo(() => (
     <>
-      {/* Header + búsqueda */}
+      {/* Header + busqueda */}
       <Header userName={user?.firstName || user?.fullName || "Usuario"} />
 
-      {/* Chips de dietas - ahora interactivos */}
+      {/* Chips de dietas */}
       <View className="px-4 pb-1 bg-white">
         <View className="flex-row flex-wrap gap-2 mt-2">
-          {[
-            { label: "Celiacos", tag: "sin-gluten" as const },
-            { label: "Veganos", tag: "vegano" as const },
-            { label: "Sin lactosa", tag: "sin-lactosa" as const },
-            { label: "Bajo en azucar", tag: "bajo-en-azucar" as const }
-          ].map(({ label, tag }) => {
-            const isActive = dietaryTags.includes(tag);
-            return (
-              <Pressable
-                key={label}
-                onPress={() => toggleDietaryTag(tag)}
-                className={`px-3 py-2 rounded-full border ${isActive ? 'bg-green-500 border-green-600' : 'bg-gray-100 border-gray-200'
-                  }`}
-              >
-                <Text className={`text-xs font-medium ${isActive ? 'text-white' : 'text-gray-700'}`}>
-                  {label}
-                </Text>
-              </Pressable>
-            );
-          })}
+          {DIET_FILTERS.map(({ label, tag }) => (
+            <AnimatedFilterChip
+              key={label}
+              label={label}
+              isActive={dietaryTags.includes(tag)}
+              onPress={() => toggleDietaryTag(tag)}
+            />
+          ))}
         </View>
       </View>
 
@@ -133,7 +127,10 @@ export default function HomeScreen() {
               Descubre snacks sin gluten
             </Text>
             <Text className="text-sm text-gray-200 mt-2">Hasta 30% de descuento hoy</Text>
-            <Pressable className="mt-3 self-start bg-white rounded-full px-4 py-2">
+            <Pressable
+              className="mt-3 self-start bg-white rounded-full px-5 py-3"
+              style={{ minHeight: 44 }}
+            >
               <Text className="font-semibold text-black">Ver coleccion</Text>
             </Pressable>
           </View>
@@ -152,48 +149,88 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      {/* Estado de carga mientras se re-fetch - MOVIDO AL TOP */}
-      {isFetching && data && (
-        <View className="absolute top-2 left-0 right-0 items-center z-10">
-          <View className="bg-white/90 rounded-full px-4 py-2 shadow-md">
-            <ActivityIndicator size="small" />
-          </View>
-        </View>
-      )}
-
-      {/* Secciones previas cuando no hay búsqueda */}
-      <FavoritesBar products={data} />
+      {/* Secciones horizontales */}
       <RecentlyViewedBar items={recentlyViewedItems} />
+      <FavoritesBar products={data} />
 
-
+      {/* Products section header */}
+      <View className="px-4 flex-row items-center justify-between mt-2 mb-1">
+        <Text className="text-lg font-bold text-gray-900">
+          {dietaryTags.length > 0
+            ? `🛒 Productos filtrados`
+            : `🛒 Todos los productos`}
+        </Text>
+        <Pressable>
+          <Text className="text-sm font-semibold text-green-600">Ver mas</Text>
+        </Pressable>
+      </View>
     </>
-  );
+  ), [user, dietaryTags, toggleDietaryTag, heroProduct, data, recentlyViewedItems]);
 
-  const renderEmpty = () => (
-    <View className="flex-1 items-center justify-center p-8">
-      <Text className="text-center text-gray-500">
-        No hay productos disponibles
-      </Text>
-    </View>
-  );
+  // Solo muestra loading completo en primera carga
+  if (isLoading && !data) {
+    return (
+      <>
+        <Stack.Screen options={{ headerShown: false }} />
+        <HomeSkeleton />
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <Stack.Screen options={{ headerShown: false }} />
+        <View className="flex-1 items-center justify-center bg-white px-6">
+          <Text className="text-red-500 text-base mb-4">Error cargando productos</Text>
+          <Pressable
+            onPress={() => refetch()}
+            className="flex-row items-center gap-2 bg-black px-6 py-3 rounded-full"
+            style={{ minHeight: 44 }}
+          >
+            <RefreshCw size={18} color="white" />
+            <Text className="text-white font-bold">Reintentar</Text>
+          </Pressable>
+        </View>
+      </>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
 
+      {/* Refetching indicator */}
+      {isFetching && data && (
+        <View className="absolute top-16 left-0 right-0 items-center z-10">
+          <View className="bg-white/90 rounded-full px-4 py-2 shadow-md">
+            <ActivityIndicator size="small" />
+          </View>
+        </View>
+      )}
+
       <FlatList
         className="flex-1 bg-gray-50"
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={renderHeader}
-        ListEmptyComponent={renderEmpty}
+        ListEmptyComponent={
+          <View className="flex-1 items-center justify-center p-8">
+            <Text className="text-center text-gray-500">
+              No hay productos disponibles
+            </Text>
+          </View>
+        }
         key={numColumns}
         keyExtractor={keyExtractor}
         data={data}
         numColumns={numColumns}
-        contentContainerClassName="gap-2 max-w-[960px] mx-auto w-full px-3 pb-32"
-        columnWrapperClassName="gap-2"
-        renderItem={({ item }) => <ProductListItem product={item} />}
+        contentContainerClassName="gap-3 w-full px-4 pb-32"
+        columnWrapperClassName="gap-3"
+        renderItem={renderItem}
+        initialNumToRender={6}
+        windowSize={7}
+        maxToRenderPerBatch={6}
       />
     </SafeAreaView>
   );

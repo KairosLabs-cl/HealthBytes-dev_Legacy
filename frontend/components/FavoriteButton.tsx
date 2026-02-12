@@ -1,28 +1,45 @@
-import { TouchableOpacity, Platform } from 'react-native';
+import { Pressable, Platform, Alert } from 'react-native';
 import { Heart } from 'lucide-react-native';
 import { useAuth } from '@clerk/clerk-expo';
 import { useFavoritesStore } from '@/store/favoritesStore';
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withSequence,
+    withSpring,
+} from 'react-native-reanimated';
 
 interface FavoriteButtonProps {
     productId: number;
     size?: number;
-    className?: string;
 }
 
 export default function FavoriteButton({
     productId,
     size = 24,
-    className = ""
 }: FavoriteButtonProps) {
     const { getToken } = useAuth();
     const { isFavorite, toggleFavorite } = useFavoritesStore();
+    const scale = useSharedValue(1);
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: scale.value }],
+    }));
 
     const handlePress = async () => {
         const token = await getToken();
         if (!token) {
-            console.warn('[FavoriteButton] User not authenticated');
+            Alert.alert(
+                "Inicia sesion",
+                "Necesitas iniciar sesion para agregar favoritos."
+            );
             return;
         }
+
+        scale.value = withSequence(
+            withSpring(1.3, { damping: 10, stiffness: 400 }),
+            withSpring(1, { damping: 10, stiffness: 400 })
+        );
 
         await toggleFavorite(productId, token);
     };
@@ -39,22 +56,29 @@ export default function FavoriteButton({
     } : {};
 
     return (
-        <TouchableOpacity
+        <Pressable
             onPress={handlePress}
-            activeOpacity={0.7}
             style={{
-                padding: 8,
+                padding: 10,
                 borderRadius: 999,
                 backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                minWidth: 44,
+                minHeight: 44,
+                alignItems: 'center',
+                justifyContent: 'center',
             }}
+            accessibilityRole="button"
+            accessibilityLabel={favorited ? "Quitar de favoritos" : "Agregar a favoritos"}
             {...webProps}
         >
-            <Heart
-                size={size}
-                color={favorited ? "#ef4444" : "#6b7280"}
-                fill={favorited ? "#ef4444" : "none"}
-                strokeWidth={2}
-            />
-        </TouchableOpacity>
+            <Animated.View style={animatedStyle}>
+                <Heart
+                    size={size}
+                    color={favorited ? "#ef4444" : "#6b7280"}
+                    fill={favorited ? "#ef4444" : "none"}
+                    strokeWidth={2}
+                />
+            </Animated.View>
+        </Pressable>
     );
 }
