@@ -7,7 +7,7 @@ import { ShoppingCart, User } from "lucide-react-native";
 import { Pressable } from "react-native";
 import { useCart } from "@/store/cartStore";
 import { Text } from "@/components/ui/text";
-import BottomNavBar from "@/components/ui/NavBarr/BottomNavBar";
+import BottomNavBar from "@/components/ui/NavBar/BottomNavBar";
 import React, { useEffect } from "react";
 import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@/lib/cache";
@@ -107,6 +107,13 @@ function RootLayoutNav() {
                   </Pressable>
                 </Link>
               ),
+          }}
+        />
+        <Stack.Screen
+          name="profile"
+          options={{
+            title: "Mi Perfil",
+            headerTitleAlign: "center",
           }}
         />
         <Stack.Screen name="product/[id]" options={{ title: "Product" }} />

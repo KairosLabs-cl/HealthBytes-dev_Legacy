@@ -24,8 +24,7 @@ class ProductBase(BaseModel):
     price: float = Field(..., gt=0)
     stock: int = Field(0, ge=0)
     category: Optional[str] = Field(None, max_length=100)
-    dietary_tags: Optional[List[str]] = []
-    
+
     @field_validator('price', mode='before')
     @classmethod
     def convert_decimal_to_float(cls, v):

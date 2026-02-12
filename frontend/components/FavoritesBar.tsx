@@ -1,63 +1,44 @@
-import React, { useMemo } from "react";
-import { View, FlatList, Image, Pressable } from "react-native";
-import { Star } from "lucide-react-native";
+import { useCallback, useMemo } from "react";
+import { View, FlatList, Pressable } from "react-native";
 import { Text } from "@/components/ui/text";
-import SectionHeader from "@/components/SectionHeader";
 import type { Product } from "@/types/product";
-import { formatPrice } from "@/lib/formatPrice";
-import { useRouter } from "expo-router";
+import HorizontalProductCard from "@/components/HorizontalProductCard";
 
 type Props = { products?: Product[]; limit?: number };
 
-function FavoriteCard({ product }: { product: Product }) {
-  const router = useRouter();
-
-  const handlePress = () => {
-    router.push(`/product/${product.id}`);
-  };
-
-  return (
-    <Pressable onPress={handlePress}>
-      <View className="w-60 mr-10">
-        <View className="rounded-3xl bg-white border border-neutral-200 p-3 shadow-sm">
-          <Image
-            source={{ uri: product.image }}
-            className="w-full h-40 rounded-2xl"
-            resizeMode="contain"
-          />
-        </View>
-
-        <Text className="mt-2 text-[13px] text-white">
-          {product.name}
-        </Text>
-        <Text className="mt-1 text-[18px] font-extrabold text-white">{formatPrice(product.price)}</Text>
-      </View>
-    </Pressable>
-  );
-}
+const cardKeyExtractor = (item: Product) => String(item.id);
 
 export default function FavoritesBar({ products, limit = 8 }: Props) {
   const favs = useMemo(() => (products?.length ? products.slice(0, limit) : []), [products, limit]);
+
+  const renderItem = useCallback(
+    ({ item }: { item: Product }) => <HorizontalProductCard product={item} />,
+    []
+  );
+
   if (!favs.length) return null;
 
   return (
     <View className="mt-4 mb-4">
-      <View className="bg-[#1a1a1a] rounded-3xl mx-3 overflow-hidden">
-        <View className="px-3 pt-3 pb-4">
-          <SectionHeader icon={Star} title="Favoritos" lightText />
-          <FlatList
-            horizontal
-            data={favs}
-            keyExtractor={(item) => String(item.id)}
-            showsHorizontalScrollIndicator={false}
-            contentContainerClassName="px-1"
-            renderItem={({ item }) => <FavoriteCard product={item} />}
-            initialNumToRender={5}
-            maxToRenderPerBatch={5}
-            windowSize={5}
-          />
-        </View>
+      <View className="px-4 flex-row items-center justify-between mb-3">
+        <Text className="text-lg font-bold text-gray-900">
+          {"⭐ Favoritos"}
+        </Text>
+        <Pressable>
+          <Text className="text-sm font-semibold text-green-600">Ver mas</Text>
+        </Pressable>
       </View>
+      <FlatList
+        horizontal
+        data={favs}
+        keyExtractor={cardKeyExtractor}
+        showsHorizontalScrollIndicator={false}
+        contentContainerClassName="px-4"
+        renderItem={renderItem}
+        initialNumToRender={3}
+        maxToRenderPerBatch={3}
+        windowSize={5}
+      />
     </View>
   );
 }

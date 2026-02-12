@@ -1,63 +1,50 @@
-import React from "react";
-import { View, FlatList, Image } from "react-native";
+import { useCallback } from "react";
+import { View, FlatList, Pressable } from "react-native";
 import { Clock } from "lucide-react-native";
 import { Text } from "@/components/ui/text";
-import SectionHeader from "@/components/SectionHeader";
 import type { Product } from "@/types/product";
-import { Pressable } from "react-native";
-import { useRouter } from "expo-router";
-import { formatPrice } from "@/lib/formatPrice";
+import HorizontalProductCard from "@/components/HorizontalProductCard";
 
 type Props = { items?: Product[] };
 
-function RecentlyViewedCard({ product }: { product: Product }) {
-  const router = useRouter();
-
-  const handlePress = () => {
-    router.push(`/product/${product.id}`);
-  };
-
-  return (
-    <Pressable onPress={handlePress}>
-      <View className="w-60 mr-10">
-        <View className="rounded-3xl bg-white border border-neutral-200 p-3 shadow-sm">
-          <Image
-            source={{ uri: product.image }}
-            className="w-full h-40 rounded-2xl"
-            resizeMode="contain"
-          />
-        </View>
-
-        <Text className="mt-2 text-[13px] text-white">
-          {product.name}
-        </Text>
-        <Text className="mt-1 text-[18px] font-extrabold text-white">{formatPrice(product.price)}</Text>
-      </View>
-    </Pressable>
-  );
-}
+const cardKeyExtractor = (item: Product) => String(item.id);
 
 export default function RecentlyViewedBar({ items = [] }: Props) {
-  if (!items.length) return null;
+  const renderItem = useCallback(
+    ({ item }: { item: Product }) => <HorizontalProductCard product={item} />,
+    []
+  );
+
+  if (!items.length) {
+    return (
+      <View className="mx-4 mb-4 bg-gray-50 rounded-2xl px-4 pt-4 pb-6 items-center">
+        <Clock size={28} color="#9CA3AF" style={{ marginBottom: 8 }} />
+        <Text className="text-sm text-gray-400 font-medium">Tus productos vistos apareceran aqui</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={{ marginBottom: 16 }}>
-      <View className="bg-[#1a1a1a] rounded-3xl mx-3 overflow-hidden">
-        <View className="px-3 pt-3 pb-4">
-          <SectionHeader icon={Clock} title="Vistos recientemente" lightText />
-          <FlatList
-            horizontal
-            data={items}
-            keyExtractor={(item) => String(item.id)}
-            showsHorizontalScrollIndicator={false}
-            contentContainerClassName="px-1"
-            renderItem={({ item }) => <RecentlyViewedCard product={item} />}
-            initialNumToRender={5}
-            maxToRenderPerBatch={5}
-            windowSize={5}
-          />
-        </View>
+      <View className="px-4 flex-row items-center justify-between mb-3">
+        <Text className="text-lg font-bold text-gray-900">
+          {"👀 Vistos recientemente"}
+        </Text>
+        <Pressable>
+          <Text className="text-sm font-semibold text-green-600">Ver mas</Text>
+        </Pressable>
       </View>
+      <FlatList
+        horizontal
+        data={items}
+        keyExtractor={cardKeyExtractor}
+        showsHorizontalScrollIndicator={false}
+        contentContainerClassName="px-4"
+        renderItem={renderItem}
+        initialNumToRender={3}
+        maxToRenderPerBatch={3}
+        windowSize={5}
+      />
     </View>
   );
 }
