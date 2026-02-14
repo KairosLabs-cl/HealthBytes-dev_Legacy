@@ -19,8 +19,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.14"
-          allow-prereleases: true
+          python-version: "3.12"
 
       - name: Install dependencies
         run: |
@@ -48,8 +47,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.14"
-          allow-prereleases: true
+          python-version: "3.12"
 
       - name: Cache pip
         uses: actions/cache@v4
@@ -69,7 +67,7 @@ jobs:
           echo "JWT_SECRET=ci-test-secret-key-min-32-characters-long" >> .env
 
       - name: Run tests
-        run: pytest --tb=short --cov=app --cov-fail-under=70 -q
+        run: pytest --tb=short --cov=app --cov-fail-under=80 -q
 
   frontend-lint:
     name: Frontend Lint & Types
@@ -100,13 +98,43 @@ jobs:
       - name: ESLint
         run: pnpm lint
 
+  frontend-test:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    needs: [frontend-lint]
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests
+        run: pnpm test --ci --forceExit
+
   docker-build:
     name: Docker Build Test
     runs-on: ubuntu-latest
-    needs: [backend-test, backend-lint]
+    needs: [backend-test, backend-lint, frontend-test]
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Build backend image
         run: docker build -t healthbytes-backend ./backend
+
+      - name: Build frontend image
+        run: docker build -t healthbytes-frontend ./frontend
