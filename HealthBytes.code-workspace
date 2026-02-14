@@ -1,234 +1,221 @@
 {
-  "folders": [
-    {
-      "path": "backend",
-      "name": "🐍 Backend (FastAPI)"
-    },
-    {
-      "path": "frontend",
-      "name": "⚛️ Frontend (React Native)"
-    },
-    {
-      "path": "docs",
-      "name": "📚 Documentation"
-    },
-    {
-      "path": ".",
-      "name": "📁 Root"
-    }
-  ],
-  "settings": {
-    // Python settings (backend)
-    "python.defaultInterpreterPath": "${workspaceFolder:🐍 Backend (FastAPI)}/.venv/Scripts/python.exe",
-    "python.testing.pytestEnabled": true,
-    "python.testing.pytestArgs": [
-      "tests",
-      "--cov=app",
-      "--cov-report=html"
-    ],
-    "python.analysis.extraPaths": [
-      "${workspaceFolder:🐍 Backend (FastAPI)}/app"
-    ],
-
-    // TypeScript settings (frontend)
-    "typescript.tsdk": "${workspaceFolder:⚛️ Frontend (React Native)}/node_modules/typescript/lib",
-    "typescript.enablePromptUseWorkspaceTsdk": true,
-
-    // Editor settings
-    "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "explicit",
-      "source.organizeImports": "explicit"
-    },
-    "editor.rulers": [88, 120],
-
-    // Language-specific formatters
-    "[python]": {
-      "editor.defaultFormatter": "ms-python.black-formatter",
-      "editor.formatOnSave": true,
-      "editor.codeActionsOnSave": {
-        "source.organizeImports": "explicit"
-      }
-    },
-    "[typescript]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.tabSize": 2
-    },
-    "[typescriptreact]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.tabSize": 2
-    },
-    "[javascript]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.tabSize": 2
-    },
-    "[json]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.tabSize": 2
-    },
-    "[markdown]": {
-      "editor.wordWrap": "on",
-      "editor.quickSuggestions": {
-        "comments": "off",
-        "strings": "off",
-        "other": "off"
-      }
-    },
-
-    // File associations
-    "files.associations": {
-      ".cursorrules": "markdown",
-      "*.code-workspace": "jsonc"
-    },
-
-    // Exclude from explorer
-    "files.exclude": {
-      "**/__pycache__": true,
-      "**/.pytest_cache": true,
-      "**/node_modules": true,
-      "**/.venv": true,
-      "**/*.pyc": true
-    },
-
-    // Search exclusions
-    "search.exclude": {
-      "**/node_modules": true,
-      "**/.venv": true,
-      "**/htmlcov": true,
-      "**/__pycache__": true
-    },
-
-    // Terminal settings
-    "terminal.integrated.cwd": "${workspaceFolder}",
-    "terminal.integrated.defaultProfile.windows": "PowerShell",
-
-    // Git settings
-    "git.ignoreLimitWarning": true,
-
-    // Copilot settings
-    "github.copilot.enable": {
-      "*": true,
-      "yaml": true,
-      "plaintext": true,
-      "markdown": true
-    }
-  },
-  "extensions": {
-    "recommendations": [
-      // Python (Backend)
-      "ms-python.python",
-      "ms-python.black-formatter",
-      "ms-python.vscode-pylance",
-
-      // TypeScript/React (Frontend)
-      "dbaeumer.vscode-eslint",
-      "esbenp.prettier-vscode",
-
-      // General
-      "github.copilot",
-      "github.copilot-chat",
-      "eamodio.gitlens",
-      "editorconfig.editorconfig",
-
-      // Database
-      "mtxr.sqltools",
-      "mtxr.sqltools-driver-pg"
-    ]
-  },
-  "launch": {
-    "version": "0.2.0",
-    "configurations": [
-      {
-        "name": "🐍 FastAPI Backend",
-        "type": "python",
-        "request": "launch",
-        "module": "uvicorn",
-        "args": [
-          "app.main:app",
-          "--reload",
-          "--host",
-          "0.0.0.0",
-          "--port",
-          "3001"
-        ],
-        "cwd": "${workspaceFolder:🐍 Backend (FastAPI)}",
-        "env": {
-          "PYTHONPATH": "${workspaceFolder:🐍 Backend (FastAPI)}"
-        },
-        "console": "integratedTerminal"
-      },
-      {
-        "name": "🧪 Pytest (Current File)",
-        "type": "python",
-        "request": "launch",
-        "module": "pytest",
-        "args": [
-          "${file}",
-          "-v"
-        ],
-        "cwd": "${workspaceFolder:🐍 Backend (FastAPI)}",
-        "console": "integratedTerminal"
-      },
-      {
-        "name": "🧪 Pytest (All Tests)",
-        "type": "python",
-        "request": "launch",
-        "module": "pytest",
-        "args": [
-          "tests/",
-          "--cov=app",
-          "--cov-report=html",
-          "-v"
-        ],
-        "cwd": "${workspaceFolder:🐍 Backend (FastAPI)}",
-        "console": "integratedTerminal"
-      }
-    ],
-    "compounds": []
-  },
-  "tasks": {
-    "version": "2.0.0",
-    "tasks": [
-      {
-        "label": "Start Backend",
-        "type": "shell",
-        "command": "cd backend && .\\start.ps1",
-        "problemMatcher": [],
-        "presentation": {
-          "reveal": "always",
-          "panel": "dedicated"
-        }
-      },
-      {
-        "label": "Start Frontend",
-        "type": "shell",
-        "command": "cd frontend && pnpm start",
-        "problemMatcher": [],
-        "presentation": {
-          "reveal": "always",
-          "panel": "dedicated"
-        }
-      },
-      {
-        "label": "Run Backend Tests",
-        "type": "shell",
-        "command": "cd backend && pytest --cov=app --cov-report=html",
-        "problemMatcher": [],
-        "presentation": {
-          "reveal": "always",
-          "panel": "shared"
-        }
-      },
-      {
-        "label": "Run Frontend Tests",
-        "type": "shell",
-        "command": "cd frontend && pnpm test",
-        "problemMatcher": [],
-        "presentation": {
-          "reveal": "always",
-          "panel": "shared"
-        }
-      }
-    ]
-  }
+	"folders": [
+		{
+			"path": "backend",
+			"name": "🐍 Backend (FastAPI)"
+		},
+		{
+			"path": "frontend",
+			"name": "⚛️ Frontend (React Native)"
+		},
+		{
+			"path": "docs",
+			"name": "📚 Documentation"
+		},
+		{
+			"path": ".",
+			"name": "📁 Root"
+		}
+	],
+	"settings": {
+		"python.defaultInterpreterPath": "${workspaceFolder:🐍 Backend (FastAPI)}/.venv/Scripts/python.exe",
+		"python.testing.pytestEnabled": true,
+		"python.testing.pytestArgs": [
+			"tests",
+			"--cov=app",
+			"--cov-report=html"
+		],
+		"python.analysis.extraPaths": [
+			"${workspaceFolder:🐍 Backend (FastAPI)}/app"
+		],
+		"typescript.tsdk": "${workspaceFolder:⚛️ Frontend (React Native)}/node_modules/typescript/lib",
+		"typescript.enablePromptUseWorkspaceTsdk": true,
+		"editor.formatOnSave": true,
+		"editor.codeActionsOnSave": {
+			"source.fixAll.eslint": "explicit",
+			"source.organizeImports": "explicit"
+		},
+		"editor.rulers": [
+			88,
+			120
+		],
+		"[python]": {
+			"editor.defaultFormatter": "ms-python.black-formatter",
+			"editor.formatOnSave": true,
+			"editor.codeActionsOnSave": {
+				"source.organizeImports": "explicit"
+			}
+		},
+		"[typescript]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode",
+			"editor.tabSize": 2
+		},
+		"[typescriptreact]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode",
+			"editor.tabSize": 2
+		},
+		"[javascript]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode",
+			"editor.tabSize": 2
+		},
+		"[json]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode",
+			"editor.tabSize": 2
+		},
+		"[markdown]": {
+			"editor.wordWrap": "on",
+			"editor.quickSuggestions": {
+				"comments": "off",
+				"strings": "off",
+				"other": "off"
+			}
+		},
+		"files.associations": {
+			".cursorrules": "markdown",
+			"*.code-workspace": "jsonc"
+		},
+		"files.exclude": {
+			"**/__pycache__": true,
+			"**/.pytest_cache": true,
+			"**/node_modules": true,
+			"**/.venv": true,
+			"**/*.pyc": true
+		},
+		"search.exclude": {
+			"**/node_modules": true,
+			"**/.venv": true,
+			"**/htmlcov": true,
+			"**/__pycache__": true
+		},
+		"terminal.integrated.cwd": "${workspaceFolder}",
+		"terminal.integrated.defaultProfile.windows": "PowerShell",
+		"git.ignoreLimitWarning": true,
+		"github.copilot.enable": {
+			"*": true,
+			"yaml": true,
+			"plaintext": true,
+			"markdown": true
+		},
+		"powershell.cwd": "📁 Root",
+		"mcp": {
+			"servers": {
+				"Mercado Pago": {
+					"url": "https://mcp.mercadopago.com/mcp",
+					"type": "http"
+				}
+			},
+			"inputs": []
+		}
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-python.python",
+			"ms-python.black-formatter",
+			"ms-python.vscode-pylance",
+			"dbaeumer.vscode-eslint",
+			"esbenp.prettier-vscode",
+			"github.copilot",
+			"github.copilot-chat",
+			"eamodio.gitlens",
+			"editorconfig.editorconfig",
+			"mtxr.sqltools",
+			"mtxr.sqltools-driver-pg"
+		]
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "🐍 FastAPI Backend",
+				"type": "python",
+				"request": "launch",
+				"module": "uvicorn",
+				"args": [
+					"app.main:app",
+					"--reload",
+					"--host",
+					"0.0.0.0",
+					"--port",
+					"3001"
+				],
+				"cwd": "${workspaceFolder:🐍 Backend (FastAPI)}",
+				"env": {
+					"PYTHONPATH": "${workspaceFolder:🐍 Backend (FastAPI)}"
+				},
+				"console": "integratedTerminal"
+			},
+			{
+				"name": "🧪 Pytest (Current File)",
+				"type": "python",
+				"request": "launch",
+				"module": "pytest",
+				"args": [
+					"${file}",
+					"-v"
+				],
+				"cwd": "${workspaceFolder:🐍 Backend (FastAPI)}",
+				"console": "integratedTerminal"
+			},
+			{
+				"name": "🧪 Pytest (All Tests)",
+				"type": "python",
+				"request": "launch",
+				"module": "pytest",
+				"args": [
+					"tests/",
+					"--cov=app",
+					"--cov-report=html",
+					"-v"
+				],
+				"cwd": "${workspaceFolder:🐍 Backend (FastAPI)}",
+				"console": "integratedTerminal"
+			}
+		],
+		"compounds": []
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "Start Backend",
+				"type": "shell",
+				"command": "cd backend && .\\start.ps1",
+				"problemMatcher": [],
+				"presentation": {
+					"reveal": "always",
+					"panel": "dedicated"
+				}
+			},
+			{
+				"label": "Start Frontend",
+				"type": "shell",
+				"command": "cd frontend && pnpm start",
+				"problemMatcher": [],
+				"presentation": {
+					"reveal": "always",
+					"panel": "dedicated"
+				}
+			},
+			{
+				"label": "Run Backend Tests",
+				"type": "shell",
+				"command": "cd backend && pytest --cov=app --cov-report=html",
+				"problemMatcher": [],
+				"presentation": {
+					"reveal": "always",
+					"panel": "shared"
+				}
+			},
+			{
+				"label": "Run Frontend Tests",
+				"type": "shell",
+				"command": "cd frontend && pnpm test",
+				"problemMatcher": [],
+				"presentation": {
+					"reveal": "always",
+					"panel": "shared"
+				}
+			}
+		]
+	}
 }

@@ -4,9 +4,15 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export async function createOrder(
   items: any[],
-  getToken: () => Promise<string | null>
+  addressId?: number | string,
+  paymentMethod?: string,
+  getToken?: () => Promise<string | null>
 ) {
-  const token = await getToken();
+  // Backward compatibility: if getToken is passed as second argument
+  const token =
+    paymentMethod instanceof Function
+      ? await paymentMethod()
+      : await getToken?.();
 
   console.log("Token obtenido:", token ? "Token presente" : "Token ausente");
   console.log("Token length:", token?.length || 0);
@@ -17,13 +23,21 @@ export async function createOrder(
     );
   }
 
+  const orderPayload: any = {
+    order: {
+      ...(addressId && { address_id: addressId }),
+      ...(paymentMethod && { payment_method: paymentMethod }),
+    },
+    items,
+  };
+
   const res = await fetch(`${API_URL}/orders`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ order: {}, items }),
+    body: JSON.stringify(orderPayload),
   });
 
   const data = await res.json();

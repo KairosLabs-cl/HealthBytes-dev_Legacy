@@ -19,7 +19,7 @@ export type Order = {
   user_id: string | number;
   created_at: string; // ISO date string
   status: OrderStatus;
-  stripe_payment_intent_id?: string | null;
+
   items: OrderItem[];
 };
 
@@ -28,7 +28,7 @@ export type OrderResponse = {
   user_id: string | number;
   created_at: string;
   status: OrderStatus;
-  stripe_payment_intent_id?: string | null;
+
   items: OrderItem[];
 };
 

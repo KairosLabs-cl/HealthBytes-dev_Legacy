@@ -19,13 +19,21 @@ export default function FavoritesBar({ products, limit = 8 }: Props) {
   if (!favs.length) return null;
 
   return (
-    <View className="mt-4 mb-4">
-      <View className="px-4 flex-row items-center justify-between mb-3">
-        <Text className="text-lg font-bold text-gray-900">
+    <View style={{ marginTop: 16, marginBottom: 16 }}>
+      <View
+        style={{
+          paddingHorizontal: 16,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 12,
+        }}
+      >
+        <Text style={{ fontSize: 17, fontWeight: "700", color: "#111827" }}>
           {"⭐ Favoritos"}
         </Text>
         <Pressable>
-          <Text className="text-sm font-semibold text-green-600">Ver mas</Text>
+          <Text style={{ fontSize: 13, fontWeight: "600", color: "#16A34A" }}>Ver mas</Text>
         </Pressable>
       </View>
       <FlatList
@@ -33,7 +41,7 @@ export default function FavoritesBar({ products, limit = 8 }: Props) {
         data={favs}
         keyExtractor={cardKeyExtractor}
         showsHorizontalScrollIndicator={false}
-        contentContainerClassName="px-4"
+        contentContainerStyle={{ paddingHorizontal: 16 }}
         renderItem={renderItem}
         initialNumToRender={3}
         maxToRenderPerBatch={3}

@@ -47,7 +47,7 @@ async def create_order(
                     )
                 ],
             )
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error.dict())
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error.model_dump())
 
         try:
             new_order = await order_service.create_order(
@@ -70,7 +70,7 @@ async def create_order(
             error_status = (
                 status.HTTP_404_NOT_FOUND if is_not_found else status.HTTP_422_UNPROCESSABLE_ENTITY
             )
-            raise HTTPException(status_code=error_status, detail=error.dict())
+            raise HTTPException(status_code=error_status, detail=error.model_dump())
 
         # Build response
         items_response = [
@@ -89,7 +89,7 @@ async def create_order(
             user_id=new_order.user_id,
             created_at=new_order.created_at,
             status=new_order.status,
-            stripe_payment_intent_id=new_order.stripe_payment_intent_id,
+
             items=items_response,
         )
 
@@ -102,7 +102,7 @@ async def create_order(
             message="An unexpected error occurred while creating the order",
             path="/api/v1/orders",
         )
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.dict())
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.model_dump())
 
 
 @router.get("/", response_model=List[OrderResponse])
@@ -158,7 +158,7 @@ async def list_orders(
                     user_id=order.user_id,
                     created_at=order.created_at,
                     status=order.status,
-                    stripe_payment_intent_id=order.stripe_payment_intent_id,
+        
                     items=items_response,
                 )
             )
@@ -173,7 +173,7 @@ async def list_orders(
             message="An error occurred while fetching orders",
             path="/api/v1/orders",
         )
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.dict())
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.model_dump())
 
 
 @router.get("/{id}", response_model=OrderResponse)
@@ -204,7 +204,7 @@ async def get_order(
                 message="Order not found",
                 path=f"/api/v1/orders/{id}",
             )
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.dict())
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.model_dump())
 
         # Build response
         items_response = [
@@ -223,7 +223,7 @@ async def get_order(
             user_id=order.user_id,
             created_at=order.created_at,
             status=order.status,
-            stripe_payment_intent_id=order.stripe_payment_intent_id,
+
             items=items_response,
         )
 
@@ -235,7 +235,7 @@ async def get_order(
             message="An error occurred while fetching the order",
             path=f"/api/v1/orders/{id}",
         )
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.dict())
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.model_dump())
 
 
 @router.put("/{id}", response_model=OrderResponse)
@@ -256,7 +256,7 @@ async def update_order(
                 message="You do not have permission to update orders",
                 path=f"/api/v1/orders/{id}",
             )
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=error.dict())
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=error.model_dump())
 
         result = await db.execute(
             select(Order).where(Order.id == id).options(selectinload(Order.items))
@@ -268,7 +268,7 @@ async def update_order(
                 message="Order not found",
                 path=f"/api/v1/orders/{id}",
             )
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.dict())
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.model_dump())
 
         # Update status
         order.status = order_data.status
@@ -292,7 +292,7 @@ async def update_order(
             user_id=order.user_id,
             created_at=order.created_at,
             status=order.status,
-            stripe_payment_intent_id=order.stripe_payment_intent_id,
+
             items=items_response,
         )
 
@@ -305,7 +305,7 @@ async def update_order(
             message="An error occurred while updating the order",
             path=f"/api/v1/orders/{id}",
         )
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.dict())
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.model_dump())
 
 
 @router.delete("/{id}", status_code=204)
@@ -325,7 +325,7 @@ async def delete_order(
                 message="You do not have permission to delete orders",
                 path=f"/api/v1/orders/{id}",
             )
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=error.dict())
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=error.model_dump())
 
         result = await db.execute(select(Order).where(Order.id == id))
         order = result.scalar_one_or_none()
@@ -335,7 +335,7 @@ async def delete_order(
                 message="Order not found",
                 path=f"/api/v1/orders/{id}",
             )
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.dict())
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.model_dump())
 
         await db.delete(order)
         await db.commit()
@@ -350,4 +350,4 @@ async def delete_order(
             message="An error occurred while deleting the order",
             path=f"/api/v1/orders/{id}",
         )
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.dict())
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.model_dump())

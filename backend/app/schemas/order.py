@@ -38,7 +38,7 @@ class OrderCreate(BaseModel):
     """Schema for order creation - Replica of insertOrderWithItemsSchema"""
 
     order: dict = Field(default_factory=dict, description="Empty dict as in Node.js")
-    items: List[OrderItemCreate] = Field(..., min_items=1, description="At least 1 item required")
+    items: List[OrderItemCreate] = Field(..., min_length=1, description="At least 1 item required")
 
     @field_validator("items")
     @classmethod
@@ -64,8 +64,7 @@ class OrderItemResponse(BaseModel):
     quantity: int
     price: float
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OrderResponse(BaseModel):
@@ -75,11 +74,9 @@ class OrderResponse(BaseModel):
     user_id: int
     created_at: datetime
     status: str
-    stripe_payment_intent_id: Optional[str] = None
     items: Optional[List[OrderItemResponse]] = []
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OrderUpdate(BaseModel):

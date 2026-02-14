@@ -162,7 +162,7 @@ function ProductListItem({ product }: Props) {
                     flexDirection: "row",
                     alignItems: "center",
                     justifyContent: "center",
-                    backgroundColor: isOutOfStock ? "#E5E7EB" : "#1F2937",
+                    backgroundColor: isOutOfStock ? "#E5E7EB" : "#000000",
                     minHeight: 36,
                     ...Platform.select<any>({
                       web: {

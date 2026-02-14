@@ -103,7 +103,7 @@ async def create_product(db: AsyncSession, product_in: ProductCreate) -> Product
     Returns:
         Created Product object
     """
-    db_product = Product(**product_in.model_dump())
+    db_product = Product(**product_in.model_dump(exclude={"dietary_tag_ids"}))
     db.add(db_product)
     await db.commit()
     await db.refresh(db_product)
@@ -186,7 +186,7 @@ async def search_products(
 
     # If query is empty, return all products
     if not clean_query:
-        return await list_products(db, skip, limit)
+        return await list_products(db, skip=skip, limit=limit)
 
     try:
         # Create tsquery using plainto_tsquery (safe from SQL injection)

@@ -17,7 +17,10 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "clean": "expo start --clear",
-    "prebuild": "pnpm run type-check"
+    "prebuild": "pnpm run type-check",
+    "build:android:preview": "eas build --platform android --profile preview",
+    "build:android:production": "eas build --platform android --profile production",
+    "build:android:local": "expo prebuild && cd android && ./gradlew assembleRelease"
   },
   "dependencies": {
     "@clerk/clerk-expo": "^2.19.18",
