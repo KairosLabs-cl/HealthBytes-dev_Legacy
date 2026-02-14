@@ -5,18 +5,22 @@ Handles payment initialization, verification, and webhook processing
 
 import hashlib
 import hmac
-from datetime import datetime
-from typing import Dict, Optional, List
+import logging
+from datetime import UTC, datetime
 from decimal import Decimal
+from typing import Dict, List, Optional
 
 import httpx
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
-from app.db.models.payment import Payment, PaymentProvider, PaymentStatus, PaymentCurrency
-from app.db.schemas import Order
-from app.core.exceptions import PaymentError
 from app.config import Settings
+from app.core.exceptions import PaymentError
+from app.db.models.payment import Payment, PaymentCurrency, PaymentProvider, PaymentStatus
+from app.db.schemas import Order
+
+logger = logging.getLogger(__name__)
 
 
 class MercadoPagoService:
@@ -32,20 +36,19 @@ class MercadoPagoService:
         self,
         db: AsyncSession,
         order_id: int,
-        amount: Decimal,
         currency: PaymentCurrency = PaymentCurrency.CLP,
-        description: str = "HealthBytes Order",
         payer_email: Optional[str] = None,
     ) -> Dict:
         """
-        Create a Mercado Pago payment preference
+        Create a Mercado Pago payment preference from an order.
+
+        Fetches the order with items, calculates total from DB prices,
+        and creates a preference with individual line items.
 
         Args:
             db: Database session
             order_id: Order ID to associate payment with
-            amount: Payment amount
             currency: Payment currency (default CLP)
-            description: Payment description
             payer_email: Payer email for pre-fill
 
         Returns:
@@ -54,8 +57,10 @@ class MercadoPagoService:
         Raises:
             PaymentError: If preference creation fails
         """
-        # Verify order exists
-        result = await db.execute(select(Order).where(Order.id == order_id))
+        # Fetch order with items
+        result = await db.execute(
+            select(Order).where(Order.id == order_id).options(selectinload(Order.items))
+        )
         order = result.scalar_one_or_none()
 
         if not order:
@@ -64,10 +69,16 @@ class MercadoPagoService:
         if order.status == "cancelled":
             raise PaymentError(f"Order {order_id} is cancelled")
 
+        if not order.items:
+            raise PaymentError(f"Order {order_id} has no items")
+
+        # Calculate total from DB (never trust client)
+        total = sum(Decimal(str(item.price)) * item.quantity for item in order.items)
+
         # Create payment record
         payment = Payment(
             order_id=order_id,
-            amount=amount,
+            amount=total,
             currency=currency,
             provider=PaymentProvider.MERCADO_PAGO,
             status=PaymentStatus.PENDING,
@@ -76,30 +87,43 @@ class MercadoPagoService:
         await db.commit()
         await db.refresh(payment)
 
-        # Build preference payload
-        preference_data = {
-            "items": [
+        # Build individual items for the preference
+        mp_items = []
+        for item in order.items:
+            mp_items.append(
                 {
-                    "title": description,
-                    "quantity": 1,
+                    "id": str(item.product_id),
+                    "title": f"Producto #{item.product_id}",
+                    "quantity": item.quantity,
                     "currency_id": currency.value,
-                    "unit_price": float(amount),
+                    "unit_price": float(item.price),
                 }
-            ],
-            "back_urls": {
-                "success": f"{self.settings.FRONTEND_URL}/payment/success?order_id={order_id}",
-                "failure": f"{self.settings.FRONTEND_URL}/payment/failure?order_id={order_id}",
-                "pending": f"{self.settings.FRONTEND_URL}/payment/pending?order_id={order_id}",
-            },
-            "auto_return": "approved",
+            )
+
+        # Build preference payload
+        is_production = self.settings.ENVIRONMENT == "production"
+
+        preference_data = {
+            "items": mp_items,
             "external_reference": str(order_id),
-            "notification_url": f"{self.settings.BACKEND_URL}/api/v1/payments/mercadopago/webhook",
             "statement_descriptor": "HEALTHBYTES",
             "metadata": {
                 "order_id": order_id,
                 "payment_id": payment.id,
             },
         }
+
+        # back_urls and auto_return only work with public URLs (not localhost)
+        if is_production:
+            preference_data["back_urls"] = {
+                "success": f"{self.settings.FRONTEND_URL}/payment/success?order_id={order_id}",
+                "failure": f"{self.settings.FRONTEND_URL}/payment/failure?order_id={order_id}",
+                "pending": f"{self.settings.FRONTEND_URL}/payment/pending?order_id={order_id}",
+            }
+            preference_data["auto_return"] = "approved"
+            preference_data["notification_url"] = (
+                f"{self.settings.BACKEND_URL}/api/v1/payments/mercadopago/webhook"
+            )
 
         if payer_email:
             preference_data["payer"] = {"email": payer_email}
@@ -119,6 +143,11 @@ class MercadoPagoService:
 
                 if response.status_code not in (200, 201):
                     error_detail = response.json() if response.text else {}
+                    logger.error(
+                        "Mercado Pago preference error: %s - %s",
+                        response.status_code,
+                        error_detail,
+                    )
                     raise PaymentError(
                         f"Mercado Pago API error: {response.status_code} - {error_detail}"
                     )
@@ -137,6 +166,7 @@ class MercadoPagoService:
                 }
 
         except httpx.RequestError as e:
+            logger.error("Network error calling Mercado Pago: %s", e)
             raise PaymentError(f"Network error calling Mercado Pago: {str(e)}")
 
     async def get_payment_info(self, payment_id: str) -> Dict:
@@ -169,7 +199,11 @@ class MercadoPagoService:
             raise PaymentError(f"Network error: {str(e)}")
 
     async def process_webhook(
-        self, db: AsyncSession, payment_id: str, topic: str, webhook_signature: Optional[str] = None
+        self,
+        db: AsyncSession,
+        payment_id: str,
+        topic: str,
+        webhook_signature: Optional[str] = None,
     ) -> Dict:
         """
         Process Mercado Pago webhook notification
@@ -178,7 +212,7 @@ class MercadoPagoService:
             db: Database session
             payment_id: Mercado Pago payment ID
             topic: Notification topic (payment, merchant_order)
-            webhook_signature: Optional signature for validation
+            webhook_signature: Optional x-signature header for validation
 
         Returns:
             Dict with processing status
@@ -188,9 +222,9 @@ class MercadoPagoService:
         """
         # Validate signature if provided
         if webhook_signature and self.webhook_secret:
-            # Implement signature validation
-            # MP signature format: x-signature: ts={timestamp},v1={hash}
-            pass
+            if not self._validate_x_signature(webhook_signature, payment_id):
+                logger.warning("Invalid webhook signature for payment %s", payment_id)
+                raise PaymentError("Invalid webhook signature")
 
         # Get payment info from Mercado Pago
         payment_info = await self.get_payment_info(payment_id)
@@ -204,7 +238,7 @@ class MercadoPagoService:
 
         order_id = int(external_reference)
 
-        # Find our payment record by provider_payment_id
+        # Find our payment record
         result = await db.execute(
             select(Payment).where(
                 Payment.order_id == order_id,
@@ -228,10 +262,11 @@ class MercadoPagoService:
 
         new_status = status_map.get(status, PaymentStatus.PENDING)
         payment.status = new_status
-        payment.updated_at = datetime.utcnow()
+        payment.provider_payment_id = payment_id
+        payment.updated_at = datetime.now(UTC)
 
-        # Store full response in metadata (optional, requires JSON field in model)
-        # payment.metadata = payment_info
+        if new_status == PaymentStatus.COMPLETED:
+            payment.completed_at = datetime.now(UTC)
 
         # Update order status if payment completed
         if new_status == PaymentStatus.COMPLETED:
@@ -239,9 +274,35 @@ class MercadoPagoService:
             order = result.scalar_one_or_none()
             if order:
                 order.status = "confirmed"
-                order.updated_at = datetime.utcnow()
+
+        elif new_status == PaymentStatus.FAILED:
+            result = await db.execute(select(Order).where(Order.id == order_id))
+            order = result.scalar_one_or_none()
+            if order:
+                order.status = "cancelled"
 
         await db.commit()
+
+        # Send payment success email (fire-and-forget)
+        if new_status == PaymentStatus.COMPLETED:
+            try:
+                from app.services.email_service import EmailService, build_order_email_data
+
+                email_svc = EmailService(self.settings)
+                email_data = await build_order_email_data(db, order_id)
+                if email_data:
+                    await email_svc.send_payment_success(email_data)
+            except Exception:
+                logger.exception(
+                    "Failed to send payment success email for order %s", order_id
+                )
+
+        logger.info(
+            "Webhook processed: order=%s, mp_payment=%s, status=%s",
+            order_id,
+            payment_id,
+            new_status.value,
+        )
 
         return {
             "payment_id": payment.id,
@@ -250,14 +311,18 @@ class MercadoPagoService:
             "mp_payment_id": payment_id,
         }
 
-    def verify_webhook_signature(self, payload: str, signature: str, timestamp: str) -> bool:
+    def _validate_x_signature(self, x_signature: str, data_id: str) -> bool:
         """
-        Verify Mercado Pago webhook signature
+        Validate Mercado Pago x-signature header.
+
+        MP sends: x-signature: ts=<timestamp>,v1=<hash>
+        Hash is HMAC-SHA256(secret, "id:<data_id>;request-id:...;ts:<timestamp>;")
+
+        For simplicity we validate: HMAC-SHA256(secret, "id:<data_id>;ts:<timestamp>;")
 
         Args:
-            payload: Raw webhook payload
-            signature: Signature from x-signature header
-            timestamp: Timestamp from x-signature header
+            x_signature: Full x-signature header value
+            data_id: The payment/resource ID from the notification
 
         Returns:
             True if signature is valid
@@ -265,16 +330,33 @@ class MercadoPagoService:
         if not self.webhook_secret:
             return True  # Skip validation if no secret configured
 
-        # Build expected signature
-        # MP uses: HMAC-SHA256(secret, timestamp + payload)
-        message = f"{timestamp}{payload}"
-        expected = hmac.new(
-            self.webhook_secret.encode(),
-            message.encode(),
-            hashlib.sha256,
-        ).hexdigest()
+        try:
+            # Parse x-signature: "ts=12345,v1=abcdef..."
+            parts = {}
+            for part in x_signature.split(","):
+                key, _, value = part.strip().partition("=")
+                parts[key] = value
 
-        return hmac.compare_digest(expected, signature)
+            ts = parts.get("ts", "")
+            v1 = parts.get("v1", "")
+
+            if not ts or not v1:
+                return False
+
+            # Build the manifest string per MP docs
+            manifest = f"id:{data_id};ts:{ts};"
+
+            expected = hmac.new(
+                self.webhook_secret.encode(),
+                manifest.encode(),
+                hashlib.sha256,
+            ).hexdigest()
+
+            return hmac.compare_digest(expected, v1)
+
+        except Exception:
+            logger.exception("Error validating webhook signature")
+            return False
 
     async def refund_payment(
         self, db: AsyncSession, payment_id: int, amount: Optional[Decimal] = None
@@ -326,14 +408,17 @@ class MercadoPagoService:
 
                 if response.status_code not in (200, 201):
                     error = response.json() if response.text else {}
+                    logger.error("Refund failed: %s - %s", response.status_code, error)
                     raise PaymentError(f"Refund failed: {response.status_code} - {error}")
 
                 refund_info = response.json()
 
                 # Update payment status
                 payment.status = PaymentStatus.REFUNDED
-                payment.updated_at = datetime.utcnow()
+                payment.updated_at = datetime.now(UTC)
                 await db.commit()
+
+                logger.info("Payment %s refunded successfully", payment.id)
 
                 return {
                     "payment_id": payment.id,
@@ -343,4 +428,5 @@ class MercadoPagoService:
                 }
 
         except httpx.RequestError as e:
+            logger.error("Network error during refund: %s", e)
             raise PaymentError(f"Network error during refund: {str(e)}")
