@@ -1,19 +1,23 @@
-import "@/global.css";
-import { Link, Stack, useRouter } from "expo-router";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { Icon } from "@/components/ui/icon";
-import { ShoppingCart, User } from "lucide-react-native";
-import { Pressable } from "react-native";
-import { useCart } from "@/store/cartStore";
-import { Text } from "@/components/ui/text";
 import BottomNavBar from "@/components/ui/NavBar/BottomNavBar";
-import React, { useEffect } from "react";
-import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
+import {
+  Toast,
+  ToastDescription,
+  ToastTitle,
+  useToast,
+} from "@/components/ui/toast";
+import "@/global.css";
 import { tokenCache } from "@/lib/cache";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Toast, ToastDescription, ToastTitle, useToast } from "@/components/ui/toast";
+import { useCart } from "@/store/cartStore";
 import { useFavoritesStore } from "@/store/favoritesStore";
+import { ClerkLoaded, ClerkProvider, useAuth } from "@clerk/clerk-expo";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Link, Stack } from "expo-router";
+import { User } from "lucide-react-native";
+import { useEffect } from "react";
+import { Pressable } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 // Constants removed
 
@@ -86,7 +90,6 @@ function RootLayoutNav() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSignedIn]);
 
-
   return (
     <>
       <Stack>
@@ -124,14 +127,19 @@ function RootLayoutNav() {
             headerTitleAlign: "center",
           }}
         />
+        <Stack.Screen
+          name="checkout-v2"
+          options={{
+            title: "",
+            headerTitleAlign: "center",
+          }}
+        />
       </Stack>
 
       <BottomNavBar />
     </>
   );
 }
-
-
 
 export default function RootLayout() {
   return (
@@ -140,7 +148,6 @@ export default function RootLayout() {
         <ClerkLoaded>
           <QueryClientProvider client={queryClient}>
             <GluestackUIProvider>
-
               <RootLayoutNav />
             </GluestackUIProvider>
           </QueryClientProvider>

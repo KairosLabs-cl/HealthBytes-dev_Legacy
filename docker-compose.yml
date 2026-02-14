@@ -1,0 +1,129 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: healthbytes-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-healthbytes}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-healthbytes_dev}
+      POSTGRES_DB: ${DB_NAME:-healthbytes}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./Tools/backend/database/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-healthbytes}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - healthbytes_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: healthbytes-backend
+    restart: unless-stopped
+    environment:
+      ***REDACTED_DATABASE_URL***
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-in-production}
+      CLERK_PUBLISHABLE_KEY: ${CLERK_PUBLISHABLE_KEY}
+      ***REDACTED_CLERK_SECRET_KEY***
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend/app:/app/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - healthbytes_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # React Native / Expo Frontend (Dev)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: healthbytes-frontend
+    restart: unless-stopped
+    environment:
+      EXPO_PUBLIC_API_URL: http://backend:3001
+      EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY: ${EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY:-${CLERK_PUBLISHABLE_KEY}}
+      NODE_ENV: development
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./frontend/app:/app/app
+      - ./frontend/components:/app/components
+      - ./frontend/api:/app/api
+      - ./frontend/store:/app/store
+      - ./frontend/types:/app/types
+      - ./frontend/lib:/app/lib
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - healthbytes_network
+    stdin_open: true
+    tty: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Redis Cache (Optional - for future use)
+  redis:
+    image: redis:7-alpine
+    container_name: healthbytes-cache
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_dev}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - healthbytes_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  healthbytes_network:
+    driver: bridge

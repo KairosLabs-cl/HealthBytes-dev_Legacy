@@ -95,10 +95,12 @@ async def test_create_order_insufficient_stock(db_session, test_user):
     # Try to order 2
     order_data = OrderCreate(items=[OrderItemCreate(productId=10, quantity=2, price=50.0)])
 
-    with pytest.raises(ValueError) as exc_info:
-        await create_order(mock_db, test_user, order_data)
+    from fastapi import HTTPException
 
-    assert "stock" in str(exc_info.value).lower()
+    with pytest.raises(HTTPException) as exc_info:
+        await create_order(mock_db, test_user.id, order_data)
+
+    assert "stock" in str(exc_info.value.detail).lower()
 
 
 @pytest.mark.asyncio

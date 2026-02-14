@@ -21,6 +21,7 @@
 - [🔧 Configuración](#-configuración)
 - [📚 Documentación](#-documentación)
 - [🧪 Testing](#-testing)
+- [🗺️ Roadmap](#️-roadmap)
 - [🤝 Contribuir](#-contribuir)
 - [⚖️ Notas Legales](#️-notas-legales)
 
@@ -50,15 +51,15 @@ Las personas con condiciones como celiaquía, diabetes o alergias alimentarias e
 ### Estado Actual del Proyecto
 
 **Versión:** MVP en Desarrollo Activo
-**Última actualización:** Enero 2026
+**Última actualización:** Febrero 2026
 
 | Componente         | Estado           | Descripción                      |
 | ------------------ | ---------------- | --------------------------------- |
 | 🎨 Frontend Mobile | ✅ Funcional     | React Native + Expo               |
-| ⚙️ Backend API   | ✅ Funcional     | FastAPI + SQLAlchemy              |
+| ⚙️ Backend API   | ✅ Funcional     | FastAPI + SQLAlchemy async        |
 | 🗄️ Base de Datos | ✅ Funcional     | PostgreSQL con modelos core       |
-| 🔐 Autenticación  | ✅ Implementado  | JWT + Clerk (en transición)      |
-| 🧪 Tests           | ⚠️ En Progreso | Coverage parcial (backend ~50%, frontend inicial) |
+| 🔐 Autenticación  | ✅ Implementado  | JWT + Clerk (dual auth)          |
+| 🧪 Tests           | ✅ Estable       | 179 tests passing, 70% coverage  |
 | 🐳 Docker          | 📝 Planeado      | Containerización pendiente       |
 | 🚀 Deploy          | 📝 Planeado      | AWS (preparado)                   |
 
@@ -124,18 +125,6 @@ python run_server.py
 
 **Backend disponible en**: `http://localhost:3001`
 
-# Activar entorno virtual
-.\venv\Scripts\Activate.ps1  # Windows PowerShell
-# source venv/bin/activate    # Linux/Mac
-
-# Instalar dependencias
-pip install -r requirements.txt
-
-# Configurar variables de entorno
-cp .env.example .env
-# ⚠️ IMPORTANTE: Edita .env con tus credenciales reales
-```
-
 **Configurar `.env`** (ver sección [Configuración](#-configuración) para más detalles)
 
 ### 3️⃣ Configurar Frontend (1 minuto) ⚡
@@ -184,7 +173,7 @@ pnpm start
 2. Deberías ver la documentación interactiva de la API
 3. Prueba el endpoint `GET /api/v1/health` para verificar que todo funciona
 
-¿Problemas? Consulta la [Guía de Troubleshooting](docs/Copilot-logs/status-logs/QUICK_START.md)
+¿Problemas? Consulta la [documentación de setup](docs/setup/)
 
 ---
 
@@ -293,9 +282,11 @@ HealthBytes-dev/
 │                             # (Ver backend/README.md para detalles)
 │
 ├── 📚 docs/                  # Documentación del proyecto
-│   ├── Copilot-logs/         # Reportes y análisis
-│   │   ├── status-logs/      # Estado y diagnóstico del proyecto
-│   │   └── auth-logs/        # Autenticación y seguridad
+│   ├── ai-logs/              # Sesiones de desarrollo con IA
+│   ├── architecture/         # Arquitectura y decisiones
+│   ├── development/          # Roadmap, testing, guías
+│   ├── features/             # Documentación de features
+│   ├── security/             # Seguridad
 │   └── diagramas/            # Diagramas de arquitectura
 │
 ├── 🛠️ tools/                 # Herramientas y scripts utilitarios
@@ -347,7 +338,7 @@ HealthBytes-dev/
 | Necesito...                 | Ve a...                                                                                   |
 | --------------------------- | ----------------------------------------------------------------------------------------- |
 | Documentación principal     | [docs/README.md](docs/README.md) |
-| Ver estado del proyecto     | [docs/Copilot-logs/status-logs/](docs/Copilot-logs/status-logs/) |
+| Ver estado del proyecto     | [docs/ai-logs/status/](docs/ai-logs/status/) |
 | Backend info                | [backend/README.md](backend/README.md) |
 | Frontend info               | [frontend/README.md](frontend/README.md) |
 | Tools scripts               | [Tools/README.md](Tools/README.md) |
@@ -432,7 +423,7 @@ PROJECT_NAME="HealthBytes API"
 
 ### 🔑 Obtener Keys y Credenciales
 
-Las credenciales y API keys (Clerk, Venti, Mercado Pago, etc.) están documentadas en ClickUp:
+Las credenciales y API keys (Clerk, Mercado Pago, etc.) están documentadas en ClickUp:
 
 **📋 [Documento de Keys en ClickUp](https://app.clickup.com/90131597357/v/dc/2ky4621d-2233)**
 
@@ -645,8 +636,8 @@ pre-commit run --files app/api/v1/products.py
 
 | Documento                                                                        | Descripción                                                  | Audiencia |
 | -------------------------------------------------------------------------------- | ------------------------------------------------------------- | --------- |
-| [Análisis Proyecto](docs/copilot-logs/status-logs/ANALISIS_PROFUNDO_2026-01-27.md) | ⭐**Estado completo** - Análisis exhaustivo (27/01/26) | Todos     |
-| [Sesión 27/01](docs/copilot-logs/status-logs/SESSION_2026-01-27.md)                | Cambios y fixes recientes                                     | Devs      |
+| [Análisis Proyecto](docs/ai-logs/status/status-logs/ANALISIS_PROFUNDO_2026-01-27.md) | ⭐**Estado completo** - Análisis exhaustivo | Todos     |
+| [Resumen Ejecutivo](docs/ai-logs/status/status-logs/RESUMEN_EJECUTIVO.md)            | Dashboard ejecutivo del proyecto              | Todos     |
 | [docs/README.md](docs/README.md)                                                    | Índice general de documentación                             | Todos     |
 
 ### READMEs Específicos
@@ -705,12 +696,15 @@ pytest -v
 
 ### Estado Actual de Tests
 
-| Módulo      | Coverage | Estado           |
-| ------------ | -------- | ---------------- |
-| API Auth     | ~70%     | ⚠️ En progreso |
-| API Products | ~80%     | ✅ Funcional     |
-| API Orders   | ~60%     | ⚠️ Mejorar     |
-| Services     | ~50%     | ⚠️ Incompleto  |
+**179 tests passing | 70% coverage | 0 failures**
+
+| Módulo      | Tests | Coverage | Estado           |
+| ------------ | ----- | -------- | ---------------- |
+| Services     | 68    | ~93%     | ✅ Completo      |
+| API Endpoints| 84    | ~70%     | ✅ Funcional     |
+| Security     | 16    | ~80%     | ✅ Funcional     |
+| Performance  | 9     | -        | ✅ Funcional     |
+| Config       | 2     | ~81%     | ✅ Funcional     |
 
 Ver más detalles en [tests/README.md](backend/tests/README.md)
 
@@ -720,6 +714,84 @@ Ver más detalles en [tests/README.md](backend/tests/README.md)
 cd frontend
 pnpm test  # Ejecutar tests (Jest + RNTL)
 ```
+
+---
+
+## 🗺️ Roadmap
+
+### 🎯 Vision 2026
+
+Convertir HealthBytes en la **plataforma líder** de e-commerce para personas con restricciones alimentarias en Latinoamérica.
+
+### 📅 Hitos Principales
+
+| Milestone | Target | Status | Progress |
+|-----------|--------|--------|----------|
+| 🚀 **MVP Launch** | Abril 2026 | 🟡 En progreso | 70% |
+| 💳 **Payment Integration** | Marzo 2026 | 📋 Planeado | 0% |
+| 📱 **App Store Release** | Mayo 2026 | 📋 Planeado | 0% |
+| 👥 **100 Beta Users** | Abril 2026 | 📋 Planeado | 0% |
+
+### 🔴 Prioridades Críticas (P0) - Febrero-Marzo 2026
+
+**Bloqueadores para MVP Launch**:
+
+#### Backend
+- [ ] **Payment Integration** (Mercado Pago) - 1.5 semanas
+- [x] **Address CRUD** - ✅ Implementado
+- [x] **Stock Management** - ✅ Implementado (locking atómico)
+- [ ] **Webhooks Payment Confirmation** - 3 días
+- [ ] **Order Emails** (SendGrid) - 2 días
+
+#### Frontend
+- [ ] **Checkout Flow Completo** - 1 semana
+- [ ] **Address Selection UI** - 3 días
+- [ ] **Payment Method Selection** - 3 días
+- [ ] **Order Success Screen** - 2 días
+
+#### DevOps
+- [ ] **Docker Setup** - 2 días
+- [ ] **CI/CD Pipeline** (GitHub Actions) - 1 semana
+
+### 🟠 Alta Prioridad (P1) - Abril 2026
+
+**Post-MVP Features para engagement**:
+- [ ] Onboarding de preferencias dietéticas
+- [ ] Push Notifications para órdenes
+- [ ] Sistema de recomendaciones
+- [ ] Reviews & Ratings (básico)
+- [ ] Deep Linking
+
+### 🟡 Media Prioridad (P2) - Mayo 2026
+
+**Polish & Accesibilidad**:
+- [ ] Dark Mode
+- [ ] A11y Audit (WCAG 2.1 AA)
+- [ ] Performance Optimization
+- [ ] Offline Mode (básico)
+- [ ] Image CDN
+
+### 📊 Documentación Completa
+
+- **Roadmap Detallado**: [docs/development/ROADMAP.md](docs/development/ROADMAP.md) - Plan completo con estimaciones y dependencias
+- **Roadmap Visual**: [docs/development/ROADMAP_VISUAL.md](docs/development/ROADMAP_VISUAL.md) - Diagramas Gantt y dependencias
+- **UI/UX Roadmap**: [docs/development/UIUX_ROADMAP.md](docs/development/UIUX_ROADMAP.md) - Mejoras de experiencia de usuario
+
+### 🚧 Features en Progreso
+
+| Feature | Owner | ETA | Status |
+|---------|-------|-----|--------|
+| Backend Testing 80%+ | QA | Feb 20 | 🟡 70% (179 tests passing) |
+| Docker Configuration | DevOps | Mar 1 | 📋 Planeado |
+| Payment Integration (Mercado Pago) | Backend | Mar 15 | 📋 Not started |
+
+### ❌ Features Descartadas
+
+Por razones de **ROI vs esfuerzo**, estas features NO están en el roadmap:
+- ❌ Historial de búsquedas (bajo impacto)
+- ❌ Typeahead de búsqueda (premature optimization)
+- ❌ 2FA avanzado (Clerk es suficiente para MVP)
+- ❌ Feedback háptico (valor unclear)
 
 ---
 
@@ -886,16 +958,18 @@ git push origin feat/product-filters
 
 ---
 
-## 📊 Estado del Proyecto (Actualizado: 27/01/2026)
+## 📊 Estado del Proyecto (Actualizado: 13/02/2026)
 
-**Calificación Global**: 🟢 **85/100** - Muy Bueno
+**Calificación Global**: 🟢 **88/100** - Muy Bueno
 
 - ✅ Arquitectura sólida (100% backend, 90% frontend)
-- ✅ Seguridad correcta (sin credenciales hardcodeadas, JWT configurado)
-- ⚠️ Testing parcial (backend 50%, frontend inicial)
-- ⚠️ TypeScript con 10 usos de `any` (mejorando)
+- ✅ Seguridad correcta (security headers, bcrypt, JWT + Clerk)
+- ✅ Testing estable (179 tests, 70% coverage, 0 failures)
+- ✅ N+1 queries optimizados (batch queries + stock locking)
+- ⚠️ Frontend tests pendientes (Jest configurado, tests por escribir)
+- ⚠️ Payment integration pendiente (Mercado Pago)
 
-**Ver**: [Análisis Completo](docs/copilot-logs/status-logs/ANALISIS_PROFUNDO_2026-01-27.md)
+**Ver**: [Análisis Completo](docs/ai-logs/status/status-logs/ANALISIS_PROFUNDO_2026-01-27.md)
 
 ---
 
@@ -941,7 +1015,7 @@ Al usar HealthBytes, el usuario acepta que:
 ### Enlaces Útiles
 
 - 📖 [Documentación Completa](docs/)
-- 🎯 [Roadmap del Proyecto](docs/Copilot-logs/status-logs/PLAN_ACCION.md)
+- 🎯 [Roadmap del Proyecto](docs/development/ROADMAP.md)
 - [📱 Wireframe / Diseño Figma](https://www.figma.com/design/0yTwgp5ddVCKM1SL1p2rIS/Wireframes---HealthBytes?node-id=11606-22516&t=VWSNkneVk6PCZnrh-1)
 - [🔑 Llaves de acceso para .env  ](https://app.clickup.com/90131597357/v/dc/2ky4621d-2233)
 
@@ -963,6 +1037,6 @@ Al usar HealthBytes, el usuario acepta que:
 
 Hecho con ❤️ por el equipo de HealthBytes
 
-_Última actualización: 27 Enero 2026_
+_Última actualización: 13 Febrero 2026_
 
 </div>

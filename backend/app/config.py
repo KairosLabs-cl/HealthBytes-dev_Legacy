@@ -2,6 +2,7 @@ from typing import Optional
 
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
+from pydantic import ConfigDict
 
 load_dotenv()
 
@@ -21,9 +22,13 @@ class Settings(BaseSettings):
     CLERK_PUBLISHABLE_KEY: Optional[str] = None
     ***REDACTED_CLERK_SECRET_KEY***
 
-    # Stripe
-    STRIPE_SECRET_KEY: Optional[str] = None
-    STRIPE_WEBHOOK_SECRET: Optional[str] = None
+    # Mercado Pago
+    ***REDACTED_MERCADOPAGO_TOKEN***
+    MERCADO_PAGO_WEBHOOK_SECRET: Optional[str] = None
+    
+    # URLs for callbacks
+    BACKEND_URL: str = "http://127.0.0.1:3001"
+    FRONTEND_URL: str = "http://localhost:8081"
 
     # Environment
     ENVIRONMENT: str = "dev"
@@ -72,10 +77,7 @@ class Settings(BaseSettings):
                     print(f"Decoded frontend API: {frontend_api}")
         return ""
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
-        extra = "ignore"
+    model_config = ConfigDict(env_file=".env", case_sensitive=True, extra="ignore")
 
 
 settings = Settings()

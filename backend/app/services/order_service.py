@@ -3,6 +3,7 @@
 from typing import List, Optional
 from app.db.schemas import Order, OrderItem, Product
 from app.schemas.order import OrderCreate
+from app.services.stock_service import StockService
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -59,17 +60,14 @@ async def create_order(db: AsyncSession, user_id: int, order_in: OrderCreate) ->
             requested_quantities.get(item.product_id, 0) + item.quantity
         )
 
+    # Reserve stock with atomic locking (prevents race conditions)
+    # This uses SELECT FOR UPDATE to lock rows during transaction
     for pid, qty in requested_quantities.items():
-        product = products_map[pid]
-        if product.stock < qty:
-            raise ValueError(
-                f"Insufficient stock for {product.name}. "
-                f"Available: {product.stock}, requested: {qty}"
-            )
-
-        # Reduce stock (in memory, will be flushed on commit)
-        product.stock -= qty
-        db.add(product)
+        await StockService.reserve_stock_atomic(
+            db=db, product_id=pid, quantity=qty, order_id=None  # Will be set after order creation
+        )
+        # Note: Stock is already reduced by reserve_stock_atomic
+        # No need to manually update product.stock here
 
     # 4. Calculate total and prepare items
     for item in order_in.items:
@@ -82,11 +80,7 @@ async def create_order(db: AsyncSession, user_id: int, order_in: OrderCreate) ->
         )
 
     # 5. Create order and items
-    stripe_payment_intent_id = order_in.order.get("stripePaymentIntentId")
-
-    new_order = Order(
-        user_id=user_id, total=total, stripe_payment_intent_id=stripe_payment_intent_id
-    )
+    new_order = Order(user_id=user_id, total=total)
 
     db.add(new_order)
     await db.flush()  # Get ID

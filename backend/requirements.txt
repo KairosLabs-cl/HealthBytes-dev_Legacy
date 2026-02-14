@@ -8,7 +8,7 @@ pydantic-settings>=2.12.0
 
 # Auth & Security
 python-jose[cryptography]>=3.5.0
-passlib[bcrypt]>=1.7.4
+
 bcrypt>=4.1.0,<5.1.0
 PyJWT[crypto]>=2.10.1
 
@@ -22,9 +22,6 @@ python-multipart>=0.0.22
 
 # Environment & Config
 python-dotenv>=1.2.1
-
-# External Services
-stripe>=14.2.0
 
 # AWS Lambda adapter
 mangum>=0.20.0
