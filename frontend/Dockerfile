@@ -9,13 +9,13 @@ WORKDIR /build
 RUN npm install -g pnpm
 
 # Copy package files
-COPY frontend/package.json frontend/pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml ./
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
 # Copy source code
-COPY frontend .
+COPY . .
 
 # Prebuild Expo app (optional - for static export if needed)
 # Note: Expo apps are primarily run in dev mode via `pnpm start`
@@ -34,7 +34,7 @@ COPY --from=builder /build/node_modules ./node_modules
 COPY --from=builder /build .
 
 # Set environment
-ENV NODE_ENV=production \
+ENV NODE_ENV=development \
     EXPO_PUBLIC_API_URL=http://backend:3001 \
     PORT=8081
 
@@ -42,4 +42,4 @@ ENV NODE_ENV=production \
 EXPOSE 8081
 
 # Start Expo dev server
-CMD ["pnpm", "start", "--localhost"]
+CMD ["pnpm", "start"]
