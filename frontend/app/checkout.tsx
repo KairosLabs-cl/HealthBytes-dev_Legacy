@@ -1,14 +1,15 @@
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator, Linking, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { useCart } from "@/store/cartStore";
 import { useAuth } from "@clerk/clerk-expo";
 import { useMutation } from "@tanstack/react-query";
 import { createOrder } from "@/api/orders";
+import { createMercadoPagoPreference } from "@/api/mercadopago";
 import { Button, ButtonText } from "@/components/ui/button";
 import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
 import { useState } from "react";
-import { CheckCircleIcon } from "lucide-react-native";
+import { CheckCircleIcon, AlertCircleIcon } from "lucide-react-native";
 import { formatPrice } from "@/lib/formatPrice";
 
 export default function CheckoutScreen() {
@@ -17,85 +18,77 @@ export default function CheckoutScreen() {
     const { isSignedIn, getToken } = useAuth();
     const [isProcessing, setIsProcessing] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     const subtotal = items.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
 
-    const createOrderMutation = useMutation({
-        mutationFn: () =>
-            createOrder(
+    const handlePay = async () => {
+        setErrorMsg(null);
+
+        if (!isSignedIn) {
+            alert("Necesitas haber iniciado una sesión para realizar una compra.");
+            router.push("/(auth)/login");
+            return;
+        }
+
+        let token = await getToken();
+
+        if (!token) {
+            for (let attempt = 1; attempt <= 3; attempt++) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                token = await getToken();
+                if (token) break;
+            }
+        }
+
+        if (!token) {
+            alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
+            router.push("/(auth)/login");
+            return;
+        }
+
+        setIsProcessing(true);
+
+        try {
+            // 1. Create the order in the backend
+            const order = await createOrder(
                 items.map((item) => ({
                     productId: item.product.id,
                     quantity: item.quantity,
                     price: item.product.price,
                 })),
                 getToken
-            ),
-        onSuccess: (data) => {
+            );
 
+            console.log("Order created:", order.id);
+
+            // 2. Create Mercado Pago preference
+            const preference = await createMercadoPagoPreference(
+                { order_id: order.id },
+                getToken
+            );
+
+            console.log("MP preference created:", preference.preference_id);
+
+            // 3. Open Mercado Pago checkout
+            const checkoutUrl = preference.sandbox_init_point || preference.init_point;
+
+            if (Platform.OS === "web") {
+                window.open(checkoutUrl, "_blank");
+            } else {
+                await Linking.openURL(checkoutUrl);
+            }
+
+            // 4. Clear cart (order is already created)
+            resetCart();
             setIsProcessing(false);
             setIsSuccess(true);
-            resetCart();
-            // Esperar un momento para mostrar el estado de éxito antes de redirigir
-            setTimeout(() => {
-                router.replace("/");
-            }, 2000);
-        },
-        onError: (error) => {
 
+        } catch (error: any) {
+            console.error("Checkout error:", error);
             setIsProcessing(false);
-            alert(error.message || "Hubo un error al procesar la orden. Inténtalo de nuevo.");
-        },
-    });
-
-    const handlePay = async () => {
-
-
-        /* Validar Autenticación: Impedir checkout si no hay sesión */
-        if (!isSignedIn) {
-
-            alert("Necesitas haber iniciado una sesión para realizar una compra.");
-            router.push("/(auth)/login");
-            return;
+            setErrorMsg(error.message || "Hubo un error al procesar la orden.");
         }
-
-
-
-        // Verificar que el token esté disponible ANTES de procesar pago
-
-        let token = await getToken();
-
-        // Si el token no está disponible, intentar esperar un poco (timing issue mitigation)
-        if (!token) {
-
-
-            for (let attempt = 1; attempt <= 3; attempt++) {
-                await new Promise(resolve => setTimeout(resolve, 500));
-                token = await getToken();
-
-                if (token) {
-
-                    break;
-                } else {
-
-                }
-            }
-        }
-
-        if (!token) {
-
-            alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
-            router.push("/(auth)/login");
-            return;
-        }
-
-
-        setIsProcessing(true);
-
-        // Simular pasarela de pago antes de crear la orden
-        setTimeout(() => {
-            console.log("💳 handlePay: Pago simulado exitoso. Creando orden...");
-            createOrderMutation.mutate();
-        }, 2500);
     };
 
     if (isSuccess) {
@@ -104,8 +97,17 @@ export default function CheckoutScreen() {
                 <View className="bg-green-100 p-6 rounded-full mb-6">
                     <CheckCircleIcon size={64} color="#16a34a" />
                 </View>
-                <Text className="text-2xl font-bold text-center mb-2 text-black">¡Pago Exitoso!</Text>
-                <Text className="text-gray-500 text-center">Tu orden ha sido procesada correctamente.</Text>
+                <Text className="text-2xl font-bold text-center mb-2 text-black">¡Orden Creada!</Text>
+                <Text className="text-gray-500 text-center mb-4">
+                    Completa tu pago en la ventana de Mercado Pago.
+                </Text>
+                <Button
+                    size="lg"
+                    onPress={() => router.replace("/")}
+                    className="bg-black rounded-full px-8"
+                >
+                    <ButtonText className="text-white font-semibold">Volver al Inicio</ButtonText>
+                </Button>
             </View>
         );
     }
@@ -140,9 +142,18 @@ export default function CheckoutScreen() {
 
                 <View className="bg-blue-50 p-4 rounded-xl border border-blue-100">
                     <Text className="text-blue-800 font-medium text-center">
-                        💳 Simulación de Pago Segura
+                        Serás redirigido a Mercado Pago para completar el pago
                     </Text>
                 </View>
+
+                {errorMsg && (
+                    <View className="bg-red-50 p-4 rounded-xl border border-red-200">
+                        <HStack space="sm" className="items-center">
+                            <AlertCircleIcon size={20} color="#dc2626" />
+                            <Text className="text-red-700 flex-1">{errorMsg}</Text>
+                        </HStack>
+                    </View>
+                )}
             </VStack>
 
             <View className="absolute bottom-24 left-6 right-6">
@@ -158,7 +169,7 @@ export default function CheckoutScreen() {
                             <ButtonText className="text-white font-semibold text-lg">Procesando...</ButtonText>
                         </HStack>
                     ) : (
-                        <ButtonText className="text-white font-bold text-xl">Pagar Ahora</ButtonText>
+                        <ButtonText className="text-white font-bold text-xl">Pagar con Mercado Pago</ButtonText>
                     )}
                 </Button>
             </View>
