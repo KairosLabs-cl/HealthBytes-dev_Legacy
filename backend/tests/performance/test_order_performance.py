@@ -7,6 +7,7 @@ N+1 query pattern has been successfully eliminated.
 
 import time
 from typing import List
+from unittest.mock import patch, AsyncMock
 
 import pytest
 from app.db.schemas import Product, User
@@ -82,7 +83,8 @@ def create_test_products(db_session, count: int) -> List[Product]:
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("item_count", [5, 10, 25, 50])
-async def test_order_creation_query_count(db_session, test_user_perf, item_count):
+@patch("app.services.email_service.build_order_email_data", new_callable=AsyncMock, return_value=None)
+async def test_order_creation_query_count(mock_email, db_session, test_user_perf, item_count):
     """
     Benchmark: Verify that order creation uses constant number of queries.
 
@@ -177,7 +179,8 @@ async def test_order_creation_query_count(db_session, test_user_perf, item_count
 
 
 @pytest.mark.asyncio
-async def test_order_creation_performance_scaling(db_session, test_user_perf):
+@patch("app.services.email_service.build_order_email_data", new_callable=AsyncMock, return_value=None)
+async def test_order_creation_performance_scaling(mock_email, db_session, test_user_perf):
     """
     Benchmark: Compare execution time for different order sizes.
 
@@ -244,7 +247,8 @@ async def test_order_creation_performance_scaling(db_session, test_user_perf):
 
 
 @pytest.mark.asyncio
-async def test_verify_single_product_query(db_session, test_user_perf):
+@patch("app.services.email_service.build_order_email_data", new_callable=AsyncMock, return_value=None)
+async def test_verify_single_product_query(mock_email, db_session, test_user_perf):
     """
     Benchmark: Verify that product fetching uses a single query with IN clause.
 
