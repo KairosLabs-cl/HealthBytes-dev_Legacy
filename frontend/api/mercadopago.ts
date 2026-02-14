@@ -74,11 +74,15 @@ export async function createMercadoPagoPreference(
       errorMsg = data.message;
     }
 
-    console.error("❌ Error creating MP preference:", errorMsg);
+    if (__DEV__) {
+      console.error("Error creating MP preference:", errorMsg);
+    }
     throw new Error(errorMsg);
   }
 
-  console.log("✅ MP preference created:", data.preference_id);
+  if (__DEV__) {
+    console.log("MP preference created:", data.preference_id);
+  }
   return data;
 }
 
@@ -117,6 +121,8 @@ export async function getMercadoPagoPaymentStatus(
     throw new Error(data.detail || `Failed to get payment status`);
   }
 
-  console.log("✅ Payment status:", data.status);
+  if (__DEV__) {
+    console.log("Payment status:", data.status);
+  }
   return data;
 }
