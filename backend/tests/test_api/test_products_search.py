@@ -23,7 +23,7 @@ class TestProductSearch:
     These tests validate the LIKE search (fallback) behavior.
 
     For full-text search testing on PostgreSQL:
-    1. Run migrations: psql -f backend/migrations/add_fulltext_search.sql
+    1. Run migrations: psql -f Tools/backend/database/migrations/add_fulltext_search.sql
     2. Update conftest.py to use PostgreSQL instead of SQLite
     3. Re-run these tests
     """

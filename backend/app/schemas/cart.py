@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List
 
 from app.schemas.product import ProductResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class CartItemCreate(BaseModel):
@@ -27,8 +27,7 @@ class CartItemResponse(BaseModel):
     created_at: datetime
     product: ProductResponse  # Include full product info
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CartResponse(BaseModel):

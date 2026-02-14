@@ -91,7 +91,7 @@ export default function CheckoutScreen() {
 
         setIsProcessing(true);
 
-        // Simular pasarela de pago (Stripe/PayPal) antes de crear la orden
+        // Simular pasarela de pago antes de crear la orden
         setTimeout(() => {
             console.log("💳 handlePay: Pago simulado exitoso. Creando orden...");
             createOrderMutation.mutate();

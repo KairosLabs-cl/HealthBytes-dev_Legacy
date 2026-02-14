@@ -1,18 +1,18 @@
-import { View, Pressable, Platform } from "react-native";
-import { Link, usePathname } from "expo-router";
 import { Icon } from "@/components/ui/icon";
-import { ShoppingCart, Home, User } from "lucide-react-native";
 import { Text } from "@/components/ui/text";
 import { useCart } from "@/store/cartStore";
-import React, { useMemo, useCallback, useEffect } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Link, usePathname } from "expo-router";
+import { Home, ShoppingCart, User } from "lucide-react-native";
+import React, { useCallback, useEffect, useMemo } from "react";
+import { Platform, Pressable, View } from "react-native";
 import Animated, {
-  useSharedValue,
+  Easing,
   useAnimatedStyle,
+  useSharedValue,
   withSpring,
   withTiming,
-  Easing,
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Try to import haptics - gracefully degrade if not installed
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,7 +32,7 @@ const AnimatedPressable = isMobile
   : null;
 
 // Screens where the nav bar should be hidden
-const HIDDEN_ROUTES = ["/product/"];
+const HIDDEN_ROUTES = ["/product/", "/checkout-v2"];
 
 const TAB_CONFIG = [
   { href: "/", label: "Inicio", icon: Home, hasBadge: false },

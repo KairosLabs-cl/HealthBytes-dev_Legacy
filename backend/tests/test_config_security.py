@@ -5,7 +5,7 @@ from app.config import Settings
 from pydantic import ValidationError
 
 
-def test_jwt_secret_required(monkeypatch):
+def test_jwt_secret_required(monkeypatch, tmp_path):
     """Test that the application fails to start if JWT_SECRET is missing."""
     # Unset JWT_SECRET to verify it's required
     monkeypatch.delenv("JWT_SECRET", raising=False)
@@ -13,11 +13,13 @@ def test_jwt_secret_required(monkeypatch):
     # Ensure other required fields are present so we specifically test JWT_SECRET
     monkeypatch.setenv("DATABASE_URL", "sqlite:///:memory:")
 
-    # We must ensure other env vars that might be causing issues (like the quoted ones) are clean or set correctly
-    # But monkeypatch handles the env for this test.
+    # Create an empty .env file so Settings doesn't load the real one
+    empty_env = tmp_path / ".env"
+    empty_env.write_text("DATABASE_URL=sqlite:///:memory:\n")
 
+    # Override the env_file to avoid loading real .env with JWT_SECRET
     with pytest.raises(ValidationError) as exc_info:
-        Settings()
+        Settings(_env_file=str(empty_env))
 
     errors = exc_info.value.errors()
     jwt_secret_error = next((e for e in errors if "JWT_SECRET" in str(e["loc"])), None)

@@ -32,7 +32,7 @@ This migration adds PostgreSQL Full-Text Search (FTS) capabilities to HealthByte
   - If no search → returns all products (existing behavior)
 
 ### 4. Database Migration
-- **File**: `backend/migrations/add_fulltext_search.sql`
+- **File**: `Tools/backend/database/migrations/add_fulltext_search.sql`
 - **Contains**:
   - SQL to add `search_vector` column
   - Trigger function to auto-update search_vector
@@ -63,15 +63,15 @@ Execute the SQL migration on your PostgreSQL database:
 
 ```bash
 # Using psql:
-psql -U your_user -d healthbytes -f backend/migrations/add_fulltext_search.sql
+psql -U your_user -d healthbytes -f Tools/backend/database/migrations/add_fulltext_search.sql
 
 # Or using Supabase SQL Editor:
 # 1. Go to: https://app.supabase.com/project/YOUR_PROJECT/sql/new
-# 2. Copy entire contents of backend/migrations/add_fulltext_search.sql
+# 2. Copy entire contents of Tools/backend/database/migrations/add_fulltext_search.sql
 # 3. Click "Run"
 
 # Or using psql with environment variables:
-PGPASSWORD=your_password psql -h localhost -U postgres -d healthbytes -f backend/migrations/add_fulltext_search.sql
+PGPASSWORD=your_password psql -h localhost -U postgres -d healthbytes -f Tools/backend/database/migrations/add_fulltext_search.sql
 ```
 
 **Expected Output**:
@@ -181,7 +181,7 @@ Returns: [Product(...), Product(...), ...]  (sorted by relevance)
 ### Issue: "column search_vector does not exist"
 **Solution**: Run the SQL migration again:
 ```bash
-psql -U your_user -d healthbytes -f backend/migrations/add_fulltext_search.sql
+psql -U your_user -d healthbytes -f Tools/backend/database/migrations/add_fulltext_search.sql
 ```
 
 ### Issue: Search returns no results (but products exist)

@@ -37,11 +37,13 @@ function HorizontalProductCard({ product }: Props) {
   const colors = firstTag ? (TAG_COLORS[firstTag.color || ""] || DEFAULT_TAG) : null;
 
   return (
-    <Pressable onPress={handlePress} className="mr-3">
+    <Pressable onPress={handlePress} style={{ marginRight: 12 }}>
       <View
-        className="bg-white rounded-2xl overflow-hidden"
         style={{
           width: 200,
+          backgroundColor: "#FFFFFF",
+          borderRadius: 16,
+          overflow: "hidden",
           borderWidth: 1,
           borderColor: "#F3F4F6",
           ...Platform.select<any>({
@@ -58,7 +60,7 @@ function HorizontalProductCard({ product }: Props) {
         }}
       >
         {/* Image */}
-        <View className="relative">
+        <View style={{ position: "relative" }}>
           <Image
             source={{ uri: product.image }}
             style={{ width: 200, height: 140, borderTopLeftRadius: 16, borderTopRightRadius: 16 }}
@@ -72,7 +74,7 @@ function HorizontalProductCard({ product }: Props) {
         {/* Content */}
         <View style={{ paddingHorizontal: 12, paddingTop: 10, paddingBottom: 12 }}>
           {/* Rating */}
-          <View className="flex-row items-center" style={{ marginBottom: 4 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 4 }}>
             <Star size={12} color="#FBBF24" fill="#FBBF24" />
             <Text style={{ fontSize: 11, color: "#9CA3AF", marginLeft: 3, fontWeight: "500" }}>
               4.5
@@ -126,7 +128,7 @@ function HorizontalProductCard({ product }: Props) {
           <Pressable
             onPress={handleAddToCart}
             style={{
-              backgroundColor: "#1F2937",
+              backgroundColor: "#000000",
               borderRadius: 12,
               paddingVertical: 10,
               flexDirection: "row",
@@ -146,7 +148,7 @@ function HorizontalProductCard({ product }: Props) {
             }}
           >
             <ShoppingCart size={14} color="white" />
-            <Text style={{ fontSize: 12, fontWeight: "700", color: "white", marginLeft: 6 }}>
+            <Text style={{ fontSize: 12, fontWeight: "700", color: "#FFFFFF", marginLeft: 6 }}>
               Agregar al carrito
             </Text>
           </Pressable>

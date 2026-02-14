@@ -1,4 +1,15 @@
-from app.api.v1 import auth, cart, orders, products, stripe, users, favorites
+from app.api.v1 import (
+    addresses,
+    auth,
+    cart,
+    orders,
+    products,
+    stock,
+
+    users,
+    favorites,
+    mercadopago,
+)
 from app.config import settings
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -114,6 +125,13 @@ async def root():
     return {"message": "Hola curiosin 👋! Bienvenido a la API de HealthBytes con FastAPI."}
 
 
+# Health check endpoint
+@app.get("/health")
+async def health():
+    """Health check endpoint for Docker and load balancers"""
+    return {"status": "healthy", "service": "HealthBytes API"}
+
+
 # Diagnostic endpoint for JWKS access
 @app.get("/health/jwks")
 async def check_jwks_health():
@@ -182,9 +200,12 @@ app.include_router(products.router, prefix="/products", tags=["Products"])
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(orders.router, prefix="/orders", tags=["Orders"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
-app.include_router(stripe.router, prefix="/stripe", tags=["Stripe"])
+
 app.include_router(cart.router, prefix="/cart", tags=["Cart"])
 app.include_router(favorites.router, prefix="/favorites", tags=["Favorites"])
+app.include_router(addresses.router, tags=["Addresses"])
+app.include_router(stock.router, prefix="/api/v1", tags=["Stock"])
+app.include_router(mercadopago.router, prefix="/api/v1", tags=["Mercado Pago"])
 
 
 # For local development
