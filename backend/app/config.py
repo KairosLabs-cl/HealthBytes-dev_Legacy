@@ -26,6 +26,10 @@ class Settings(BaseSettings):
     ***REDACTED_MERCADOPAGO_TOKEN***
     MERCADO_PAGO_WEBHOOK_SECRET: Optional[str] = None
     
+    # Email (Resend)
+    ***REDACTED_RESEND_KEY***
+    EMAIL_FROM_ADDRESS: str = "HealthBytes <onboarding@resend.dev>"
+
     # URLs for callbacks
     BACKEND_URL: str = "http://127.0.0.1:3001"
     FRONTEND_URL: str = "http://localhost:8081"

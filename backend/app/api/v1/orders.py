@@ -271,9 +271,23 @@ async def update_order(
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.model_dump())
 
         # Update status
+        old_status = order.status
         order.status = order_data.status
         await db.commit()
         await db.refresh(order)
+
+        # Send shipped email if status changed to shipped
+        if order_data.status == "shipped" and old_status != "shipped":
+            try:
+                from app.config import settings
+                from app.services.email_service import EmailService, build_order_email_data
+
+                email_svc = EmailService(settings)
+                email_data = await build_order_email_data(db, order.id)
+                if email_data:
+                    await email_svc.send_order_shipped(email_data)
+            except Exception:
+                logger.exception("Failed to send shipped email for order %s", order.id)
 
         # Build response
         items_response = [

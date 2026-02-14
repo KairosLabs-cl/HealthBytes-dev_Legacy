@@ -1,13 +1,18 @@
 """Order service - Order management and validation logic."""
 
+import logging
 from typing import List, Optional
-from app.db.schemas import Order, OrderItem, Product
-from app.schemas.order import OrderCreate
-from app.services.stock_service import StockService
+from decimal import Decimal
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from decimal import Decimal
+
+from app.db.schemas import Order, OrderItem, Product
+from app.schemas.order import OrderCreate
+from app.services.stock_service import StockService
+
+logger = logging.getLogger(__name__)
 
 
 async def create_order(db: AsyncSession, user_id: int, order_in: OrderCreate) -> Order:
@@ -101,7 +106,21 @@ async def create_order(db: AsyncSession, user_id: int, order_in: OrderCreate) ->
     result = await db.execute(
         select(Order).where(Order.id == new_order.id).options(selectinload(Order.items))
     )
-    return result.scalar_one()
+    created_order = result.scalar_one()
+
+    # Send order confirmation email (fire-and-forget)
+    try:
+        from app.config import settings
+        from app.services.email_service import EmailService, build_order_email_data
+
+        email_svc = EmailService(settings)
+        email_data = await build_order_email_data(db, created_order.id)
+        if email_data:
+            await email_svc.send_order_confirmation(email_data)
+    except Exception:
+        logger.exception("Failed to send order confirmation email for order %s", created_order.id)
+
+    return created_order
 
 
 async def get_user_orders(
