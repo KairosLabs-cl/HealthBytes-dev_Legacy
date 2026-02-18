@@ -1,8 +1,8 @@
 # 🗺️ HealthBytes - Roadmap Completo 2026
 
-> **📅 Última actualización**: Febrero 13, 2026  
-> **🎯 Estado del Proyecto**: MVP en Desarrollo Activo  
-> **🚀 Versión Target**: v1.0.0 (Q2 2026)
+> **📅 Última actualización**: Febrero 16, 2026  
+> **🎯 Estado del Proyecto**: MVP en Estadio Final - Payment Integration Activo  
+> **🚀 Versión Target**: v1.0.0 (Marzo-Abril 2026)
 
 ---
 
@@ -14,10 +14,10 @@
 
 | Objetivo | Target | Status |
 |----------|--------|--------|
-| 🚢 **MVP Launch** | Abril 2026 | 🟡 En progreso (70% completo) |
-| 👥 **Beta Users** | 100 usuarios | 📋 Planeado |
-| 💳 **Payment Live** | Marzo 2026 | 📋 Planeado |
-| 🐳 **Dockerized** | Febrero 2026 | 📋 Planeado |
+| 🚢 **MVP Launch** | Marzo-Abril 2026 | 🟠 En progreso (80% completo) |
+| 👥 **Beta Users** | 100 usuarios | 🟡 Próximo sprint |
+| 💳 **Payment Live** | Marzo 2026 | 🟡 Integración Mercado Pago 80% |
+| 🐳 **Dockerized** | Marzo 2026 | 🟡 Docker paths corregidas |
 | 📱 **App Store** | Mayo 2026 | 📋 Planeado |
 
 ---
@@ -28,15 +28,16 @@
 
 | Feature | Estado | Coverage | Endpoints |
 |---------|--------|----------|-----------|
-| **CRUD Productos** | ✅ Completo | 78% | 5 endpoints |
-| **Full-Text Search** | ✅ Completo | 85% | PostgreSQL tsvector |
-| **Autenticación** | ✅ Completo | 90% | Clerk + JWT fallback |
-| **Carrito** | ✅ Completo | 80% | Sync backend + local |
-| **Órdenes** | ✅ Completo | 70% | CRUD + tracking |
-| **Favoritos** | ✅ Completo | 75% | Many-to-many |
-| **Dietary Tags** | ✅ Completo | 80% | Many-to-many |
-| **Nutritional Info** | ✅ Completo | 70% | JSON field |
-| **Users CRUD** | ✅ Completo | 85% | Profile management |
+| **CRUD Productos** | ✅ Completo | 85% | 5 endpoints |
+| **Full-Text Search** | ✅ Completo | 90% | PostgreSQL tsvector |
+| **Autenticación** | ✅ Completo | 95% | Clerk + JWT fallback |
+| **Carrito** | ✅ Completo | 85% | Sync backend + local |
+| **Órdenes** | ✅ Completo | 80% | CRUD + tracking + estado |
+| **Favoritos** | ✅ Completo | 85% | Many-to-many + Supabase |
+| **Dietary Tags** | ✅ Completo | 85% | Many-to-many |
+| **Nutritional Info** | ✅ Completo | 80% | JSON field |
+| **Users CRUD** | ✅ Completo | 90% | Profile management |
+| **Payment Integration** | 🟡 En progreso | 60% | Mercado Pago + screens |
 
 ### Frontend (React Native + Expo)
 
@@ -49,22 +50,26 @@
 | **Dietary Filter Chips** | ✅ Completo | Filtros interactivos |
 | **Wishlist/Favorites** | ✅ Completo | Corazones + backend sync |
 | **Cart Management** | ✅ Completo | Add/Remove/Update qty |
-| **Orders List** | ✅ Completo | Estado con timeline |
+| **Orders List** | ✅ Completo | Estado con timeline + filtros |
 | **Authentication** | ✅ Completo | Clerk OAuth |
 | **Recently Viewed** | ✅ Completo | AsyncStorage + horizontal scroll |
 | **Stock Badges** | ✅ Completo | "Agotado", "Últimas unidades" |
 | **Skeleton Loaders** | ✅ Completo | Shimmer effect |
 | **Empty States** | ✅ Completo | Ilustraciones amigables |
+| **Address Management** | ✅ Completo | AddressCard + addressStore |
+| **Payment Methods** | ✅ Completo | PaymentMethodSelector |
+| **Step Indicator** | ✅ Completo | Checkout steps visualization |
+| **Payment Screens** | ✅ Completo | Success, failure, pending screens |
 
 ### Infraestructura
 
 | Componente | Estado | Detalle |
 |------------|--------|---------|
-| **Database** | ✅ PostgreSQL 14+ | Migraciones manuales |
+| **Database** | ✅ PostgreSQL 14+ + Supabase | Migraciones manuales |
 | **API** | ✅ FastAPI 0.104+ | Async SQLAlchemy 2.x |
-| **Testing** | 🟡 Parcial | Backend ~70%, Frontend inicial |
-| **CI/CD** | ❌ Pendiente | GitHub Actions planeado |
-| **Docker** | ❌ Pendiente | docker-compose.yml existente vacío |
+| **Testing** | 🟡 Mejorado | Backend 85%, Frontend 67+ tests |
+| **CI/CD** | 🟡 En progreso | GitHub Actions workflow básico |
+| **Docker** | 🟡 En revisión | Frontend paths corregidas |
 | **Deploy** | ❌ Pendiente | AWS target |
 
 ---
@@ -80,11 +85,11 @@
 
 | Feature | Estimación | Dependencias | Owner |
 |---------|-----------|--------------|-------|
-| **Payment Integration (Mercado Pago)** | 1.5 semanas | Credenciales MP Chile | Backend |
-| **Webhooks Payment Confirmation** | 3 días | MP webhooks | Backend |
-| **Address CRUD** | ~~5 días~~ | ✅ Implementado | Backend |
-| **Order Confirmation Emails** | 2 días | SendGrid/Mailgun | Backend |
-| **Stock Management** | ~~4 días~~ | 🟡 Parcialmente implementado (locking atómico existe) | Backend |
+| **Payment Integration (Mercado Pago)** | 3-4 días | ✅ 80% completado | Backend |
+| **Webhooks Payment Confirmation** | 2 días | En progreso | Backend |
+| **Address CRUD** | ✅ Completado | Implementado jan | Backend |
+| **Order Confirmation Emails** | ✅ 1 día | SendGrid/Mailgun (Resend implementado) | Backend |
+| **Stock Management** | ✅ Implementado | Locking atómico funcional | Backend |
 
 **Total Backend P0**: ~2.5 semanas
 
@@ -92,11 +97,11 @@
 
 | Feature | Estimación | Dependencias | Owner |
 |---------|-----------|--------------|-------|
-| **Checkout Flow Completo** | 1 semana | Backend Addresses + Payment | Frontend |
-| **Address Selection UI** | 3 días | Backend Addresses API | Frontend |
-| **Payment Method Selection** | 3 días | Backend Payment API | Frontend |
-| **Order Success Screen** | 2 días | Ninguna | Frontend |
-| **Error Handling Mejorado** | 2 días | Ninguna | Frontend |
+| **Checkout Flow Completo** | ✅ 80% | Backend Addresses + Payment | Frontend |
+| **Address Selection UI** | ✅ Completado | AddressCard component | Frontend |
+| **Payment Method Selection** | ✅ Completado | PaymentMethodSelector | Frontend |
+| **Order Success Screen** | ✅ Completado | Payment screens (success/failure/pending) | Frontend |
+| **Error Handling Mejorado** | ✅ Mejorado | Type safety + debug logs | Frontend |
 
 **Total Frontend P0**: ~2.5 semanas
 
@@ -104,9 +109,9 @@
 
 | Task | Estimación | Objetivo | Owner |
 |------|-----------|----------|-------|
-| **Backend Coverage 80%+** | 1 semana | Subir de 70% a 80% | QA + Backend |
-| **E2E Checkout Tests** | 3 días | Happy path + errores | QA |
-| **Payment Integration Tests** | 2 días | Sandbox testing | QA |
+| **Backend Coverage 85%+** | ✅ Alcanzado | Subido a 85% | QA + Backend |
+| **Frontend Tests 67+** | ✅ Completado | Zustand stores + API clients | QA |
+| **E2E Checkout Tests** | 🟡 En progreso | Happy path + errores | QA |
 
 **Total Testing P0**: ~2 semanas
 
@@ -114,8 +119,8 @@
 
 | Task | Estimación | Objetivo | Owner |
 |------|-----------|----------|-------|
-| **Docker Configuration** | 2 días | Containerizar backend + frontend | DevOps |
-| **Environment Variables Management** | 1 día | .env templates + docs | DevOps |
+| **Docker Configuration** | 🟡 En revisión | Frontend paths corregidas | DevOps |
+| **CI/CD Pipeline** | 🟡 En progreso | GitHub Actions workflow | DevOps |
 
 **Total DevOps P0**: ~3 días
 
@@ -240,29 +245,34 @@
 
 ```
 Febrero 2026
-├─ Semana 1-2: P0 Backend (Payment integration starts)
-├─ Semana 3-4: P0 Frontend (Checkout flow)
-└─ Ongoing: Testing P0
+├─ Semana 1-2 (3-9 feb): P0 Backend (Payment integration 80%) ✅
+├─ Semana 3-4 (10-14): P0 Frontend (Checkout, Address, Payment screens) ✅ + Testing P0 (Backend 85%, Frontend 67 tests) ✅
+├─ Semana 4-5 (17-23): Finalizar P0, Docker fixes, CI/CD
+└─ Semana 5 (24+): Email integration (Resend ✅), webhooks payment
 
 Marzo 2026
-├─ Semana 1-2: P0 Backend completion + Testing
-├─ Semana 3: DevOps P0 (Docker, CI/CD)
-└─ Semana 4: MVP Freeze + Bug fixes
+├─ Semana 1-2: P0 Backend completion + E2E tests
+├─ Semana 3: DevOps P0 (Docker, CI/CD finales, AWS setup)
+├─ Semana 4: MVP Freeze + Bug fixes + UAT
+└─ Semana 5 (fin): **MVP Launch** 🚀
 
 Abril 2026
-├─ **MVP Launch** 🚀
-├─ P1 Features: Onboarding, Notifications, Recommendations
-└─ User feedback collection
+├─ **MVP Live & Monitoring**
+├─ P1 Features: Onboarding (User dietary prefs), Push notifications, Recommendations
+├─ Beta testing & user feedback
+└─ Bug fixes + hot releases
 
 Mayo 2026
-├─ P2 UI/UX: Dark mode, A11y, Performance
-├─ App Store submission prep
-└─ Beta testing program
+├─ P2 UI/UX: Dark mode, A11y audit, Performance optimization
+├─ App Store submission (iOS + Android)
+├─ Beta program expansion
+└─ Monitoring & analytics
 
 Junio 2026+
 ├─ P3 Features (evaluar ROI)
 ├─ Advanced features según feedback
-└─ Scale optimization
+├─ Scale optimization
+└─ Post-launch iterations
 ```
 
 ---
@@ -309,24 +319,26 @@ Junio 2026+
 
 ### Externas (Bloqueadores)
 
-- **Mercado Pago Credentials** → Blocker P0 (Payment Chile)
-- **SMTP Service** → Blocker P0 (Emails)
-- **AWS Account Setup** → Blocker DevOps P0
+- **Mercado Pago Credentials** → 🟢 Confirmadas, integración en progreso
+- **SMTP Service** → ✅ Resend implementado
+- **AWS Account Setup** → Blocker DevOps P0 (próximas 2 semanas)
 - **Apple Developer Account** → Blocker App Store (Mayo)
 - **Google Play Console** → Blocker Play Store (Mayo)
 
 ### Internas (Secuenciales)
 
 ```
-Backend Addresses API
+✅ Backend Addresses API
     ↓
-Frontend Address Selection UI
+✅ Frontend Address Selection UI  
     ↓
-Checkout Flow
+✅ Checkout Flow 80%
     ↓
-Payment Integration
+🟡 Payment Integration (Mercado Pago 80%)
     ↓
-Order Confirmation
+🟡 Order Confirmation (Webhooks + Emails)
+    ↓
+🟢 E2E Testing + UAT
 ```
 
 ---
@@ -377,11 +389,45 @@ Este documento debe revisarse:
 
 ---
 
+## 📋 Cambios Recientes (10-16 feb 2026)
+
+### ✅ Completado Esta Semana
+
+**Frontend**:
+- Payment status polling en pending screen
+- Payment screens (success, failure, pending) con navegación
+- Address management (AddressCard + addressStore Zustand)
+- Payment method selector + Step indicator
+- 67+ nuevos tests (Zustand stores, API clients, Jest setup)
+- Refactor: eliminación de `any` types, debug logs gateados con `__DEV__`
+- CI/CD: Frontend tests job, coverage threshold aumentado
+
+**Backend**:
+- Integración Mercado Pago conectada a frontend (80% completo)
+- Router y schema tests comprehensivos (85% coverage)
+- Email transaccional con Resend integrado
+- Docker paths corregidas
+
+### 🟡 En Progreso
+
+- Webhooks de payment confirmation (Mercado Pago)
+- E2E tests para checkout flow
+- AWS deployment setup
+
+### 📊 Métricas Actualizado
+
+- Backend Coverage: 70% → **85%** ✅
+- Frontend Tests: 0 → **67+** tests ✅
+- Payment Integration: 0% → **80%** 🟡
+- MVP Status: 70% → **80%** ✅
+
+---
+
 > **💡 Nota**: Este roadmap es un documento vivo. Las prioridades pueden cambiar según feedback de usuarios, restricciones técnicas, o decisiones de negocio.
 > 
 > **📞 Contacto**: Para proponer cambios al roadmap, abrir un issue en GitHub con label `roadmap`.
 
 ---
 
-**Última actualización**: Febrero 13, 2026  
-**Versión**: 1.0.0
+**Última actualización**: Febrero 16, 2026  
+**Versión**: 1.1.0

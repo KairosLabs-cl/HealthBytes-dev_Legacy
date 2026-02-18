@@ -22,6 +22,14 @@ def customer_user(db_session):
     )
 
 
+@pytest.fixture
+def admin_user(db_session):
+    """Create an admin user."""
+    return create_test_user(
+        db_session, email="mp_admin@test.com", role="admin", name="MP Admin"
+    )
+
+
 class TestCreatePreference:
     """Tests for POST /api/v1/payments/mercadopago/create-preference"""
 
@@ -185,8 +193,8 @@ class TestRefund:
     """Tests for POST /api/v1/payments/mercadopago/refund"""
 
     @patch("app.api.v1.mercadopago.MercadoPagoService")
-    def test_refund_success(self, mock_mp_cls, client, db_session, customer_user):
-        """Test successful refund."""
+    def test_refund_success(self, mock_mp_cls, client, db_session, admin_user):
+        """Test successful refund (admin only)."""
         mock_mp = MagicMock()
         mock_mp.refund_payment = AsyncMock(
             return_value={
@@ -198,7 +206,7 @@ class TestRefund:
         )
         mock_mp_cls.return_value = mock_mp
 
-        app.dependency_overrides[get_current_user] = lambda: customer_user
+        app.dependency_overrides[get_current_user] = lambda: admin_user
         try:
             response = client.post(
                 f"{BASE_URL}/refund",
@@ -210,7 +218,7 @@ class TestRefund:
             app.dependency_overrides.pop(get_current_user, None)
 
     @patch("app.api.v1.mercadopago.MercadoPagoService")
-    def test_refund_payment_error(self, mock_mp_cls, client, db_session, customer_user):
+    def test_refund_payment_error(self, mock_mp_cls, client, db_session, admin_user):
         """Test refund with PaymentError returns 400."""
         from app.core.exceptions import PaymentError
 
@@ -218,13 +226,25 @@ class TestRefund:
         mock_mp.refund_payment = AsyncMock(side_effect=PaymentError("Not found"))
         mock_mp_cls.return_value = mock_mp
 
-        app.dependency_overrides[get_current_user] = lambda: customer_user
+        app.dependency_overrides[get_current_user] = lambda: admin_user
         try:
             response = client.post(
                 f"{BASE_URL}/refund",
                 json={"payment_id": 999},
             )
             assert response.status_code == 400
+        finally:
+            app.dependency_overrides.pop(get_current_user, None)
+
+    def test_refund_customer_forbidden(self, client, db_session, customer_user):
+        """Test that non-admin users cannot refund."""
+        app.dependency_overrides[get_current_user] = lambda: customer_user
+        try:
+            response = client.post(
+                f"{BASE_URL}/refund",
+                json={"payment_id": 1},
+            )
+            assert response.status_code == 403
         finally:
             app.dependency_overrides.pop(get_current_user, None)
 

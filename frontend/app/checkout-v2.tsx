@@ -16,7 +16,7 @@ import { useAuth } from "@clerk/clerk-expo";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { CheckCircleIcon, MapPinIcon, PhoneIcon } from "lucide-react-native";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Linking,
@@ -45,17 +45,21 @@ export default function CheckoutV2Screen() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [orderData, setOrderData] = useState<any>(null);
 
-  // Cargar direcciones al montar componente
-  const handleFetchAddresses = async () => {
-    try {
-      await fetchAddresses();
-      if (defaultAddress && !selectedAddress) {
-        setSelectedAddress(defaultAddress);
+  useEffect(() => {
+    const loadAddresses = async () => {
+      try {
+        const token = await getToken();
+        if (token) {
+          await fetchAddresses(token);
+        }
+      } catch (error) {
+        if (__DEV__) {
+          console.error("Error cargando direcciones:", error);
+        }
       }
-    } catch (error) {
-      console.error("Error cargando direcciones:", error);
-    }
-  };
+    };
+    loadAddresses();
+  }, []);
 
   const subtotal = useMemo(
     () =>
@@ -175,28 +179,34 @@ export default function CheckoutV2Screen() {
         );
 
         console.log("✅ Preference creada:", preference.preference_id);
-        console.log("🔗 Redirigiendo a:", preference.init_point);
 
         // STEP 3: Redirigir a Mercado Pago
-        // En Expo, usamos Linking.openURL
-        const canOpen = await Linking.canOpenURL(preference.init_point);
+        // Use sandbox URL for testing, production URL otherwise
+        const checkoutUrl =
+          preference.sandbox_init_point || preference.init_point;
+        console.log("🔗 Redirigiendo a:", checkoutUrl);
+
+        const canOpen = await Linking.canOpenURL(checkoutUrl);
         if (canOpen) {
-          await Linking.openURL(preference.init_point);
+          await Linking.openURL(checkoutUrl);
         } else {
-          // Si Linking no funciona, usar WebBrowser (para Expo)
-          console.warn(
-            "No se pudo abrir URL con Linking, intentando WebBrowser..."
-          );
+          console.warn("No se pudo abrir URL con Linking");
           alert(
             "No se pudo redirigir a Mercado Pago. Por favor, intenta nuevamente."
           );
           setIsProcessing(false);
+          return;
         }
 
-        // Nota: El usuario será redirigido por Mercado Pago a:
-        // /payment/success?order_id=123 (éxito)
-        // /payment/failure?order_id=123 (fallo)
-        // /payment/pending?order_id=123 (pendiente)
+        // STEP 4: Navegar a pantalla de polling mientras el usuario paga
+        resetCart();
+        router.replace({
+          pathname: "/payment/pending",
+          params: {
+            orderId: String(orderId),
+            paymentId: String(preference.payment_id),
+          },
+        });
       } catch (error) {
         console.error("❌ Error durante checkout:", error);
         setIsProcessing(false);
