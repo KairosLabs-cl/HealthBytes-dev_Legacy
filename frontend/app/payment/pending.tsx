@@ -1,7 +1,6 @@
-import { getMercadoPagoPaymentStatus } from "@/api/mercadopago";
+import { getOrderById } from "@/api/orders";
 import { Button, ButtonText } from "@/components/ui/button";
 import { VStack } from "@/components/ui/vstack";
-import { useCart } from "@/store/cartStore";
 import { useAuth } from "@clerk/clerk-expo";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ClockIcon } from "lucide-react-native";
@@ -9,28 +8,28 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 
 const POLL_INTERVAL_MS = 5000;
-const MAX_POLLS = 10;
+const MAX_POLLS = 12;
 
 export default function PaymentPendingScreen() {
   const router = useRouter();
-  const { resetCart } = useCart();
   const { getToken } = useAuth();
-  const { orderId, paymentId } = useLocalSearchParams();
+  const { orderId } = useLocalSearchParams();
   const [isChecking, setIsChecking] = useState(false);
   const [pollCount, setPollCount] = useState(0);
   const [maxRetriesReached, setMaxRetriesReached] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const checkPaymentStatus = useCallback(async () => {
-    if (!paymentId && !orderId) return;
+  const checkOrderStatus = useCallback(async () => {
+    if (!orderId) return;
 
     setIsChecking(true);
     try {
-      const id = String(paymentId || orderId);
-      const status = await getMercadoPagoPaymentStatus(id, getToken);
+      const token = await getToken();
+      if (!token) return;
 
-      if (status.status === "approved") {
-        resetCart();
+      const order = await getOrderById(String(orderId), token);
+
+      if (order.status === "confirmed") {
         router.replace({
           pathname: "/payment/success",
           params: { orderId: String(orderId) },
@@ -38,7 +37,7 @@ export default function PaymentPendingScreen() {
         return;
       }
 
-      if (status.status === "rejected" || status.status === "cancelled") {
+      if (order.status === "cancelled") {
         router.replace({
           pathname: "/payment/failure",
           params: { orderId: String(orderId) },
@@ -47,12 +46,12 @@ export default function PaymentPendingScreen() {
       }
     } catch (error) {
       if (__DEV__) {
-        console.error("Error checking payment status:", error);
+        console.error("Error checking order status:", error);
       }
     } finally {
       setIsChecking(false);
     }
-  }, [paymentId, orderId, getToken, resetCart, router]);
+  }, [orderId, getToken, router]);
 
   useEffect(() => {
     if (maxRetriesReached) return;
@@ -65,7 +64,7 @@ export default function PaymentPendingScreen() {
           setMaxRetriesReached(true);
           return next;
         }
-        checkPaymentStatus();
+        checkOrderStatus();
         return next;
       });
     }, POLL_INTERVAL_MS);
@@ -73,7 +72,7 @@ export default function PaymentPendingScreen() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [checkPaymentStatus, maxRetriesReached]);
+  }, [checkOrderStatus, maxRetriesReached]);
 
   return (
     <View className="flex-1 bg-white justify-center items-center p-6">
@@ -115,7 +114,7 @@ export default function PaymentPendingScreen() {
         <Button
           size="lg"
           className="bg-blue-600"
-          onPress={checkPaymentStatus}
+          onPress={checkOrderStatus}
           disabled={isChecking}
         >
           <ButtonText className="text-white font-bold">
@@ -127,10 +126,7 @@ export default function PaymentPendingScreen() {
           size="lg"
           variant="outline"
           className="border-gray-300"
-          onPress={() => {
-            resetCart();
-            router.replace("/orders");
-          }}
+          onPress={() => router.replace("/orders")}
         >
           <ButtonText className="text-gray-700 font-bold">
             Ir a mis ordenes

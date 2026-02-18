@@ -100,10 +100,12 @@ export default function OrdersScreen() {
       const normalizedStatus = order.status.toLowerCase().replace(/_/g, "");
       const filterStatus = selectedFilter.toLowerCase().replace(/_/g, "");
 
-      // Para "pending" también incluir "packed"
+      // Para "pending" también incluir "confirmed" y "packed"
       if (
         selectedFilter === "pending" &&
-        (normalizedStatus === "pending" || normalizedStatus === "packed")
+        (normalizedStatus === "pending" ||
+          normalizedStatus === "confirmed" ||
+          normalizedStatus === "packed")
       ) {
         return true;
       }
