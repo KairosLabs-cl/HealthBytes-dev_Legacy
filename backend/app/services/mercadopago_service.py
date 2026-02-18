@@ -19,6 +19,7 @@ from app.config import Settings
 from app.core.exceptions import PaymentError
 from app.db.models.payment import Payment, PaymentCurrency, PaymentProvider, PaymentStatus
 from app.db.schemas import Order
+from app.services.stock_service import StockService
 
 logger = logging.getLogger(__name__)
 
@@ -113,12 +114,12 @@ class MercadoPagoService:
             },
         }
 
-        # back_urls and auto_return only work with public URLs (not localhost)
+        # back_urls and notification_url require public HTTPS URLs (not localhost)
         if is_production:
             preference_data["back_urls"] = {
-                "success": f"{self.settings.FRONTEND_URL}/payment/success?order_id={order_id}",
-                "failure": f"{self.settings.FRONTEND_URL}/payment/failure?order_id={order_id}",
-                "pending": f"{self.settings.FRONTEND_URL}/payment/pending?order_id={order_id}",
+                "success": f"{self.settings.FRONTEND_URL}/payment/success?orderId={order_id}",
+                "failure": f"{self.settings.FRONTEND_URL}/payment/failure?orderId={order_id}",
+                "pending": f"{self.settings.FRONTEND_URL}/payment/pending?orderId={order_id}",
             }
             preference_data["auto_return"] = "approved"
             preference_data["notification_url"] = (
@@ -275,11 +276,30 @@ class MercadoPagoService:
             if order:
                 order.status = "confirmed"
 
-        elif new_status == PaymentStatus.FAILED:
-            result = await db.execute(select(Order).where(Order.id == order_id))
+        elif new_status in (PaymentStatus.FAILED, PaymentStatus.CANCELLED):
+            result = await db.execute(
+                select(Order)
+                .where(Order.id == order_id)
+                .options(selectinload(Order.items))
+            )
             order = result.scalar_one_or_none()
-            if order:
+            if order and order.status != "cancelled":
                 order.status = "cancelled"
+                # Release reserved stock for each item
+                for item in order.items:
+                    try:
+                        await StockService.release_stock(
+                            db=db,
+                            product_id=item.product_id,
+                            quantity=item.quantity,
+                            reason=f"Payment {new_status.value} for order {order_id}",
+                        )
+                    except Exception:
+                        logger.exception(
+                            "Failed to release stock for product %s (order %s)",
+                            item.product_id,
+                            order_id,
+                        )
 
         await db.commit()
 
@@ -416,6 +436,32 @@ class MercadoPagoService:
                 # Update payment status
                 payment.status = PaymentStatus.REFUNDED
                 payment.updated_at = datetime.now(UTC)
+
+                # Release stock and cancel order on full refund
+                if not amount:
+                    order_result = await db.execute(
+                        select(Order)
+                        .where(Order.id == payment.order_id)
+                        .options(selectinload(Order.items))
+                    )
+                    order = order_result.scalar_one_or_none()
+                    if order and order.status != "cancelled":
+                        order.status = "cancelled"
+                        for item in order.items:
+                            try:
+                                await StockService.release_stock(
+                                    db=db,
+                                    product_id=item.product_id,
+                                    quantity=item.quantity,
+                                    reason=f"Refund for order {payment.order_id}",
+                                )
+                            except Exception:
+                                logger.exception(
+                                    "Failed to release stock for product %s (refund order %s)",
+                                    item.product_id,
+                                    payment.order_id,
+                                )
+
                 await db.commit()
 
                 logger.info("Payment %s refunded successfully", payment.id)

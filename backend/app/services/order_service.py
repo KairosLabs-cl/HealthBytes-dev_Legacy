@@ -156,11 +156,13 @@ async def update_order_status(db: AsyncSession, order_id: int, status: str) -> O
     """
     Update order status.
     """
-    valid_statuses = ["pending", "processing", "shipped", "cancelled"]
+    valid_statuses = ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"]
     if status not in valid_statuses:
         raise ValueError(f"Invalid status. Must be one of: {valid_statuses}")
 
-    result = await db.execute(select(Order).where(Order.id == order_id))
+    result = await db.execute(
+        select(Order).where(Order.id == order_id).options(selectinload(Order.items))
+    )
     db_order = result.scalar_one_or_none()
 
     if not db_order:
@@ -169,14 +171,26 @@ async def update_order_status(db: AsyncSession, order_id: int, status: str) -> O
     # Validate status transition
     current_status = db_order.status
     valid_transitions = {
-        "pending": ["processing", "cancelled"],
+        "pending": ["confirmed", "processing", "cancelled"],
+        "confirmed": ["processing", "shipped", "cancelled"],
         "processing": ["shipped", "cancelled"],
-        "shipped": [],  # Cannot change once shipped
-        "cancelled": [],  # Cannot change once cancelled
+        "shipped": ["delivered"],
+        "delivered": [],
+        "cancelled": [],
     }
 
     if status not in valid_transitions.get(current_status, []):
         raise ValueError(f"Invalid status transition from {current_status} to {status}")
+
+    # Release stock when order is cancelled
+    if status == "cancelled" and current_status != "cancelled":
+        for item in db_order.items:
+            await StockService.release_stock(
+                db=db,
+                product_id=item.product_id,
+                quantity=item.quantity,
+                reason=f"Order {order_id} cancelled",
+            )
 
     db_order.status = status
     await db.commit()

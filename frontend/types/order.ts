@@ -1,6 +1,7 @@
 // Tipos para órdenes
 export type OrderStatus =
   | "pending"
+  | "confirmed"
   | "packed"
   | "in_transit"
   | "delivered"
@@ -34,6 +35,7 @@ export type OrderResponse = {
 
 export const STATUS_LABELS: Record<OrderStatus, string> = {
   pending: "Pendiente",
+  confirmed: "Confirmado",
   packed: "Preparando",
   in_transit: "En tránsito",
   delivered: "Entregado",
@@ -42,9 +44,11 @@ export const STATUS_LABELS: Record<OrderStatus, string> = {
 
 const STATUS_ALIASES: Record<string, OrderStatus> = {
   pending: "pending",
+  confirmed: "confirmed",
   packed: "packed",
   in_transit: "in_transit",
   "in transit": "in_transit",
+  processing: "confirmed",
   delivered: "delivered",
   cancelled: "cancelled",
   canceled: "cancelled",
@@ -58,6 +62,7 @@ export function normalizeStatus(status?: string | null): OrderStatus {
 
 export const STATUS_COLORS: Record<OrderStatus, string> = {
   pending: "bg-yellow-200 border border-yellow-400",
+  confirmed: "bg-emerald-50 border border-emerald-300",
   packed: "bg-blue-50 border border-blue-300",
   in_transit: "bg-purple-200 border border-purple-400",
   delivered: "bg-green-50 border border-green-300",
@@ -66,6 +71,7 @@ export const STATUS_COLORS: Record<OrderStatus, string> = {
 
 export const STATUS_BADGE_COLORS: Record<OrderStatus, string> = {
   pending: "bg-yellow-300 text-yellow-900",
+  confirmed: "bg-emerald-200 text-emerald-900",
   packed: "bg-blue-100 text-blue-800",
   in_transit: "bg-purple-300 text-purple-900",
   delivered: "bg-green-100 text-green-800",

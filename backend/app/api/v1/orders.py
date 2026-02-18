@@ -258,10 +258,25 @@ async def update_order(
             )
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=error.model_dump())
 
-        result = await db.execute(
-            select(Order).where(Order.id == id).options(selectinload(Order.items))
-        )
-        order = result.scalar_one_or_none()
+        # Use service to validate status transition and handle stock release on cancel
+        try:
+            order = await order_service.update_order_status(
+                db=db, order_id=id, status=order_data.status
+            )
+        except ValueError as e:
+            error = ErrorResponse.validation_error(
+                message=str(e),
+                path=f"/api/v1/orders/{id}",
+                details=[
+                    ErrorDetail(
+                        code="INVALID_STATUS",
+                        message=str(e),
+                    )
+                ],
+            )
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=error.model_dump()
+            )
 
         if not order:
             error = ErrorResponse.not_found(
@@ -270,14 +285,8 @@ async def update_order(
             )
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.model_dump())
 
-        # Update status
-        old_status = order.status
-        order.status = order_data.status
-        await db.commit()
-        await db.refresh(order)
-
         # Send shipped email if status changed to shipped
-        if order_data.status == "shipped" and old_status != "shipped":
+        if order_data.status == "shipped":
             try:
                 from app.config import settings
                 from app.services.email_service import EmailService, build_order_email_data

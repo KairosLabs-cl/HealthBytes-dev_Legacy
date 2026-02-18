@@ -294,8 +294,8 @@ async def test_process_webhook_approved(mp_service, mock_db, test_payment):
 
 
 @pytest.mark.asyncio
-async def test_process_webhook_rejected(mp_service, mock_db, test_payment):
-    """Test webhook with rejected payment cancels order"""
+async def test_process_webhook_rejected(mp_service, mock_db, test_payment, test_order_with_items):
+    """Test webhook with rejected payment cancels order and releases stock"""
     payment_info = {
         "id": "12345",
         "status": "rejected",
@@ -304,23 +304,26 @@ async def test_process_webhook_rejected(mp_service, mock_db, test_payment):
 
     mp_service.get_payment_info = AsyncMock(return_value=payment_info)
 
-    order_mock = MagicMock()
-    order_mock.status = "pending"
+    test_order_with_items.status = "pending"
 
     mock_db.execute = AsyncMock(
         side_effect=[
             MagicMock(scalar_one_or_none=MagicMock(return_value=test_payment)),
-            MagicMock(scalar_one_or_none=MagicMock(return_value=order_mock)),
+            MagicMock(scalar_one_or_none=MagicMock(return_value=test_order_with_items)),
         ]
     )
 
-    result = await mp_service.process_webhook(
-        db=mock_db, payment_id="12345", topic="payment"
-    )
+    with patch(
+        "app.services.mercadopago_service.StockService.release_stock", new_callable=AsyncMock
+    ) as mock_release:
+        result = await mp_service.process_webhook(
+            db=mock_db, payment_id="12345", topic="payment"
+        )
 
-    assert result["status"] == "failed"
-    assert order_mock.status == "cancelled"
-    assert test_payment.status == PaymentStatus.FAILED
+        assert result["status"] == "failed"
+        assert test_order_with_items.status == "cancelled"
+        assert test_payment.status == PaymentStatus.FAILED
+        assert mock_release.call_count == len(test_order_with_items.items)
 
 
 @pytest.mark.asyncio
@@ -377,18 +380,22 @@ async def test_refund_payment_no_mp_id(mp_service, mock_db, test_payment):
 
 
 @pytest.mark.asyncio
-async def test_refund_payment_success(mp_service, mock_db, test_payment):
-    """Test successful refund"""
+async def test_refund_payment_success(mp_service, mock_db, test_payment, test_order_with_items):
+    """Test successful refund with stock release and order cancellation"""
     test_payment.status = PaymentStatus.COMPLETED
     test_payment.provider_payment_id = "mp_pay_123"
+    test_order_with_items.status = "confirmed"
 
-    mock_db.execute = AsyncMock(
-        return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=test_payment))
-    )
+    # First execute returns payment, second returns order (for stock release)
+    payment_result = MagicMock(scalar_one_or_none=MagicMock(return_value=test_payment))
+    order_result = MagicMock(scalar_one_or_none=MagicMock(return_value=test_order_with_items))
+    mock_db.execute = AsyncMock(side_effect=[payment_result, order_result])
 
     refund_response = {"id": "refund_456", "amount": 13000.0}
 
-    with patch("httpx.AsyncClient") as mock_client:
+    with patch("httpx.AsyncClient") as mock_client, patch(
+        "app.services.mercadopago_service.StockService.release_stock", new_callable=AsyncMock
+    ) as mock_release:
         mock_resp = MagicMock()
         mock_resp.status_code = 201
         mock_resp.json.return_value = refund_response
@@ -402,6 +409,8 @@ async def test_refund_payment_success(mp_service, mock_db, test_payment):
         assert result["status"] == "refunded"
         assert result["refund_id"] == "refund_456"
         assert test_payment.status == PaymentStatus.REFUNDED
+        assert test_order_with_items.status == "cancelled"
+        assert mock_release.call_count == len(test_order_with_items.items)
 
 
 # --- _validate_x_signature tests ---
