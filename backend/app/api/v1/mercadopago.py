@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.core.exceptions import PaymentError
+from app.core.limiter import limiter
 from app.db.database import get_db
 from app.db.schemas import User
 from app.middleware.auth import get_current_user
@@ -46,8 +47,10 @@ class RefundRequest(BaseModel):
 
 
 @router.post("/create-preference", response_model=CreatePreferenceResponse)
+@limiter.limit("20/minute")
 async def create_payment_preference(
-    request: CreatePreferenceRequest,
+    request: Request,
+    body: CreatePreferenceRequest,
     db: AsyncSession = Depends(get_db),
     current_user: dict = Depends(get_current_user),
 ):
@@ -62,7 +65,7 @@ async def create_payment_preference(
         # Verify order exists and belongs to user
         from app.services.order_service import get_order
 
-        order = await get_order(db, request.order_id, current_user.id)
+        order = await get_order(db, body.order_id, current_user.id)
 
         if not order:
             raise HTTPException(status_code=404, detail="Order not found")
@@ -70,8 +73,8 @@ async def create_payment_preference(
         # Create preference (service calculates total from DB prices)
         preference = await mp_service.create_preference(
             db=db,
-            order_id=request.order_id,
-            payer_email=request.payer_email,
+            order_id=body.order_id,
+            payer_email=body.payer_email,
         )
 
         return CreatePreferenceResponse(**preference)

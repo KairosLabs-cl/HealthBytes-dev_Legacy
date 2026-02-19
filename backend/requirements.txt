@@ -26,5 +26,11 @@ resend>=2.0.0
 # Environment & Config
 python-dotenv>=1.2.1
 
+# Database Migrations
+alembic>=1.14.0
+
+# Rate Limiting
+slowapi>=0.1.9
+
 # AWS Lambda adapter
 mangum>=0.20.0
