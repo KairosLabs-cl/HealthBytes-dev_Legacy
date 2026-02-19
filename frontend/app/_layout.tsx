@@ -1,3 +1,4 @@
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { Icon } from "@/components/ui/icon";
 import BottomNavBar from "@/components/ui/NavBar/BottomNavBar";
@@ -148,7 +149,9 @@ export default function RootLayout() {
         <ClerkLoaded>
           <QueryClientProvider client={queryClient}>
             <GluestackUIProvider>
-              <RootLayoutNav />
+              <ErrorBoundary>
+                <RootLayoutNav />
+              </ErrorBoundary>
             </GluestackUIProvider>
           </QueryClientProvider>
         </ClerkLoaded>
