@@ -12,11 +12,14 @@ import "@/global.css";
 import { tokenCache } from "@/lib/cache";
 import { useCart } from "@/store/cartStore";
 import { useFavoritesStore } from "@/store/favoritesStore";
+import { usePreferencesStore } from "@/store/preferencesStore";
+import { updateDietaryPreferences } from "@/api/preferences";
+import OnboardingModal from "@/components/OnboardingModal";
 import { ClerkLoaded, ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Link, Stack } from "expo-router";
 import { User } from "lucide-react-native";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Pressable } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -42,6 +45,36 @@ function RootLayoutNav() {
   const toast = useToast();
 
   const { isSignedIn, getToken } = useAuth();
+
+  // Onboarding
+  const { hasSeenOnboarding, markOnboardingComplete, setDietaryPreferences } =
+    usePreferencesStore();
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    if (isSignedIn && !hasSeenOnboarding) {
+      setShowOnboarding(true);
+    }
+  }, [isSignedIn, hasSeenOnboarding]);
+
+  const handleOnboardingComplete = async (tags: string[]) => {
+    setDietaryPreferences(tags);
+    markOnboardingComplete();
+    setShowOnboarding(false);
+    if (tags.length > 0) {
+      const token = await getToken();
+      if (token) {
+        updateDietaryPreferences(tags, token).catch(() => {
+          // fire-and-forget: failure is non-critical
+        });
+      }
+    }
+  };
+
+  const handleOnboardingSkip = () => {
+    markOnboardingComplete();
+    setShowOnboarding(false);
+  };
 
   // Handle cart errors
   useEffect(() => {
@@ -138,6 +171,12 @@ function RootLayoutNav() {
       </Stack>
 
       <BottomNavBar />
+
+      <OnboardingModal
+        visible={showOnboarding}
+        onComplete={handleOnboardingComplete}
+        onSkip={handleOnboardingSkip}
+      />
     </>
   );
 }

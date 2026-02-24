@@ -4,7 +4,7 @@ This service handles ONLY database operations for payments.
 Payment provider integrations (Venti, Mercado Pago) will be in separate modules.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from typing import List, Optional, Sequence
 
@@ -150,7 +150,7 @@ class PaymentService:
             return None
 
         payment.status = status  # type: ignore
-        payment.updated_at = datetime.utcnow()  # type: ignore
+        payment.updated_at = datetime.now(timezone.utc)  # type: ignore
 
         if provider_payment_id:
             payment.provider_payment_id = provider_payment_id  # type: ignore
@@ -159,7 +159,7 @@ class PaymentService:
             payment.error_message = error_message  # type: ignore
 
         if status == PaymentStatus.COMPLETED:
-            payment.completed_at = datetime.utcnow()  # type: ignore
+            payment.completed_at = datetime.now(timezone.utc)  # type: ignore
 
         await db.commit()
         await db.refresh(payment)
@@ -237,7 +237,7 @@ class PaymentService:
             raise ValueError("Can only refund completed payments")
 
         payment.status = PaymentStatus.REFUNDED  # type: ignore
-        payment.updated_at = datetime.utcnow()  # type: ignore
+        payment.updated_at = datetime.now(timezone.utc)  # type: ignore
 
         await db.commit()
         await db.refresh(payment)
@@ -260,7 +260,7 @@ class PaymentService:
         """
         from datetime import timedelta
 
-        cutoff_time = datetime.utcnow() - timedelta(minutes=older_than_minutes)
+        cutoff_time = datetime.now(timezone.utc) - timedelta(minutes=older_than_minutes)
 
         result = await db.execute(
             select(Payment).where(

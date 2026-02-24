@@ -78,7 +78,7 @@ export default function CheckoutV2Screen() {
 
       return createOrder(
         items.map((item) => ({
-          productId: item.product.id,
+          productId: Number(item.product.id),
           quantity: item.quantity,
           price: item.product.price,
         })),
@@ -155,12 +155,12 @@ export default function CheckoutV2Screen() {
         console.log("📋 Creando orden...");
         const orderResponse = await createOrder(
           items.map((item) => ({
-            productId: item.product.id,
+            productId: Number(item.product.id),
             quantity: item.quantity,
             price: item.product.price,
           })),
           selectedAddress!.id,
-          selectedPayment,
+          selectedPayment ?? undefined,
           () => Promise.resolve(token)
         );
 

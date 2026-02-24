@@ -14,7 +14,6 @@ from logging.config import fileConfig
 
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
-from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
@@ -36,9 +35,8 @@ logger = logging.getLogger("alembic.env")
 # ---------------------------------------------------------------------------
 config = context.config
 
-# Override sqlalchemy.url from environment so alembic.ini placeholder is ignored
+# Build the async DB URL from settings (bypasses ConfigParser % interpolation issues)
 db_url = settings.***REDACTED_DATABASE_URL***
-config.set_main_option("sqlalchemy.url", db_url)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
@@ -54,9 +52,8 @@ target_metadata = Base.metadata
 
 def run_migrations_offline() -> None:
     """Run migrations without a DB connection (generates SQL script)."""
-    url = config.get_main_option("sqlalchemy.url")
     context.configure(
-        url=url,
+        url=db_url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -78,11 +75,9 @@ def do_run_migrations(connection: Connection) -> None:
 
 async def run_async_migrations() -> None:
     """Run migrations using the async engine (matches app runtime)."""
-    connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-    )
+    from sqlalchemy.ext.asyncio import create_async_engine
+
+    connectable = create_async_engine(db_url, poolclass=pool.NullPool)
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)
 
@@ -90,6 +85,10 @@ async def run_async_migrations() -> None:
 
 
 def run_migrations_online() -> None:
+    import sys
+
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     asyncio.run(run_async_migrations())
 
 

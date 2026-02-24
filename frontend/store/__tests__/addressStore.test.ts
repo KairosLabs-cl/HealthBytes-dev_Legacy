@@ -13,12 +13,15 @@ const TOKEN = "test-token";
 
 const mockAddress = (overrides = {}) => ({
   id: 1,
+  user_id: "user_test_1",
   street: "Av. Providencia 123",
   city: "Santiago",
   region: "Metropolitana",
   postal_code: "7500000",
+  country: "CL",
   phone: "+56912345678",
   is_default: false,
+  is_active: true,
   ...overrides,
 });
 

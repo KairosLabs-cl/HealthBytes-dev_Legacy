@@ -11,9 +11,10 @@ import { Header } from "@/components/Header";
 import { Stack } from "expo-router";
 import { RefreshCw } from "lucide-react-native";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
-import { useProductFilters } from "@/store/productFiltersStore";
+import { useProductFilters, DietaryTag } from "@/store/productFiltersStore";
+import { usePreferencesStore } from "@/store/preferencesStore";
 import { useUser } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -71,10 +72,26 @@ const DIET_FILTERS = [
 
 const keyExtractor = (item: Product) => item.id.toString();
 
+const VALID_DIETARY_TAGS = new Set<string>([
+  'sin-gluten', 'vegano', 'sin-lactosa', 'bajo-en-azucar', 'alto-en-proteina', 'para-diabeticos',
+]);
+
 export default function HomeScreen() {
   const { items: recentlyViewedItems } = useRecentlyViewed();
-  const { dietaryTags, toggleDietaryTag } = useProductFilters();
+  const { dietaryTags, toggleDietaryTag, setDietaryTags, clearFilters } = useProductFilters();
   const { user } = useUser();
+  const { dietaryPreferences } = usePreferencesStore();
+
+  // Pre-apply saved dietary preferences as initial filters on first mount
+  useEffect(() => {
+    if (dietaryPreferences.length > 0) {
+      const validTags = dietaryPreferences.filter((t) =>
+        VALID_DIETARY_TAGS.has(t)
+      ) as DietaryTag[];
+      if (validTags.length > 0) setDietaryTags(validTags);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { data, isLoading, error, isFetching, refetch } = useQuery({
     queryKey: ["products", dietaryTags],
@@ -216,9 +233,24 @@ export default function HomeScreen() {
         ListHeaderComponent={renderHeader}
         ListEmptyComponent={
           <View className="flex-1 items-center justify-center p-8">
-            <Text className="text-center text-gray-500">
-              No hay productos disponibles
-            </Text>
+            {dietaryTags.length > 0 ? (
+              <>
+                <Text className="text-center text-gray-500 mb-4">
+                  No hay productos para estos filtros
+                </Text>
+                <Pressable
+                  onPress={clearFilters}
+                  className="bg-black rounded-full px-6 py-3"
+                  style={{ minHeight: 44 }}
+                >
+                  <Text className="text-white font-semibold">Ver todos los productos</Text>
+                </Pressable>
+              </>
+            ) : (
+              <Text className="text-center text-gray-500">
+                No hay productos disponibles
+              </Text>
+            )}
           </View>
         }
         key={numColumns}
