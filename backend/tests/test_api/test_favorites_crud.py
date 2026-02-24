@@ -48,9 +48,7 @@ class TestAddFavorite:
         )
         app.dependency_overrides[get_current_user] = lambda: customer_user
         try:
-            response = client.post(
-                "/favorites/", json={"product_id": product.id}
-            )
+            response = client.post("/favorites/", json={"product_id": product.id})
             assert response.status_code == 201
         finally:
             app.dependency_overrides.pop(get_current_user, None)
@@ -61,9 +59,7 @@ class TestAddFavorite:
         mock_svc.add_favorite = AsyncMock(side_effect=ValueError("Already favorited"))
         app.dependency_overrides[get_current_user] = lambda: customer_user
         try:
-            response = client.post(
-                "/favorites/", json={"product_id": product.id}
-            )
+            response = client.post("/favorites/", json={"product_id": product.id})
             assert response.status_code == 409
         finally:
             app.dependency_overrides.pop(get_current_user, None)

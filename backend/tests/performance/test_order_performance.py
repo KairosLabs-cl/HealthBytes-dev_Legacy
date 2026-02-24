@@ -83,7 +83,9 @@ def create_test_products(db_session, count: int) -> List[Product]:
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("item_count", [5, 10, 25, 50])
-@patch("app.services.email_service.build_order_email_data", new_callable=AsyncMock, return_value=None)
+@patch(
+    "app.services.email_service.build_order_email_data", new_callable=AsyncMock, return_value=None
+)
 async def test_order_creation_query_count(mock_email, db_session, test_user_perf, item_count):
     """
     Benchmark: Verify that order creation uses constant number of queries.
@@ -171,15 +173,15 @@ async def test_order_creation_query_count(mock_email, db_session, test_user_perf
 
     print(f"\n{'='*60}")
     print(f"QUERY ANALYSIS:")
-    print(
-        f"   Product queries: {product_select_count} for {item_count} items"
-    )
+    print(f"   Product queries: {product_select_count} for {item_count} items")
     print(f"   Note: StockService adds per-product SELECT FOR UPDATE (intentional)")
     print(f"{'='*60}\n")
 
 
 @pytest.mark.asyncio
-@patch("app.services.email_service.build_order_email_data", new_callable=AsyncMock, return_value=None)
+@patch(
+    "app.services.email_service.build_order_email_data", new_callable=AsyncMock, return_value=None
+)
 async def test_order_creation_performance_scaling(mock_email, db_session, test_user_perf):
     """
     Benchmark: Compare execution time for different order sizes.
@@ -247,7 +249,9 @@ async def test_order_creation_performance_scaling(mock_email, db_session, test_u
 
 
 @pytest.mark.asyncio
-@patch("app.services.email_service.build_order_email_data", new_callable=AsyncMock, return_value=None)
+@patch(
+    "app.services.email_service.build_order_email_data", new_callable=AsyncMock, return_value=None
+)
 async def test_verify_single_product_query(mock_email, db_session, test_user_perf):
     """
     Benchmark: Verify that product fetching uses a single query with IN clause.

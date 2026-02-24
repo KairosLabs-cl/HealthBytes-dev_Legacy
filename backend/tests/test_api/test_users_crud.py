@@ -164,9 +164,7 @@ class TestDeleteUser:
 
     def test_delete_user_admin_success(self, client, db_session, admin_user):
         """Test admin can delete a user."""
-        user_to_delete = create_test_user(
-            db_session, email="delete_me@test.com", role="customer"
-        )
+        user_to_delete = create_test_user(db_session, email="delete_me@test.com", role="customer")
         app.dependency_overrides[get_current_user] = lambda: admin_user
         app.dependency_overrides[verify_admin] = lambda: admin_user
         try:
