@@ -8,7 +8,8 @@ from app.config import settings
 DATABASE_URL = settings.DATABASE_URL.replace("postgresql://", "postgresql+psycopg://")
 
 # SQLite (used in tests) doesn't support connection pool params
-_is_sqlite = DATABASE_URL.startswith("sqlite")
+# Check for any SQLite variant (sqlite://, sqlite+aiosqlite://, sqlite+pysqlite://)
+_is_sqlite = "sqlite" in DATABASE_URL.lower()
 _pool_kwargs = (
     {}
     if _is_sqlite
