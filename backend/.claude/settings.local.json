@@ -4,7 +4,21 @@
       "Bash(python -m pytest:*)",
       "Bash(.venv/Scripts/pip install:*)",
       "Bash(dir:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "WebFetch(domain:mcp.mercadopago.com)",
+      "Bash(.venv/Scripts/python.exe -m pytest:*)",
+      "Bash(curl -s \"https://api.mercadopago.com/v1/payment_methods\" -H \"Authorization: Bearer APP_USR-428714479135599-021311-a7d68b26cc6fd767f5d03d12d711c3e4-3201356262\")",
+      "Bash(python:*)",
+      "Bash(pnpm test:*)",
+      "Bash(npx jest:*)",
+      "Bash(ls:*)",
+      "Bash(\"c:/Users/benja/Proyects/Code/Work/HealthBytes-dev/frontend/jest.setup.env.js\":*)",
+      "Bash(\"c:/Users/benja/Proyects/Code/Work/HealthBytes-dev/frontend/api/__tests__/products.test.ts\":*)",
+      "Bash(\"c:/Users/benja/Proyects/Code/Work/HealthBytes-dev/frontend/api/__tests__/cart.test.ts\":*)",
+      "Bash(\"c:/Users/benja/Proyects/Code/Work/HealthBytes-dev/frontend/api/__tests__/orders.test.ts\":*)",
+      "Bash(.venv/Scripts/python -m pytest:*)",
+      "Bash(.venv/Scripts/python:*)",
+      "Bash(pnpm type-check:*)"
     ]
   }
 }

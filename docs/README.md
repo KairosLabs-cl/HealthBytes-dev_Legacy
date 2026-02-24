@@ -46,6 +46,7 @@ Documentación de sesiones con Copilot y análisis del proyecto:
 - **[ai-logs/features/](./ai-logs/features/)** - Features desarrolladas
 - **[ai-logs/auth/](./ai-logs/auth/)** - Autenticación
 - **[ai-logs/security/](./ai-logs/security/)** - Mejoras de seguridad
+- **[ai-logs/archived/](./ai-logs/archived/)** - Reportes obsoletos archivados
 
 ---
 
@@ -80,13 +81,13 @@ Documentación de sesiones con Copilot y análisis del proyecto:
 
 ---
 
-**Última actualización:** Febrero 13, 2026 ✅
+**Última actualización:** Febrero 23, 2026 ✅
 
 - **Requisitos**: Python 3.14+, Node.js 18+, PostgreSQL 14+
 - **Lenguajes**: Python (backend), TypeScript (frontend)
 - **Arquitectura**: FastAPI + React Native (Expo)
 - **Base de Datos**: PostgreSQL (prod), SQLite (testing)
-- **Tests**: 179 passing, 70% coverage, 0 failures
+- **Tests**: Suite green, 85% coverage target, 0 failures
 
 ---
 
