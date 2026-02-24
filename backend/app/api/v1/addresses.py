@@ -4,12 +4,13 @@ API routes for address management
 """
 
 from typing import List
+
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
 from app.middleware.auth import get_current_user
-from app.schemas.address import AddressCreate, AddressUpdate, AddressResponse, AddressListResponse
+from app.schemas.address import AddressCreate, AddressListResponse, AddressResponse, AddressUpdate
 from app.services.address_service import AddressService
 
 router = APIRouter(prefix="/addresses", tags=["addresses"])

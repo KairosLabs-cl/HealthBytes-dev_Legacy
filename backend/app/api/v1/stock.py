@@ -3,14 +3,15 @@ Stock Management Endpoints
 API routes for checking and managing product stock
 """
 
-from fastapi import APIRouter, Body, Depends, status
-from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
+
+from fastapi import APIRouter, Body, Depends, status
+from pydantic import BaseModel, Field
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
 from app.middleware.auth import get_current_user, verify_admin
 from app.services.stock_service import StockService, StockStatus
-from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/products", tags=["stock"])
 

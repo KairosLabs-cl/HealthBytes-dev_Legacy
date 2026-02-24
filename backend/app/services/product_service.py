@@ -3,11 +3,12 @@
 import logging
 from typing import List, Optional
 
-from app.db.schemas import DietaryTag, Product
-from app.schemas.product import ProductCreate, ProductUpdate
-from sqlalchemy import select, func, desc, text
+from sqlalchemy import desc, func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+
+from app.db.schemas import DietaryTag, Product
+from app.schemas.product import ProductCreate, ProductUpdate
 
 logger = logging.getLogger(__name__)
 

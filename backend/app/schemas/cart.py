@@ -1,8 +1,9 @@
 from datetime import datetime
 from typing import List
 
-from app.schemas.product import ProductResponse
 from pydantic import BaseModel, ConfigDict, Field
+
+from app.schemas.product import ProductResponse
 
 
 class CartItemCreate(BaseModel):

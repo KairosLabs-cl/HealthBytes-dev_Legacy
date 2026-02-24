@@ -3,11 +3,12 @@ Stock Service
 Business logic for inventory management with race condition prevention
 """
 
-from typing import Optional, Dict, Any
+from enum import Enum
+from typing import Any, Dict, Optional
+
+from fastapi import HTTPException, status
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import HTTPException, status
-from enum import Enum
 
 from app.db.schemas import Product
 

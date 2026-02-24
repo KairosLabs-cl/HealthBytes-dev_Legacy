@@ -1,6 +1,7 @@
-from pydantic import BaseModel, ConfigDict, Field, field_validator, computed_field
-from typing import Optional, List, Annotated
 from decimal import Decimal
+from typing import Annotated, List, Optional
+
+from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator
 
 
 class DietaryTagResponse(BaseModel):
