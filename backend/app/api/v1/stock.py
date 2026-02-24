@@ -5,12 +5,12 @@ API routes for checking and managing product stock
 
 from typing import List
 
-from fastapi import APIRouter, Body, Depends, status
+from fastapi import APIRouter, Body, Depends
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
-from app.middleware.auth import get_current_user, verify_admin
+from app.middleware.auth import verify_admin
 from app.services.stock_service import StockService, StockStatus
 
 router = APIRouter(prefix="/products", tags=["stock"])
@@ -145,9 +145,7 @@ async def update_product_stock(
     - Receiving new stock
     - Correcting discrepancies
     """
-    product = await StockService.update_stock(
-        db, product_id, request.new_stock, str(current_user.id)
-    )
+    await StockService.update_stock(db, product_id, request.new_stock, str(current_user.id))
 
     # Return updated stock info
     return await StockService.get_stock_info(db, product_id)
@@ -175,6 +173,6 @@ async def release_reserved_stock(
     - Payment failure
     - Manual adjustment
     """
-    product = await StockService.release_stock(db, product_id, quantity, reason)
+    await StockService.release_stock(db, product_id, quantity, reason)
 
     return await StockService.get_stock_info(db, product_id)

@@ -3,12 +3,11 @@
 import logging
 from typing import List, Optional
 
-from sqlalchemy import and_, exists, select
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload, selectinload
+from sqlalchemy.orm import joinedload
 
 from app.db.schemas import Product, UserFavorite
-from app.schemas.favorite import FavoriteCreate
 
 logger = logging.getLogger(__name__)
 

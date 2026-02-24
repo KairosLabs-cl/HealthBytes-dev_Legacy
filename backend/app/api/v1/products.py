@@ -31,7 +31,7 @@ async def list_products(
     GET /products?category=Snacks&dietary=vegano,sin-gluten&min_price=1000
     """
     try:
-        # If search is provided, we use the FTS search (which currently doesn't combine with filters in service)
+        # If search is provided, use FTS search
         # TODO: Enhance search_products to also accept filters if needed
         if search:
             return await product_service.search_products(db, search, skip=skip, limit=limit)

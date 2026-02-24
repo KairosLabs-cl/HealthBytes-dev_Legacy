@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Annotated, List, Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator
 
@@ -48,9 +48,8 @@ class ProductUpdate(BaseModel):
     image: Optional[str] = Field(None, max_length=255)
     price: Optional[float] = Field(None, gt=0)
     stock: Optional[int] = Field(None, ge=0)
-    dietary_tag_ids: Optional[List[int]] = (
-        None  # si esto llega a fallar se tiene que usar sin _ids debido a que en master estaba buscado de esta manera
-    )
+    # If this fails, use without _ids (old master used bare field name)
+    dietary_tag_ids: Optional[List[int]] = None
     category: Optional[str] = Field(None, max_length=100)
 
 

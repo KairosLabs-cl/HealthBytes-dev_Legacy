@@ -3,8 +3,6 @@ Address Endpoints
 API routes for address management
 """
 
-from typing import List
-
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 

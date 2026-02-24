@@ -7,7 +7,7 @@ from sqlalchemy import desc, func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.db.schemas import DietaryTag, Product
+from app.db.schemas import Product
 from app.schemas.product import ProductCreate, ProductUpdate
 
 logger = logging.getLogger(__name__)
