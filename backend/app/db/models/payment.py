@@ -5,13 +5,13 @@ from datetime import datetime
 from decimal import Decimal
 
 from sqlalchemy import (
+    TIMESTAMP,
     Column,
     Enum,
     ForeignKey,
     Integer,
     Numeric,
     String,
-    TIMESTAMP,
 )
 from sqlalchemy.orm import relationship
 

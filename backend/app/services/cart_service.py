@@ -4,12 +4,13 @@ Cart service - Business logic for shopping cart operations
 
 from typing import List
 
-from app.db.schemas import CartItem, Product
-from app.schemas.cart import CartItemCreate, CartItemResponse, CartResponse
 from fastapi import HTTPException
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload, selectinload
+
+from app.db.schemas import CartItem, Product
+from app.schemas.cart import CartItemCreate, CartItemResponse, CartResponse
 
 
 async def get_cart(user_id: int, db: AsyncSession) -> CartResponse:

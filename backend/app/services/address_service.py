@@ -4,9 +4,10 @@ Business logic for address management
 """
 
 from typing import List, Optional
+
+from fastapi import HTTPException, status
 from sqlalchemy import and_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import HTTPException, status
 
 from app.db.models.address import Address
 from app.schemas.address import AddressCreate, AddressUpdate

@@ -1,14 +1,15 @@
 """Favorites API endpoints"""
 
+import logging
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List
-import logging
 
 from app.db.database import get_db
 from app.db.schemas import User
 from app.middleware.auth import get_current_user
-from app.schemas.favorite import FavoriteCreate, FavoriteResponse, FavoriteCheckResponse
+from app.schemas.favorite import FavoriteCheckResponse, FavoriteCreate, FavoriteResponse
 from app.services import favorite_service
 
 logger = logging.getLogger(__name__)
