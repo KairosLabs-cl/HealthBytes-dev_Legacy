@@ -21,9 +21,7 @@ def customer_user(db_session):
 @pytest.fixture
 def admin_user(db_session):
     """Create an admin user."""
-    return create_test_user(
-        db_session, email="orders_admin@test.com", role="admin", name="Admin"
-    )
+    return create_test_user(db_session, email="orders_admin@test.com", role="admin", name="Admin")
 
 
 @pytest.fixture
@@ -54,12 +52,8 @@ def order_with_items(db_session, customer_user, products):
     db_session.commit()
     db_session.refresh(order)
 
-    item1 = OrderItem(
-        order_id=order.id, product_id=products[0].id, quantity=2, price=5000.0
-    )
-    item2 = OrderItem(
-        order_id=order.id, product_id=products[1].id, quantity=1, price=3000.0
-    )
+    item1 = OrderItem(order_id=order.id, product_id=products[0].id, quantity=2, price=5000.0)
+    item2 = OrderItem(order_id=order.id, product_id=products[1].id, quantity=1, price=3000.0)
     db_session.add_all([item1, item2])
     db_session.commit()
     return order
@@ -89,7 +83,9 @@ class TestCreateOrder:
 
     def test_create_order_requires_auth(self, client):
         """Test that creating order requires authentication."""
-        response = client.post("/orders/", json={"items": [{"productId": 1, "quantity": 1, "price": 10}]})
+        response = client.post(
+            "/orders/", json={"items": [{"productId": 1, "quantity": 1, "price": 10}]}
+        )
         assert response.status_code == 401
 
     def test_create_order_product_not_found(self, client, db_session, customer_user):
@@ -214,21 +210,19 @@ class TestUpdateOrder:
         """Test admin can update order status."""
         app.dependency_overrides[get_current_user] = lambda: admin_user
         try:
-            response = client.put(
-                f"/orders/{order_with_items.id}", json={"status": "confirmed"}
-            )
+            response = client.put(f"/orders/{order_with_items.id}", json={"status": "confirmed"})
             assert response.status_code == 200
             assert response.json()["status"] == "confirmed"
         finally:
             app.dependency_overrides.pop(get_current_user, None)
 
-    def test_update_order_customer_forbidden(self, client, db_session, customer_user, order_with_items):
+    def test_update_order_customer_forbidden(
+        self, client, db_session, customer_user, order_with_items
+    ):
         """Test customer cannot update order."""
         app.dependency_overrides[get_current_user] = lambda: customer_user
         try:
-            response = client.put(
-                f"/orders/{order_with_items.id}", json={"status": "shipped"}
-            )
+            response = client.put(f"/orders/{order_with_items.id}", json={"status": "shipped"})
             assert response.status_code == 403
         finally:
             app.dependency_overrides.pop(get_current_user, None)
@@ -260,7 +254,9 @@ class TestDeleteOrder:
         finally:
             app.dependency_overrides.pop(get_current_user, None)
 
-    def test_delete_order_customer_forbidden(self, client, db_session, customer_user, order_with_items):
+    def test_delete_order_customer_forbidden(
+        self, client, db_session, customer_user, order_with_items
+    ):
         """Test customer cannot delete order."""
         app.dependency_overrides[get_current_user] = lambda: customer_user
         try:

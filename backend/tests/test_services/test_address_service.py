@@ -67,7 +67,9 @@ async def test_create_address_as_default(db_session, default_address_data):
 
 
 @pytest.mark.asyncio
-async def test_create_default_unsets_previous_default(db_session, address_data, default_address_data):
+async def test_create_default_unsets_previous_default(
+    db_session, address_data, default_address_data
+):
     mock_db = MockAsyncSession(db_session)
 
     # Create first address as default
@@ -109,7 +111,14 @@ async def test_get_user_addresses_returns_active_only(db_session, address_data):
     await AddressService.create_address(mock_db, USER_ID, address_data)
 
     # Create inactive address directly
-    inactive = Address(user_id=USER_ID, street="Deleted St", city="Gone", region="X", postal_code="000", is_active=False)
+    inactive = Address(
+        user_id=USER_ID,
+        street="Deleted St",
+        city="Gone",
+        region="X",
+        postal_code="000",
+        is_active=False,
+    )
     db_session.add(inactive)
     db_session.commit()
 
@@ -123,7 +132,14 @@ async def test_get_user_addresses_include_inactive(db_session, address_data):
     mock_db = MockAsyncSession(db_session)
 
     await AddressService.create_address(mock_db, USER_ID, address_data)
-    inactive = Address(user_id=USER_ID, street="Deleted St", city="Gone", region="X", postal_code="000", is_active=False)
+    inactive = Address(
+        user_id=USER_ID,
+        street="Deleted St",
+        city="Gone",
+        region="X",
+        postal_code="000",
+        is_active=False,
+    )
     db_session.add(inactive)
     db_session.commit()
 

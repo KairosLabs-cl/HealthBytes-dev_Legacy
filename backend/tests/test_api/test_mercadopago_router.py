@@ -25,18 +25,14 @@ def customer_user(db_session):
 @pytest.fixture
 def admin_user(db_session):
     """Create an admin user."""
-    return create_test_user(
-        db_session, email="mp_admin@test.com", role="admin", name="MP Admin"
-    )
+    return create_test_user(db_session, email="mp_admin@test.com", role="admin", name="MP Admin")
 
 
 class TestCreatePreference:
     """Tests for POST /api/v1/payments/mercadopago/create-preference"""
 
     @patch("app.api.v1.mercadopago.MercadoPagoService")
-    def test_create_preference_success(
-        self, mock_mp_cls, client, db_session, customer_user
-    ):
+    def test_create_preference_success(self, mock_mp_cls, client, db_session, customer_user):
         """Test successful preference creation."""
         mock_order = MagicMock(id=1, user_id=customer_user.id)
 

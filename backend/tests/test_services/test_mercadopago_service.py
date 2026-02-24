@@ -98,9 +98,7 @@ async def test_create_preference_cancelled_order(mp_service, mock_db, test_order
     test_order_with_items.status = "cancelled"
 
     mock_db.execute = AsyncMock(
-        return_value=MagicMock(
-            scalar_one_or_none=MagicMock(return_value=test_order_with_items)
-        )
+        return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=test_order_with_items))
     )
 
     with pytest.raises(PaymentError, match="cancelled"):
@@ -127,9 +125,7 @@ async def test_create_preference_no_items(mp_service, mock_db):
 async def test_create_preference_success(mp_service, mock_db, test_order_with_items):
     """Test successful preference creation"""
     mock_db.execute = AsyncMock(
-        return_value=MagicMock(
-            scalar_one_or_none=MagicMock(return_value=test_order_with_items)
-        )
+        return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=test_order_with_items))
     )
 
     mp_response = {
@@ -161,9 +157,7 @@ async def test_create_preference_success(mp_service, mock_db, test_order_with_it
 async def test_create_preference_mp_api_error(mp_service, mock_db, test_order_with_items):
     """Test preference creation when MP API returns error"""
     mock_db.execute = AsyncMock(
-        return_value=MagicMock(
-            scalar_one_or_none=MagicMock(return_value=test_order_with_items)
-        )
+        return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=test_order_with_items))
     )
 
     with patch("httpx.AsyncClient") as mock_client:
@@ -199,9 +193,7 @@ async def test_get_payment_info_success(mp_service):
         mock_response.status_code = 200
         mock_response.json.return_value = payment_data
 
-        mock_client.return_value.__aenter__.return_value.get = AsyncMock(
-            return_value=mock_response
-        )
+        mock_client.return_value.__aenter__.return_value.get = AsyncMock(return_value=mock_response)
 
         result = await mp_service.get_payment_info("12345")
 
@@ -216,9 +208,7 @@ async def test_get_payment_info_not_found(mp_service):
         mock_response = AsyncMock()
         mock_response.status_code = 404
 
-        mock_client.return_value.__aenter__.return_value.get = AsyncMock(
-            return_value=mock_response
-        )
+        mock_client.return_value.__aenter__.return_value.get = AsyncMock(return_value=mock_response)
 
         with pytest.raises(PaymentError, match="Failed to get payment info"):
             await mp_service.get_payment_info("99999")
@@ -238,9 +228,7 @@ async def test_process_webhook_no_external_reference(mp_service, mock_db):
     mp_service.get_payment_info = AsyncMock(return_value=payment_info)
 
     with pytest.raises(PaymentError, match="No external_reference"):
-        await mp_service.process_webhook(
-            db=mock_db, payment_id="12345", topic="payment"
-        )
+        await mp_service.process_webhook(db=mock_db, payment_id="12345", topic="payment")
 
 
 @pytest.mark.asyncio
@@ -258,9 +246,7 @@ async def test_process_webhook_payment_not_found(mp_service, mock_db):
     )
 
     with pytest.raises(PaymentError, match="Payment not found"):
-        await mp_service.process_webhook(
-            db=mock_db, payment_id="12345", topic="payment"
-        )
+        await mp_service.process_webhook(db=mock_db, payment_id="12345", topic="payment")
 
 
 @pytest.mark.asyncio
@@ -284,9 +270,7 @@ async def test_process_webhook_approved(mp_service, mock_db, test_payment):
         ]
     )
 
-    result = await mp_service.process_webhook(
-        db=mock_db, payment_id="12345", topic="payment"
-    )
+    result = await mp_service.process_webhook(db=mock_db, payment_id="12345", topic="payment")
 
     assert result["status"] == "completed"
     assert order_mock.status == "confirmed"
@@ -316,9 +300,7 @@ async def test_process_webhook_rejected(mp_service, mock_db, test_payment, test_
     with patch(
         "app.services.mercadopago_service.StockService.release_stock", new_callable=AsyncMock
     ) as mock_release:
-        result = await mp_service.process_webhook(
-            db=mock_db, payment_id="12345", topic="payment"
-        )
+        result = await mp_service.process_webhook(db=mock_db, payment_id="12345", topic="payment")
 
         assert result["status"] == "failed"
         assert test_order_with_items.status == "cancelled"
@@ -393,16 +375,17 @@ async def test_refund_payment_success(mp_service, mock_db, test_payment, test_or
 
     refund_response = {"id": "refund_456", "amount": 13000.0}
 
-    with patch("httpx.AsyncClient") as mock_client, patch(
-        "app.services.mercadopago_service.StockService.release_stock", new_callable=AsyncMock
-    ) as mock_release:
+    with (
+        patch("httpx.AsyncClient") as mock_client,
+        patch(
+            "app.services.mercadopago_service.StockService.release_stock", new_callable=AsyncMock
+        ) as mock_release,
+    ):
         mock_resp = MagicMock()
         mock_resp.status_code = 201
         mock_resp.json.return_value = refund_response
 
-        mock_client.return_value.__aenter__.return_value.post = AsyncMock(
-            return_value=mock_resp
-        )
+        mock_client.return_value.__aenter__.return_value.post = AsyncMock(return_value=mock_resp)
 
         result = await mp_service.refund_payment(db=mock_db, payment_id=test_payment.id)
 
@@ -422,9 +405,7 @@ def test_validate_x_signature_valid(mp_service):
     ts = "1707849600"
 
     manifest = f"id:{data_id};ts:{ts};"
-    v1 = hmac.new(
-        mp_service.webhook_secret.encode(), manifest.encode(), hashlib.sha256
-    ).hexdigest()
+    v1 = hmac.new(mp_service.webhook_secret.encode(), manifest.encode(), hashlib.sha256).hexdigest()
 
     x_signature = f"ts={ts},v1={v1}"
 

@@ -100,9 +100,9 @@ def _get_payment_from_db(db_session, order_id):
 
 def _get_product_stock(db_session, product_id):
     """Query current stock for a product (sync helper)."""
-    return db_session.execute(
-        sql_select(Product).where(Product.id == product_id)
-    ).scalar_one().stock
+    return (
+        db_session.execute(sql_select(Product).where(Product.id == product_id)).scalar_one().stock
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -113,9 +113,7 @@ def _get_product_stock(db_session, product_id):
 class TestE2ECheckoutApproved:
     """Full flow: order → preference → webhook approved → order confirmed."""
 
-    def test_payment_approved_confirms_order(
-        self, client, db_session, e2e_user, e2e_product
-    ):
+    def test_payment_approved_confirms_order(self, client, db_session, e2e_user, e2e_product):
         """
         Happy path:
         1. Create order          → status=pending, stock reserved (10→9)

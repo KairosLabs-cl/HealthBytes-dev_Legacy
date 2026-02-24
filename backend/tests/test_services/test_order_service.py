@@ -188,18 +188,8 @@ async def test_get_user_orders_with_data(db_session, test_user, test_products):
     mock_db = MockAsyncSession(db_session)
 
     # Create orders
-    order1 = Order(
-        id=1,
-        user_id=test_user.id,
-        total=Decimal("30.0"),
-        status="pending"
-    )
-    order2 = Order(
-        id=2,
-        user_id=test_user.id,
-        total=Decimal("50.0"),
-        status="completed"
-    )
+    order1 = Order(id=1, user_id=test_user.id, total=Decimal("30.0"), status="pending")
+    order2 = Order(id=2, user_id=test_user.id, total=Decimal("50.0"), status="completed")
     db_session.add(order1)
     db_session.add(order2)
     db_session.commit()
@@ -275,12 +265,7 @@ async def test_update_order_status_invalid_transition(db_session, test_user):
     mock_db = MockAsyncSession(db_session)
 
     # Create order
-    order = Order(
-        id=1,
-        user_id=test_user.id,
-        total=Decimal("50.0"),
-        status="completed"
-    )
+    order = Order(id=1, user_id=test_user.id, total=Decimal("50.0"), status="completed")
     db_session.add(order)
     db_session.commit()
 
