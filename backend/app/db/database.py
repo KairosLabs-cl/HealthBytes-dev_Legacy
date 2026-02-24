@@ -8,7 +8,8 @@ from app.config import settings
 ***REDACTED_DATABASE_URL***
 
 # SQLite (used in tests) doesn't support connection pool params
-_is_sqlite = ***REDACTED_DATABASE_URL***
+# Check for any SQLite variant (sqlite://, sqlite+aiosqlite://, sqlite+pysqlite://)
+_is_sqlite = "sqlite" in ***REDACTED_DATABASE_URL***
 _pool_kwargs = (
     {}
     if _is_sqlite
