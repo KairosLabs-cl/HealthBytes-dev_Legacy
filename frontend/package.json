@@ -87,7 +87,8 @@
       "tmp": ">=0.2.4",
       "bs58": "^6.0.0",
       "minimatch": "^10.2.2",
-      "glob": "^11.0.0"
+      "glob": "^11.0.0",
+      "babel-plugin-module-resolver>glob": "^8"
     },
     "ignoredBuiltDependencies": [
       "@clerk/shared",
