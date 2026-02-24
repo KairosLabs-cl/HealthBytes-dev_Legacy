@@ -84,7 +84,9 @@ class TestRequestSizeLimiting:
         large_data = "x" * (3 * 1024 * 1024)
 
         response = client.post(
-            "/api/v1/products", json={"data": large_data}, headers={"Content-Type": "application/json"}
+            "/api/v1/products",
+            json={"data": large_data},
+            headers={"Content-Type": "application/json"},
         )
 
         # Should return 413 Request Entity Too Large

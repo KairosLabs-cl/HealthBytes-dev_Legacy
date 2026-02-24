@@ -118,9 +118,7 @@ def test_update_address(client, auth_headers):
 
     update_data = {"street": "New Street", "label": "Updated Home"}
 
-    response = client.put(
-        f"/addresses/{address_id}", json=update_data, headers=auth_headers
-    )
+    response = client.put(f"/addresses/{address_id}", json=update_data, headers=auth_headers)
 
     assert response.status_code == 200
     data = response.json()
