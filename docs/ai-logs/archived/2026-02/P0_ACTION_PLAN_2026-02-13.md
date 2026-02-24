@@ -1,3 +1,7 @@
+# ARCHIVED - P0 Critical Plan (Feb 13, 2026)
+
+> Archived on Feb 23, 2026. Superseded by current status docs in docs/ai-logs/status/.
+
 # 🚨 P0 Critical - Plan de Acción Inmediato
 
 > **Fecha inicio**: Febrero 13, 2026  
@@ -373,3 +377,4 @@ Mientras tanto:
 
 **Última actualización**: Feb 13, 2026  
 **Próxima revisión**: Feb 20, 2026 (fin de Semana 1)
+````

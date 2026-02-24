@@ -1,3 +1,7 @@
+# ARCHIVED - Task 3 Payment Models (Feb 13, 2026)
+
+> Archived on Feb 23, 2026. Superseded by current payment integration docs.
+
 # Task 3: Payment Models - COMPLETE ✅
 
 **Date**: February 13, 2026  
@@ -229,9 +233,9 @@ pytest tests/test_services/test_payment_service.py -v --cov=app/services/payment
 
 ## 🔗 Related Documentation
 
-- [P0 Action Plan](../../docs/ai-logs/P0_ACTION_PLAN.md) - Full roadmap
-- [Backend Patterns](../../.github/skills/healthbytes-backend-patterns.md) - Service layer guide
-- [Security Practices](../../.github/skills/healthbytes-security-practices.md) - Payment security
+- [P0 Action Plan (Archived)](../P0_ACTION_PLAN_2026-02-13.md) - Full roadmap
+- [Backend Patterns](../../../.github/skills/healthbytes-backend-patterns.md) - Service layer guide
+- [Security Practices](../../../.github/skills/healthbytes-security-practices.md) - Payment security
 
 ---
 

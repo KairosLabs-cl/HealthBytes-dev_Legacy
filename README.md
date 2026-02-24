@@ -696,7 +696,9 @@ pytest -v
 
 ### Estado Actual de Tests
 
-**179 tests passing | 70% coverage | 0 failures**
+**Suite green (backend + frontend) | 85% coverage target | 0 failures**
+
+Nota: El detalle por modulo se debe refrescar con la proxima corrida de coverage.
 
 | Módulo      | Tests | Coverage | Estado           |
 | ------------ | ----- | -------- | ---------------- |
@@ -728,7 +730,7 @@ Convertir HealthBytes en la **plataforma líder** de e-commerce para personas co
 | Milestone | Target | Status | Progress |
 |-----------|--------|--------|----------|
 | 🚀 **MVP Launch** | Abril 2026 | 🟡 En progreso | 70% |
-| 💳 **Payment Integration** | Marzo 2026 | 📋 Planeado | 0% |
+| 💳 **Payment Integration** | Febrero 2026 | ✅ Implementado | 100% |
 | 📱 **App Store Release** | Mayo 2026 | 📋 Planeado | 0% |
 | 👥 **100 Beta Users** | Abril 2026 | 📋 Planeado | 0% |
 
@@ -737,17 +739,17 @@ Convertir HealthBytes en la **plataforma líder** de e-commerce para personas co
 **Bloqueadores para MVP Launch**:
 
 #### Backend
-- [ ] **Payment Integration** (Mercado Pago) - 1.5 semanas
+- [x] **Payment Integration** (Mercado Pago) - ✅ Implementado
 - [x] **Address CRUD** - ✅ Implementado
 - [x] **Stock Management** - ✅ Implementado (locking atómico)
 - [ ] **Webhooks Payment Confirmation** - 3 días
 - [ ] **Order Emails** (SendGrid) - 2 días
 
 #### Frontend
-- [ ] **Checkout Flow Completo** - 1 semana
-- [ ] **Address Selection UI** - 3 días
-- [ ] **Payment Method Selection** - 3 días
-- [ ] **Order Success Screen** - 2 días
+- [x] **Checkout Flow Completo** - ✅ Implementado
+- [x] **Address Selection UI** - ✅ Implementado
+- [x] **Payment Method Selection** - ✅ Implementado
+- [x] **Order Success Screen** - ✅ Implementado
 
 #### DevOps
 - [ ] **Docker Setup** - 2 días
