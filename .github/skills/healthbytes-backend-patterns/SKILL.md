@@ -185,41 +185,124 @@ cd backend
 
 **Workflow**:
 ```bash
-# 1. Write code
+cd backend
+
+# Make changes to code...
 vim app/services/product_service.py
 
-# 2. Stage changes
-git add app/services/product_service.py
+# Format & lint manually before commit
+black app/ tests/ --line-length 100
+isort app/ tests/
+flake8 app/ tests/
 
-# 3. Commit (hooks run automatically)
-git commit -m "feat: add product search"
-
-# If Black/isort fix formatting:
-# → Files modified, re-add them:
+# If all passes, commit
 git add app/services/product_service.py
 git commit -m "feat: add product search"
-
-# If Flake8 reports errors:
-# → Fix manually:
-# app/services/product_service.py:15:1: F401 'random' imported but unused
 ```
 
-**Manual formatting** (no commit):
+**Manual Quality Checks** (run before commit):
 ```bash
 cd backend
-pre-commit run --all-files  # Format everything
-pre-commit run --files app/api/v1/products.py  # Specific file
+
+# 1. Format code (auto-fix)
+black app/ tests/ --line-length 100
+isort app/ tests/
+
+# 2. Lint code (reports only - fix manually)
+flake8 app/ tests/
+
+# 3. Security scan (reports only)
+bandit -r app/ -ll  # Only medium/high severity
+
+# 4. Run tests with coverage
+pytest --cov=app --cov-fail-under=80
+
+# 5. Type check (if using mypy - optional)
+mypy app/
+```
+
+**Quick format check** (without modifying files):
+```bash
+black --check app/ tests/     # Check if formatting needed
+flake8 app/ tests/            # Check lint errors
+pytest -x                     # Stop on first failure
+```
+
+**CI/CD Pipeline** (GitHub Actions):
+```yaml
+# .github/workflows/ci.yml runs:
+1. Black formatting check
+2. Flake8 linting
+3. pytest with 80% coverage minimum
+4. Bandit security scan
 ```
 
 **Common Flake8 errors**:
-- `F401` - Imported but unused
-- `E501` - Line too long (>100 chars)
-- `F841` - Variable assigned but never used
-- `E302` - Expected 2 blank lines, found 1
+- `F401` - Imported but unused → Remove the import
+- `E501` - Line too long (>100 chars) → Break into multiple lines
+- `F841` - Variable assigned but never used → Remove or use it
+- `E302` - Expected 2 blank lines, found 1 → Add blank line
+- `E711` - Comparison to None with `==` → Use `is None`
+- `W503` - Line break before binary operator → Disabled in config
 
-**Skip hooks** (emergencies only):
+**Quick fixes**:
 ```bash
-git commit --no-verify -m "WIP: work in progress"
+# Fix all formatting at once
+black app/ tests/ --line-length 100 && isort app/ tests/
+
+# Check what would change (dry-run)
+black --check --diff app/
+
+# Format specific file
+black app/api/v1/products.py --line-length 100
+```
+
+**Troubleshooting**:
+```bash
+# If Black conflicts with isort:
+# → Already configured (isort profile = "black")
+
+# If line too long error persists:
+# → Check string literals, break with parentheses
+# ✅ Good:
+long_message = (
+    "This is a very long message that "
+    "spans multiple lines cleanly"
+)
+
+# If import errors:
+# → Run: isort app/ --check-only --diff
+# → Then: isort app/
+```
+
+**Quick fixes**:
+```bash
+# Fix all formatting at once
+black app/ tests/ --line-length 100 && isort app/ tests/
+
+# Check what would change (dry-run)
+black --check --diff app/
+
+# Format specific file
+black app/api/v1/products.py --line-length 100
+```
+
+**Troubleshooting**:
+```bash
+# If Black conflicts with isort:
+# → Already configured (isort profile = "black")
+
+# If line too long error persists:
+# → Check string literals, break with parentheses
+# ✅ Good:
+long_message = (
+    "This is a very long message that "
+    "spans multiple lines cleanly"
+)
+
+# If import errors:
+# → Run: isort app/ --check-only --diff
+# → Then: isort app/
 ```
 
 ### Security Scanning with Bandit
