@@ -301,9 +301,7 @@ class MercadoPagoService:
 
         elif new_status in (PaymentStatus.FAILED, PaymentStatus.CANCELLED):
             result = await db.execute(
-                select(Order)
-                .where(Order.id == order_id)
-                .options(selectinload(Order.items))
+                select(Order).where(Order.id == order_id).options(selectinload(Order.items))
             )
             order = result.scalar_one_or_none()
             if order and order.status != "cancelled":
@@ -336,9 +334,7 @@ class MercadoPagoService:
                 if email_data:
                     await email_svc.send_payment_success(email_data)
             except Exception:
-                logger.exception(
-                    "Failed to send payment success email for order %s", order_id
-                )
+                logger.exception("Failed to send payment success email for order %s", order_id)
 
         logger.info(
             "Webhook processed: order=%s, mp_payment=%s, status=%s",

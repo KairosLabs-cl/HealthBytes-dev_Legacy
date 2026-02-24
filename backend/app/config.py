@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     # Mercado Pago
     MERCADO_PAGO_ACCESS_TOKEN: Optional[str] = None
     MERCADO_PAGO_WEBHOOK_SECRET: Optional[str] = None
-    
+
     # Email (Resend)
     RESEND_API_KEY: Optional[str] = None
     EMAIL_FROM_ADDRESS: str = "HealthBytes <onboarding@resend.dev>"

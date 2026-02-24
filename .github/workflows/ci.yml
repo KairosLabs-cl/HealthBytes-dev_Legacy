@@ -3,8 +3,14 @@ name: CI
 on:
   push:
     branches: [master, main]
+    paths-ignore:
+      - "docs/**"
+      - "**.md"
   pull_request:
     branches: [master, main]
+    paths-ignore:
+      - "docs/**"
+      - "**.md"
   workflow_call: # allows deploy.yml to call this as a CI gate
 
 jobs:
@@ -64,7 +70,7 @@ jobs:
 
       - name: Create test .env
         run: |
-          echo "DATABASE_URL=sqlite:///:memory:" > .env
+          echo "DATABASE_URL=sqlite+aiosqlite:///:memory:" > .env
           echo "JWT_SECRET=ci-test-secret-key-min-32-characters-long" >> .env
 
       - name: Run tests
