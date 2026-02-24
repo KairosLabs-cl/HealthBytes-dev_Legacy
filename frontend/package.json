@@ -23,7 +23,7 @@
     "build:android:local": "expo prebuild && cd android && ./gradlew assembleRelease"
   },
   "dependencies": {
-    "@clerk/clerk-expo": "^2.19.18",
+    "@clerk/clerk-expo": "^2.19.26",
     "@expo/html-elements": "^0.13.8",
     "@expo/metro-runtime": "^6.1.2",
     "@gluestack-ui/button": "^1.0.14",
@@ -85,7 +85,9 @@
   "pnpm": {
     "overrides": {
       "tmp": ">=0.2.4",
-      "bs58": "^6.0.0"
+      "bs58": "^6.0.0",
+      "minimatch": "^10.2.2",
+      "glob": "^11.0.0"
     },
     "ignoredBuiltDependencies": [
       "@clerk/shared",

@@ -7,7 +7,7 @@ from enum import Enum
 from typing import Any, Dict, Optional
 
 from fastapi import HTTPException, status
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.schemas import Product
@@ -182,7 +182,6 @@ class StockService:
                 detail={"message": f"Product {product_id} not found"},
             )
 
-        old_stock = product.stock
         product.stock = new_stock
 
         await db.commit()

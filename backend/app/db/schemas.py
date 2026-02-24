@@ -1,10 +1,8 @@
 from sqlalchemy import (
-    ARRAY,
     JSON,
     TIMESTAMP,
     Column,
     DateTime,
-    Float,
     ForeignKey,
     Index,
     Integer,
@@ -22,7 +20,7 @@ from app.db.database import Base
 
 # Custom type that works with both PostgreSQL and SQLite
 class SearchVector(TypeDecorator):
-    """A custom type that represents PostgreSQL tsvector but falls back to Text for other databases."""
+    """A custom type for PostgreSQL tsvector that falls back to Text for other databases."""
 
     impl = Text
     cache_ok = True

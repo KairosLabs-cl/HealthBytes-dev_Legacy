@@ -52,7 +52,7 @@ class AddressService:
         query = select(Address).where(Address.user_id == user_id)
 
         if not include_inactive:
-            query = query.where(Address.is_active == True)
+            query = query.where(Address.is_active.is_(True))
 
         query = query.order_by(Address.is_default.desc(), Address.created_at.desc())
 
@@ -67,7 +67,7 @@ class AddressService:
         Get specific address by ID (must belong to user)
         """
         query = select(Address).where(
-            and_(Address.id == address_id, Address.user_id == user_id, Address.is_active == True)
+            and_(Address.id == address_id, Address.user_id == user_id, Address.is_active.is_(True))
         )
 
         result = await db.execute(query)
@@ -85,7 +85,11 @@ class AddressService:
     async def get_default_address(db: AsyncSession, user_id: str) -> Optional[Address]:
         """Get user's default address"""
         query = select(Address).where(
-            and_(Address.user_id == user_id, Address.is_default == True, Address.is_active == True)
+            and_(
+                Address.user_id == user_id,
+                Address.is_default.is_(True),
+                Address.is_active.is_(True),
+            )
         )
 
         result = await db.execute(query)
@@ -139,7 +143,9 @@ class AddressService:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail={
-                    "message": "Cannot delete default address. Set another address as default first."
+                    "message": (
+                        "Cannot delete default address. " "Set another address as default first."
+                    )
                 },
             )
 
@@ -173,7 +179,7 @@ class AddressService:
         """Helper: Unset all default addresses for user"""
         stmt = (
             update(Address)
-            .where(and_(Address.user_id == user_id, Address.is_default == True))
+            .where(and_(Address.user_id == user_id, Address.is_default.is_(True)))
             .values(is_default=False)
         )
         await db.execute(stmt)
