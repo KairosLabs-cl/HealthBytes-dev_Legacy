@@ -2,7 +2,6 @@
 
 import enum
 from datetime import datetime
-from decimal import Decimal
 
 from sqlalchemy import (
     TIMESTAMP,
@@ -102,4 +101,7 @@ class Payment(Base):
     order = relationship("Order", backref="payments")
 
     def __repr__(self):
-        return f"<Payment(id={self.id}, order_id={self.order_id}, provider={self.provider}, status={self.status})>"
+        return (
+            f"<Payment(id={self.id}, order_id={self.order_id}, "
+            f"provider={self.provider}, status={self.status})>"
+        )

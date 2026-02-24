@@ -101,7 +101,7 @@ async def create_order(db: AsyncSession, user_id: int, order_in: OrderCreate) ->
 
     # No manual commit here, we rely on caller or middleware?
     # Usually service methods might flush but caller commits.
-    # But for a transaction script like this, it's safer to commit if it encapsulates the unit of work.
+    # But for a transaction script like this, it's safer to commit to encapsulate the unit of work.
     # The API router called `await db.commit()`.
     # I will commit here to ensure transaction integrity within the service method.
 

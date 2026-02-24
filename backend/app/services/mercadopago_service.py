@@ -8,7 +8,7 @@ import hmac
 import logging
 from datetime import UTC, datetime
 from decimal import Decimal
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 import httpx
 from sqlalchemy import select

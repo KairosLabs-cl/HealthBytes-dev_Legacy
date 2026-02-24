@@ -13,7 +13,7 @@ from sqlalchemy.orm import selectinload
 
 from app.db.database import get_db
 from app.db.models.address import Address
-from app.db.schemas import Order, OrderItem, User
+from app.db.schemas import Order, User
 from app.middleware.auth import get_current_user
 from app.schemas.error import ErrorDetail, ErrorResponse
 from app.schemas.order import OrderCreate, OrderItemResponse, OrderResponse, OrderUpdate
