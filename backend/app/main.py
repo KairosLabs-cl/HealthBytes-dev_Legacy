@@ -1,21 +1,22 @@
-from app.api.v1 import (
-    addresses,
-    auth,
-    cart,
-    orders,
-    products,
-    stock,
-    users,
-    favorites,
-    mercadopago,
-)
-from app.config import settings
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
+
+from app.api.v1 import (
+    addresses,
+    auth,
+    cart,
+    favorites,
+    mercadopago,
+    orders,
+    products,
+    stock,
+    users,
+)
+from app.config import settings
 from app.core.limiter import limiter
 
 # Create FastAPI application
@@ -145,6 +146,7 @@ async def health():
 async def check_jwks_health():
     """Check if the backend can access Clerk's JWKS endpoint"""
     import httpx
+
     from app.config import settings
 
     if settings.ENVIRONMENT != "dev" and not settings.ENABLE_DIAGNOSTIC_ENDPOINTS:

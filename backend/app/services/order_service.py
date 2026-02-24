@@ -1,8 +1,8 @@
 """Order service - Order management and validation logic."""
 
 import logging
-from typing import List, Optional
 from decimal import Decimal
+from typing import List, Optional
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession

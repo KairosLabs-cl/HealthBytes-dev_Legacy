@@ -1,12 +1,13 @@
 import logging
 from typing import List, Optional
 
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.db.database import get_db
 from app.middleware.auth import verify_seller
 from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate
 from app.services import product_service
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 

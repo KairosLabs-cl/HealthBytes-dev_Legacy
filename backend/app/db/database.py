@@ -1,6 +1,7 @@
-from app.config import settings
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
+
+from app.config import settings
 
 # Convert postgresql:// to postgresql+psycopg://
 # Note: Using psycopg instead of asyncpg for Python 3.14 compatibility

@@ -1,4 +1,3 @@
-from app.db.database import Base
 from sqlalchemy import (
     ARRAY,
     JSON,
@@ -17,6 +16,8 @@ from sqlalchemy import (
     func,
 )
 from sqlalchemy.orm import relationship
+
+from app.db.database import Base
 
 
 # Custom type that works with both PostgreSQL and SQLite

@@ -2,10 +2,11 @@
 
 from typing import Optional
 
-from app.db.schemas import User
-from app.schemas.user import UserUpdate
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.schemas import User
+from app.schemas.user import UserUpdate
 
 
 async def get_user(db: AsyncSession, user_id: str) -> Optional[User]:

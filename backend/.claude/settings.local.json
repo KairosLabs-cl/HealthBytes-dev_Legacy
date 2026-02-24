@@ -18,7 +18,17 @@
       "Bash(\"c:/Users/benja/Proyects/Code/Work/HealthBytes-dev/frontend/api/__tests__/orders.test.ts\":*)",
       "Bash(.venv/Scripts/python -m pytest:*)",
       "Bash(.venv/Scripts/python:*)",
-      "Bash(pnpm type-check:*)"
+      "Bash(pnpm type-check:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git diff:*)",
+      "Bash(.venv/Scripts/black:*)",
+      "Bash(.venv/Scripts/isort:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm install:*)"
     ]
   }
 }
