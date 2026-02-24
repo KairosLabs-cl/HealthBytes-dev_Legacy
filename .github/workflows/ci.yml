@@ -3,8 +3,14 @@ name: CI
 on:
   push:
     branches: [master, main]
+    paths-ignore:
+      - "docs/**"
+      - "**.md"
   pull_request:
     branches: [master, main]
+    paths-ignore:
+      - "docs/**"
+      - "**.md"
   workflow_call: # allows deploy.yml to call this as a CI gate
 
 jobs:

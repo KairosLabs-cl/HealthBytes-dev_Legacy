@@ -5,7 +5,6 @@ from app.api.v1 import (
     orders,
     products,
     stock,
-
     users,
     favorites,
     mercadopago,
