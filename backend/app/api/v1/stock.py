@@ -12,7 +12,6 @@ from app.middleware.auth import get_current_user, verify_admin
 from app.services.stock_service import StockService, StockStatus
 from pydantic import BaseModel, Field
 
-
 router = APIRouter(prefix="/products", tags=["stock"])
 
 
