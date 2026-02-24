@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type DietaryTag = 'sin-gluten' | 'vegano' | 'sin-lactosa' | 'bajo-en-azucar' | 'alto-en-proteina';
+export type DietaryTag = 'sin-gluten' | 'vegano' | 'sin-lactosa' | 'bajo-en-azucar' | 'alto-en-proteina' | 'para-diabeticos';
 
 interface ProductFiltersState {
     category?: string;
@@ -11,6 +11,7 @@ interface ProductFiltersState {
     // Actions
     setCategory: (category: string | undefined) => void;
     toggleDietaryTag: (tag: DietaryTag) => void;
+    setDietaryTags: (tags: DietaryTag[]) => void;
     setPriceRange: (min?: number, max?: number) => void;
     clearFilters: () => void;
 }
@@ -28,6 +29,8 @@ export const useProductFilters = create<ProductFiltersState>((set) => ({
             ? state.dietaryTags.filter(t => t !== tag)
             : [...state.dietaryTags, tag]
     })),
+
+    setDietaryTags: (tags) => set({ dietaryTags: tags }),
 
     setPriceRange: (min, max) => set({ minPrice: min, maxPrice: max }),
 

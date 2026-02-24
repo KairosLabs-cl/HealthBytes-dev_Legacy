@@ -88,6 +88,7 @@ async def mercadopago_webhook(
     request: Request,
     db: AsyncSession = Depends(get_db),
     x_signature: Optional[str] = Header(None),
+    x_request_id: Optional[str] = Header(None),
 ):
     """
     Webhook endpoint for Mercado Pago payment notifications.
@@ -95,6 +96,9 @@ async def mercadopago_webhook(
     MP will POST here when payment status changes.
     """
     mp_service = MercadoPagoService(settings)
+
+    if x_request_id:
+        logger.info("MP webhook request_id=%s", x_request_id)
 
     try:
         data = await request.json()

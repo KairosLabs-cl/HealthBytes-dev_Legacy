@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.db.database import get_db
+from app.db.models.address import Address
 from app.db.schemas import Order, OrderItem, User
 from app.middleware.auth import get_current_user
 from app.schemas.error import ErrorDetail, ErrorResponse
@@ -50,6 +51,24 @@ async def create_order(
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error.model_dump())
 
         try:
+            # Validate address ownership if provided
+            if order_data.address_id:
+                addr_result = await db.execute(
+                    select(Address).where(
+                        Address.id == order_data.address_id,
+                        Address.user_id == current_user.clerk_id,
+                        Address.is_active.is_(True),
+                    )
+                )
+                if not addr_result.scalar_one_or_none():
+                    error = ErrorResponse.not_found(
+                        message="Address not found",
+                        path="/api/v1/orders",
+                    )
+                    raise HTTPException(
+                        status_code=status.HTTP_404_NOT_FOUND, detail=error.model_dump()
+                    )
+
             new_order = await order_service.create_order(
                 db=db, user_id=user_id, order_in=order_data
             )
@@ -89,7 +108,8 @@ async def create_order(
             user_id=new_order.user_id,
             created_at=new_order.created_at,
             status=new_order.status,
-
+            address_id=new_order.address_id,
+            payment_method=new_order.payment_method,
             items=items_response,
         )
 
@@ -102,7 +122,9 @@ async def create_order(
             message="An unexpected error occurred while creating the order",
             path="/api/v1/orders",
         )
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.model_dump())
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.model_dump()
+        )
 
 
 @router.get("/", response_model=List[OrderResponse])
@@ -158,7 +180,8 @@ async def list_orders(
                     user_id=order.user_id,
                     created_at=order.created_at,
                     status=order.status,
-        
+                    address_id=order.address_id,
+                    payment_method=order.payment_method,
                     items=items_response,
                 )
             )
@@ -173,7 +196,9 @@ async def list_orders(
             message="An error occurred while fetching orders",
             path="/api/v1/orders",
         )
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.model_dump())
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.model_dump()
+        )
 
 
 @router.get("/{id}", response_model=OrderResponse)
@@ -223,7 +248,8 @@ async def get_order(
             user_id=order.user_id,
             created_at=order.created_at,
             status=order.status,
-
+            address_id=order.address_id,
+            payment_method=order.payment_method,
             items=items_response,
         )
 
@@ -235,7 +261,9 @@ async def get_order(
             message="An error occurred while fetching the order",
             path=f"/api/v1/orders/{id}",
         )
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.model_dump())
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.model_dump()
+        )
 
 
 @router.put("/{id}", response_model=OrderResponse)
@@ -315,7 +343,8 @@ async def update_order(
             user_id=order.user_id,
             created_at=order.created_at,
             status=order.status,
-
+            address_id=order.address_id,
+            payment_method=order.payment_method,
             items=items_response,
         )
 
@@ -328,7 +357,9 @@ async def update_order(
             message="An error occurred while updating the order",
             path=f"/api/v1/orders/{id}",
         )
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.model_dump())
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.model_dump()
+        )
 
 
 @router.delete("/{id}", status_code=204)
@@ -373,4 +404,6 @@ async def delete_order(
             message="An error occurred while deleting the order",
             path=f"/api/v1/orders/{id}",
         )
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.model_dump())
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.model_dump()
+        )

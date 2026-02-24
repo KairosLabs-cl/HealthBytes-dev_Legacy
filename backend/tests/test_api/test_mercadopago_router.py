@@ -156,6 +156,54 @@ class TestWebhook:
         assert response.status_code == 200
         assert response.json()["status"] == "error"
 
+    @patch("app.api.v1.mercadopago.MercadoPagoService")
+    def test_webhook_idempotent_duplicate_ignored(self, mock_mp_cls, client, db_session):
+        """Test that duplicate webhook for already-completed payment is handled idempotently."""
+        mock_mp = MagicMock()
+        # Service returns same status (idempotency guard triggered internally)
+        mock_mp.process_webhook = AsyncMock(
+            return_value={
+                "payment_id": 1,
+                "order_id": 1,
+                "status": "completed",
+                "mp_payment_id": "12345",
+            }
+        )
+        mock_mp_cls.return_value = mock_mp
+
+        payload = {"type": "payment", "data": {"id": "12345"}}
+
+        # First call
+        r1 = client.post(f"{BASE_URL}/webhook", json=payload)
+        assert r1.status_code == 200
+        assert r1.json()["status"] == "ok"
+
+        # Duplicate call — should also return 200 (not 4xx)
+        r2 = client.post(f"{BASE_URL}/webhook", json=payload)
+        assert r2.status_code == 200
+        assert r2.json()["status"] == "ok"
+
+    @patch("app.api.v1.mercadopago.MercadoPagoService")
+    def test_webhook_logs_x_request_id(self, mock_mp_cls, client, db_session):
+        """Test webhook accepts and logs x-request-id header without error."""
+        mock_mp = MagicMock()
+        mock_mp.process_webhook = AsyncMock(
+            return_value={
+                "payment_id": 1,
+                "order_id": 1,
+                "status": "completed",
+                "mp_payment_id": "12345",
+            }
+        )
+        mock_mp_cls.return_value = mock_mp
+
+        response = client.post(
+            f"{BASE_URL}/webhook",
+            json={"type": "payment", "data": {"id": "12345"}},
+            headers={"x-request-id": "mp-req-abc123"},
+        )
+        assert response.status_code == 200
+
 
 class TestGetPaymentStatus:
     """Tests for GET /api/v1/payments/mercadopago/payment/{payment_id}"""

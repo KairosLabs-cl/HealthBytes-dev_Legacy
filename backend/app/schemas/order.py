@@ -11,7 +11,7 @@ class OrderItemCreate(BaseModel):
 
     product_id: int = Field(..., gt=0, alias="productId", description="Product ID must be positive")
     quantity: int = Field(..., ge=1, le=1000, description="Quantity must be 1-1000")
-    price: float = Field(..., gt=0, description="Price must be positive")
+    price: int = Field(..., gt=0, description="Price in CLP (integer, no decimals)")
 
     @field_validator("quantity")
     @classmethod
@@ -25,20 +25,36 @@ class OrderItemCreate(BaseModel):
 
     @field_validator("price")
     @classmethod
-    def validate_price(cls, v: float) -> float:
+    def validate_price(cls, v: int) -> int:
         """Ensure price is reasonable"""
         if v <= 0:
             raise ValueError("Price must be positive")
-        if v > 999999.99:
-            raise ValueError("Price is unreasonably high (max: 999999.99)")
+        if v > 999999999:
+            raise ValueError("Price is unreasonably high")
         return v
+
+
+VALID_PAYMENT_METHODS = {"mercado_pago", "venti"}
 
 
 class OrderCreate(BaseModel):
     """Schema for order creation - Replica of insertOrderWithItemsSchema"""
 
+    model_config = ConfigDict(populate_by_name=True)
+
     order: dict = Field(default_factory=dict, description="Empty dict as in Node.js")
     items: List[OrderItemCreate] = Field(..., min_length=1, description="At least 1 item required")
+    address_id: Optional[int] = Field(
+        None, gt=0, alias="addressId", description="Shipping address ID"
+    )
+    payment_method: Optional[str] = Field(None, alias="paymentMethod", description="Payment method")
+
+    @field_validator("payment_method")
+    @classmethod
+    def validate_payment_method(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None and v not in VALID_PAYMENT_METHODS:
+            raise ValueError(f"Invalid payment method. Must be one of: {VALID_PAYMENT_METHODS}")
+        return v
 
     @field_validator("items")
     @classmethod
@@ -62,7 +78,7 @@ class OrderItemResponse(BaseModel):
     order_id: int
     product_id: int
     quantity: int
-    price: float
+    price: int
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -74,6 +90,8 @@ class OrderResponse(BaseModel):
     user_id: int
     created_at: datetime
     status: str
+    address_id: Optional[int] = None
+    payment_method: Optional[str] = None
     items: Optional[List[OrderItemResponse]] = []
 
     model_config = ConfigDict(from_attributes=True)

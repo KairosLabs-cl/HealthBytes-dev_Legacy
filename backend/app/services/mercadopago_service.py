@@ -115,15 +115,22 @@ class MercadoPagoService:
         }
 
         # back_urls and notification_url require public HTTPS URLs (not localhost)
-        if is_production:
+        # Works for production and for staging/testing with ngrok or similar public URLs
+        backend_url = self.settings.BACKEND_URL or ""
+        frontend_url = self.settings.FRONTEND_URL or ""
+        is_public = is_production or backend_url.startswith("https://")
+
+        if is_public and frontend_url:
             preference_data["back_urls"] = {
-                "success": f"{self.settings.FRONTEND_URL}/payment/success?orderId={order_id}",
-                "failure": f"{self.settings.FRONTEND_URL}/payment/failure?orderId={order_id}",
-                "pending": f"{self.settings.FRONTEND_URL}/payment/pending?orderId={order_id}",
+                "success": f"{frontend_url}/payment/success?orderId={order_id}",
+                "failure": f"{frontend_url}/payment/failure?orderId={order_id}",
+                "pending": f"{frontend_url}/payment/pending?orderId={order_id}",
             }
             preference_data["auto_return"] = "approved"
+
+        if is_public and backend_url:
             preference_data["notification_url"] = (
-                f"{self.settings.BACKEND_URL}/api/v1/payments/mercadopago/webhook"
+                f"{backend_url}/api/v1/payments/mercadopago/webhook"
             )
 
         if payer_email:
@@ -262,6 +269,22 @@ class MercadoPagoService:
         }
 
         new_status = status_map.get(status, PaymentStatus.PENDING)
+        previous_status = payment.status
+
+        # Idempotency guard: skip if already in the desired state
+        if new_status == previous_status:
+            logger.info(
+                "Webhook idempotent: payment %s already in status %s, skipping",
+                payment_id,
+                new_status.value,
+            )
+            return {
+                "payment_id": payment.id,
+                "order_id": order_id,
+                "status": new_status.value,
+                "mp_payment_id": payment_id,
+            }
+
         payment.status = new_status
         payment.provider_payment_id = payment_id
         payment.updated_at = datetime.now(UTC)
@@ -303,8 +326,8 @@ class MercadoPagoService:
 
         await db.commit()
 
-        # Send payment success email (fire-and-forget)
-        if new_status == PaymentStatus.COMPLETED:
+        # Send payment success email only on actual transition to COMPLETED
+        if new_status == PaymentStatus.COMPLETED and previous_status != PaymentStatus.COMPLETED:
             try:
                 from app.services.email_service import EmailService, build_order_email_data
 

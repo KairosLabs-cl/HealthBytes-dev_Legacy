@@ -12,8 +12,8 @@ from tests.conftest import create_test_user
 
 @pytest.fixture
 def test_user(db_session):
-    """Create a test user for stock tests."""
-    return create_test_user(db_session, email="stock_user@test.com", role="customer")
+    """Create an admin user for stock update tests."""
+    return create_test_user(db_session, email="stock_user@test.com", role="admin")
 
 
 @pytest.fixture

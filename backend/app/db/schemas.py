@@ -1,6 +1,7 @@
 from app.db.database import Base
 from sqlalchemy import (
     ARRAY,
+    JSON,
     TIMESTAMP,
     Column,
     DateTime,
@@ -109,6 +110,7 @@ class User(Base):
     name = Column(String(255), nullable=True)
     address = Column(Text, nullable=True)
     clerk_id = Column(String(255), unique=True, nullable=True, index=True)  # Clerk user ID
+    dietary_preferences = Column(JSON, nullable=True, default=list)  # e.g. ["sin-gluten", "vegano"]
 
     # Relationship with favorites
     favorites = relationship("UserFavorite", back_populates="user", cascade="all, delete-orphan")
@@ -148,7 +150,13 @@ class Order(Base):
     status = Column(String(50), nullable=False, default="pending")
     total = Column(Numeric(10, 2), nullable=False, default=0.0)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    address_id = Column(
+        Integer, ForeignKey("addresses.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    payment_method = Column(String(50), nullable=True, default="mercado_pago")
+
     items = relationship("OrderItem", back_populates="order")
+    shipping_address = relationship("Address")
 
 
 class OrderItem(Base):
