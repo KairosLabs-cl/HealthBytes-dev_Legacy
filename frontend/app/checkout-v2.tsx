@@ -205,6 +205,7 @@ export default function CheckoutV2Screen() {
           params: {
             orderId: String(orderId),
             paymentId: String(preference.payment_id),
+            checkoutUrl,
           },
         });
       } catch (error) {

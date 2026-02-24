@@ -5,7 +5,7 @@ import { useAuth } from "@clerk/clerk-expo";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ClockIcon } from "lucide-react-native";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Linking, Text, View } from "react-native";
 
 const POLL_INTERVAL_MS = 5000;
 const MAX_POLLS = 12;
@@ -13,7 +13,10 @@ const MAX_POLLS = 12;
 export default function PaymentPendingScreen() {
   const router = useRouter();
   const { getToken } = useAuth();
-  const { orderId } = useLocalSearchParams();
+  const { orderId, checkoutUrl } = useLocalSearchParams<{
+    orderId: string;
+    checkoutUrl?: string;
+  }>();
   const [isChecking, setIsChecking] = useState(false);
   const [pollCount, setPollCount] = useState(0);
   const [maxRetriesReached, setMaxRetriesReached] = useState(false);
@@ -111,6 +114,18 @@ export default function PaymentPendingScreen() {
       )}
 
       <VStack space="md" className="w-full">
+        {checkoutUrl && (
+          <Button
+            size="lg"
+            className="bg-black"
+            onPress={() => Linking.openURL(checkoutUrl)}
+          >
+            <ButtonText className="text-white font-bold">
+              Abrir Mercado Pago
+            </ButtonText>
+          </Button>
+        )}
+
         <Button
           size="lg"
           className="bg-blue-600"
