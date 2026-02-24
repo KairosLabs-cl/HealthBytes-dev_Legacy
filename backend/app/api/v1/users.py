@@ -5,7 +5,8 @@ from app.core.security import get_password_hash
 from app.db.database import get_db
 from app.db.schemas import User
 from app.middleware.auth import get_current_user, verify_admin
-from app.schemas.user import UserResponse, UserUpdate
+from app.schemas.user import DietaryPreferencesUpdate, UserResponse, UserUpdate
+from app.services import user_service
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -37,6 +38,7 @@ async def list_users(
                 role=user.role,
                 name=user.name,
                 address=user.address,
+                dietary_preferences=user.dietary_preferences or [],
             )
             for user in users
         ]
@@ -103,7 +105,7 @@ async def update_user(
             raise HTTPException(status_code=404, detail="User not found")
 
         # Update fields
-        update_data = user_data.dict(exclude_unset=True)
+        update_data = user_data.model_dump(exclude_unset=True)
 
         # Hash password if provided
         if "password" in update_data and update_data["password"]:
@@ -127,6 +129,34 @@ async def update_user(
     except Exception as e:
         await db.rollback()
         logger.error(f"Error updating user {id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+@router.put("/me/dietary-preferences", response_model=UserResponse)
+async def update_my_dietary_preferences(
+    request: DietaryPreferencesUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    PUT /users/me/dietary-preferences
+    Update the authenticated user's dietary preferences.
+
+    Used by the onboarding flow and profile settings.
+    """
+    try:
+        user = await user_service.update_dietary_preferences(
+            db=db, user_id=current_user.id, tags=request.tags
+        )
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        return UserResponse.model_validate(user)
+    except HTTPException:
+        raise
+    except Exception as e:
+        await db.rollback()
+        logger.error(f"Error updating dietary preferences for user {current_user.id}: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 

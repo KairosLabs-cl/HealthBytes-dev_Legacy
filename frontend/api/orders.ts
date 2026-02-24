@@ -22,11 +22,7 @@ export async function createOrder(
   paymentMethod?: string,
   getToken?: () => Promise<string | null>
 ) {
-  // Backward compatibility: if getToken is passed as second argument
-  const token =
-    paymentMethod instanceof Function
-      ? await paymentMethod()
-      : await getToken?.();
+  const token = await getToken?.();
 
   if (__DEV__) {
     console.log("Token obtenido:", token ? "Token presente" : "Token ausente");

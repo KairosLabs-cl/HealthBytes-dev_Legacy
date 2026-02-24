@@ -1,41 +1,28 @@
-# Docker Ignore for Frontend
-
-# Dependencies
+# Node
 node_modules/
-pnpm-lock.yaml.bak
-.pnpm-debug.log*
+.pnpm-store/
 
-# Build outputs
+# Build
+.expo/
 dist/
 build/
-.next/
-out/
-.expo/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
 
 # Environment
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 
-# OS
-Thumbs.db
-.DS_Store
-
-# Testing
-coverage/
-.jest_cache/
-
-# Logs
-logs/
+# Dev & IDE
+.git/
+.gitignore
+.github/
+*.md
 *.log
 
-# Expo
-.expo-shared/
+# Tests
+coverage/
+__snapshots__/
+
+# OS
+.DS_Store
+Thumbs.db

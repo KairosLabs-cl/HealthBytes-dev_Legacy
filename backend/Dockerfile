@@ -1,7 +1,7 @@
 # Multi-stage build for FastAPI backend
 
 # Stage 1: Builder
-FROM python:3.14-slim as builder
+FROM python:3.12-slim as builder
 
 WORKDIR /build
 
@@ -18,7 +18,7 @@ COPY requirements.txt .
 RUN pip install --user --no-cache-dir -r requirements.txt
 
 # Stage 2: Runtime
-FROM python:3.14-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
@@ -31,8 +31,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy Python dependencies from builder
 COPY --from=builder /root/.local /root/.local
 
-# Copy application code
+# Copy application code + migrations
 COPY app ./app
+COPY alembic ./alembic
+COPY alembic.ini ./alembic.ini
 
 # Set environment variables
 ENV PATH=/root/.local/bin:$PATH \

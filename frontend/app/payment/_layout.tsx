@@ -5,7 +5,6 @@ export default function PaymentLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        animationEnabled: true,
       }}
     >
       <Stack.Screen name="success" options={{ title: "Pago Exitoso" }} />

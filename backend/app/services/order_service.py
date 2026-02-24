@@ -85,7 +85,12 @@ async def create_order(db: AsyncSession, user_id: int, order_in: OrderCreate) ->
         )
 
     # 5. Create order and items
-    new_order = Order(user_id=user_id, total=total)
+    new_order = Order(
+        user_id=user_id,
+        total=total,
+        address_id=order_in.address_id,
+        payment_method=order_in.payment_method or "mercado_pago",
+    )
 
     db.add(new_order)
     await db.flush()  # Get ID

@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
 from app.db.database import get_db
-from app.middleware.auth import get_current_user
+from app.middleware.auth import get_current_user, verify_admin
 from app.services.stock_service import StockService, StockStatus
 from pydantic import BaseModel, Field
 
@@ -57,7 +57,9 @@ class BulkStockCheckRequest(BaseModel):
     """Request to check multiple products"""
 
     items: List[tuple[int, int]] = Field(
-        ..., description="List of (product_id, quantity) tuples", json_schema_extra={"example": [[1, 2], [3, 1]]}
+        ...,
+        description="List of (product_id, quantity) tuples",
+        json_schema_extra={"example": [[1, 2], [3, 1]]},
     )
 
 
@@ -130,7 +132,7 @@ async def bulk_check_availability(
 async def update_product_stock(
     product_id: int,
     request: StockUpdateRequest,
-    current_user: dict = Depends(get_current_user),
+    current_user=Depends(verify_admin),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -143,11 +145,9 @@ async def update_product_stock(
     - Receiving new stock
     - Correcting discrepancies
     """
-    # TODO: Add admin role check
-    # if not current_user.get("is_admin"):
-    #     raise HTTPException(403, "Admin access required")
-
-    product = await StockService.update_stock(db, product_id, request.new_stock, str(current_user.id))
+    product = await StockService.update_stock(
+        db, product_id, request.new_stock, str(current_user.id)
+    )
 
     # Return updated stock info
     return await StockService.get_stock_info(db, product_id)
@@ -162,7 +162,7 @@ async def release_reserved_stock(
     product_id: int,
     quantity: int = Body(..., gt=0),
     reason: str = Body(default="Manual release", max_length=200),
-    current_user: dict = Depends(get_current_user),
+    current_user=Depends(verify_admin),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -175,8 +175,6 @@ async def release_reserved_stock(
     - Payment failure
     - Manual adjustment
     """
-    # TODO: Add admin role check
-
     product = await StockService.release_stock(db, product_id, quantity, reason)
 
     return await StockService.get_stock_info(db, product_id)

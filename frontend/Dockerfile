@@ -17,9 +17,7 @@ RUN pnpm install --frozen-lockfile
 # Copy source code
 COPY . .
 
-# Prebuild Expo app (optional - for static export if needed)
-# Note: Expo apps are primarily run in dev mode via `pnpm start`
-RUN pnpm run build 2>/dev/null || echo "Build script not configured, skipping"
+# Note: Expo apps run via dev server, no static build step needed here
 
 # Stage 2: Runtime
 FROM node:22-alpine
