@@ -51,7 +51,7 @@ Las personas con condiciones como celiaquía, diabetes o alergias alimentarias e
 ### Estado Actual del Proyecto
 
 **Versión:** MVP en Desarrollo Activo
-**Última actualización:** Febrero 2026
+**Última actualización:** Febrero 24, 2026
 
 | Componente         | Estado           | Descripción                      |
 | ------------------ | ---------------- | --------------------------------- |
@@ -60,8 +60,23 @@ Las personas con condiciones como celiaquía, diabetes o alergias alimentarias e
 | 🗄️ Base de Datos | ✅ Funcional     | PostgreSQL con modelos core       |
 | 🔐 Autenticación  | ✅ Implementado  | JWT + Clerk (dual auth)          |
 | 🧪 Tests           | ✅ Estable       | 179 tests passing, 70% coverage  |
+| 🛡️ Security      | ✅ Hardened      | minimatch HIGH resuelto, Clerk actualizado |
 | 🐳 Docker          | 📝 Planeado      | Containerización pendiente       |
 | 🚀 Deploy          | 📝 Planeado      | AWS (preparado)                   |
+
+### 🛡️ Estado de Seguridad (Febrero 2026)
+
+**Vulnerabilidades Resueltas:**
+- ✅ **minimatch ReDoS** (HIGH) - Resuelto con glob 11.0.0 + minimatch 10.2.2 override
+- ✅ **@clerk/clerk-expo** - Actualizado a 2.19.26 (reduce exposición bn.js)
+- ⚠️ **ajv MEDIUM** - Deferred (ESLint 9 ecosystem pending v2.0 plugins, dev-only)
+- ⚠️ **bn.js MEDIUM** - Upstream sin patch: @solana/web3.js max 1.98.4 con bn.js 5.2.3
+
+**Validación**: `pnpm audit --prod` = "No known vulnerabilities found"
+
+Ver [Security Documentation](docs/security/) para detalles técnicos y mitigation strategy.
+
+---
 
 ⚠️ **Disclaimer Legal**: Este proyecto NO sustituye el consejo médico profesional. La información de productos es referencial y debe ser verificada. Consulta siempre a un profesional de la salud.
 
