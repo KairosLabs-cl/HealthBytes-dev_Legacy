@@ -37,4 +37,11 @@ backend/.pytest_cache/
 
 # AI Skills (junctions to .agents/)
 .agent/
+.agents/
 .cursor/
+.claude/
+.mcp.json
+
+# Frontend local artifacts
+frontend/error.log
+frontend/.expo/

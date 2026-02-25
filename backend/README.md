@@ -143,7 +143,6 @@ backend/
 │   ├── conftest.py               # Fixtures pytest
 │   └── README.md                 # Guía de testing
 │
-├── migrations/                   # Database migrations
 ├── start.ps1                     # Windows dev launcher (punto de entrada)
 ├── start.sh                      # Unix dev launcher (punto de entrada)
 ├── run_server.py                 # FastAPI server runner

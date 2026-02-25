@@ -128,6 +128,96 @@ app/                     ← File-based routing (Expo Router)
    └─ login.tsx         ← Auth group screens
 ```
 
+## Code Quality & Formatting
+
+**Tools installed**: ESLint, Prettier, TypeScript, Jest
+
+**Configuration files**:
+- `frontend/eslint.config.js` - ESLint flat config (ESLint 9+)
+- `frontend/.prettierrc` - Prettier formatting rules
+- `frontend/tsconfig.json` - TypeScript compiler options
+- `frontend/jest.config.js` - Test runner config
+
+| Tool | Purpose | Config |
+|---|---|---|
+| **ESLint** | JS/JSX linting (security plugin) | eslint.config.js |
+| **Prettier** | Code formatting (80 chars) | .prettierrc |
+| **TypeScript** | Type checking | tsconfig.json |
+| **Jest** | Unit testing | jest.config.js |
+
+**Prettier settings**:
+- Print width: 80 characters
+- Tab width: 2 spaces
+- Semi-colons: Yes
+- Single quotes: No (double quotes)
+- Trailing commas: ES5
+
+**ESLint rules**:
+- `react/react-in-jsx-scope`: off (React 17+ JSX transform)
+- `no-console`: off (mobile dev needs console)
+- `no-unused-vars`: warn
+- Security plugin: enabled (detect XSS, injection)
+
+### Manual Quality Checks
+
+**Before commit** (run these commands):
+```bash
+cd frontend
+
+# 1. Type check (TypeScript)
+pnpm type-check        # tsc --noEmit
+
+# 2. Lint code (auto-fix)
+pnpm lint:fix          # eslint . --fix
+
+# 3. Format code (auto-fix)
+pnpm format            # prettier --write
+
+# 4. Run tests
+pnpm test              # jest
+
+# 5. Run tests with coverage
+pnpm test:coverage     # jest --coverage
+```
+
+**Check only** (no modifications):
+```bash
+pnpm type-check        # TypeScript errors
+pnpm lint              # ESLint errors
+pnpm format:check      # Prettier formatting check
+```
+
+**CI/CD Pipeline** (GitHub Actions):
+```yaml
+# .github/workflows/ci.yml runs:
+1. TypeScript type check (tsc --noEmit)
+2. ESLint linting
+3. Prettier formatting check
+4. Jest tests with coverage
+```
+
+**Common ESLint/Prettier errors**:
+- **Prettier conflicts**: Run `pnpm format` after `pnpm lint:fix`
+- **TypeScript errors**: Fix in code, don't use `@ts-ignore` without reason
+- **Unused vars**: Remove or prefix with underscore `_unused`
+- **Missing imports**: Add to file or check if type-only import needed
+
+**Troubleshooting**:
+```bash
+# If ESLint cache is stale:
+rm -rf node_modules/.cache
+pnpm lint:fix
+
+# If Prettier/ESLint conflict:
+# → Already configured (ESLint defers to Prettier for formatting)
+
+# If type errors in .tsx files:
+# → ESLint only checks .js/.jsx (TypeScript checked via tsc)
+
+# Clear all caches:
+pnpm start --clear     # Clear Metro bundler cache
+```
+
 ## Folder Structure (STRICT)
 
 ```

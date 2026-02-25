@@ -1,12 +1,13 @@
 import logging
 from typing import List, Optional
 
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.db.database import get_db
 from app.middleware.auth import verify_seller
 from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate
 from app.services import product_service
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,7 @@ async def list_products(
     max_price: Optional[float] = None,
     skip: int = 0,
     limit: int = 100,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """
     GET /products
@@ -30,22 +31,22 @@ async def list_products(
     GET /products?category=Snacks&dietary=vegano,sin-gluten&min_price=1000
     """
     try:
-        # If search is provided, we use the FTS search (which currently doesn't combine with filters in service)
+        # If search is provided, use FTS search
         # TODO: Enhance search_products to also accept filters if needed
         if search:
             return await product_service.search_products(db, search, skip=skip, limit=limit)
-        
+
         # Parse dietary tags string into a list
         dietary_tags = [t.strip() for t in dietary.split(",") if t.strip()] if dietary else None
-        
+
         return await product_service.list_products(
-            db, 
-            skip=skip, 
-            limit=limit, 
-            category=category, 
+            db,
+            skip=skip,
+            limit=limit,
+            category=category,
             dietary_tags=dietary_tags,
             min_price=min_price,
-            max_price=max_price
+            max_price=max_price,
         )
     except Exception as e:
         logger.error(f"Error listing/searching products: {str(e)}")

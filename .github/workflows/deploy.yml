@@ -1,0 +1,145 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: staging
+        type: choice
+        options: [staging, production]
+
+# Cancel in-progress deploys on the same branch
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  AWS_REGION: us-east-1
+  BACKEND_IMAGE_NAME: healthbytes-backend
+  FRONTEND_IMAGE_NAME: healthbytes-frontend
+
+jobs:
+  # ──────────────────────────────────────────────
+  # Run full CI before deploying
+  # ──────────────────────────────────────────────
+  ci-check:
+    name: CI Gate
+    uses: ./.github/workflows/ci.yml
+
+  # ──────────────────────────────────────────────
+  # Build & push Docker images to ECR
+  # ──────────────────────────────────────────────
+  build-and-push:
+    name: Build & Push Images
+    runs-on: ubuntu-latest
+    needs: [ci-check]
+    environment: staging
+    outputs:
+      backend-image: ${{ steps.backend.outputs.image }}
+      frontend-image: ${{ steps.frontend.outputs.image }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build & push backend image
+        id: backend
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          IMAGE=$ECR_REGISTRY/$BACKEND_IMAGE_NAME:$IMAGE_TAG
+          docker build -t $IMAGE ./backend
+          docker push $IMAGE
+          # Also tag as latest
+          docker tag $IMAGE $ECR_REGISTRY/$BACKEND_IMAGE_NAME:latest
+          docker push $ECR_REGISTRY/$BACKEND_IMAGE_NAME:latest
+          echo "image=$IMAGE" >> $GITHUB_OUTPUT
+
+      - name: Build & push frontend image
+        id: frontend
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          IMAGE=$ECR_REGISTRY/$FRONTEND_IMAGE_NAME:$IMAGE_TAG
+          docker build -t $IMAGE ./frontend
+          docker push $IMAGE
+          docker tag $IMAGE $ECR_REGISTRY/$FRONTEND_IMAGE_NAME:latest
+          docker push $ECR_REGISTRY/$FRONTEND_IMAGE_NAME:latest
+          echo "image=$IMAGE" >> $GITHUB_OUTPUT
+
+  # ──────────────────────────────────────────────
+  # Deploy to staging (ECS)
+  # ──────────────────────────────────────────────
+  deploy-staging:
+    name: Deploy → Staging
+    runs-on: ubuntu-latest
+    needs: [build-and-push]
+    environment:
+      name: staging
+      url: ${{ secrets.STAGING_URL }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Run DB migrations
+        env:
+          ***REDACTED_DATABASE_URL***
+        run: |
+          pip install alembic psycopg sqlalchemy pydantic-settings python-dotenv
+          cd backend
+          echo "***REDACTED_DATABASE_URL***
+          echo "JWT_SECRET=placeholder" >> .env
+          python -m alembic upgrade head
+
+      - name: Deploy backend to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ secrets.BACKEND_TASK_DEFINITION }}
+          service: ${{ secrets.ECS_BACKEND_SERVICE }}
+          cluster: ${{ secrets.ECS_CLUSTER }}
+          container-name: backend
+          image: ${{ needs.build-and-push.outputs.backend-image }}
+          wait-for-service-stability: true
+
+      - name: Deploy frontend to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ secrets.FRONTEND_TASK_DEFINITION }}
+          service: ${{ secrets.ECS_FRONTEND_SERVICE }}
+          cluster: ${{ secrets.ECS_CLUSTER }}
+          container-name: frontend
+          image: ${{ needs.build-and-push.outputs.frontend-image }}
+          wait-for-service-stability: true
+
+      - name: Notify deploy success
+        if: success()
+        run: |
+          echo "✅ Staging deploy complete — ${{ github.sha }}"
+          echo "URL: ${{ secrets.STAGING_URL }}"
+
+      - name: Notify deploy failure
+        if: failure()
+        run: echo "❌ Staging deploy failed — ${{ github.sha }}"

@@ -30,12 +30,13 @@ def test_get_products_by_ids(client):
         data = response.json()
         assert isinstance(data, list)
 
+
 @pytest.mark.unit
 @pytest.mark.products
 def test_search_products(client):
     """Test GET /products?search=... endpoint."""
-    # This assumes there might be some products. 
-    # Since we are mocking or using a test db, we might not find anything, 
+    # This assumes there might be some products.
+    # Since we are mocking or using a test db, we might not find anything,
     # but the query shouldn't fail.
     response = client.get("/products?search=test")
     assert response.status_code == 200

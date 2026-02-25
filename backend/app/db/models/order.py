@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class OrderItemCreate(BaseModel):
@@ -15,7 +15,7 @@ class OrderItemCreate(BaseModel):
 class OrderCreate(BaseModel):
     """Schema for order creation - Replica of insertOrderWithItemsSchema"""
 
-    order: dict = {}  # Empty dict as in Node.js (only stripePaymentIntentId optional)
+    order: dict = {}
     items: List[OrderItemCreate]
 
 
@@ -28,8 +28,7 @@ class OrderItemResponse(BaseModel):
     quantity: int
     price: float
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OrderResponse(BaseModel):
@@ -39,11 +38,9 @@ class OrderResponse(BaseModel):
     user_id: int
     created_at: datetime
     status: str
-    stripe_payment_intent_id: Optional[str] = None
     items: Optional[List[OrderItemResponse]] = []
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OrderUpdate(BaseModel):

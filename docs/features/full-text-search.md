@@ -95,7 +95,7 @@ async def list_products(
 
 ---
 
-### 4. Database Migration (`backend/migrations/add_fulltext_search.sql`)
+### 4. Database Migration (`Tools/backend/database/migrations/add_fulltext_search.sql`)
 
 ✅ **Archivo Creado**: Script SQL completo e idempotente
 
@@ -108,13 +108,13 @@ async def list_products(
 **Cómo ejecutar**:
 ```bash
 # Opción 1: PostgreSQL local
-psql -U postgres -d healthbytes -f backend/migrations/add_fulltext_search.sql
+psql -U postgres -d healthbytes -f Tools/backend/database/migrations/add_fulltext_search.sql
 
 # Opción 2: Supabase SQL Editor
 # Copiar contenido del archivo y ejecutar en UI
 
 # Opción 3: Con variables de entorno
-PGPASSWORD=tu_password psql -h localhost -U postgres -d healthbytes -f backend/migrations/add_fulltext_search.sql
+PGPASSWORD=tu_password psql -h localhost -U postgres -d healthbytes -f Tools/backend/database/migrations/add_fulltext_search.sql
 ```
 
 ---
@@ -173,7 +173,7 @@ export async function listProducts(searchTerm?: string) {
 
 ```bash
 # En tu servidor PostgreSQL o Supabase
-psql -f backend/migrations/add_fulltext_search.sql
+psql -f Tools/backend/database/migrations/add_fulltext_search.sql
 ```
 
 ### Paso 2: Reiniciar Backend
@@ -255,8 +255,8 @@ api/v1/products.py (Router)
 
 | Archivo | Contenido |
 |---------|-----------|
-| [backend/migrations/add_fulltext_search.sql](../migrations/add_fulltext_search.sql) | Script SQL de migración |
-| [backend/migrations/FULLTEXT_SEARCH_README.md](../migrations/FULLTEXT_SEARCH_README.md) | Guía completa de instalación y troubleshooting |
+| [Tools/backend/database/migrations/add_fulltext_search.sql](../../Tools/backend/database/migrations/add_fulltext_search.sql) | Script SQL de migración |
+| [Tools/backend/database/migrations/FULLTEXT_SEARCH_README.md](../../Tools/backend/database/migrations/FULLTEXT_SEARCH_README.md) | Guía completa de instalación y troubleshooting |
 | [backend/tests/test_api/test_products_search.py](../tests/test_api/test_products_search.py) | 10 tests funcionales |
 
 ---

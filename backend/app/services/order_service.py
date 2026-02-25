@@ -1,12 +1,18 @@
 """Order service - Order management and validation logic."""
 
+import logging
+from decimal import Decimal
 from typing import List, Optional
-from app.db.schemas import Order, OrderItem, Product
-from app.schemas.order import OrderCreate
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from decimal import Decimal
+
+from app.db.schemas import Order, OrderItem, Product
+from app.schemas.order import OrderCreate
+from app.services.stock_service import StockService
+
+logger = logging.getLogger(__name__)
 
 
 async def create_order(db: AsyncSession, user_id: int, order_in: OrderCreate) -> Order:
@@ -59,17 +65,14 @@ async def create_order(db: AsyncSession, user_id: int, order_in: OrderCreate) ->
             requested_quantities.get(item.product_id, 0) + item.quantity
         )
 
+    # Reserve stock with atomic locking (prevents race conditions)
+    # This uses SELECT FOR UPDATE to lock rows during transaction
     for pid, qty in requested_quantities.items():
-        product = products_map[pid]
-        if product.stock < qty:
-            raise ValueError(
-                f"Insufficient stock for {product.name}. "
-                f"Available: {product.stock}, requested: {qty}"
-            )
-
-        # Reduce stock (in memory, will be flushed on commit)
-        product.stock -= qty
-        db.add(product)
+        await StockService.reserve_stock_atomic(
+            db=db, product_id=pid, quantity=qty, order_id=None  # Will be set after order creation
+        )
+        # Note: Stock is already reduced by reserve_stock_atomic
+        # No need to manually update product.stock here
 
     # 4. Calculate total and prepare items
     for item in order_in.items:
@@ -82,10 +85,11 @@ async def create_order(db: AsyncSession, user_id: int, order_in: OrderCreate) ->
         )
 
     # 5. Create order and items
-    stripe_payment_intent_id = order_in.order.get("stripePaymentIntentId")
-
     new_order = Order(
-        user_id=user_id, total=total, stripe_payment_intent_id=stripe_payment_intent_id
+        user_id=user_id,
+        total=total,
+        address_id=order_in.address_id,
+        payment_method=order_in.payment_method or "mercado_pago",
     )
 
     db.add(new_order)
@@ -97,7 +101,7 @@ async def create_order(db: AsyncSession, user_id: int, order_in: OrderCreate) ->
 
     # No manual commit here, we rely on caller or middleware?
     # Usually service methods might flush but caller commits.
-    # But for a transaction script like this, it's safer to commit if it encapsulates the unit of work.
+    # But for a transaction script like this, it's safer to commit to encapsulate the unit of work.
     # The API router called `await db.commit()`.
     # I will commit here to ensure transaction integrity within the service method.
 
@@ -107,7 +111,21 @@ async def create_order(db: AsyncSession, user_id: int, order_in: OrderCreate) ->
     result = await db.execute(
         select(Order).where(Order.id == new_order.id).options(selectinload(Order.items))
     )
-    return result.scalar_one()
+    created_order = result.scalar_one()
+
+    # Send order confirmation email (fire-and-forget)
+    try:
+        from app.config import settings
+        from app.services.email_service import EmailService, build_order_email_data
+
+        email_svc = EmailService(settings)
+        email_data = await build_order_email_data(db, created_order.id)
+        if email_data:
+            await email_svc.send_order_confirmation(email_data)
+    except Exception:
+        logger.exception("Failed to send order confirmation email for order %s", created_order.id)
+
+    return created_order
 
 
 async def get_user_orders(
@@ -143,11 +161,13 @@ async def update_order_status(db: AsyncSession, order_id: int, status: str) -> O
     """
     Update order status.
     """
-    valid_statuses = ["pending", "processing", "shipped", "cancelled"]
+    valid_statuses = ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"]
     if status not in valid_statuses:
         raise ValueError(f"Invalid status. Must be one of: {valid_statuses}")
 
-    result = await db.execute(select(Order).where(Order.id == order_id))
+    result = await db.execute(
+        select(Order).where(Order.id == order_id).options(selectinload(Order.items))
+    )
     db_order = result.scalar_one_or_none()
 
     if not db_order:
@@ -156,14 +176,26 @@ async def update_order_status(db: AsyncSession, order_id: int, status: str) -> O
     # Validate status transition
     current_status = db_order.status
     valid_transitions = {
-        "pending": ["processing", "cancelled"],
+        "pending": ["confirmed", "processing", "cancelled"],
+        "confirmed": ["processing", "shipped", "cancelled"],
         "processing": ["shipped", "cancelled"],
-        "shipped": [],  # Cannot change once shipped
-        "cancelled": [],  # Cannot change once cancelled
+        "shipped": ["delivered"],
+        "delivered": [],
+        "cancelled": [],
     }
 
     if status not in valid_transitions.get(current_status, []):
         raise ValueError(f"Invalid status transition from {current_status} to {status}")
+
+    # Release stock when order is cancelled
+    if status == "cancelled" and current_status != "cancelled":
+        for item in db_order.items:
+            await StockService.release_stock(
+                db=db,
+                product_id=item.product_id,
+                quantity=item.quantity,
+                reason=f"Order {order_id} cancelled",
+            )
 
     db_order.status = status
     await db.commit()

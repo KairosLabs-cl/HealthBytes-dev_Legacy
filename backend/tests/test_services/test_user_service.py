@@ -41,12 +41,11 @@ async def test_update_user_success(db_session):
     """Test updating user information"""
     mock_db = MockAsyncSession(db_session)
 
-    # Create user
-    user = User(
-        id="user_456", email="original@example.com", password="hashed_password", role="customer"
-    )
+    # Create user (auto-generated int ID)
+    user = User(email="original@example.com", password="hashed_password", role="customer")
     db_session.add(user)
     db_session.commit()
+    db_session.refresh(user)
 
     # Update user
     update_data = UserUpdate(email="updated@example.com")
@@ -75,12 +74,11 @@ async def test_update_user_partial(db_session):
     """Test partial update (only some fields)"""
     mock_db = MockAsyncSession(db_session)
 
-    # Create user
-    user = User(
-        id="user_789", email="original@example.com", password="hashed_password", role="customer"
-    )
+    # Create user (auto-generated int ID)
+    user = User(email="partial_test@example.com", password="hashed_password", role="customer")
     db_session.add(user)
     db_session.commit()
+    db_session.refresh(user)
 
     # Update only role
     update_data = UserUpdate(role="seller")
@@ -97,10 +95,11 @@ async def test_update_user_all_fields(db_session):
     """Test updating all user fields"""
     mock_db = MockAsyncSession(db_session)
 
-    # Create user
-    user = User(id="user_999", email="old@example.com", password="old_hash", role="customer")
+    # Create user (auto-generated int ID)
+    user = User(email="old@example.com", password="old_hash", role="customer")
     db_session.add(user)
     db_session.commit()
+    db_session.refresh(user)
 
     # Update all fields
     update_data = UserUpdate(email="new@example.com", role="admin")
