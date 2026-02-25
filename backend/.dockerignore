@@ -1,0 +1,30 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Dev & IDE
+.git/
+.gitignore
+.github/
+*.md
+*.log
+
+# Tests (not needed in image)
+tests/
+
+# OS
+.DS_Store
+Thumbs.db

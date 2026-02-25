@@ -1,6 +1,6 @@
-from typing import Optional
+from typing import List, Optional
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class UserCreate(BaseModel):
@@ -27,6 +27,13 @@ class UserUpdate(BaseModel):
     name: Optional[str] = Field(None, max_length=255)
     address: Optional[str] = None
     role: Optional[str] = None
+    dietary_preferences: Optional[List[str]] = None
+
+
+class DietaryPreferencesUpdate(BaseModel):
+    """Schema for updating dietary preferences only"""
+
+    tags: List[str] = Field(default_factory=list, description="List of dietary tag slugs")
 
 
 class UserResponse(BaseModel):
@@ -37,9 +44,9 @@ class UserResponse(BaseModel):
     role: str
     name: Optional[str]
     address: Optional[str]
+    dietary_preferences: List[str] = Field(default_factory=list)
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Token(BaseModel):

@@ -2,11 +2,12 @@
 
 from typing import Optional
 
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.security import get_password_hash, verify_password
 from app.db.schemas import User
 from app.schemas.user import UserCreate
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def register_user(db: AsyncSession, user_in: UserCreate) -> User:

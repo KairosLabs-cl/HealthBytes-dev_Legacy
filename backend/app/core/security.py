@@ -1,24 +1,23 @@
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
+
+import bcrypt
+from jose import JWTError, jwt
 
 from app.config import settings
-from jose import JWTError, jwt
-from passlib.context import CryptContext
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a password against a hash"""
     # Truncate to 72 bytes for bcrypt compatibility
-    plain_password_bytes = plain_password.encode("utf-8")[:72].decode("utf-8", errors="ignore")
-    return pwd_context.verify(plain_password_bytes, hashed_password)
+    password_bytes = plain_password.encode("utf-8")[:72]
+    return bcrypt.checkpw(password_bytes, hashed_password.encode("utf-8"))
 
 
 def get_password_hash(password: str) -> str:
     """Hash a password (truncates to 72 bytes for bcrypt compatibility)"""
     # Bcrypt has a 72-byte limit, truncate if necessary
-    password_bytes = password.encode("utf-8")[:72].decode("utf-8", errors="ignore")
-    return pwd_context.hash(password_bytes)
+    password_bytes = password.encode("utf-8")[:72]
+    return bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode("utf-8")
 
 
 def create_access_token(data: dict) -> str:
@@ -28,7 +27,7 @@ def create_access_token(data: dict) -> str:
     Uses same secret 'your-secret' and 30d expiration
     """
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.now(UTC) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
 
     # Use 'your-secret' to match Node.js JWT_SECRET

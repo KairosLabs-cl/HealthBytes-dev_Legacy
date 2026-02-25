@@ -1,13 +1,10 @@
-import { RecentOrders } from "@/components/RecentOrders";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
-import { useOrders } from "@/store/orderStore";
 import { useAuth, useClerk, useUser } from "@clerk/clerk-expo";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import {
   CheckCircle2,
-  CreditCard,
   Heart,
   LogOut,
   MapPin,
@@ -32,7 +29,7 @@ const orderStatuses = [
   {
     label: "Preparando",
     icon: Package,
-    status: "pending",
+    status: "packed",
   },
   {
     label: "En tránsito",
@@ -48,7 +45,6 @@ const orderStatuses = [
 
 const options = [
   { label: "Direcciones", icon: MapPin, href: "/addresses" },
-  { label: "Metodos de pago", icon: CreditCard, href: "/payments" },
   { label: "Lista de deseos", icon: Heart, href: "/wishlist" },
   { label: "Contactate con soporte", icon: Phone, href: "/support" },
 ];
@@ -56,37 +52,18 @@ const options = [
 export default function ProfileScreen() {
   const router = useRouter();
   const { signOut } = useClerk();
-  const { getToken, isSignedIn, isLoaded } = useAuth();
-  const { user } = useUser();
-  const { orders, isLoading, fetchOrders } = useOrders();
 
   useEffect(() => {
     // This just ensures the header is properly styled
   }, []);
+  const { isSignedIn, isLoaded } = useAuth();
+  const { user } = useUser();
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
       router.replace("/(auth)/login");
     }
   }, [isLoaded, isSignedIn]);
-
-  // Cargar órdenes cuando se autentica
-  useEffect(() => {
-    if (isSignedIn && isLoaded) {
-      loadOrders();
-    }
-  }, [isSignedIn, isLoaded]);
-
-  const loadOrders = async () => {
-    try {
-      const token = await getToken();
-      if (token) {
-        await fetchOrders(token);
-      }
-    } catch (err) {
-      console.error("Error loading orders in profile:", err);
-    }
-  };
 
   const handleLogout = async () => {
     await signOut();
@@ -141,27 +118,12 @@ export default function ProfileScreen() {
           </Pressable>
         </View>
 
-        {/* Órdenes Recientes */}
-        <RecentOrders
-          orders={orders}
-          isLoading={isLoading}
-          onViewAll={() => router.push("/orders")}
-        />
-
         <View className="bg-[#303030] rounded-3xl p-4 mb-4">
-          <View className="flex-row items-center justify-between mb-1">
-            <View className="flex-row items-center">
-              <Icon as={PackageOpen} color="#ffffff" size="lg" />
-              <Text className="text-white text-lg font-semibold ml-2">
-                Mis órdenes
-              </Text>
-            </View>
-            <Pressable
-              onPress={() => router.push("/orders")}
-              className="bg-white/20 rounded-full p-2 active:bg-white/30"
-            >
-              <Icon as={Truck} color="#ffffff" size="sm" />
-            </Pressable>
+          <View className="flex-row items-center mb-1">
+            <Icon as={PackageOpen} color="#ffffff" size="lg" />
+            <Text className="text-white text-lg font-semibold ml-2">
+              Mis órdenes
+            </Text>
           </View>
           <Text className="text-gray-300 text-xs mb-3">
             Ve el estado de tus compras!
@@ -171,7 +133,12 @@ export default function ProfileScreen() {
               <Pressable
                 key={item.label}
                 className="bg-white rounded-2xl px-3 py-2 items-center justify-center w-[30%]"
-                onPress={() => router.push(`/orders?filter=${item.status}`)}
+                onPress={() =>
+                  router.push({
+                    pathname: "/orders",
+                    params: { status: item.status },
+                  })
+                }
               >
                 <Icon
                   as={item.icon}

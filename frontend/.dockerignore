@@ -1,0 +1,28 @@
+# Node
+node_modules/
+.pnpm-store/
+
+# Build
+.expo/
+dist/
+build/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Dev & IDE
+.git/
+.gitignore
+.github/
+*.md
+*.log
+
+# Tests
+coverage/
+__snapshots__/
+
+# OS
+.DS_Store
+Thumbs.db

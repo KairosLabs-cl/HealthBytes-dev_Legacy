@@ -3,11 +3,12 @@
 import logging
 from typing import List, Optional
 
-from app.db.schemas import DietaryTag, Product
-from app.schemas.product import ProductCreate, ProductUpdate
-from sqlalchemy import select, func, desc, text
+from sqlalchemy import desc, func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+
+from app.db.schemas import Product
+from app.schemas.product import ProductCreate, ProductUpdate
 
 logger = logging.getLogger(__name__)
 
@@ -103,7 +104,7 @@ async def create_product(db: AsyncSession, product_in: ProductCreate) -> Product
     Returns:
         Created Product object
     """
-    db_product = Product(**product_in.model_dump())
+    db_product = Product(**product_in.model_dump(exclude={"dietary_tag_ids"}))
     db.add(db_product)
     await db.commit()
     await db.refresh(db_product)
@@ -186,7 +187,7 @@ async def search_products(
 
     # If query is empty, return all products
     if not clean_query:
-        return await list_products(db, skip, limit)
+        return await list_products(db, skip=skip, limit=limit)
 
     try:
         # Create tsquery using plainto_tsquery (safe from SQL injection)

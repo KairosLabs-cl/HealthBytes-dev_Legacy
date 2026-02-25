@@ -1,19 +1,27 @@
-import "@/global.css";
-import { Link, Stack, useRouter } from "expo-router";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { Icon } from "@/components/ui/icon";
-import { ShoppingCart, User } from "lucide-react-native";
-import { Pressable } from "react-native";
-import { useCart } from "@/store/cartStore";
-import { Text } from "@/components/ui/text";
-import BottomNavBar from "@/components/ui/NavBarr/BottomNavBar";
-import React, { useEffect } from "react";
-import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
+import BottomNavBar from "@/components/ui/NavBar/BottomNavBar";
+import {
+  Toast,
+  ToastDescription,
+  ToastTitle,
+  useToast,
+} from "@/components/ui/toast";
+import "@/global.css";
 import { tokenCache } from "@/lib/cache";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Toast, ToastDescription, ToastTitle, useToast } from "@/components/ui/toast";
+import { useCart } from "@/store/cartStore";
 import { useFavoritesStore } from "@/store/favoritesStore";
+import { usePreferencesStore } from "@/store/preferencesStore";
+import { updateDietaryPreferences } from "@/api/preferences";
+import OnboardingModal from "@/components/OnboardingModal";
+import { ClerkLoaded, ClerkProvider, useAuth } from "@clerk/clerk-expo";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Link, Stack } from "expo-router";
+import { User } from "lucide-react-native";
+import { useEffect, useState } from "react";
+import { Pressable } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 // Constants removed
 
@@ -37,6 +45,36 @@ function RootLayoutNav() {
   const toast = useToast();
 
   const { isSignedIn, getToken } = useAuth();
+
+  // Onboarding
+  const { hasSeenOnboarding, markOnboardingComplete, setDietaryPreferences } =
+    usePreferencesStore();
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    if (isSignedIn && !hasSeenOnboarding) {
+      setShowOnboarding(true);
+    }
+  }, [isSignedIn, hasSeenOnboarding]);
+
+  const handleOnboardingComplete = async (tags: string[]) => {
+    setDietaryPreferences(tags);
+    markOnboardingComplete();
+    setShowOnboarding(false);
+    if (tags.length > 0) {
+      const token = await getToken();
+      if (token) {
+        updateDietaryPreferences(tags, token).catch(() => {
+          // fire-and-forget: failure is non-critical
+        });
+      }
+    }
+  };
+
+  const handleOnboardingSkip = () => {
+    markOnboardingComplete();
+    setShowOnboarding(false);
+  };
 
   // Handle cart errors
   useEffect(() => {
@@ -86,7 +124,6 @@ function RootLayoutNav() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSignedIn]);
 
-
   return (
     <>
       <Stack>
@@ -109,6 +146,13 @@ function RootLayoutNav() {
               ),
           }}
         />
+        <Stack.Screen
+          name="profile"
+          options={{
+            title: "Mi Perfil",
+            headerTitleAlign: "center",
+          }}
+        />
         <Stack.Screen name="product/[id]" options={{ title: "Product" }} />
         <Stack.Screen
           name="cart"
@@ -117,14 +161,25 @@ function RootLayoutNav() {
             headerTitleAlign: "center",
           }}
         />
+        <Stack.Screen
+          name="checkout-v2"
+          options={{
+            title: "",
+            headerTitleAlign: "center",
+          }}
+        />
       </Stack>
 
       <BottomNavBar />
+
+      <OnboardingModal
+        visible={showOnboarding}
+        onComplete={handleOnboardingComplete}
+        onSkip={handleOnboardingSkip}
+      />
     </>
   );
 }
-
-
 
 export default function RootLayout() {
   return (
@@ -133,8 +188,9 @@ export default function RootLayout() {
         <ClerkLoaded>
           <QueryClientProvider client={queryClient}>
             <GluestackUIProvider>
-
-              <RootLayoutNav />
+              <ErrorBoundary>
+                <RootLayoutNav />
+              </ErrorBoundary>
             </GluestackUIProvider>
           </QueryClientProvider>
         </ClerkLoaded>

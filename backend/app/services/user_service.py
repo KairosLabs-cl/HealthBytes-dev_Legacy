@@ -2,10 +2,11 @@
 
 from typing import Optional
 
-from app.db.schemas import User
-from app.schemas.user import UserUpdate
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.schemas import User
+from app.schemas.user import UserUpdate
 
 
 async def get_user(db: AsyncSession, user_id: str) -> Optional[User]:
@@ -49,6 +50,32 @@ async def update_user(db: AsyncSession, user_id: str, user_in: UserUpdate) -> Op
     await db.commit()
     await db.refresh(db_user)
     return db_user
+
+
+async def update_dietary_preferences(
+    db: AsyncSession, user_id: int, tags: list[str]
+) -> Optional[User]:
+    """
+    Update a user's dietary preferences.
+
+    Args:
+        db: Database session
+        user_id: User ID to update
+        tags: List of dietary tag slugs (e.g. ["sin-gluten", "vegano"])
+
+    Returns:
+        Updated User object or None if not found
+    """
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+
+    if not user:
+        return None
+
+    user.dietary_preferences = tags
+    await db.commit()
+    await db.refresh(user)
+    return user
 
 
 async def delete_user(db: AsyncSession, user_id: str) -> bool:

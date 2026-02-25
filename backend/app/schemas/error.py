@@ -3,8 +3,8 @@ Standard Error Response Schema - RFC 7807 Problem Details
 Used across all API endpoints for consistent error handling
 """
 
-from datetime import datetime
-from typing import Any, Optional
+from datetime import UTC, datetime
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -59,7 +59,7 @@ class ErrorResponse(BaseModel):
             error="ValidationError",
             status_code=422,
             message=message,
-            timestamp=datetime.utcnow().isoformat() + "Z",
+            timestamp=datetime.now(UTC).isoformat(),
             path=path,
             details=details,
             request_id=request_id,
@@ -77,7 +77,7 @@ class ErrorResponse(BaseModel):
             error="NotFound",
             status_code=404,
             message=message,
-            timestamp=datetime.utcnow().isoformat() + "Z",
+            timestamp=datetime.now(UTC).isoformat(),
             path=path,
             request_id=request_id,
         )
@@ -94,7 +94,7 @@ class ErrorResponse(BaseModel):
             error="Unauthorized",
             status_code=401,
             message=message,
-            timestamp=datetime.utcnow().isoformat() + "Z",
+            timestamp=datetime.now(UTC).isoformat(),
             path=path,
             request_id=request_id,
         )
@@ -111,7 +111,7 @@ class ErrorResponse(BaseModel):
             error="Forbidden",
             status_code=403,
             message=message,
-            timestamp=datetime.utcnow().isoformat() + "Z",
+            timestamp=datetime.now(UTC).isoformat(),
             path=path,
             request_id=request_id,
         )
@@ -129,7 +129,7 @@ class ErrorResponse(BaseModel):
             error="Conflict",
             status_code=409,
             message=message,
-            timestamp=datetime.utcnow().isoformat() + "Z",
+            timestamp=datetime.now(UTC).isoformat(),
             path=path,
             details=details,
             request_id=request_id,
@@ -147,7 +147,7 @@ class ErrorResponse(BaseModel):
             error="InternalServerError",
             status_code=500,
             message=message,
-            timestamp=datetime.utcnow().isoformat() + "Z",
+            timestamp=datetime.now(UTC).isoformat(),
             path=path,
             request_id=request_id,
         )

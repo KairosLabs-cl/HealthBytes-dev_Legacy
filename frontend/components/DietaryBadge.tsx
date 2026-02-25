@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text } from "react-native";
 import type { DietaryTag } from "@/types/product";
+import { normalizeDietaryTag } from "@/types/product";
 
 /**
  * Color mapping for dietary tag badges
@@ -42,12 +43,12 @@ export const DietaryBadge: React.FC<DietaryBadgeProps> = React.memo(
 DietaryBadge.displayName = "DietaryBadge";
 
 interface DietaryBadgeListProps {
-  tags?: DietaryTag[];
+  tags?: (DietaryTag | string)[];
 }
 
 /**
  * DietaryBadgeList - Displays a list of dietary badges
- * Handles empty/undefined arrays gracefully
+ * Handles string tags, DietaryTag objects, and empty/undefined arrays
  */
 export const DietaryBadgeList: React.FC<DietaryBadgeListProps> = React.memo(
   ({ tags }) => {
@@ -55,9 +56,10 @@ export const DietaryBadgeList: React.FC<DietaryBadgeListProps> = React.memo(
 
     return (
       <View className="flex-row flex-wrap gap-2 mb-4">
-        {tags.map((tag) => (
-          <DietaryBadge key={tag.id} tag={tag} />
-        ))}
+        {tags.map((raw, index) => {
+          const tag = normalizeDietaryTag(raw);
+          return <DietaryBadge key={tag.id || index} tag={tag} />;
+        })}
       </View>
     );
   }

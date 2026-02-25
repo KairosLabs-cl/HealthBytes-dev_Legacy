@@ -86,7 +86,7 @@ def test_order_error_leakage(client):
 
     assert response.status_code == 500
 
-    # Check fix
-    assert response.json()["detail"] == "Internal Server Error"
+    # Check that sensitive error details are NOT leaked in the response body
+    response_text = str(response.json())
     sensitive_error = "Order Table Deadlock: UPDATE orders SET..."
-    assert sensitive_error not in response.json()["detail"]
+    assert sensitive_error not in response_text

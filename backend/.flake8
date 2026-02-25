@@ -1,0 +1,5 @@
+[flake8]
+per-file-ignores =
+    app/services/email_service.py:E501
+    app/main.py:E501
+    app/middleware/auth.py:E501

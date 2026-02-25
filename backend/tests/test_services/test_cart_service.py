@@ -173,7 +173,7 @@ async def test_merge_cart_items(db_session, product_a, product_b):
     await add_to_cart(user_id, product_a.id, 1, mock_db)
 
     # Local cart has:
-    # - Product A (qty 2) -> Should increment server to 3
+    # - Product A (qty 2) -> Should replace server qty (local takes priority)
     # - Product B (qty 1) -> Should be added as new
     local_items = [
         CartItemCreate(product_id=product_a.id, quantity=2),
@@ -188,6 +188,6 @@ async def test_merge_cart_items(db_session, product_a, product_b):
     item_a = next(i for i in merged_cart.items if i.product_id == product_a.id)
     item_b = next(i for i in merged_cart.items if i.product_id == product_b.id)
 
-    assert item_a.quantity == 3
+    assert item_a.quantity == 2  # Local quantity replaces server quantity
     assert item_b.quantity == 1
-    assert merged_cart.total == (3 * 10.0) + (1 * 20.0)
+    assert merged_cart.total == (2 * 10.0) + (1 * 20.0)
