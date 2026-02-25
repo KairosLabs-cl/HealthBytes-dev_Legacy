@@ -96,6 +96,7 @@ jest.mock('expo-status-bar', () => ({
 jest.mock('react-native-reanimated', () => {
   const { View } = require('react-native');
   return {
+    __esModule: true,
     default: {
       View,
       createAnimatedComponent: (c: any) => c,
@@ -106,6 +107,8 @@ jest.mock('react-native-reanimated', () => {
     Easing: { out: (fn: any) => fn, ease: (t: any) => t },
   };
 });
+
+jest.mock('@/components/HomeSkeleton', () => () => null);
 
 jest.mock('expo-router', () => ({
   Stack: {
