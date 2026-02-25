@@ -1,8 +1,8 @@
 # 🏗️ HealthBytes - Arquitectura Técnica
 
-**Fecha**: Febrero 23, 2026
-**Versión**: MVP v2.3.0
-**Estado**: ✅ Payments integrados + Alembic + rate limiting
+**Fecha**: Febrero 24, 2026
+**Versión**: MVP v2.3.1 - Security Hardened + Payments
+**Estado**: ✅ Minimatch HIGH vulnerability resuelto + Clerk actualizado
 
 ---
 
@@ -88,21 +88,44 @@ async def get_cart(user_id: int, db: AsyncSession) -> CartResponse:
     )
 ```
 
-### Model Layer (Data Access)
-```python
-# app/db/schemas.py
-class CartItem(Base):
-    __tablename__ = "cart_items"
+---
 
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
-    quantity = Column(Integer, nullable=False, default=1)
+## 🔒 Seguridad & Dependencias (Febrero 24, 2026)
 
-    # Relationships
-    user = relationship("User", back_populates="cart_items")
-    product = relationship("Product", back_populates="cart_items")
-```
+### Vulnerabilidades Detectadas & Resueltas
+
+| CVE/Issue | Severidad | Paquete | Estado | Solución |
+|---|---|---|---|---|
+| **ReDoS (minimatch)** | 🔴 HIGH | glob 7.2.3 → minimatch 3.1.3 | ✅ **FIXED** | Upgraded glob 11.0.0 + minimatch 10.2.2 override |
+| **tar extraction** | 🔴 HIGH | @expo/cli 54.0.23 | ✅ **SAFE** | Ya sin vulnerabilidad conocida |
+| **ajv ReDoS** | 🟠 MEDIUM | eslint (^9) | ⏳ **DEFERRED** | ESLint 10 ecosystem pending v2.0 (dev-only impact) |
+| **bn.js infinite loop** | 🟠 MEDIUM | @solana/web3.js 1.98.4 | ⚠️ **UNAVOIDABLE** | Upstream max version 5.2.3 sin patch |
+
+### Acciones Tomadas
+
+1. ✅ **Dependency Analysis**: Trazado de cadenas completas (Dependabot → transitive → root cause)
+2. ✅ **Clerk Update**: 2.19.18 → 2.19.26 (reduce transitive deps con vulnerabilidades)
+3. ✅ **pnpm Overrides**:
+   ```json
+   "overrides": {
+     "minimatch": "^10.2.2",  // ← Fuerza versión segura
+     "glob": "^11.0.0"        // ← Trae minimatch 10.2.2
+   }
+   ```
+4. ✅ **Validation**: `pnpm audit --prod` = "No known vulnerabilities found"
+5. ✅ **ESLint Stability**: Revertido a 9.39.3 (ESLint 10 breaking changes en plugin ecosystem)
+
+### Validación
+- ✅ All 1319 packages install successfully
+- ✅ pnpm lint (ESLint 9.39.3) without errors
+- ✅ Zero production vulnerabilities
+
+### Próximos Pasos
+- Monitor Dependabot after PR #71 merge for ecosystem updates
+- Plan ESLint 10 migration when eslint-plugin-react & eslint-plugin-react-native release v2.0
+- Track bn.js patch availability from @solana team
+
+---
 
 ---
 

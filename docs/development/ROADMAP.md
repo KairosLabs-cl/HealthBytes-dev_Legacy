@@ -18,11 +18,27 @@
 | 👥 **Beta Users** | 100 usuarios | 🟡 Próximo sprint |
 | 💳 **Payment Live** | Marzo 2026 | 🟡 Integración Mercado Pago 80% |
 | 🐳 **Dockerized** | Marzo 2026 | 🟡 Docker paths corregidas |
-| 📱 **App Store** | Mayo 2026 | 📋 Planeado |
+| �️ **Security Hardened** | Febrero 2026 | ✅ Completado (minimatch HIGH resuelto) |
+| �📱 **App Store** | Mayo 2026 | 📋 Planeado |
 
 ---
 
 ## ✅ Estado Actual - Features Implementadas
+
+### 🛡️ Security & Dependencies (Febrero 2026)
+
+| Vulnerability | Severity | Status | Solution |
+|---|---|---|---|
+| **minimatch ReDoS** | 🔴 HIGH | ✅ FIXED | glob 11.0.0 + minimatch 10.2.2 override |
+| **tar** | 🔴 HIGH | ✅ SAFE | @expo/cli 54.0.23 ya sin vuln |
+| **ajv ReDoS** | 🟠 MEDIUM | ⏳ DEFERRED | ESLint 9 (ecosystem pending, dev-only) |
+| **bn.js infinite loop** | 🟠 MEDIUM | ⚠️ UNAVOIDABLE | Upstream max v5.2.3 (@solana/web3.js 1.98.4) |
+
+**Validation**: ✅ `pnpm audit --prod` = "No known vulnerabilities found"  
+**Clerk Update Impact**: 2.19.18 → 2.19.26 reduces transitive bn.js exposure  
+**Next Step**: Monitor Dependabot after PR #71 merge for ecosystem updates
+
+---
 
 ### Backend (FastAPI)
 
@@ -121,6 +137,7 @@
 |------|-----------|----------|-------|
 | **Docker Configuration** | 🟡 En revisión | Frontend paths corregidas | DevOps |
 | **CI/CD Pipeline** | 🟡 En progreso | GitHub Actions workflow | DevOps |
+| **Security: Dependency Hardening** | ✅ COMPLETADO | Minimatch HIGH resuelto, Clerk actualizado | DevOps |
 
 **Total DevOps P0**: ~3 días
 
