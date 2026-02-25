@@ -43,8 +43,8 @@ Comprehensive security improvements to HTTP middleware, database full-text searc
 
 ### 2. **Database: Full-Text Search Migration** ✅
 
-**File**: `backend/migrations/add_fulltext_search.sql`  
-**Execution**: Via `backend/run_migration.py`
+**File**: `Tools/backend/database/migrations/add_fulltext_search.sql`
+**Execution**: Via `Tools/backend/database/run_migration.py`
 
 #### Implemented Features
 - **Column added**: `products.search_vector` (PostgreSQL tsvector)

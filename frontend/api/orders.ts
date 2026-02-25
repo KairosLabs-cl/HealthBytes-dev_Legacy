@@ -2,14 +2,32 @@ import { OrderResponse } from "@/types/order";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-export async function createOrder(
-  items: any[],
-  getToken: () => Promise<string | null>
-) {
-  const token = await getToken();
+export interface OrderItemPayload {
+  productId: number;
+  quantity: number;
+  price: number;
+}
 
-  console.log("Token obtenido:", token ? "Token presente" : "Token ausente");
-  console.log("Token length:", token?.length || 0);
+interface CreateOrderPayload {
+  order: {
+    address_id?: number | string;
+    payment_method?: string;
+  };
+  items: OrderItemPayload[];
+}
+
+export async function createOrder(
+  items: OrderItemPayload[],
+  addressId?: number | string,
+  paymentMethod?: string,
+  getToken?: () => Promise<string | null>
+) {
+  const token = await getToken?.();
+
+  if (__DEV__) {
+    console.log("Token obtenido:", token ? "Token presente" : "Token ausente");
+    console.log("Token length:", token?.length || 0);
+  }
 
   if (!token) {
     throw new Error(
@@ -17,23 +35,30 @@ export async function createOrder(
     );
   }
 
+  const orderPayload: CreateOrderPayload = {
+    order: {
+      ...(addressId && { address_id: addressId }),
+      ...(typeof paymentMethod === "string" && { payment_method: paymentMethod }),
+    },
+    items,
+  };
+
   const res = await fetch(`${API_URL}/orders`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ order: {}, items }),
+    body: JSON.stringify(orderPayload),
   });
 
   const data = await res.json();
 
   if (!res.ok) {
-    console.log("❌ Error del servidor - Status:", res.status);
-    console.log(
-      "❌ Error del servidor - Response:",
-      JSON.stringify(data, null, 2)
-    );
+    if (__DEV__) {
+      console.log("Error del servidor - Status:", res.status);
+      console.log("Error del servidor - Response:", JSON.stringify(data, null, 2));
+    }
 
     /* Lanzar error específico del backend para mostrar en la UI */
     let errorMsg = `Error ${res.status}`;
@@ -49,7 +74,9 @@ export async function createOrder(
       errorMsg = data.error;
     }
 
-    console.error("❌ Error finalizado:", errorMsg);
+    if (__DEV__) {
+      console.error("Error finalizado:", errorMsg);
+    }
     throw new Error(errorMsg);
   }
 
@@ -79,7 +106,9 @@ export async function getOrders(
   const data = await res.json();
 
   if (!res.ok) {
-    console.error("❌ Error obteniendo órdenes:", data);
+    if (__DEV__) {
+      console.error("Error obteniendo órdenes:", data);
+    }
     let errorMsg = `Error ${res.status}`;
 
     if (typeof data.detail === "string") {
@@ -118,7 +147,9 @@ export async function getOrderById(
   const data = await res.json();
 
   if (!res.ok) {
-    console.error("❌ Error obteniendo orden:", data);
+    if (__DEV__) {
+      console.error("Error obteniendo orden:", data);
+    }
     throw new Error(data.detail || "Error al obtener la orden");
   }
 

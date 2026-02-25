@@ -1,10 +1,8 @@
-from app.db.database import Base
 from sqlalchemy import (
-    ARRAY,
+    JSON,
     TIMESTAMP,
     Column,
     DateTime,
-    Float,
     ForeignKey,
     Index,
     Integer,
@@ -17,10 +15,12 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 
+from app.db.database import Base
+
 
 # Custom type that works with both PostgreSQL and SQLite
 class SearchVector(TypeDecorator):
-    """A custom type that represents PostgreSQL tsvector but falls back to Text for other databases."""
+    """A custom type for PostgreSQL tsvector that falls back to Text for other databases."""
 
     impl = Text
     cache_ok = True
@@ -41,6 +41,7 @@ class Product(Base):
     price = Column(Numeric(10, 2), nullable=False)
     stock = Column(Integer, nullable=False, default=0)
     category = Column(String(100), nullable=True, index=True)
+    nutritional_info = Column(Text, nullable=True)
 
     # Full-text search column
     # PostgreSQL: TSVECTOR with GIN index, populated by trigger
@@ -108,6 +109,7 @@ class User(Base):
     name = Column(String(255), nullable=True)
     address = Column(Text, nullable=True)
     clerk_id = Column(String(255), unique=True, nullable=True, index=True)  # Clerk user ID
+    dietary_preferences = Column(JSON, nullable=True, default=list)  # e.g. ["sin-gluten", "vegano"]
 
     # Relationship with favorites
     favorites = relationship("UserFavorite", back_populates="user", cascade="all, delete-orphan")
@@ -144,12 +146,16 @@ class Order(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     created_at = Column(TIMESTAMP, nullable=False, server_default=func.now())
-    status = Column(String(50), nullable=False, default="New")
+    status = Column(String(50), nullable=False, default="pending")
     total = Column(Numeric(10, 2), nullable=False, default=0.0)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
-    stripe_payment_intent_id = Column(String(255), nullable=True)
+    address_id = Column(
+        Integer, ForeignKey("addresses.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    payment_method = Column(String(50), nullable=True, default="mercado_pago")
 
     items = relationship("OrderItem", back_populates="order")
+    shipping_address = relationship("Address")
 
 
 class OrderItem(Base):

@@ -1,13 +1,13 @@
 """Favorite service - Business logic for user favorites"""
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, exists
-from sqlalchemy.orm import joinedload, selectinload
-from typing import List, Optional
 import logging
+from typing import List, Optional
 
-from app.db.schemas import UserFavorite, Product
-from app.schemas.favorite import FavoriteCreate
+from sqlalchemy import and_, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
+
+from app.db.schemas import Product, UserFavorite
 
 logger = logging.getLogger(__name__)
 

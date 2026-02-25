@@ -47,7 +47,7 @@ addopts = """
     --cov=app
     --cov-report=html
     --cov-report=term-missing:skip-covered
-    --cov-fail-under=70
+    --cov-fail-under=80
 """
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",

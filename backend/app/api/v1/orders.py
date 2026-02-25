@@ -12,7 +12,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.db.database import get_db
-from app.db.schemas import Order, OrderItem, User
+from app.db.models.address import Address
+from app.db.schemas import Order, User
 from app.middleware.auth import get_current_user
 from app.schemas.error import ErrorDetail, ErrorResponse
 from app.schemas.order import OrderCreate, OrderItemResponse, OrderResponse, OrderUpdate
@@ -47,9 +48,27 @@ async def create_order(
                     )
                 ],
             )
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error.dict())
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error.model_dump())
 
         try:
+            # Validate address ownership if provided
+            if order_data.address_id:
+                addr_result = await db.execute(
+                    select(Address).where(
+                        Address.id == order_data.address_id,
+                        Address.user_id == current_user.clerk_id,
+                        Address.is_active.is_(True),
+                    )
+                )
+                if not addr_result.scalar_one_or_none():
+                    error = ErrorResponse.not_found(
+                        message="Address not found",
+                        path="/api/v1/orders",
+                    )
+                    raise HTTPException(
+                        status_code=status.HTTP_404_NOT_FOUND, detail=error.model_dump()
+                    )
+
             new_order = await order_service.create_order(
                 db=db, user_id=user_id, order_in=order_data
             )
@@ -70,7 +89,7 @@ async def create_order(
             error_status = (
                 status.HTTP_404_NOT_FOUND if is_not_found else status.HTTP_422_UNPROCESSABLE_ENTITY
             )
-            raise HTTPException(status_code=error_status, detail=error.dict())
+            raise HTTPException(status_code=error_status, detail=error.model_dump())
 
         # Build response
         items_response = [
@@ -89,7 +108,8 @@ async def create_order(
             user_id=new_order.user_id,
             created_at=new_order.created_at,
             status=new_order.status,
-            stripe_payment_intent_id=new_order.stripe_payment_intent_id,
+            address_id=new_order.address_id,
+            payment_method=new_order.payment_method,
             items=items_response,
         )
 
@@ -102,7 +122,9 @@ async def create_order(
             message="An unexpected error occurred while creating the order",
             path="/api/v1/orders",
         )
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.dict())
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.model_dump()
+        )
 
 
 @router.get("/", response_model=List[OrderResponse])
@@ -158,7 +180,8 @@ async def list_orders(
                     user_id=order.user_id,
                     created_at=order.created_at,
                     status=order.status,
-                    stripe_payment_intent_id=order.stripe_payment_intent_id,
+                    address_id=order.address_id,
+                    payment_method=order.payment_method,
                     items=items_response,
                 )
             )
@@ -173,7 +196,9 @@ async def list_orders(
             message="An error occurred while fetching orders",
             path="/api/v1/orders",
         )
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.dict())
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.model_dump()
+        )
 
 
 @router.get("/{id}", response_model=OrderResponse)
@@ -204,7 +229,7 @@ async def get_order(
                 message="Order not found",
                 path=f"/api/v1/orders/{id}",
             )
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.dict())
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.model_dump())
 
         # Build response
         items_response = [
@@ -223,7 +248,8 @@ async def get_order(
             user_id=order.user_id,
             created_at=order.created_at,
             status=order.status,
-            stripe_payment_intent_id=order.stripe_payment_intent_id,
+            address_id=order.address_id,
+            payment_method=order.payment_method,
             items=items_response,
         )
 
@@ -235,7 +261,9 @@ async def get_order(
             message="An error occurred while fetching the order",
             path=f"/api/v1/orders/{id}",
         )
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.dict())
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.model_dump()
+        )
 
 
 @router.put("/{id}", response_model=OrderResponse)
@@ -256,24 +284,47 @@ async def update_order(
                 message="You do not have permission to update orders",
                 path=f"/api/v1/orders/{id}",
             )
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=error.dict())
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=error.model_dump())
 
-        result = await db.execute(
-            select(Order).where(Order.id == id).options(selectinload(Order.items))
-        )
-        order = result.scalar_one_or_none()
+        # Use service to validate status transition and handle stock release on cancel
+        try:
+            order = await order_service.update_order_status(
+                db=db, order_id=id, status=order_data.status
+            )
+        except ValueError as e:
+            error = ErrorResponse.validation_error(
+                message=str(e),
+                path=f"/api/v1/orders/{id}",
+                details=[
+                    ErrorDetail(
+                        code="INVALID_STATUS",
+                        message=str(e),
+                    )
+                ],
+            )
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=error.model_dump()
+            )
 
         if not order:
             error = ErrorResponse.not_found(
                 message="Order not found",
                 path=f"/api/v1/orders/{id}",
             )
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.dict())
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.model_dump())
 
-        # Update status
-        order.status = order_data.status
-        await db.commit()
-        await db.refresh(order)
+        # Send shipped email if status changed to shipped
+        if order_data.status == "shipped":
+            try:
+                from app.config import settings
+                from app.services.email_service import EmailService, build_order_email_data
+
+                email_svc = EmailService(settings)
+                email_data = await build_order_email_data(db, order.id)
+                if email_data:
+                    await email_svc.send_order_shipped(email_data)
+            except Exception:
+                logger.exception("Failed to send shipped email for order %s", order.id)
 
         # Build response
         items_response = [
@@ -292,7 +343,8 @@ async def update_order(
             user_id=order.user_id,
             created_at=order.created_at,
             status=order.status,
-            stripe_payment_intent_id=order.stripe_payment_intent_id,
+            address_id=order.address_id,
+            payment_method=order.payment_method,
             items=items_response,
         )
 
@@ -305,7 +357,9 @@ async def update_order(
             message="An error occurred while updating the order",
             path=f"/api/v1/orders/{id}",
         )
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.dict())
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.model_dump()
+        )
 
 
 @router.delete("/{id}", status_code=204)
@@ -325,7 +379,7 @@ async def delete_order(
                 message="You do not have permission to delete orders",
                 path=f"/api/v1/orders/{id}",
             )
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=error.dict())
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=error.model_dump())
 
         result = await db.execute(select(Order).where(Order.id == id))
         order = result.scalar_one_or_none()
@@ -335,7 +389,7 @@ async def delete_order(
                 message="Order not found",
                 path=f"/api/v1/orders/{id}",
             )
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.dict())
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.model_dump())
 
         await db.delete(order)
         await db.commit()
@@ -350,4 +404,6 @@ async def delete_order(
             message="An error occurred while deleting the order",
             path=f"/api/v1/orders/{id}",
         )
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.dict())
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.model_dump()
+        )

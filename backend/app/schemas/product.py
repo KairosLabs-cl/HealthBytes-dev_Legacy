@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Field, field_validator
-from typing import Optional, List, Annotated
 from decimal import Decimal
+from typing import List, Optional
+
+from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator
 
 
 class DietaryTagResponse(BaseModel):
@@ -11,8 +12,7 @@ class DietaryTagResponse(BaseModel):
     display_name: str
     color: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ProductBase(BaseModel):
@@ -24,9 +24,8 @@ class ProductBase(BaseModel):
     price: float = Field(..., gt=0)
     stock: int = Field(0, ge=0)
     category: Optional[str] = Field(None, max_length=100)
-    dietary_tags: Optional[List[str]] = []
-    
-    @field_validator('price', mode='before')
+
+    @field_validator("price", mode="before")
     @classmethod
     def convert_decimal_to_float(cls, v):
         """Convert Decimal from database to float"""
@@ -49,15 +48,33 @@ class ProductUpdate(BaseModel):
     image: Optional[str] = Field(None, max_length=255)
     price: Optional[float] = Field(None, gt=0)
     stock: Optional[int] = Field(None, ge=0)
-    dietary_tag_ids: Optional[List[int]] = None # si esto llega a fallar se tiene que usar sin _ids debido a que en master estaba buscado de esta manera
+    # If this fails, use without _ids (old master used bare field name)
+    dietary_tag_ids: Optional[List[int]] = None
     category: Optional[str] = Field(None, max_length=100)
 
 
 class ProductResponse(ProductBase):
-    """Product response schema"""
+    """Product response schema with computed stock status"""
 
     id: int
     dietary_tags: List[DietaryTagResponse] = Field(default_factory=list)
+    nutritional_info: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    @computed_field
+    @property
+    def stock_status(self) -> str:
+        """Computed field: stock status based on current stock level"""
+        if self.stock == 0:
+            return "out_of_stock"
+        elif self.stock < 5:  # Low stock threshold
+            return "low_stock"
+        else:
+            return "in_stock"
+
+    @computed_field
+    @property
+    def is_available(self) -> bool:
+        """Computed field: whether product can be purchased"""
+        return self.stock > 0
+
+    model_config = ConfigDict(from_attributes=True)

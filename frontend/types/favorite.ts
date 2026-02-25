@@ -1,4 +1,6 @@
 // Tipos para favoritos
+import type { DietaryTag } from "./product";
+
 export type Favorite = {
     id: number;
     user_id: number;
@@ -12,7 +14,7 @@ export type Favorite = {
         description?: string;
         stock?: number;
         category?: string;
-        dietary_tags?: string[];
+        dietary_tags?: (DietaryTag | string)[];
     };
 };
 

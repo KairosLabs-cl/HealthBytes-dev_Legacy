@@ -2,15 +2,16 @@ import logging
 from typing import Optional
 
 import jwt
-from app.config import settings
-from app.core.security import decode_token
-from app.db.database import get_db
-from app.db.schemas import User
 from fastapi import Depends, Header, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt import PyJWKClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.config import settings
+from app.core.security import decode_token
+from app.db.database import get_db
+from app.db.schemas import User
 
 security = HTTPBearer(auto_error=False)
 

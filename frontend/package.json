@@ -17,10 +17,13 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "clean": "expo start --clear",
-    "prebuild": "pnpm run type-check"
+    "prebuild": "pnpm run type-check",
+    "build:android:preview": "eas build --platform android --profile preview",
+    "build:android:production": "eas build --platform android --profile production",
+    "build:android:local": "expo prebuild && cd android && ./gradlew assembleRelease"
   },
   "dependencies": {
-    "@clerk/clerk-expo": "^2.19.18",
+    "@clerk/clerk-expo": "^2.19.26",
     "@expo/html-elements": "^0.13.8",
     "@expo/metro-runtime": "^6.1.2",
     "@gluestack-ui/button": "^1.0.14",
@@ -39,6 +42,7 @@
     "expo-auth-session": "~7.0.10",
     "expo-constants": "~18.0.13",
     "expo-crypto": "~15.0.8",
+    "expo-haptics": "^15.0.8",
     "expo-linking": "~8.0.11",
     "expo-router": "~6.0.22",
     "expo-secure-store": "~15.0.8",
@@ -81,7 +85,10 @@
   "pnpm": {
     "overrides": {
       "tmp": ">=0.2.4",
-      "bs58": "^6.0.0"
+      "bs58": "^6.0.0",
+      "minimatch": "^10.2.2",
+      "glob": "^11.0.0",
+      "babel-plugin-module-resolver>glob": "^8"
     },
     "ignoredBuiltDependencies": [
       "@clerk/shared",

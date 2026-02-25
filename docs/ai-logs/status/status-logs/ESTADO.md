@@ -1,8 +1,8 @@
 # 🏗️ HealthBytes - Arquitectura Técnica
 
-**Fecha**: Enero 29, 2026
-**Versión**: MVP v2.0.0
-**Estado**: ✅ Completo con Cart Persistence
+**Fecha**: Febrero 23, 2026
+**Versión**: MVP v2.3.0
+**Estado**: ✅ Payments integrados + Alembic + rate limiting
 
 ---
 
@@ -26,7 +26,7 @@
 │  🗄️ DATABASE (PostgreSQL)                                   │
 │  ├─ Tables: users, products, orders, cart_items            │
 │  ├─ Relations: FK constraints, indexes                      │
-│  └─ Migrations: Alembic (planned)                           │
+│  └─ Migrations: Alembic (active)                            │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -132,11 +132,11 @@ class CartItem(Base):
 ```
 1. User clicks "Pay"
 2. Validate authentication
-3. Simulate payment (2.5s delay)
-4. Create order from cart items
-5. Clear cart
-6. Show success screen
-7. Redirect to home
+3. Create payment (Mercado Pago)
+4. Poll payment status (pending/success/failure)
+5. Create order on success
+6. Clear cart
+7. Navigate to status screen and home
 ```
 
 ---
@@ -374,7 +374,7 @@ AWS Infrastructure (Planned)
 ### API Optimization
 - **Async/Await**: All I/O operations async
 - **Response Caching**: Planned for product catalog
-- **Rate Limiting**: Planned for auth endpoints
+- **Rate Limiting**: Implemented for auth endpoints
 - **Compression**: Gzip for responses
 
 ### Mobile Optimization

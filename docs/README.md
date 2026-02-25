@@ -30,6 +30,8 @@ Información sobre seguridad y mejoras implementadas:
 
 ### 👨‍💻 [development/](./development/) - Para Desarrolladores
 Guías para trabajar en el código:
+- **[ROADMAP_VISUAL.md](./development/ROADMAP_VISUAL.md)** - 🗺️ Roadmap visual con diagramas Gantt
+- **[UIUX_ROADMAP.md](./development/UIUX_ROADMAP.md)** - Roadmap UI/UX detallado
 - **[testing-report.md](./development/testing-report.md)** - Reporte de pruebas (2026-02-05)
 - **[testing-guide.md](./development/testing-guide.md)** - Estrategia de testing
 - **[git-workflow.md](./development/git-workflow.md)** - Flujo de git y commits
@@ -44,6 +46,7 @@ Documentación de sesiones con Copilot y análisis del proyecto:
 - **[ai-logs/features/](./ai-logs/features/)** - Features desarrolladas
 - **[ai-logs/auth/](./ai-logs/auth/)** - Autenticación
 - **[ai-logs/security/](./ai-logs/security/)** - Mejoras de seguridad
+- **[ai-logs/archived/](./ai-logs/archived/)** - Reportes obsoletos archivados
 
 ---
 
@@ -52,6 +55,8 @@ Documentación de sesiones con Copilot y análisis del proyecto:
 | Necesito | Ir a |
 |----------|------|
 | 🚀 Empezar rápido | [setup/](./setup/) |
+| 🗺️ Ver roadmap | [../ROADMAP.md](../ROADMAP.md) ⭐ |
+| 📊 Timeline visual | [development/ROADMAP_VISUAL.md](./development/ROADMAP_VISUAL.md) |
 | 🏗️ Entender arquitectura | [architecture/](./architecture/) |
 | ✨ Ver features | [features/](./features/) |
 | 🔐 Seguridad | [security/](./security/) |
@@ -76,27 +81,18 @@ Documentación de sesiones con Copilot y análisis del proyecto:
 
 ---
 
-**Última actualización:** Feb 4, 2026 ✅
+**Última actualización:** Febrero 23, 2026 ✅
 
 - **Requisitos**: Python 3.14+, Node.js 18+, PostgreSQL 14+
 - **Lenguajes**: Python (backend), TypeScript (frontend)
 - **Arquitectura**: FastAPI + React Native (Expo)
 - **Base de Datos**: PostgreSQL (prod), SQLite (testing)
+- **Tests**: Suite green, 85% coverage target, 0 failures
 
 ---
 
-**Última actualización**: Febrero 4, 2026  
-**Status**: ✅ Proyecto activo
-- [Mejoras de seguridad](./copilot-logs/security-improvements-logs/)
-- [Autenticación](./copilot-logs/auth-logs/)
-
-### Búsqueda Full-Text
-Documentación completa sobre la implementación de búsqueda:
-- [Índice de búsqueda](./search-logs/README.md)
-- [Resumen técnico](./search-logs/SUMMARY.md)
-- [Guía de setup](./search-logs/SETUP.md)
-  
 ## Diagramas
+
 Para visualizar los flujos y arquitectura del proyecto:
 - [Diagramas técnicos](./diagramas/)
 - [Infraestructura](diagramas/Infrastructura.drawio) - Diagrama de infraestructura (abrir con draw.io)

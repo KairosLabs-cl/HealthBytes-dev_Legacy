@@ -16,6 +16,11 @@ describe('Cart Store Logic', () => {
   beforeEach(() => {
     useCart.setState({ ...initialState, items: [], isAuthenticated: true, authToken: 'fake-token' });
     jest.clearAllMocks();
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   const product = {

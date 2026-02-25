@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ProductBase(BaseModel):
@@ -10,6 +10,7 @@ class ProductBase(BaseModel):
     description: Optional[str] = None
     image: Optional[str] = Field(None, max_length=255)
     price: float = Field(..., gt=0)
+    nutritional_info: Optional[str] = None
 
 
 class ProductCreate(ProductBase):
@@ -25,6 +26,7 @@ class ProductUpdate(BaseModel):
     description: Optional[str] = None
     image: Optional[str] = Field(None, max_length=255)
     price: Optional[float] = Field(None, gt=0)
+    nutritional_info: Optional[str] = None
 
 
 class ProductResponse(ProductBase):
@@ -32,5 +34,4 @@ class ProductResponse(ProductBase):
 
     id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

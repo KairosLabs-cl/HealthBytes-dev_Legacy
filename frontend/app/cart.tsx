@@ -1,13 +1,12 @@
-import React, { useCallback, useMemo } from "react";
+import CartItem from "@/components/CartItem";
 import { Text } from "@/components/ui/text";
-import { Icon } from "@/components/ui/icon";
+import { formatPrice } from "@/lib/formatPrice";
 import { useCart } from "@/store/cartStore";
-import { View, FlatList, Pressable, Platform } from "react-native";
+import { CartItem as CartItemType } from "@/types/cart";
 import { Stack, useRouter } from "expo-router";
 import { ShoppingBag } from "lucide-react-native";
-import { formatPrice } from "@/lib/formatPrice";
-import { CartItem as CartItemType } from "@/types/cart";
-import CartItem from "@/components/CartItem";
+import React, { useCallback, useMemo } from "react";
+import { FlatList, Pressable, View } from "react-native";
 
 interface CartFooterProps {
   itemCount: number;
@@ -15,42 +14,50 @@ interface CartFooterProps {
   onCheckout: () => void;
 }
 
-const CartFooter = React.memo<CartFooterProps>(({ itemCount, subtotal, onCheckout }) => {
-  return (
-    <View className="mt-2 bg-white p-5 rounded-2xl">
-      <Text className="font-bold text-lg mb-4 text-gray-900">Resumen de compra</Text>
-
-      <View className="flex-row justify-between mb-2">
-        <Text className="text-gray-600">Subtotal ({itemCount} {itemCount === 1 ? 'producto' : 'productos'})</Text>
-        <Text className="font-semibold text-gray-900">{formatPrice(subtotal)}</Text>
-      </View>
-
-      <View className="flex-row justify-between mb-4">
-        <Text className="text-gray-600">Envío</Text>
-        <Text className="font-semibold text-green-600">Gratis</Text>
-      </View>
-
-      <View className="h-[1px] bg-gray-200 my-3" />
-
-      <View className="flex-row justify-between items-center mb-4">
-        <Text className="font-bold text-xl text-gray-900">Total</Text>
-        <Text className="font-bold text-2xl text-gray-900">{formatPrice(subtotal)}</Text>
-      </View>
-
-      {/* Checkout Button */}
-      <Pressable
-        onPress={onCheckout}
-        className="w-full h-14 bg-black rounded-full items-center justify-center active:opacity-80"
-      >
-        <Text className="text-white font-bold text-lg">
-          Proceder al pago
+const CartFooter = React.memo<CartFooterProps>(
+  ({ itemCount, subtotal, onCheckout }) => {
+    return (
+      <View className="mt-2 bg-white p-5 rounded-2xl">
+        <Text className="font-bold text-lg mb-4 text-gray-900">
+          Resumen de compra
         </Text>
-      </Pressable>
-    </View>
-  );
-});
 
-CartFooter.displayName = 'CartFooter';
+        <View className="flex-row justify-between mb-2">
+          <Text className="text-gray-600">
+            Subtotal ({itemCount} {itemCount === 1 ? "producto" : "productos"})
+          </Text>
+          <Text className="font-semibold text-gray-900">
+            {formatPrice(subtotal)}
+          </Text>
+        </View>
+
+        <View className="flex-row justify-between mb-4">
+          <Text className="text-gray-600">Envío</Text>
+          <Text className="font-semibold text-green-600">Gratis</Text>
+        </View>
+
+        <View className="h-[1px] bg-gray-200 my-3" />
+
+        <View className="flex-row justify-between items-center mb-4">
+          <Text className="font-bold text-xl text-gray-900">Total</Text>
+          <Text className="font-bold text-2xl text-gray-900">
+            {formatPrice(subtotal)}
+          </Text>
+        </View>
+
+        {/* Checkout Button */}
+        <Pressable
+          onPress={onCheckout}
+          className="w-full h-14 bg-black rounded-full items-center justify-center active:opacity-80"
+        >
+          <Text className="text-white font-bold text-lg">Proceder al pago</Text>
+        </Pressable>
+      </View>
+    );
+  }
+);
+
+CartFooter.displayName = "CartFooter";
 
 export default function CartScreen() {
   const items = useCart((state) => state.items);
@@ -59,28 +66,37 @@ export default function CartScreen() {
   const removeProduct = useCart((state) => state.removeProduct);
   const router = useRouter();
 
-  const subtotal = items.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
+  const subtotal = items.reduce(
+    (acc, item) => acc + item.product.price * item.quantity,
+    0
+  );
 
   const onCheckout = useCallback(() => {
-    router.push("/checkout");
+    router.push("/checkout-v2");
   }, [router]);
 
-  const renderItem = useCallback(({ item }: { item: CartItemType }) => (
-    <CartItem
-      item={item}
-      onIncrement={addProduct}
-      onDecrement={decrementProduct}
-      onRemove={removeProduct}
-    />
-  ), [addProduct, decrementProduct, removeProduct]);
+  const renderItem = useCallback(
+    ({ item }: { item: CartItemType }) => (
+      <CartItem
+        item={item}
+        onIncrement={addProduct}
+        onDecrement={decrementProduct}
+        onRemove={removeProduct}
+      />
+    ),
+    [addProduct, decrementProduct, removeProduct]
+  );
 
-  const footerParam = useMemo(() => (
-    <CartFooter
-      itemCount={items.length}
-      subtotal={subtotal}
-      onCheckout={onCheckout}
-    />
-  ), [items.length, subtotal, onCheckout]);
+  const footerParam = useMemo(
+    () => (
+      <CartFooter
+        itemCount={items.length}
+        subtotal={subtotal}
+        onCheckout={onCheckout}
+      />
+    ),
+    [items.length, subtotal, onCheckout]
+  );
 
   if (items.length === 0) {
     return (
@@ -111,14 +127,14 @@ export default function CartScreen() {
     <>
       <Stack.Screen options={{ title: "Carrito de Compras" }} />
       <View className="flex-1 bg-gray-50">
-      <FlatList
-        data={items}
-        contentContainerClassName="gap-3 p-4 pb-32"
-        showsVerticalScrollIndicator={false}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.product.id.toString()}
-        ListFooterComponent={footerParam}
-      />
+        <FlatList
+          data={items}
+          contentContainerClassName="gap-3 p-4 pb-32"
+          showsVerticalScrollIndicator={false}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.product.id.toString()}
+          ListFooterComponent={footerParam}
+        />
       </View>
     </>
   );

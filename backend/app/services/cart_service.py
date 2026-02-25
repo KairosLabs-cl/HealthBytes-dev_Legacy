@@ -4,12 +4,13 @@ Cart service - Business logic for shopping cart operations
 
 from typing import List
 
-from app.db.schemas import CartItem, Product
-from app.schemas.cart import CartItemCreate, CartItemResponse, CartResponse
 from fastapi import HTTPException
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload, selectinload
+from sqlalchemy.orm import joinedload
+
+from app.db.schemas import CartItem, Product
+from app.schemas.cart import CartItemCreate, CartItemResponse, CartResponse
 
 
 async def get_cart(user_id: int, db: AsyncSession) -> CartResponse:
@@ -109,11 +110,14 @@ async def update_cart_item(
         raise HTTPException(status_code=404, detail="Item not found in cart")
 
     # Validar stock solo si estamos aumentando la cantidad o manteniéndola
-    # Si el usuario está reduciendo la cantidad (aunque siga por encima del stock), permitimos la operación
+    # Si el usuario reduce la cantidad (aunque siga por encima del stock), permitimos la operación
     if quantity > cart_item.product.stock and quantity >= cart_item.quantity:
         raise HTTPException(
             status_code=400,
-            detail=f"Stock insuficiente. Solo quedan {cart_item.product.stock} unidades disponibles.",
+            detail=(
+                f"Stock insuficiente. Solo quedan "
+                f"{cart_item.product.stock} unidades disponibles."
+            ),
         )
 
     cart_item.quantity = quantity
@@ -133,7 +137,7 @@ async def remove_from_cart(user_id: int, product_id: int, db: AsyncSession) -> N
     """
     Remove item from cart
     """
-    result = await db.execute(
+    await db.execute(
         delete(CartItem).where(CartItem.user_id == user_id, CartItem.product_id == product_id)
     )
 

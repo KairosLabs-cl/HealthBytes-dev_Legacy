@@ -50,15 +50,16 @@ async def test_register_user_duplicate_email(db_session):
 
 
 @pytest.mark.asyncio
-async def test_register_user_with_clerk_id(db_session):
-    """Test registering user with Clerk ID"""
+async def test_register_user_with_name(db_session):
+    """Test registering user with name"""
     mock_db = MockAsyncSession(db_session)
 
-    user_data = UserCreate(email="clerk@example.com", password="pass123", clerk_id="user_123456789")
+    user_data = UserCreate(email="clerk@example.com", password="pass123", name="Test User")
 
     result = await register_user(mock_db, user_data)
 
-    assert result.clerk_id == "user_123456789"
+    assert result.email == "clerk@example.com"
+    assert result.id is not None
 
 
 @pytest.mark.asyncio
@@ -135,18 +136,23 @@ async def test_get_user_by_clerk_id_found(db_session):
     """Test getting user by Clerk ID"""
     mock_db = MockAsyncSession(db_session)
 
-    # Create user with Clerk ID
-    user_data = UserCreate(
-        email="clerkuser@example.com", password="pass123", clerk_id="clerk_user_12345"
+    # Create user with Clerk ID directly in DB (register_user doesn't support clerk_id)
+    user = User(
+        email="clerkuser@example.com",
+        password="hashed_password",
+        role="customer",
+        clerk_id="clerk_user_12345",
     )
-    created_user = await register_user(mock_db, user_data)
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
 
     # Find by Clerk ID
     result = await get_user_by_clerk_id(mock_db, "clerk_user_12345")
 
     assert result is not None
     assert result.clerk_id == "clerk_user_12345"
-    assert result.id == created_user.id
+    assert result.id == user.id
 
 
 @pytest.mark.asyncio

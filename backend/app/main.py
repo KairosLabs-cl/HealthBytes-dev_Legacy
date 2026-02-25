@@ -1,8 +1,23 @@
-from app.api.v1 import auth, cart, orders, products, stripe, users, favorites
-from app.config import settings
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+
+from app.api.v1 import (
+    addresses,
+    auth,
+    cart,
+    favorites,
+    mercadopago,
+    orders,
+    products,
+    stock,
+    users,
+)
+from app.config import settings
+from app.core.limiter import limiter
 
 # Create FastAPI application
 app = FastAPI(
@@ -12,6 +27,11 @@ app = FastAPI(
     docs_url="/docs" if settings.ENVIRONMENT == "dev" else None,
     redoc_url="/redoc" if settings.ENVIRONMENT == "dev" else None,
 )
+
+# Attach limiter to app state and register 429 handler
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
 
 
 @app.middleware("http")
@@ -114,11 +134,19 @@ async def root():
     return {"message": "Hola curiosin 👋! Bienvenido a la API de HealthBytes con FastAPI."}
 
 
+# Health check endpoint
+@app.get("/health")
+async def health():
+    """Health check endpoint for Docker and load balancers"""
+    return {"status": "healthy", "service": "HealthBytes API"}
+
+
 # Diagnostic endpoint for JWKS access
 @app.get("/health/jwks")
 async def check_jwks_health():
     """Check if the backend can access Clerk's JWKS endpoint"""
     import httpx
+
     from app.config import settings
 
     if settings.ENVIRONMENT != "dev" and not settings.ENABLE_DIAGNOSTIC_ENDPOINTS:
@@ -182,9 +210,12 @@ app.include_router(products.router, prefix="/products", tags=["Products"])
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(orders.router, prefix="/orders", tags=["Orders"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
-app.include_router(stripe.router, prefix="/stripe", tags=["Stripe"])
+
 app.include_router(cart.router, prefix="/cart", tags=["Cart"])
 app.include_router(favorites.router, prefix="/favorites", tags=["Favorites"])
+app.include_router(addresses.router, tags=["Addresses"])
+app.include_router(stock.router, prefix="/api/v1", tags=["Stock"])
+app.include_router(mercadopago.router, prefix="/api/v1", tags=["Mercado Pago"])
 
 
 # For local development

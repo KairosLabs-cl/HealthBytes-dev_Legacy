@@ -12,6 +12,9 @@ jest.mock('expo-router', () => ({
   useRouter: () => ({
     push: jest.fn(),
   }),
+  Stack: {
+    Screen: () => null,
+  },
 }));
 
 jest.mock('@/lib/formatPrice', () => ({
