@@ -68,7 +68,45 @@ jest.mock('@/components/SectionHeader', () => {
   return Component;
 });
 
-// ... (existing Stack mock is fine) ...
+jest.mock('@/store/productFiltersStore', () => ({
+  useProductFilters: jest.fn(() => ({
+    dietaryTags: [],
+    toggleDietaryTag: jest.fn(),
+    setDietaryTags: jest.fn(),
+    clearFilters: jest.fn(),
+  })),
+}));
+
+jest.mock('@/store/preferencesStore', () => ({
+  usePreferencesStore: jest.fn(() => ({
+    dietaryPreferences: [],
+  })),
+}));
+
+jest.mock('@clerk/clerk-expo', () => ({
+  useUser: jest.fn(() => ({
+    user: { firstName: 'Test', fullName: 'Test User' },
+  })),
+}));
+
+jest.mock('expo-status-bar', () => ({
+  StatusBar: () => null,
+}));
+
+jest.mock('react-native-reanimated', () => {
+  const { View } = require('react-native');
+  return {
+    default: {
+      View,
+      createAnimatedComponent: (c: any) => c,
+    },
+    useSharedValue: (val: any) => ({ value: val }),
+    useAnimatedStyle: () => ({}),
+    withTiming: (val: any) => val,
+    Easing: { out: (fn: any) => fn, ease: (t: any) => t },
+  };
+});
+
 jest.mock('expo-router', () => ({
   Stack: {
     Screen: () => null,
