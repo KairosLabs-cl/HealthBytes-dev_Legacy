@@ -5,11 +5,11 @@ import { Text } from "@/components/ui/text";
 import type { Product } from "@/types/product";
 import HorizontalProductCard from "@/components/HorizontalProductCard";
 
-type Props = { items?: Product[] };
+type Props = { items?: Product[]; onSeeAll?: () => void };
 
 const cardKeyExtractor = (item: Product) => String(item.id);
 
-export default function RecentlyViewedBar({ items = [] }: Props) {
+export default function RecentlyViewedBar({ items = [], onSeeAll }: Props) {
   const renderItem = useCallback(
     ({ item }: { item: Product }) => <HorizontalProductCard product={item} />,
     []
@@ -51,13 +51,13 @@ export default function RecentlyViewedBar({ items = [] }: Props) {
         <Text style={{ fontSize: 17, fontWeight: "700", color: "#111827" }}>
           {"👀 Vistos recientemente"}
         </Text>
-        <Pressable>
+        <Pressable onPress={onSeeAll}>
           <Text style={{ fontSize: 13, fontWeight: "600", color: "#16A34A" }}>Ver mas</Text>
         </Pressable>
       </View>
       <FlatList
         horizontal
-        data={items}
+        data={items.slice(0, 10)}
         keyExtractor={cardKeyExtractor}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 16 }}

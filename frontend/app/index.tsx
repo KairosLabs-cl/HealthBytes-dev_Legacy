@@ -8,13 +8,14 @@ import ProductListItem from "@/components/ProductListItem";
 import FavoritesBar from "@/components/FavoritesBar";
 import RecentlyViewedBar from "@/components/RecentlyViewedBar";
 import { Header } from "@/components/Header";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { RefreshCw } from "lucide-react-native";
 
 import { useCallback, useEffect, useMemo } from "react";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 import { useProductFilters, DietaryTag } from "@/store/productFiltersStore";
 import { usePreferencesStore } from "@/store/preferencesStore";
+import { useFavoritesStore } from "@/store/favoritesStore";
 import { useUser } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -107,10 +108,22 @@ export default function HomeScreen() {
   }) as number;
 
   const heroProduct = useMemo(() => data?.[0], [data]);
+  const { favoriteIds } = useFavoritesStore();
+
+  const favoriteProducts = useMemo(() => {
+    if (!data) return [];
+    return data.filter((p: Product) => favoriteIds.has(Number(p.id)));
+  }, [data, favoriteIds]);
+
+  const router = useRouter();
 
   const renderItem = useCallback(
-    ({ item }: { item: Product }) => <ProductListItem product={item} />,
-    []
+    ({ item }: { item: Product }) => (
+      <View style={{ width: numColumns === 2 ? '50%' : numColumns === 3 ? '33.33%' : '25%' }}>
+        <ProductListItem product={item} />
+      </View>
+    ),
+    [numColumns]
   );
 
   const renderHeader = useMemo(() => (
@@ -166,8 +179,8 @@ export default function HomeScreen() {
       </View>
 
       {/* Secciones horizontales */}
-      <RecentlyViewedBar items={recentlyViewedItems} />
-      <FavoritesBar products={data} />
+      <RecentlyViewedBar items={recentlyViewedItems} onSeeAll={() => router.push('/recently-viewed')} />
+      <FavoritesBar products={favoriteProducts} onSeeAll={() => router.push('/wishlist')} />
 
       {/* Products section header */}
       <View className="px-4 flex-row items-center justify-between mt-2 mb-1">
@@ -176,12 +189,12 @@ export default function HomeScreen() {
             ? `🛒 Productos filtrados`
             : `🛒 Todos los productos`}
         </Text>
-        <Pressable>
+        <Pressable onPress={() => router.push('/all-products')}>
           <Text className="text-sm font-semibold text-green-600">Ver mas</Text>
         </Pressable>
       </View>
     </>
-  ), [user, dietaryTags, toggleDietaryTag, heroProduct, data, recentlyViewedItems]);
+  ), [user, dietaryTags, toggleDietaryTag, heroProduct, data, recentlyViewedItems, favoriteProducts, router]);
 
   // Solo muestra loading completo en primera carga
   if (isLoading && !data) {
@@ -256,8 +269,8 @@ export default function HomeScreen() {
         keyExtractor={keyExtractor}
         data={data}
         numColumns={numColumns}
-        contentContainerClassName="gap-3 w-full px-4 pb-32"
-        columnWrapperClassName="gap-3"
+        contentContainerClassName="gap-2 max-w-[960px] mx-auto w-full px-4 pb-32"
+        columnWrapperClassName="gap-2"
         renderItem={renderItem}
         initialNumToRender={6}
         windowSize={7}
