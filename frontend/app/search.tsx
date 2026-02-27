@@ -82,7 +82,7 @@ export default function SearchScreen() {
 
     if (isLoading) {
         return (
-            <SafeAreaView className="flex-1 bg-gray-50">
+            <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
                 <Stack.Screen options={{ headerShown: false }} />
                 <Header userName={userName} initialSearchTerm={searchTerm} showBackButton={true} />
                 <View className="px-3 mt-4">
@@ -101,7 +101,7 @@ export default function SearchScreen() {
 
     if (error) {
         return (
-            <SafeAreaView className="flex-1 bg-gray-50">
+            <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
                 <Stack.Screen options={{ headerShown: false }} />
                 <Header userName={userName} initialSearchTerm={searchTerm} showBackButton={true} />
                 <View className="flex-1 items-center justify-center px-6">

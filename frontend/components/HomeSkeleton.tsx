@@ -1,6 +1,7 @@
 import React from "react";
 import { View } from "react-native";
 import Animated from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 import ProductCardSkeleton, { useShimmerStyle } from "@/components/ProductCardSkeleton";
 
 /**
@@ -11,27 +12,21 @@ function HomeSkeleton() {
   const shimmerStyle = useShimmerStyle();
 
   return (
-    <View className="flex-1 bg-gray-50">
-      {/* Header placeholder */}
-      <View className="bg-white px-4 pt-4 pb-3">
-        <View className="flex-row items-center justify-between mb-3">
-          <View>
-            <Animated.View className="h-4 w-24 bg-gray-200 rounded mb-2" style={shimmerStyle} />
-            <Animated.View className="h-6 w-40 bg-gray-200 rounded" style={shimmerStyle} />
-          </View>
-          <Animated.View className="w-10 h-10 rounded-full bg-gray-200" style={shimmerStyle} />
-        </View>
+    <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
+      {/* Header placeholder — matches Header.tsx layout */}
+      <View className="bg-white px-4 pt-6 pb-4">
+        <Animated.View className="h-6 w-40 bg-gray-200 rounded mb-3" style={shimmerStyle} />
         {/* Search bar placeholder */}
         <Animated.View className="h-11 bg-gray-100 rounded-full" style={shimmerStyle} />
       </View>
 
-      {/* Filter chips placeholder */}
+      {/* Filter chips placeholder — matches 44px minHeight chips */}
       <View className="px-4 pb-1 bg-white">
         <View className="flex-row gap-2 mt-2">
           {[80, 70, 90, 100].map((width, i) => (
             <Animated.View
               key={i}
-              className="h-8 bg-gray-100 rounded-full"
+              className="h-11 bg-gray-100 rounded-full"
               style={[shimmerStyle, { width }]}
             />
           ))}
@@ -57,7 +52,7 @@ function HomeSkeleton() {
           <ProductCardSkeleton shimmerStyle={shimmerStyle} />
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
