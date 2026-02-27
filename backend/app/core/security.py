@@ -13,6 +13,19 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(password_bytes, hashed_password.encode("utf-8"))
 
 
+def verify_password_mock() -> bool:
+    """
+    Simulate password verification for timing attack mitigation.
+    Uses a dummy hash to ensure the operation takes the same amount of time
+    as a real verification.
+    """
+    # Dummy hash generated with 12 rounds (default for bcrypt)
+    # $2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxwKc.60rScphF.1kFBZGD/k/yB2.
+    dummy_hash = b"$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxwKc.60rScphF.1kFBZGD/k/yB2."
+    password_bytes = b"dummy_password"
+    return bcrypt.checkpw(password_bytes, dummy_hash)
+
+
 def get_password_hash(password: str) -> str:
     """Hash a password (truncates to 72 bytes for bcrypt compatibility)"""
     # Bcrypt has a 72-byte limit, truncate if necessary
