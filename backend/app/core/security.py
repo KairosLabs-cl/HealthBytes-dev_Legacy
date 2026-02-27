@@ -13,48 +13,25 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(password_bytes, hashed_password.encode("utf-8"))
 
 
+# Dummy hash for timing attack mitigation (bcrypt hash of "dummy_password")
+DUMMY_PASSWORD_HASH = b"$2b$12$VSqOIz9EJj/KYyG1GmblI.p4wGOpcsBE9ioEu0hYCcnsWcMFfFED."
+
+
+def verify_password_mock(password: str) -> bool:
+    """
+    Simulate password verification for timing attack mitigation.
+    Uses a dummy hash to ensure the operation takes the same amount of time
+    as a real verification.
+    """
+    password_bytes = password.encode("utf-8")[:72]
+    return bcrypt.checkpw(password_bytes, DUMMY_PASSWORD_HASH)
+
+
 def get_password_hash(password: str) -> str:
     """Hash a password (truncates to 72 bytes for bcrypt compatibility)"""
     # Bcrypt has a 72-byte limit, truncate if necessary
     password_bytes = password.encode("utf-8")[:72]
     return bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode("utf-8")
-
-
-<<<<<<< fix/auth-timing-attack-15259610013706666787
-# Dummy hash for timing attack prevention (bcrypt hash of "dummy", work factor 12).
-# IMPORTANT: This hash uses work factor 12 to match bcrypt.gensalt() default used in
-# get_password_hash(). If the work factor is ever changed there (e.g. bcrypt.gensalt(rounds=N)),
-# this constant must be regenerated with the same factor, otherwise the timing equalization
-# breaks and the user enumeration vulnerability reappears.
-# To regenerate: python -c "import bcrypt; print(bcrypt.hashpw(b'dummy', bcrypt.gensalt(rounds=N)).decode())"
-DUMMY_HASH = "$2b$12$2CWJp6XnIbqgSd62XLhcJeOehPZYLNMnjl5iPlJTYIA6yiZZ5n5.W"
-=======
-# Dummy hash for timing attack mitigation (bcrypt hash of "dummy_password")
-DUMMY_PASSWORD_HASH = "$2b$12$VSqOIz9EJj/KYyG1GmblI.p4wGOpcsBE9ioEu0hYCcnsWcMFfFED."
->>>>>>> master
-
-
-def verify_password_mock(plain_password: str) -> bool:
-    """
-<<<<<<< fix/auth-timing-attack-15259610013706666787
-    Simulate password verification to prevent user enumeration via timing attacks.
-
-    Called when a login attempt is made with an email that does not exist in the DB.
-    Runs a full bcrypt comparison against DUMMY_HASH so the response time is comparable
-    to a real verification, making it impossible for attackers to distinguish
-    "email not found" from "wrong password" by measuring latency.
-
-    Always returns False — the result must never be trusted.
-    """
-    verify_password(plain_password, DUMMY_HASH)
-    return False
-=======
-    Perform a dummy password verification to mitigate timing attacks.
-    Accepts the actual client password so both the user-found and user-not-found
-    paths encode and hash the same input, eliminating the timing side-channel.
-    """
-    return verify_password(plain_password, DUMMY_PASSWORD_HASH)
->>>>>>> master
 
 
 def create_access_token(data: dict) -> str:
