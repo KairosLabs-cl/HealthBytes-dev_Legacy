@@ -212,6 +212,7 @@ class MercadoPagoService:
         payment_id: str,
         topic: str,
         webhook_signature: Optional[str] = None,
+        request_id: Optional[str] = None,
     ) -> Dict:
         """
         Process Mercado Pago webhook notification
@@ -230,7 +231,7 @@ class MercadoPagoService:
         """
         # Validate signature if provided
         if webhook_signature and self.webhook_secret:
-            if not self._validate_x_signature(webhook_signature, payment_id):
+            if not self._validate_x_signature(webhook_signature, payment_id, request_id):
                 logger.warning("Invalid webhook signature for payment %s", payment_id)
                 raise PaymentError("Invalid webhook signature")
 
@@ -350,18 +351,20 @@ class MercadoPagoService:
             "mp_payment_id": payment_id,
         }
 
-    def _validate_x_signature(self, x_signature: str, data_id: str) -> bool:
+    def _validate_x_signature(
+        self, x_signature: str, data_id: str, request_id: Optional[str] = None
+    ) -> bool:
         """
         Validate Mercado Pago x-signature header.
 
         MP sends: x-signature: ts=<timestamp>,v1=<hash>
-        Hash is HMAC-SHA256(secret, "id:<data_id>;request-id:...;ts:<timestamp>;")
-
-        For simplicity we validate: HMAC-SHA256(secret, "id:<data_id>;ts:<timestamp>;")
+        Hash is HMAC-SHA256(secret, "id:<data_id>;request-id:<request_id>;ts:<timestamp>;")
+        When x-request-id header is absent, request-id is omitted from the manifest.
 
         Args:
             x_signature: Full x-signature header value
             data_id: The payment/resource ID from the notification
+            request_id: Optional x-request-id header value from MP
 
         Returns:
             True if signature is valid
@@ -382,8 +385,11 @@ class MercadoPagoService:
             if not ts or not v1:
                 return False
 
-            # Build the manifest string per MP docs
-            manifest = f"id:{data_id};ts:{ts};"
+            # Build the manifest string per MP docs — include request-id when present
+            if request_id:
+                manifest = f"id:{data_id};request-id:{request_id};ts:{ts};"
+            else:
+                manifest = f"id:{data_id};ts:{ts};"
 
             expected = hmac.new(
                 self.webhook_secret.encode(),
