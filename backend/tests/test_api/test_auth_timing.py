@@ -47,7 +47,7 @@ def test_password_verification_timing():
 @pytest.mark.security
 def test_dummy_hash_validity():
     """Ensure DUMMY_PASSWORD_HASH is a valid bcrypt hash structure."""
-    assert DUMMY_PASSWORD_HASH.startswith("$2b$")
+    assert DUMMY_PASSWORD_HASH.startswith(b"$2b$")
     assert len(DUMMY_PASSWORD_HASH) == 60
 
 
@@ -81,7 +81,9 @@ def test_api_login_timing(client):
 
     # Measure: Valid User (Wrong Password)
     start = time.perf_counter()
-    valid_user_response = client.post("/auth/login", json={"email": email, "password": "wrong_password"})
+    valid_user_response = client.post(
+        "/auth/login", json={"email": email, "password": "wrong_password"}
+    )
     valid_user_time = time.perf_counter() - start
 
     # Measure: Invalid User
