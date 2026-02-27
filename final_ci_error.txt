@@ -1,0 +1,42 @@
+Backend Tests	Run tests	﻿2026-02-27T03:15:15.4766588Z ##[group]Run pytest --tb=short --cov=app --cov-fail-under=80 -q
+Backend Tests	Run tests	2026-02-27T03:15:15.4767181Z [36;1mpytest --tb=short --cov=app --cov-fail-under=80 -q[0m
+Backend Tests	Run tests	2026-02-27T03:15:15.4817492Z shell: /usr/bin/bash -e {0}
+Backend Tests	Run tests	2026-02-27T03:15:15.4817957Z env:
+Backend Tests	Run tests	2026-02-27T03:15:15.4818241Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.12/x64
+Backend Tests	Run tests	2026-02-27T03:15:15.4818801Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.12/x64/lib/pkgconfig
+Backend Tests	Run tests	2026-02-27T03:15:15.4819355Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.12/x64
+Backend Tests	Run tests	2026-02-27T03:15:15.4819848Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.12/x64
+Backend Tests	Run tests	2026-02-27T03:15:15.4820333Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.12/x64
+Backend Tests	Run tests	2026-02-27T03:15:15.4820820Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.12/x64/lib
+Backend Tests	Run tests	2026-02-27T03:15:15.4821217Z ##[endgroup]
+Backend Tests	Run tests	2026-02-27T03:15:20.8064169Z ============================= test session starts ==============================
+Backend Tests	Run tests	2026-02-27T03:15:20.8065380Z platform linux -- Python 3.12.12, pytest-9.0.2, pluggy-1.6.0
+Backend Tests	Run tests	2026-02-27T03:15:20.8069372Z rootdir: /home/runner/work/HealthBytes-dev/HealthBytes-dev/backend
+Backend Tests	Run tests	2026-02-27T03:15:20.8070454Z configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+Backend Tests	Run tests	2026-02-27T03:15:20.8071213Z testpaths: tests
+Backend Tests	Run tests	2026-02-27T03:15:20.8071631Z plugins: anyio-4.12.1, cov-7.0.0, asyncio-1.3.0
+Backend Tests	Run tests	2026-02-27T03:15:20.8072650Z asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+Backend Tests	Run tests	2026-02-27T03:15:20.8073528Z collected 363 items / 1 error
+Backend Tests	Run tests	2026-02-27T03:15:20.8073760Z 
+Backend Tests	Run tests	2026-02-27T03:15:20.8073959Z ==================================== ERRORS ====================================
+Backend Tests	Run tests	2026-02-27T03:15:20.8074611Z _____________ ERROR collecting tests/test_api/test_auth_timing.py ______________
+Backend Tests	Run tests	2026-02-27T03:15:20.8075736Z ImportError while importing test module '/home/runner/work/HealthBytes-dev/HealthBytes-dev/backend/tests/test_api/test_auth_timing.py'.
+Backend Tests	Run tests	2026-02-27T03:15:20.8076836Z Hint: make sure your test modules/packages have valid Python names.
+Backend Tests	Run tests	2026-02-27T03:15:20.8078049Z Traceback:
+Backend Tests	Run tests	2026-02-27T03:15:20.8078674Z /opt/hostedtoolcache/Python/3.12.12/x64/lib/python3.12/importlib/__init__.py:90: in import_module
+Backend Tests	Run tests	2026-02-27T03:15:20.8079509Z     return _bootstrap._gcd_import(name[level:], package, level)
+Backend Tests	Run tests	2026-02-27T03:15:20.8080021Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Backend Tests	Run tests	2026-02-27T03:15:20.8080475Z tests/test_api/test_auth_timing.py:3: in <module>
+Backend Tests	Run tests	2026-02-27T03:15:20.8080917Z     from app.core.security import (
+Backend Tests	Run tests	2026-02-27T03:15:20.8081964Z E   ImportError: cannot import name 'DUMMY_PASSWORD_HASH' from 'app.core.security' (/home/runner/work/HealthBytes-dev/HealthBytes-dev/backend/app/core/security.py)
+Backend Tests	Run tests	2026-02-27T03:15:20.8083119Z =============================== warnings summary ===============================
+Backend Tests	Run tests	2026-02-27T03:15:20.8083898Z ../../../../../../opt/hostedtoolcache/Python/3.12.12/x64/lib/python3.12/site-packages/mangum/adapter.py:65
+Backend Tests	Run tests	2026-02-27T03:15:20.8085183Z   /opt/hostedtoolcache/Python/3.12.12/x64/lib/python3.12/site-packages/mangum/adapter.py:65: DeprecationWarning: There is no current event loop
+Backend Tests	Run tests	2026-02-27T03:15:20.8086167Z     asyncio.get_event_loop()
+Backend Tests	Run tests	2026-02-27T03:15:20.8086395Z 
+Backend Tests	Run tests	2026-02-27T03:15:20.8086718Z -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+Backend Tests	Run tests	2026-02-27T03:15:20.8087385Z =========================== short test summary info ============================
+Backend Tests	Run tests	2026-02-27T03:15:20.8088095Z ERROR tests/test_api/test_auth_timing.py
+Backend Tests	Run tests	2026-02-27T03:15:20.8088613Z !!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+Backend Tests	Run tests	2026-02-27T03:15:20.8089196Z ========================= 1 warning, 1 error in 1.62s ==========================
+Backend Tests	Run tests	2026-02-27T03:15:21.0098600Z ##[error]Process completed with exit code 2.
