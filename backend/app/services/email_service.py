@@ -118,7 +118,7 @@ class EmailService:
     def render_order_confirmation(self, data: OrderEmailData) -> str:
         """Render order confirmation email HTML."""
         # Security: Escape customer name to prevent HTML injection
-        safe_customer_name = html.escape(data.customer_name or 'Cliente')
+        safe_customer_name = html.escape(data.customer_name or "Cliente")
 
         return f"""
         <!DOCTYPE html>
@@ -154,7 +154,7 @@ class EmailService:
     def render_payment_success(self, data: OrderEmailData) -> str:
         """Render payment success email HTML."""
         # Security: Escape customer name to prevent HTML injection
-        safe_customer_name = html.escape(data.customer_name or 'Cliente')
+        safe_customer_name = html.escape(data.customer_name or "Cliente")
 
         return f"""
         <!DOCTYPE html>
@@ -190,7 +190,7 @@ class EmailService:
     def render_order_shipped(self, data: OrderEmailData) -> str:
         """Render order shipped email HTML."""
         # Security: Escape customer name to prevent HTML injection
-        safe_customer_name = html.escape(data.customer_name or 'Cliente')
+        safe_customer_name = html.escape(data.customer_name or "Cliente")
 
         return f"""
         <!DOCTYPE html>

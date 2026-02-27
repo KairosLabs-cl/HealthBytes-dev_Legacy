@@ -4,7 +4,7 @@ from app.core.security import (
     verify_password,
     verify_password_mock,
     get_password_hash,
-    DUMMY_PASSWORD_HASH,
+    DUMMY_HASH,
 )
 
 
@@ -46,9 +46,9 @@ def test_password_verification_timing():
 @pytest.mark.unit
 @pytest.mark.security
 def test_dummy_hash_validity():
-    """Ensure DUMMY_PASSWORD_HASH is a valid bcrypt hash structure."""
-    assert DUMMY_PASSWORD_HASH.startswith("$2b$")
-    assert len(DUMMY_PASSWORD_HASH) == 60
+    """Ensure DUMMY_HASH is a valid bcrypt hash structure."""
+    assert DUMMY_HASH.startswith("$2b$")
+    assert len(DUMMY_HASH) == 60
 
 
 @pytest.mark.unit
