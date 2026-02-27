@@ -81,7 +81,7 @@ async def login(request: Request, credentials: UserLogin, db: AsyncSession = Dep
 
         if not user:
             # Run mock verification to prevent timing attacks (user enumeration)
-            verify_password_mock()
+            verify_password_mock(credentials.password)
             raise HTTPException(status_code=401, detail={"error": "Authentication failed"})
 
         # Verify password
