@@ -5,6 +5,7 @@ Sends order confirmation, payment success, and shipping notification emails.
 In dev mode (no RESEND_API_KEY), logs instead of sending.
 """
 
+import html
 import logging
 from dataclasses import dataclass
 from decimal import Decimal
@@ -83,9 +84,11 @@ class EmailService:
         rows = ""
         for item in data.items:
             subtotal = item.price * item.quantity
+            # Security: Escape product name to prevent HTML injection
+            safe_product_name = html.escape(item.product_name)
             rows += f"""
                 <tr>
-                    <td>{item.product_name}</td>
+                    <td>{safe_product_name}</td>
                     <td style="text-align:center;">{item.quantity}</td>
                     <td style="text-align:right;">{self._format_price(item.price, data.currency)}</td>
                     <td style="text-align:right;">{self._format_price(subtotal, data.currency)}</td>
@@ -114,6 +117,9 @@ class EmailService:
 
     def render_order_confirmation(self, data: OrderEmailData) -> str:
         """Render order confirmation email HTML."""
+        # Security: Escape customer name to prevent HTML injection
+        safe_customer_name = html.escape(data.customer_name or 'Cliente')
+
         return f"""
         <!DOCTYPE html>
         <html><head><style>{self._base_style()}</style></head>
@@ -124,7 +130,7 @@ class EmailService:
                     <p>Tu orden ha sido recibida</p>
                 </div>
                 <div class="content">
-                    <p>Hola <strong>{data.customer_name or 'Cliente'}</strong>,</p>
+                    <p>Hola <strong>{safe_customer_name}</strong>,</p>
                     <p>Hemos recibido tu orden y estamos procesandola.</p>
 
                     <div class="order-info">
@@ -147,6 +153,9 @@ class EmailService:
 
     def render_payment_success(self, data: OrderEmailData) -> str:
         """Render payment success email HTML."""
+        # Security: Escape customer name to prevent HTML injection
+        safe_customer_name = html.escape(data.customer_name or 'Cliente')
+
         return f"""
         <!DOCTYPE html>
         <html><head><style>{self._base_style()}</style></head>
@@ -157,7 +166,7 @@ class EmailService:
                     <p>Pago confirmado</p>
                 </div>
                 <div class="content">
-                    <p>Hola <strong>{data.customer_name or 'Cliente'}</strong>,</p>
+                    <p>Hola <strong>{safe_customer_name}</strong>,</p>
                     <p>Tu pago ha sido confirmado exitosamente. Estamos preparando tu pedido.</p>
 
                     <div class="order-info">
@@ -180,6 +189,9 @@ class EmailService:
 
     def render_order_shipped(self, data: OrderEmailData) -> str:
         """Render order shipped email HTML."""
+        # Security: Escape customer name to prevent HTML injection
+        safe_customer_name = html.escape(data.customer_name or 'Cliente')
+
         return f"""
         <!DOCTYPE html>
         <html><head><style>{self._base_style()}</style></head>
@@ -190,7 +202,7 @@ class EmailService:
                     <p>Tu pedido esta en camino</p>
                 </div>
                 <div class="content">
-                    <p>Hola <strong>{data.customer_name or 'Cliente'}</strong>,</p>
+                    <p>Hola <strong>{safe_customer_name}</strong>,</p>
                     <p>Tu pedido ha sido despachado y esta en camino.</p>
 
                     <div class="order-info" style="background:#eff6ff; border-color:#bfdbfe;">
