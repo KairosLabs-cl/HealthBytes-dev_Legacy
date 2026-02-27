@@ -21,7 +21,7 @@ def test_password_verification_timing():
 
     # Warm up
     verify_password("wrong_password", real_hash)
-    verify_password_mock()
+    verify_password_mock("wrong_password")
 
     # Measure real verification
     start = time.perf_counter()
@@ -30,7 +30,7 @@ def test_password_verification_timing():
 
     # Measure mock verification
     start = time.perf_counter()
-    verify_password_mock()
+    verify_password_mock("wrong_password")
     mock_duration = time.perf_counter() - start
 
     # Calculate difference
@@ -71,23 +71,35 @@ def test_api_login_timing(client):
         },
     )
 
-    # Warm up
-    client.post("/auth/login", json={"email": email, "password": "wrong_password"})
-    client.post(
+    # Warm up — assert 401 so rate-limit budget is not silently exhausted before measurement
+    warmup_1 = client.post("/auth/login", json={"email": email, "password": "wrong_password"})
+    warmup_2 = client.post(
         "/auth/login", json={"email": "non_existent@example.com", "password": "any_password"}
     )
+    assert warmup_1.status_code == 401, f"Warm-up 1 unexpected status: {warmup_1.status_code}"
+    assert warmup_2.status_code == 401, f"Warm-up 2 unexpected status: {warmup_2.status_code}"
 
     # Measure: Valid User (Wrong Password)
     start = time.perf_counter()
-    client.post("/auth/login", json={"email": email, "password": "wrong_password"})
+    valid_user_response = client.post("/auth/login", json={"email": email, "password": "wrong_password"})
     valid_user_time = time.perf_counter() - start
 
     # Measure: Invalid User
     start = time.perf_counter()
-    client.post(
+    invalid_user_response = client.post(
         "/auth/login", json={"email": "non_existent@example.com", "password": "any_password"}
     )
     invalid_user_time = time.perf_counter() - start
+
+    # Validate both requests hit the 401 path — not rate-limited (429) or any other shortcut
+    assert valid_user_response.status_code == 401, (
+        f"Expected 401 for valid user/wrong password, got {valid_user_response.status_code}. "
+        "Timing measurement may be invalid (e.g. rate-limited)."
+    )
+    assert invalid_user_response.status_code == 401, (
+        f"Expected 401 for non-existent user, got {invalid_user_response.status_code}. "
+        "Timing measurement may be invalid (e.g. rate-limited)."
+    )
 
     diff = abs(valid_user_time - invalid_user_time)
 
