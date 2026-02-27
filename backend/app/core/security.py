@@ -25,7 +25,8 @@ def get_password_hash(password: str) -> str:
 # get_password_hash(). If the work factor is ever changed there (e.g. bcrypt.gensalt(rounds=N)),
 # this constant must be regenerated with the same factor, otherwise the timing equalization
 # breaks and the user enumeration vulnerability reappears.
-# To regenerate: python -c "import bcrypt; print(bcrypt.hashpw(b'dummy', bcrypt.gensalt(rounds=N)).decode())"
+# To regenerate:
+# python -c "import bcrypt; print(bcrypt.hashpw(b'dummy', bcrypt.gensalt(rounds=N)).decode())"
 DUMMY_HASH = "$2b$12$2CWJp6XnIbqgSd62XLhcJeOehPZYLNMnjl5iPlJTYIA6yiZZ5n5.W"
 
 
