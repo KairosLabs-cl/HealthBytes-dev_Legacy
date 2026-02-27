@@ -10,7 +10,7 @@ import { useCart } from "@/store/cartStore"
 import FavoriteButton from "@/components/FavoriteButton"
 import StockBadge from "@/components/StockBadge"
 import Animated, {
-  FadeInDown,
+  FadeIn,
   useSharedValue,
   useAnimatedStyle,
   withTiming,
@@ -52,7 +52,7 @@ function ProductListItem({ product }: Props) {
   const colors = firstTag ? (TAG_COLORS[firstTag.color || ""] || DEFAULT_TAG) : null;
 
   return (
-    <Animated.View style={{ flex: 1 }} entering={FadeInDown.duration(400).springify()}>
+    <Animated.View style={{ flex: 1 }} entering={FadeIn.duration(200)}>
       <Link href={`/product/${product.id}`} asChild>
         <Pressable style={{ flex: 1 }}>
           <View
