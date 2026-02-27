@@ -11,25 +11,34 @@ import { useUser } from "@clerk/clerk-expo";
 import { useEffect, useMemo, useState } from "react";
 import {
   User,
-  ShieldCheck,
-  Shield,
-  Download,
-  Lock,
+  Salad,
 } from "lucide-react-native";
 
 
+import { usePreferencesStore } from "@/store/preferencesStore";
+import { useAuth } from "@clerk/clerk-expo";
+
+const DIETARY_OPTIONS = [
+  { id: "sin-gluten", label: "Sin Gluten" },
+  { id: "vegano", label: "Vegano" },
+  { id: "sin-lactosa", label: "Sin Lactosa" },
+  { id: "bajo-en-azucar", label: "Bajo en Azúcar" },
+  { id: "alto-en-proteina", label: "Alto en Proteína" },
+  { id: "para-diabeticos", label: "Para Diabéticos" },
+];
+
 export default function ProfileSettingsScreen() {
   const { user, isLoaded } = useUser();
+  const { isSignedIn } = useAuth();
+  const { dietaryPreferences, togglePreference, updateDietaryPreferences } = usePreferencesStore();
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  // Dietary preferences state
 
   useEffect(() => {
     if (!isLoaded || !user) {
@@ -75,43 +84,13 @@ export default function ProfileSettingsScreen() {
     }
   };
 
-  const handleChangePassword = async () => {
-    setError(null);
-    setSuccess(null);
-
-    if (!currentPassword.trim()) {
-      setError("Ingresa tu contraseña actual");
-      return;
-    }
-    if (!newPassword.trim()) {
-      setError("Ingresa tu nueva contraseña");
-      return;
-    }
-    if (newPassword.length < 8) {
-      setError("La contraseña debe tener al menos 8 caracteres");
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setError("Las contraseñas no coinciden");
-      return;
-    }
-
-    setIsSaving(true);
-
+  const handleSavePreferences = async () => {
     try {
-      Alert.alert(
-        "Cambio de Contraseña",
-        "El cambio de contraseña debe realizarse a través de los ajustes de seguridad de tu cuenta en Clerk. Por tu seguridad, se te redirigirá a la página de seguridad."
-      );
-
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-      setSuccess("Dirígete a los ajustes de seguridad de tu cuenta.");
-    } catch (changeError) {
-      setError("❌ No se pudo cambiar la contraseña. Intenta nuevamente.");
-    } finally {
-      setIsSaving(false);
+      await updateDietaryPreferences(dietaryPreferences);
+      setSuccess("✓ Preferencias actualizadas correctamente");
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (prefError) {
+      setError("❌ Error guardando preferencias");
     }
   };
 
@@ -239,150 +218,53 @@ export default function ProfileSettingsScreen() {
           </Button>
         </View>
 
-        {/* === SECCIÓN SEGURIDAD === */}
-        <View className="mb-8">
+        {/* === SECCIÓN PREFERENCIAS DIETÉTICAS === */}
+        <View className="mt-8 mb-8">
           <View className="flex-row items-center gap-2 mb-2">
-            <Icon as={ShieldCheck} size="lg" color="#000000" />
+            <Icon as={Salad} size="lg" color="#000000" />
             <Text className="text-2xl font-bold text-black">
-              Seguridad
+              Preferencias Alimenticias
             </Text>
           </View>
           <Text className="text-gray-600 text-sm mb-6">
-            Cambia tu contraseña y revisa tus opciones de seguridad.
+            Selecciona tus restricciones para personalizar tu experiencia.
           </Text>
 
-          {/* Contraseña actual */}
-          <View className="mb-4">
-            <Text className="text-sm font-semibold text-gray-800 mb-2">
-              Contraseña Actual
-            </Text>
-            <Input className="bg-white border-gray-200">
-              <InputField
-                value={currentPassword}
-                onChangeText={setCurrentPassword}
-                placeholder="Ingresa tu contraseña actual"
-                placeholderTextColor="#9CA3AF"
-                className="text-black"
-                secureTextEntry={!showPassword}
-              />
-            </Input>
+          <View className="flex-row flex-wrap gap-2 mb-8">
+            {DIETARY_OPTIONS.map((option) => {
+              const isActive = dietaryPreferences.includes(option.id);
+              return (
+                <Pressable
+                  key={option.id}
+                  onPress={() => togglePreference(option.id)}
+                  className={`px-4 py-3 rounded-full border transition-all ${
+                    isActive
+                      ? "bg-green-500 border-green-600"
+                      : "bg-white border-gray-200"
+                  }`}
+                  style={{ minHeight: 44 }}
+                >
+                  <Text
+                    className={`text-sm font-medium ${
+                      isActive ? "text-white" : "text-gray-700"
+                    }`}
+                  >
+                    {option.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
           </View>
 
-          {/* Nueva contraseña */}
-          <View className="mb-4">
-            <Text className="text-sm font-semibold text-gray-800 mb-2">
-              Nueva Contraseña
-            </Text>
-            <Input className="bg-white border-gray-200">
-              <InputField
-                value={newPassword}
-                onChangeText={setNewPassword}
-                placeholder="Mínimo 8 caracteres"
-                placeholderTextColor="#9CA3AF"
-                className="text-black"
-                secureTextEntry={!showPassword}
-              />
-            </Input>
-            <Text className="text-xs text-gray-500 mt-2">
-              Usa mayúsculas, minúsculas, números y símbolos para mayor seguridad.
-            </Text>
-          </View>
-
-          {/* Confirmar contraseña */}
-          <View className="mb-6">
-            <Text className="text-sm font-semibold text-gray-800 mb-2">
-              Confirmar Contraseña
-            </Text>
-            <Input className="bg-white border-gray-200">
-              <InputField
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                placeholder="Repite tu nueva contraseña"
-                placeholderTextColor="#9CA3AF"
-                className="text-black"
-                secureTextEntry={!showPassword}
-              />
-            </Input>
-          </View>
-
-          {/* Cambiar contraseña */}
           <Button
-            onPress={handleChangePassword}
-            className="bg-black rounded-full min-h-[52px] flex-row items-center justify-center"
-            disabled={isSaving}
+            onPress={handleSavePreferences}
+            className="bg-green-600 rounded-full min-h-[52px] flex-row items-center justify-center"
+            disabled={!isSignedIn}
           >
-            <Icon as={Lock} color="#ffffff" size="md" />
-            <ButtonText className="text-white font-semibold ml-2 text-base text-center leading-5">
-              {isSaving ? "Procesando..." : "Cambiar Contraseña"}
+            <ButtonText className="text-white font-semibold text-base">
+              Guardar Preferencias
             </ButtonText>
           </Button>
-        </View>
-
-        {/* === SECCIÓN PRIVACIDAD === */}
-        <View className="mb-8">
-          <View className="flex-row items-center gap-2 mb-2">
-            <Icon as={Shield} size="lg" color="#000000" />
-            <Text className="text-2xl font-bold text-black">
-              Privacidad
-            </Text>
-          </View>
-          <Text className="text-gray-600 text-sm mb-6">
-            Controla cómo se usan tus datos.
-          </Text>
-
-          <View className="bg-gray-50 rounded-2xl p-4 border border-gray-200">
-            <View className="flex-row items-center justify-between mb-4">
-              <Text className="text-base font-semibold text-black flex-1">
-                Comunicaciones
-              </Text>
-              <Pressable className="bg-black rounded-full px-3 py-2">
-                <Text className="text-white text-xs font-semibold">
-                  Editar
-                </Text>
-              </Pressable>
-            </View>
-            <Text className="text-sm text-gray-600">
-              Recibe notificaciones sobre pedidos, promociones y actualizaciones de tu cuenta.
-            </Text>
-          </View>
-
-          <View className="bg-gray-50 rounded-2xl p-4 border border-gray-200 mt-3">
-            <View className="flex-row items-center justify-between mb-4">
-              <Text className="text-base font-semibold text-black flex-1">
-                Datos y Rastreo
-              </Text>
-              <Pressable className="bg-black rounded-full px-3 py-2">
-                <Text className="text-white text-xs font-semibold">
-                  Editar
-                </Text>
-              </Pressable>
-            </View>
-            <Text className="text-sm text-gray-600">
-              Controla el uso de cookies y rastreo de navegación.
-            </Text>
-          </View>
-        </View>
-
-        {/* === SECCIÓN DESCARGAR DATOS === */}
-        <View className="mb-8">
-          <View className="flex-row items-center gap-2 mb-2">
-            <Icon as={Download} size="lg" color="#000000" />
-            <Text className="text-2xl font-bold text-black">
-              Tus Datos
-            </Text>
-          </View>
-          <Text className="text-gray-600 text-sm mb-6">
-            Descarga una copia de tus datos personales.
-          </Text>
-
-          <Button className="bg-gray-100 rounded-full min-h-[52px] border border-gray-300 flex-row items-center justify-center">
-            <ButtonText className="text-black font-semibold text-base text-center leading-5">
-              Descargar mis datos
-            </ButtonText>
-          </Button>
-          <Text className="text-xs text-gray-500 mt-2">
-            Recibirás un archivo con toda tu información personal, pedidos e historial.
-          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>

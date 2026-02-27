@@ -37,8 +37,12 @@ export default function SearchScreen() {
     const userName = user?.firstName || user?.fullName || "Usuario";
 
     const renderItem = useCallback(
-        ({ item }: { item: Product }) => <ProductListItem product={item} />,
-        []
+        ({ item }: { item: Product }) => (
+            <View style={{ width: numColumns === 2 ? '50%' : numColumns === 3 ? '33.33%' : '25%' }}>
+                <ProductListItem product={item} />
+            </View>
+        ),
+        [numColumns]
     );
 
     const renderHeader = useMemo(() => (

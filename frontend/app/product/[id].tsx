@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Image } from '@/components/ui/image';
 import { Text } from '@/components/ui/text';
 import { useQuery } from '@tanstack/react-query';
@@ -7,7 +7,7 @@ import { View, ScrollView, Pressable, Alert } from 'react-native';
 import { useCart } from '@/store/cartStore';
 import { useRecentlyViewed } from '@/store/recentlyViewedStore';
 import { useEffect, useMemo } from 'react';
-import { ShoppingCart, RefreshCw } from 'lucide-react-native';
+import { ShoppingCart, RefreshCw, ArrowLeft } from 'lucide-react-native';
 import { formatPrice } from '@/lib/formatPrice';
 import { DietaryBadgeList } from '@/components/DietaryBadge';
 import FavoriteButton from '@/components/FavoriteButton';
@@ -65,6 +65,7 @@ function ProductDetailSkeleton() {
 export default function ProductDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
+  const router = useRouter();
   const addProduct = useCart((state) => state.addProduct);
   const cartItems = useCart((state) => state.items);
   const ctaScale = useSharedValue(1);
@@ -96,6 +97,14 @@ export default function ProductDetailsScreen() {
 
   const canAddToCart = product ? product.stock > 0 && currentInCart < product.stock : false;
 
+  const addRecentlyViewed = useRecentlyViewed((state) => state.add);
+
+  useEffect(() => {
+    if (product) {
+      addRecentlyViewed(product);
+    }
+  }, [product, addRecentlyViewed]);
+
   const addToCart = async () => {
     ctaScale.value = withTiming(0.97, { duration: 80, easing: Easing.out(Easing.ease) }, () => {
       ctaScale.value = withTiming(1, { duration: 150, easing: Easing.out(Easing.ease) });
@@ -119,10 +128,18 @@ export default function ProductDetailsScreen() {
     }
   };
 
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.push('/');
+    }
+  };
+
   if (isLoading) {
     return (
       <>
-        <Stack.Screen options={{ title: '', headerShown: true }} />
+        <Stack.Screen options={{ headerShown: false }} />
         <ProductDetailSkeleton />
       </>
     );
@@ -131,7 +148,7 @@ export default function ProductDetailsScreen() {
   if (error) {
     return (
       <>
-        <Stack.Screen options={{ title: '', headerShown: true }} />
+        <Stack.Screen options={{ headerShown: false }} />
         <View className="flex-1 items-center justify-center bg-white px-6">
           <Text className="text-red-500 text-lg mb-4">Producto no encontrado</Text>
           <Pressable
@@ -149,7 +166,16 @@ export default function ProductDetailsScreen() {
 
   return (
     <View className="flex-1 bg-white">
-      <Stack.Screen options={{ title: product.name, headerShown: true }} />
+      <Stack.Screen options={{ headerShown: false }} />
+
+      {/* Floating Back Button */}
+      <Pressable
+        onPress={handleBack}
+        className="absolute top-12 left-5 z-50 bg-white/90 p-3 rounded-full shadow-lg border border-gray-100"
+        style={{ elevation: 5 }}
+      >
+        <ArrowLeft size={24} color="black" />
+      </Pressable>
 
       <ScrollView
         className="flex-1"
