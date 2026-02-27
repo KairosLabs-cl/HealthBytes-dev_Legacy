@@ -20,6 +20,19 @@ def get_password_hash(password: str) -> str:
     return bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode("utf-8")
 
 
+# Dummy hash for timing attack mitigation (bcrypt hash of "dummy_password")
+DUMMY_PASSWORD_HASH = "$2b$12$VSqOIz9EJj/KYyG1GmblI.p4wGOpcsBE9ioEu0hYCcnsWcMFfFED."
+
+
+def verify_password_mock(plain_password: str) -> bool:
+    """
+    Perform a dummy password verification to mitigate timing attacks.
+    Accepts the actual client password so both the user-found and user-not-found
+    paths encode and hash the same input, eliminating the timing side-channel.
+    """
+    return verify_password(plain_password, DUMMY_PASSWORD_HASH)
+
+
 def create_access_token(data: dict) -> str:
     """
     Create JWT access token
