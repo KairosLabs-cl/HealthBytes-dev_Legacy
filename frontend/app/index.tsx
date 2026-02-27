@@ -90,8 +90,7 @@ export default function HomeScreen() {
       ) as DietaryTag[];
       if (validTags.length > 0) setDietaryTags(validTags);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dietaryPreferences]);
 
   const { data, isLoading, error, isFetching, refetch } = useQuery({
     queryKey: ["products", dietaryTags],
