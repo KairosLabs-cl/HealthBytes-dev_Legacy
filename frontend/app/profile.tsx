@@ -55,9 +55,6 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { signOut } = useClerk();
 
-  useEffect(() => {
-    // This just ensures the header is properly styled
-  }, []);
   const { isSignedIn, isLoaded } = useAuth();
   const { user } = useUser();
 

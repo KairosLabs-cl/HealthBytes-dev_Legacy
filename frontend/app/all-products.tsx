@@ -1,6 +1,6 @@
-import React, { useCallback, useMemo } from 'react';
-import { View, FlatList, ActivityIndicator, Pressable } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
+import { useCallback } from 'react';
+import { View, FlatList, Pressable } from 'react-native';
+import { Stack } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Text } from '@/components/ui/text';
@@ -8,15 +8,18 @@ import { useBreakpointValue } from '@/components/ui/utils/use-break-point-value'
 import { useQuery } from '@tanstack/react-query';
 import { listProducts } from '@/api/products';
 import ProductListItem from '@/components/ProductListItem';
+import ProductCardSkeleton, { useShimmerStyle } from '@/components/ProductCardSkeleton';
 import { Header } from '@/components/Header';
 import { RefreshCw, Package } from 'lucide-react-native';
+import { Product } from '@/types/product';
 
 export default function AllProductsScreen() {
-  const router = useRouter();
-  const { data: products, isLoading, error, refetch } = useQuery({
+  const { data: products, isLoading, error, refetch } = useQuery<Product[]>({
     queryKey: ['products'],
-    queryFn: listProducts,
+    queryFn: () => listProducts(),
   });
+
+  const shimmerStyle = useShimmerStyle();
 
   const numColumns = useBreakpointValue({
     default: 2,
@@ -24,7 +27,7 @@ export default function AllProductsScreen() {
     xl: 4,
   }) as number;
 
-  const renderItem = useCallback(({ item }: { item: any }) => (
+  const renderItem = useCallback(({ item }: { item: Product }) => (
     <View style={{ width: numColumns === 2 ? '50%' : numColumns === 3 ? '33.33%' : '25%' }}>
       <ProductListItem product={item} />
     </View>
@@ -47,13 +50,20 @@ export default function AllProductsScreen() {
       </View>
 
       {isLoading ? (
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#000" />
+        <View className="px-3 mt-2">
+          <View className="flex-row gap-2 mb-2">
+            <ProductCardSkeleton shimmerStyle={shimmerStyle} />
+            <ProductCardSkeleton shimmerStyle={shimmerStyle} />
+          </View>
+          <View className="flex-row gap-2">
+            <ProductCardSkeleton shimmerStyle={shimmerStyle} />
+            <ProductCardSkeleton shimmerStyle={shimmerStyle} />
+          </View>
         </View>
       ) : error ? (
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-red-500 mb-4">No se pudieron cargar los productos.</Text>
-          <Pressable onPress={() => refetch()} className="bg-black px-6 py-3 rounded-full">
+          <Pressable onPress={() => refetch()} className="bg-black px-6 py-3 rounded-full" style={{ minHeight: 44 }}>
             <RefreshCw size={20} color="white" />
           </Pressable>
         </View>
@@ -67,6 +77,9 @@ export default function AllProductsScreen() {
           contentContainerClassName="gap-2 max-w-[960px] mx-auto w-full px-3 pb-32"
           columnWrapperClassName="gap-2"
           showsVerticalScrollIndicator={false}
+          initialNumToRender={6}
+          windowSize={7}
+          maxToRenderPerBatch={6}
           ListEmptyComponent={
             <View className="items-center justify-center py-20">
               <Package size={48} color="#D1D5DB" />

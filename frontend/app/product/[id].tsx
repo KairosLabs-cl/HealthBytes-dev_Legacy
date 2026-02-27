@@ -4,6 +4,7 @@ import { Text } from '@/components/ui/text';
 import { useQuery } from '@tanstack/react-query';
 import { fetchProductById } from '@/api/products';
 import { View, ScrollView, Pressable, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCart } from '@/store/cartStore';
 import { useRecentlyViewed } from '@/store/recentlyViewedStore';
 import { useEffect, useMemo } from 'react';
@@ -84,18 +85,12 @@ export default function ProductDetailsScreen() {
     queryFn: () => fetchProductById(Number(id)),
   });
 
-  useEffect(() => {
-    if (product) {
-      useRecentlyViewed.getState().add(product);
-    }
-  }, [product]);
-
   const currentInCart = useMemo(
     () => cartItems.find(i => i.product.id === product?.id)?.quantity || 0,
     [cartItems, product?.id]
   );
 
-  const canAddToCart = product ? product.stock > 0 && currentInCart < product.stock : false;
+  const canAddToCart = product ? (product.stock ?? 0) > 0 && currentInCart < (product.stock ?? 0) : false;
 
   const addRecentlyViewed = useRecentlyViewed((state) => state.add);
 
@@ -147,9 +142,9 @@ export default function ProductDetailsScreen() {
 
   if (error) {
     return (
-      <>
+      <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
         <Stack.Screen options={{ headerShown: false }} />
-        <View className="flex-1 items-center justify-center bg-white px-6">
+        <View className="flex-1 items-center justify-center px-6">
           <Text className="text-red-500 text-lg mb-4">Producto no encontrado</Text>
           <Pressable
             onPress={() => refetch()}
@@ -160,7 +155,7 @@ export default function ProductDetailsScreen() {
             <Text className="text-white font-bold">Reintentar</Text>
           </Pressable>
         </View>
-      </>
+      </SafeAreaView>
     );
   }
 

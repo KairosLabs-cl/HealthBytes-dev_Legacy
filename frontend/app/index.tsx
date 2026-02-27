@@ -10,8 +10,7 @@ import RecentlyViewedBar from "@/components/RecentlyViewedBar";
 import { Header } from "@/components/Header";
 import { Stack, useRouter } from "expo-router";
 import { RefreshCw } from "lucide-react-native";
-
-import { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 import { useProductFilters, DietaryTag } from "@/store/productFiltersStore";
 import { usePreferencesStore } from "@/store/preferencesStore";
@@ -27,6 +26,23 @@ import Animated, {
   Easing,
 } from "react-native-reanimated";
 
+// ─── Constants ───────────────────────────────────────────────────────────────
+
+const DIET_FILTERS = [
+  { label: "Celiacos", tag: "sin-gluten" },
+  { label: "Veganos", tag: "vegano" },
+  { label: "Sin lactosa", tag: "sin-lactosa" },
+  { label: "Bajo en azucar", tag: "bajo-en-azucar" },
+] as const;
+
+const VALID_DIETARY_TAGS = new Set<string>([
+  'sin-gluten', 'vegano', 'sin-lactosa', 'bajo-en-azucar', 'alto-en-proteina', 'para-diabeticos',
+]);
+
+const keyExtractor = (item: Product) => item.id.toString();
+
+// ─── AnimatedFilterChip ───────────────────────────────────────────────────────
+
 function AnimatedFilterChip({
   label,
   isActive,
@@ -37,7 +53,6 @@ function AnimatedFilterChip({
   onPress: () => void;
 }) {
   const scale = useSharedValue(1);
-
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
@@ -64,24 +79,134 @@ function AnimatedFilterChip({
   );
 }
 
-const DIET_FILTERS = [
-  { label: "Celiacos", tag: "sin-gluten" },
-  { label: "Veganos", tag: "vegano" },
-  { label: "Sin lactosa", tag: "sin-lactosa" },
-  { label: "Bajo en azucar", tag: "bajo-en-azucar" },
-] as const;
+// ─── DietaryFilters ───────────────────────────────────────────────────────────
+// Isolated: only re-renders when active filters change, not on data refetch
 
-const keyExtractor = (item: Product) => item.id.toString();
+interface DietaryFiltersProps {
+  dietaryTags: DietaryTag[];
+  toggleDietaryTag: (tag: DietaryTag) => void;
+}
 
-const VALID_DIETARY_TAGS = new Set<string>([
-  'sin-gluten', 'vegano', 'sin-lactosa', 'bajo-en-azucar', 'alto-en-proteina', 'para-diabeticos',
-]);
+const DietaryFilters = React.memo(({ dietaryTags, toggleDietaryTag }: DietaryFiltersProps) => (
+  <View className="px-4 pb-3 bg-white">
+    <View className="flex-row flex-wrap gap-2 mt-2">
+      {DIET_FILTERS.map(({ label, tag }) => (
+        <AnimatedFilterChip
+          key={label}
+          label={label}
+          isActive={dietaryTags.includes(tag)}
+          onPress={() => toggleDietaryTag(tag)}
+        />
+      ))}
+    </View>
+  </View>
+));
+DietaryFilters.displayName = "DietaryFilters";
+
+// ─── HeroBanner ───────────────────────────────────────────────────────────────
+// Isolated: only re-renders when heroProduct changes
+
+interface HeroBannerProps {
+  heroProduct: Product | undefined;
+  onViewAll: () => void;
+}
+
+const HeroBanner = React.memo(({ heroProduct, onViewAll }: HeroBannerProps) => (
+  <View className="px-4 mt-2">
+    <View className="rounded-3xl bg-black flex-row items-center px-5 py-5 overflow-hidden">
+      <View className="flex-1 pr-3">
+        <Text className="text-[11px] uppercase text-gray-300 tracking-[1px]">
+          Especial para ti
+        </Text>
+        <Text className="text-2xl font-extrabold text-white mt-1">
+          Descubre snacks sin gluten
+        </Text>
+        <Text className="text-sm text-gray-200 mt-2">Hasta 30% de descuento hoy</Text>
+        <Pressable
+          onPress={onViewAll}
+          className="mt-3 self-start bg-white rounded-full px-5 py-3"
+          style={{ minHeight: 44 }}
+        >
+          <Text className="font-semibold text-black">Ver coleccion</Text>
+        </Pressable>
+      </View>
+      <View className="w-28 h-28 rounded-2xl bg-white/10 border border-white/10 items-center justify-center">
+        {heroProduct ? (
+          <Image
+            source={{ uri: heroProduct.image }}
+            className="w-full h-full"
+            resizeMode="contain"
+          />
+        ) : (
+          <Text className="text-white text-sm">Snacks</Text>
+        )}
+      </View>
+    </View>
+  </View>
+));
+HeroBanner.displayName = "HeroBanner";
+
+// ─── HomeListHeader ───────────────────────────────────────────────────────────
+// Composes all header sections. Each inner memo component independently
+// skips re-renders when its specific props haven't changed.
+
+interface HomeListHeaderProps {
+  userName: string;
+  dietaryTags: DietaryTag[];
+  toggleDietaryTag: (tag: DietaryTag) => void;
+  heroProduct: Product | undefined;
+  recentlyViewedItems: Product[];
+  favoriteProducts: Product[];
+  onViewAll: () => void;
+  onSeeAllRecent: () => void;
+  onSeeAllFavorites: () => void;
+}
+
+const HomeListHeader = React.memo(({
+  userName,
+  dietaryTags,
+  toggleDietaryTag,
+  heroProduct,
+  recentlyViewedItems,
+  favoriteProducts,
+  onViewAll,
+  onSeeAllRecent,
+  onSeeAllFavorites,
+}: HomeListHeaderProps) => (
+  <>
+    <Header userName={userName} />
+    <DietaryFilters dietaryTags={dietaryTags} toggleDietaryTag={toggleDietaryTag} />
+    <HeroBanner heroProduct={heroProduct} onViewAll={onViewAll} />
+
+    {/* Only render when there is content — clean on first use */}
+    {recentlyViewedItems.length > 0 && (
+      <RecentlyViewedBar items={recentlyViewedItems} onSeeAll={onSeeAllRecent} />
+    )}
+    {favoriteProducts.length > 0 && (
+      <FavoritesBar products={favoriteProducts} onSeeAll={onSeeAllFavorites} />
+    )}
+
+    <View className="px-4 flex-row items-center justify-between mt-2 mb-1">
+      <Text className="text-lg font-bold text-gray-900">
+        {dietaryTags.length > 0 ? "Productos filtrados" : "Todos los productos"}
+      </Text>
+      <Pressable onPress={onViewAll} style={{ minHeight: 44, justifyContent: 'center' }}>
+        <Text className="text-sm font-semibold text-green-600">Ver mas</Text>
+      </Pressable>
+    </View>
+  </>
+));
+HomeListHeader.displayName = "HomeListHeader";
+
+// ─── HomeScreen ───────────────────────────────────────────────────────────────
 
 export default function HomeScreen() {
   const { items: recentlyViewedItems } = useRecentlyViewed();
   const { dietaryTags, toggleDietaryTag, setDietaryTags, clearFilters } = useProductFilters();
   const { user } = useUser();
   const { dietaryPreferences } = usePreferencesStore();
+  const { favoriteIds } = useFavoritesStore();
+  const router = useRouter();
 
   // Pre-apply saved dietary preferences as initial filters on first mount
   useEffect(() => {
@@ -108,14 +233,18 @@ export default function HomeScreen() {
   }) as number;
 
   const heroProduct = useMemo(() => data?.[0], [data]);
-  const { favoriteIds } = useFavoritesStore();
 
   const favoriteProducts = useMemo(() => {
     if (!data) return [];
     return data.filter((p: Product) => favoriteIds.has(Number(p.id)));
   }, [data, favoriteIds]);
 
-  const router = useRouter();
+  const userName = user?.firstName || user?.fullName || "Usuario";
+
+  // Stable navigation callbacks — router ref is stable across renders
+  const onViewAll = useCallback(() => router.push('/all-products'), [router]);
+  const onSeeAllRecent = useCallback(() => router.push('/recently-viewed'), [router]);
+  const onSeeAllFavorites = useCallback(() => router.push('/wishlist'), [router]);
 
   const renderItem = useCallback(
     ({ item }: { item: Product }) => (
@@ -126,77 +255,21 @@ export default function HomeScreen() {
     [numColumns]
   );
 
-  const renderHeader = useMemo(() => (
-    <>
-      {/* Header + busqueda */}
-      <Header userName={user?.firstName || user?.fullName || "Usuario"} />
+  // Memoized header element — inner memo components skip re-renders independently
+  const listHeader = useMemo(() => (
+    <HomeListHeader
+      userName={userName}
+      dietaryTags={dietaryTags}
+      toggleDietaryTag={toggleDietaryTag}
+      heroProduct={heroProduct}
+      recentlyViewedItems={recentlyViewedItems}
+      favoriteProducts={favoriteProducts}
+      onViewAll={onViewAll}
+      onSeeAllRecent={onSeeAllRecent}
+      onSeeAllFavorites={onSeeAllFavorites}
+    />
+  ), [userName, dietaryTags, toggleDietaryTag, heroProduct, recentlyViewedItems, favoriteProducts, onViewAll, onSeeAllRecent, onSeeAllFavorites]);
 
-      {/* Chips de dietas */}
-      <View className="px-4 pb-1 bg-white">
-        <View className="flex-row flex-wrap gap-2 mt-2">
-          {DIET_FILTERS.map(({ label, tag }) => (
-            <AnimatedFilterChip
-              key={label}
-              label={label}
-              isActive={dietaryTags.includes(tag)}
-              onPress={() => toggleDietaryTag(tag)}
-            />
-          ))}
-        </View>
-      </View>
-
-      {/* Banner principal */}
-      <View className="px-4 mt-2">
-        <View className="rounded-3xl bg-black flex-row items-center px-5 py-5 overflow-hidden">
-          <View className="flex-1 pr-3">
-            <Text className="text-[11px] uppercase text-gray-300 tracking-[1px]">
-              Especial para ti
-            </Text>
-            <Text className="text-2xl font-extrabold text-white mt-1">
-              Descubre snacks sin gluten
-            </Text>
-            <Text className="text-sm text-gray-200 mt-2">Hasta 30% de descuento hoy</Text>
-            <Pressable
-              className="mt-3 self-start bg-white rounded-full px-5 py-3"
-              style={{ minHeight: 44 }}
-            >
-              <Text className="font-semibold text-black">Ver coleccion</Text>
-            </Pressable>
-          </View>
-
-          <View className="w-28 h-28 rounded-2xl bg-white/10 border border-white/10 items-center justify-center">
-            {heroProduct ? (
-              <Image
-                source={{ uri: heroProduct.image }}
-                className="w-full h-full"
-                resizeMode="contain"
-              />
-            ) : (
-              <Text className="text-white text-sm">Snacks</Text>
-            )}
-          </View>
-        </View>
-      </View>
-
-      {/* Secciones horizontales */}
-      <RecentlyViewedBar items={recentlyViewedItems} onSeeAll={() => router.push('/recently-viewed')} />
-      <FavoritesBar products={favoriteProducts} onSeeAll={() => router.push('/wishlist')} />
-
-      {/* Products section header */}
-      <View className="px-4 flex-row items-center justify-between mt-2 mb-1">
-        <Text className="text-lg font-bold text-gray-900">
-          {dietaryTags.length > 0
-            ? `🛒 Productos filtrados`
-            : `🛒 Todos los productos`}
-        </Text>
-        <Pressable onPress={() => router.push('/all-products')}>
-          <Text className="text-sm font-semibold text-green-600">Ver mas</Text>
-        </Pressable>
-      </View>
-    </>
-  ), [user, dietaryTags, toggleDietaryTag, heroProduct, data, recentlyViewedItems, favoriteProducts, router]);
-
-  // Solo muestra loading completo en primera carga
   if (isLoading && !data) {
     return (
       <>
@@ -230,7 +303,6 @@ export default function HomeScreen() {
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
 
-      {/* Refetching indicator */}
       {isFetching && data && (
         <View className="absolute top-16 left-0 right-0 items-center z-10">
           <View className="bg-white/90 rounded-full px-4 py-2 shadow-md">
@@ -242,7 +314,7 @@ export default function HomeScreen() {
       <FlatList
         className="flex-1 bg-gray-50"
         showsVerticalScrollIndicator={false}
-        ListHeaderComponent={renderHeader}
+        ListHeaderComponent={listHeader}
         ListEmptyComponent={
           <View className="flex-1 items-center justify-center p-8">
             {dietaryTags.length > 0 ? (

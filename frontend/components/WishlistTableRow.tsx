@@ -1,10 +1,8 @@
 import React from "react";
-import { View, Pressable, Alert } from "react-native";
+import { View, Pressable, Platform } from "react-native";
 import { Image } from "@/components/ui/image";
 import { Text } from "@/components/ui/text";
-import { Icon } from "@/components/ui/icon";
-import { Button, ButtonText } from "@/components/ui/button";
-import { ShoppingCart, X, ChevronRight } from "lucide-react-native";
+import { ShoppingCart, X } from "lucide-react-native";
 import { formatPrice } from "@/lib/formatPrice";
 import { useRouter } from "expo-router";
 import { useCart } from "@/store/cartStore";
@@ -21,51 +19,52 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
   const addProduct = useCart((state) => state.addProduct);
   const { getToken } = useAuth();
   const { toggleFavorite } = useFavoritesStore();
+  const isOutOfStock = (product.stock ?? 1) === 0;
 
   const handleRemove = async () => {
     const token = await getToken();
-    if (!token) {
-      Alert.alert("Inicia sesión", "Necesitas iniciar sesión para modificar tus favoritos.");
-      return;
-    }
+    if (!token) return;
     await toggleFavorite(Number(product.id), token);
+  };
+
+  const handleAddToCart = () => {
+    if (isOutOfStock) return;
+    addProduct(product);
   };
 
   return (
     <View
       style={{
-        flexDirection: "row",
-        paddingVertical: 12,
-        paddingHorizontal: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: "#F3F4F6",
         backgroundColor: "white",
+        borderRadius: 16,
+        marginHorizontal: 16,
+        marginBottom: 10,
+        flexDirection: "row",
         alignItems: "center",
+        padding: 12,
+        ...Platform.select({
+          ios: {
+            shadowColor: "#000",
+            shadowOpacity: 0.05,
+            shadowRadius: 8,
+            shadowOffset: { width: 0, height: 2 },
+          },
+          android: { elevation: 2 },
+          web: { boxShadow: "0 2px 8px rgba(0,0,0,0.05)" },
+        }),
       }}
     >
-      {/* Remove Button */}
-      <Pressable
-        onPress={handleRemove}
-        style={{
-          width: 32,
-          height: 32,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <X size={18} color="#9CA3AF" />
-      </Pressable>
-
-      {/* Image */}
+      {/* Product image — tappable to detail */}
       <Pressable
         onPress={() => router.push(`/product/${product.id}`)}
         style={{
           width: 80,
           height: 80,
-          borderRadius: 8,
+          borderRadius: 12,
           backgroundColor: "#F9FAFB",
           overflow: "hidden",
-          marginRight: 20,
+          flexShrink: 0,
+          opacity: isOutOfStock ? 0.5 : 1,
         }}
       >
         <Image
@@ -76,81 +75,74 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
         />
       </Pressable>
 
-      {/* Name and Basic Info */}
-      <View style={{ flex: 3, paddingRight: 10 }}>
+      {/* Info + actions */}
+      <View style={{ flex: 1, paddingHorizontal: 12 }}>
         <Pressable onPress={() => router.push(`/product/${product.id}`)}>
           <Text
-            style={{
-              fontSize: 14,
-              fontWeight: "700",
-              color: "#111827",
-              marginBottom: 4,
-            }}
             numberOfLines={2}
+            style={{ fontSize: 13, fontWeight: "700", color: "#111827", marginBottom: 4, lineHeight: 18 }}
           >
             {product.name}
           </Text>
         </Pressable>
-      </View>
 
-      {/* Price */}
-      <View style={{ flex: 1.5 }}>
-        <Text style={{ fontSize: 14, fontWeight: "700", color: "#111827" }}>
+        <Text style={{ fontSize: 16, fontWeight: "800", color: "#111827", marginBottom: 8 }}>
           {formatPrice(product.price)}
         </Text>
-      </View>
 
-      {/* Stock Status */}
-      <View style={{ flex: 1.5 }}>
+        {/* Stock badge */}
         <View
           style={{
-            backgroundColor: product.stock > 0 ? "#ECFDF5" : "#FEF2F2",
-            paddingHorizontal: 8,
-            paddingVertical: 4,
-            borderRadius: 4,
             alignSelf: "flex-start",
+            backgroundColor: isOutOfStock ? "#FEF2F2" : "#ECFDF5",
+            paddingHorizontal: 8,
+            paddingVertical: 3,
+            borderRadius: 6,
+            marginBottom: 8,
           }}
         >
-          <Text
-            style={{
-              fontSize: 10,
-              fontWeight: "600",
-              color: product.stock > 0 ? "#059669" : "#DC2626",
-            }}
-          >
-            {product.stock > 0 ? "Disponible" : "Agotado"}
+          <Text style={{ fontSize: 10, fontWeight: "600", color: isOutOfStock ? "#DC2626" : "#059669" }}>
+            {isOutOfStock ? "Agotado" : "Disponible"}
           </Text>
         </View>
-      </View>
 
-      {/* Add to Cart Button */}
-      <View style={{ minWidth: 100 }}>
-        <Button
-          size="sm"
-          variant="outline"
-          className="rounded-full border-black h-10"
-          onPress={() => {
-            addProduct(product);
-            Alert.alert("Éxito", "Producto añadido al carrito");
+        {/* Add to cart */}
+        <Pressable
+          onPress={handleAddToCart}
+          disabled={isOutOfStock}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: isOutOfStock ? "#E5E7EB" : "#000000",
+            borderRadius: 10,
+            paddingVertical: 8,
+            minHeight: 36,
           }}
-          disabled={product.stock === 0}
         >
-          <Icon as={ShoppingCart} size="sm" color="black" className="mr-2" />
-          <ButtonText className="text-black text-xs font-bold">
-            Añadir
-          </ButtonText>
-        </Button>
+          <ShoppingCart size={12} color={isOutOfStock ? "#9CA3AF" : "white"} />
+          <Text style={{ fontSize: 11, fontWeight: "700", color: isOutOfStock ? "#9CA3AF" : "white", marginLeft: 5 }}>
+            Agregar al carrito
+          </Text>
+        </Pressable>
       </View>
 
-      {/* Right Arrow (mobile hint) */}
+      {/* Remove — 44pt touch target */}
       <Pressable
-        onPress={() => router.push(`/product/${product.id}`)}
-        style={{ paddingLeft: 10 }}
+        onPress={handleRemove}
+        hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
+        style={{
+          width: 44,
+          height: 44,
+          alignItems: "center",
+          justifyContent: "center",
+          alignSelf: "flex-start",
+        }}
       >
-        <ChevronRight size={20} color="#D1D5DB" />
+        <X size={18} color="#9CA3AF" />
       </Pressable>
     </View>
   );
 };
 
-export default WishlistTableRow;
+export default React.memo(WishlistTableRow);
