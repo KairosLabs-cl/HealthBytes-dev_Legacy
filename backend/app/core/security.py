@@ -30,16 +30,16 @@ def get_password_hash(password: str) -> str:
 DUMMY_HASH = "$2b$12$2CWJp6XnIbqgSd62XLhcJeOehPZYLNMnjl5iPlJTYIA6yiZZ5n5.W"
 
 
-def verify_password_mock(password: str) -> bool:
-    """
-    Simulate password verification for timing attack mitigation.
-    Uses a dummy hash to ensure the operation takes the same amount of time
-    as a real verification.
+def verify_password_mock(plain_password: str) -> bool:
     """
     Simulate password verification to prevent user enumeration via timing attacks.
 
+    Called when a login attempt is made with an email that does not exist in the DB.
+    Runs a full bcrypt comparison against DUMMY_HASH so the response time is comparable
+    to a real verification, making it impossible for attackers to distinguish
+    "email not found" from "wrong password" by measuring latency.
 
-    Always returns False — the result must never be trusted.
+    Always returns False - the result must never be trusted.
     """
     verify_password(plain_password, DUMMY_HASH)
     return False

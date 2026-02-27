@@ -81,9 +81,7 @@ def test_api_login_timing(client):
 
     # Measure: Valid User (Wrong Password)
     start = time.perf_counter()
-    valid_user_response = client.post(
-        "/auth/login", json={"email": email, "password": "wrong_password"}
-    )
+    valid_user_response = client.post("/auth/login", json={"email": email, "password": "wrong_password"})
     valid_user_time = time.perf_counter() - start
 
     # Measure: Invalid User
