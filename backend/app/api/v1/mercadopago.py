@@ -97,9 +97,6 @@ async def mercadopago_webhook(
     """
     mp_service = MercadoPagoService(settings)
 
-    if x_request_id:
-        logger.info("MP webhook request_id=%s", x_request_id)
-
     try:
         data = await request.json()
 
@@ -116,6 +113,7 @@ async def mercadopago_webhook(
                 payment_id=str(payment_id),
                 topic="payment",
                 webhook_signature=x_signature,
+                request_id=x_request_id,
             )
 
             return {"status": "ok", "result": result}

@@ -7,7 +7,7 @@ import { Text } from "@/components/ui/text";
 import { Icon } from "@/components/ui/icon";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Input, InputField } from "@/components/ui/input";
-import { useUser, useAuth } from "@clerk/clerk-expo";
+import { useUser } from "@clerk/clerk-expo";
 import { useEffect, useMemo, useState } from "react";
 import {
   User,
@@ -15,62 +15,17 @@ import {
   Shield,
   Download,
   Lock,
-  Salad,
 } from "lucide-react-native";
-import { usePreferencesStore } from "@/store/preferencesStore";
-import { updateDietaryPreferences } from "@/api/preferences";
 
-const DIETARY_OPTIONS = [
-  { slug: "sin-gluten", label: "Sin Gluten", emoji: "🌾" },
-  { slug: "vegano", label: "Vegano", emoji: "🌱" },
-  { slug: "sin-lactosa", label: "Sin Lactosa", emoji: "🥛" },
-  { slug: "bajo-en-azucar", label: "Bajo en azúcar", emoji: "🍬" },
-  { slug: "alto-en-proteina", label: "Alto en proteína", emoji: "💪" },
-  { slug: "para-diabeticos", label: "Para diabéticos", emoji: "🩺" },
-] as const;
 
 export default function ProfileSettingsScreen() {
   const { user, isLoaded } = useUser();
-  const { getToken } = useAuth();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // Dietary preferences state
-  const { dietaryPreferences, setDietaryPreferences } = usePreferencesStore();
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [isSavingPrefs, setIsSavingPrefs] = useState(false);
-  const [prefsSuccess, setPrefsSuccess] = useState<string | null>(null);
-
-  useEffect(() => {
-    setSelectedTags(dietaryPreferences);
-  }, [dietaryPreferences]);
-
-  const toggleTag = (slug: string) => {
-    setSelectedTags((prev) =>
-      prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]
-    );
-  };
-
-  const handleSavePreferences = async () => {
-    setIsSavingPrefs(true);
-    setPrefsSuccess(null);
-    try {
-      const token = await getToken();
-      if (token) {
-        await updateDietaryPreferences(selectedTags, token);
-      }
-      setDietaryPreferences(selectedTags);
-      setPrefsSuccess("✓ Preferencias guardadas");
-      setTimeout(() => setPrefsSuccess(null), 3000);
-    } catch {
-      setError("❌ No se pudieron guardar las preferencias. Intenta nuevamente.");
-    } finally {
-      setIsSavingPrefs(false);
-    }
-  };
   const [showPassword, setShowPassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -280,62 +235,6 @@ export default function ProfileSettingsScreen() {
           >
             <ButtonText className="text-white font-semibold text-base text-center leading-5">
               {isSaving ? "Guardando..." : "Guardar Cambios"}
-            </ButtonText>
-          </Button>
-        </View>
-
-        {/* === SECCIÓN PREFERENCIAS DIETARIAS === */}
-        <View className="mb-8">
-          <View className="flex-row items-center gap-2 mb-2">
-            <Icon as={Salad} size="lg" color="#000000" />
-            <Text className="text-2xl font-bold text-black">
-              Restricciones dietarias
-            </Text>
-          </View>
-          <Text className="text-gray-600 text-sm mb-6">
-            Selecciona tus restricciones para filtrar automáticamente los productos.
-          </Text>
-
-          <View className="flex-row flex-wrap gap-3 mb-4">
-            {DIETARY_OPTIONS.map(({ slug, label, emoji }) => {
-              const isActive = selectedTags.includes(slug);
-              return (
-                <Pressable
-                  key={slug}
-                  onPress={() => toggleTag(slug)}
-                  style={{ minHeight: 44 }}
-                  className={`flex-row items-center gap-2 px-4 py-3 rounded-full border-2 ${
-                    isActive
-                      ? "bg-green-50 border-green-500"
-                      : "bg-gray-50 border-gray-200"
-                  }`}
-                >
-                  <Text className="text-base">{emoji}</Text>
-                  <Text
-                    className={`text-sm font-semibold ${
-                      isActive ? "text-green-700" : "text-gray-700"
-                    }`}
-                  >
-                    {label}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-
-          {prefsSuccess && (
-            <View className="bg-green-50 border border-green-300 rounded-lg p-3 mb-4">
-              <Text className="text-green-700 text-sm">{prefsSuccess}</Text>
-            </View>
-          )}
-
-          <Button
-            onPress={handleSavePreferences}
-            className="bg-black rounded-full min-h-[52px] flex-row items-center justify-center"
-            disabled={isSavingPrefs}
-          >
-            <ButtonText className="text-white font-semibold text-base text-center leading-5">
-              {isSavingPrefs ? "Guardando..." : "Guardar preferencias"}
             </ButtonText>
           </Button>
         </View>
