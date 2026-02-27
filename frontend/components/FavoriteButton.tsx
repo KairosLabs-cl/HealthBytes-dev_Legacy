@@ -57,7 +57,11 @@ export default function FavoriteButton({
 
     return (
         <Pressable
-            onPress={handlePress}
+            onPress={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handlePress();
+            }}
             style={{
                 padding: 10,
                 borderRadius: 999,
