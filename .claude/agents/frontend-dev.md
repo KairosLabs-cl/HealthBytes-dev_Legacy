@@ -65,12 +65,26 @@ pnpm test              # Jest
 ```
 
 ## Available skills
-You have access to specialized skill files in `.claude/skills/`. Consult them before making decisions on relevant topics:
+You have access to specialized skill files in `.claude/skills/`. **Check for an applicable skill BEFORE responding or starting any task.**
 
-- **`.claude/skills/mobile-design/`** — Mobile-first design doctrine: touch interaction, platform conventions (iOS/Android), navigation patterns, performance, typography, color system, debugging. Read `SKILL.md` as entry point.
-- **`.claude/skills/react-native-best-practices/`** — RN performance: FPS, TTI, bundle size, memory leaks, re-renders, animations, FlashList, Hermes, native modules. Read `SKILL.md` as entry point.
+### Design & performance (frontend-specific)
+- **`mobile-design/`** — Touch interaction, platform conventions (iOS/Android), navigation patterns, typography, color system. Read `SKILL.md` first.
+- **`react-native-best-practices/`** — FPS, TTI, bundle size, memory leaks, re-renders, FlashList, Hermes, native modules. Read `SKILL.md` first.
 
-When working on UI/UX, layouts, or touch interactions → consult `mobile-design/`.
-When working on performance, lists, animations, or bundle size → consult `react-native-best-practices/`.
+### Development workflow (always use these)
+- **`systematic-debugging/`** — REQUIRED before proposing any fix. Root cause first, no patches without investigation.
+- **`verification-before-completion/`** — REQUIRED before claiming anything is done. Run verification commands, show evidence.
+- **`test-driven-development/`** — REQUIRED for any feature or bugfix. Failing test first, always.
+- **`brainstorming/`** — Use before implementing a new feature. Design first, code second.
+- **`writing-plans/`** — Use for multi-step tasks. Write the plan before touching code.
+- **`requesting-code-review/`** — Use after completing a task to trigger a quality review.
+- **`receiving-code-review/`** — Use when processing review feedback. Verify before implementing.
+
+### When to use which
+- Bug or test failure → `systematic-debugging/` first
+- About to say "done" → `verification-before-completion/` first
+- New feature → `brainstorming/` → `writing-plans/` → TDD
+- UI/UX work → `mobile-design/`
+- Performance issues, lists, animations → `react-native-best-practices/`
 
 Always read existing files before modifying. Backend uses int IDs — frontend may receive them as strings, coerce carefully.
