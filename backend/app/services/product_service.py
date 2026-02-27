@@ -3,11 +3,11 @@
 import logging
 from typing import List, Optional
 
-from sqlalchemy import desc, func, select, text
+from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.db.schemas import Product
+from app.db.schemas import DietaryTag, Product
 from app.schemas.product import ProductCreate, ProductUpdate
 
 logger = logging.getLogger(__name__)
@@ -37,11 +37,11 @@ async def list_products(
     if category:
         query = query.where(Product.category == category)
 
-    # Apply dietary tags filter using raw SQL with ANY operator
+    # Apply dietary tags filter using ANY operator on the relationship
+    # This generates an EXISTS clause for the many-to-many relationship
     if dietary_tags:
         for tag in dietary_tags:
-            # Use raw SQL to avoid type casting issues
-            query = query.where(text(":tag = ANY(products.dietary_tags)").bindparams(tag=tag))
+            query = query.where(Product.dietary_tags.any(DietaryTag.name == tag))
 
     # Apply price range filters
     if min_price is not None:
