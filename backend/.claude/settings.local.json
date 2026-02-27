@@ -28,7 +28,11 @@
       "Bash(.venv/Scripts/black:*)",
       "Bash(.venv/Scripts/isort:*)",
       "Bash(pnpm lint:*)",
-      "Bash(pnpm install:*)"
+      "Bash(pnpm install:*)",
+      "Bash(git -C /c/Users/benja/Proyects/Code/Work/healthbytes/HealthBytes-dev log --oneline -10)",
+      "Bash(.venv/Scripts/pytest tests/ -q --tb=no --no-header -W always)",
+      "Bash(.venv/Scripts/pytest tests/ -q --tb=no --no-header)",
+      "Bash(.venv/Scripts/pytest tests/test_services/test_mercadopago_service.py -v)"
     ]
   }
 }

@@ -400,7 +400,7 @@ async def test_refund_payment_success(mp_service, mock_db, test_payment, test_or
 
 
 def test_validate_x_signature_valid(mp_service):
-    """Test valid x-signature validation"""
+    """Test valid x-signature without request-id"""
     data_id = "12345"
     ts = "1707849600"
 
@@ -410,6 +410,38 @@ def test_validate_x_signature_valid(mp_service):
     x_signature = f"ts={ts},v1={v1}"
 
     assert mp_service._validate_x_signature(x_signature, data_id) is True
+
+
+def test_validate_x_signature_valid_with_request_id(mp_service):
+    """Test valid x-signature with request-id included in manifest"""
+    data_id = "12345"
+    ts = "1707849600"
+    request_id = "req-abc-123"
+
+    manifest = f"id:{data_id};request-id:{request_id};ts:{ts};"
+    v1 = hmac.new(mp_service.webhook_secret.encode(), manifest.encode(), hashlib.sha256).hexdigest()
+
+    x_signature = f"ts={ts},v1={v1}"
+
+    assert mp_service._validate_x_signature(x_signature, data_id, request_id) is True
+
+
+def test_validate_x_signature_request_id_mismatch(mp_service):
+    """Test that signature built without request-id fails when request-id is present"""
+    data_id = "12345"
+    ts = "1707849600"
+    request_id = "req-abc-123"
+
+    # Build manifest WITHOUT request-id (old behaviour)
+    manifest_no_rid = f"id:{data_id};ts:{ts};"
+    v1 = hmac.new(
+        mp_service.webhook_secret.encode(), manifest_no_rid.encode(), hashlib.sha256
+    ).hexdigest()
+
+    x_signature = f"ts={ts},v1={v1}"
+
+    # Validating WITH request_id should fail — manifest strings differ
+    assert mp_service._validate_x_signature(x_signature, data_id, request_id) is False
 
 
 def test_validate_x_signature_invalid(mp_service):
