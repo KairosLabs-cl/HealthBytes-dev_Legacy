@@ -16,7 +16,7 @@ class UserLogin(BaseModel):
     """Schema for user login - Replica of loginSchema"""
 
     email: EmailStr
-    password: str
+    password: str = Field(..., min_length=1, max_length=128)
 
 
 class UserUpdate(BaseModel):
