@@ -130,11 +130,11 @@ function setupAuth(isSignedIn = true) {
 }
 
 function setupStores(overrides?: { addresses?: any[]; defaultAddress?: any }) {
-  (useCart as jest.Mock).mockReturnValue({
+  (useCart as unknown as jest.Mock).mockReturnValue({
     items: mockCartItems,
     resetCart: mockResetCart,
   });
-  (useAddress as jest.Mock).mockReturnValue({
+  (useAddress as unknown as jest.Mock).mockReturnValue({
     addresses: overrides?.addresses ?? [mockAddress],
     defaultAddress:
       overrides?.defaultAddress !== undefined ? overrides.defaultAddress : mockAddress,
