@@ -142,6 +142,3 @@ jobs:
 
       - name: Build backend image
         run: docker build -t healthbytes-backend ./backend
-
-      - name: Build frontend image
-        run: docker build -t healthbytes-frontend ./frontend
