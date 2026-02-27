@@ -105,8 +105,13 @@ async def create_order(db: AsyncSession, user_id: int, order_in: OrderCreate) ->
     await db.commit()
 
     # Fetch order with items in a single efficient query
+    # Eager load user and products to avoid subsequent queries in email service
     result = await db.execute(
-        select(Order).where(Order.id == new_order.id).options(selectinload(Order.items))
+        select(Order)
+        .where(Order.id == new_order.id)
+        .options(
+            selectinload(Order.items).selectinload(OrderItem.product), selectinload(Order.user)
+        )
     )
     created_order = result.scalar_one()
 
@@ -116,7 +121,8 @@ async def create_order(db: AsyncSession, user_id: int, order_in: OrderCreate) ->
         from app.services.email_service import EmailService, build_order_email_data
 
         email_svc = EmailService(settings)
-        email_data = await build_order_email_data(db, created_order.id)
+        # Pass the fully loaded order object to avoid re-fetching data
+        email_data = await build_order_email_data(db, created_order)
         if email_data:
             await email_svc.send_order_confirmation(email_data)
     except Exception:

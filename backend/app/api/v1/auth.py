@@ -80,12 +80,7 @@ async def login(request: Request, credentials: UserLogin, db: AsyncSession = Dep
         user = result.scalar_one_or_none()
 
         if not user:
-<<<<<<< fix/auth-timing-attack-15259610013706666787
             # Prevent timing attacks by simulating password verification
-=======
-            # Run dummy verification to prevent timing attacks (User Enumeration)
-            # Pass the client password so both paths encode/hash the same input.
->>>>>>> master
             verify_password_mock(credentials.password)
             raise HTTPException(status_code=401, detail={"error": "Authentication failed"})
 

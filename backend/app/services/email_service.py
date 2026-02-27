@@ -8,7 +8,7 @@ In dev mode (no RESEND_API_KEY), logs instead of sending.
 import logging
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import resend
 from sqlalchemy import select
@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.config import Settings
+from app.db.schemas import Order, OrderItem
 
 logger = logging.getLogger(__name__)
 
@@ -266,45 +267,72 @@ class EmailService:
         )
 
 
-async def build_order_email_data(db: AsyncSession, order_id: int) -> Optional[OrderEmailData]:
+async def build_order_email_data(
+    db: AsyncSession, order_source: Union[int, Order]
+) -> Optional[OrderEmailData]:
     """
     Build OrderEmailData from database for a given order.
     Fetches order with items + user in minimal queries.
     Returns None if order or user not found.
-    """
-    from app.db.schemas import Order, Product, User
 
-    # Fetch order with items
-    result = await db.execute(
-        select(Order).where(Order.id == order_id).options(selectinload(Order.items))
-    )
-    order = result.scalar_one_or_none()
+    Args:
+        db: Database session
+        order_source: Either an Order object (pre-loaded) or an order ID (int)
+
+    Returns:
+        OrderEmailData or None if not found
+    """
+    if isinstance(order_source, int):
+        # Fetch order with items and user and products
+        result = await db.execute(
+            select(Order)
+            .where(Order.id == order_source)
+            .options(
+                selectinload(Order.items).selectinload(OrderItem.product),
+                selectinload(Order.user),
+            )
+        )
+        order = result.scalar_one_or_none()
+    else:
+        order = order_source
+
     if not order:
         return None
 
-    # Fetch user
-    result = await db.execute(select(User).where(User.id == order.user_id))
-    user = result.scalar_one_or_none()
+    # User should be eager loaded or available via relationship
+    user = order.user
+    if not user:
+        # Fallback if relationship not loaded (should generally be loaded)
+        from app.db.schemas import User
+
+        result = await db.execute(select(User).where(User.id == order.user_id))
+        user = result.scalar_one_or_none()
+
     if not user or not user.email:
         return None
 
-    # Fetch product names for the items
-    product_ids = [item.product_id for item in order.items]
-    products_map = {}
-    if product_ids:
-        result = await db.execute(select(Product).where(Product.id.in_(product_ids)))
-        products_map = {p.id: p for p in result.scalars().all()}
+    items = []
+    for item in order.items:
+        # Product should be eager loaded
+        product_name = f"Producto #{item.product_id}"
+        if item.product:
+            product_name = item.product.name
+        else:
+            # Fallback if product not loaded (rare case with the new query)
+            from app.db.schemas import Product
 
-    items = [
-        OrderItemData(
-            product_name=products_map.get(item.product_id, None)
-            and products_map[item.product_id].name
-            or f"Producto #{item.product_id}",
-            quantity=item.quantity,
-            price=Decimal(str(item.price)),
+            product_res = await db.execute(select(Product).where(Product.id == item.product_id))
+            product = product_res.scalar_one_or_none()
+            if product:
+                product_name = product.name
+
+        items.append(
+            OrderItemData(
+                product_name=product_name,
+                quantity=item.quantity,
+                price=Decimal(str(item.price)),
+            )
         )
-        for item in order.items
-    ]
 
     return OrderEmailData(
         order_id=order.id,
