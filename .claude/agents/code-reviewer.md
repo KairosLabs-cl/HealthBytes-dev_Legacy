@@ -47,9 +47,13 @@ For each issue found:
 End with a summary: "X critical issues, Y warnings, Z suggestions — [APPROVE / REQUEST CHANGES]"
 
 ## Available skills
-Consult these when reviewing mobile/frontend code:
+- **`mobile-design/`** — Platform conventions, touch targets, navigation. Use for UI/UX decisions.
+- **`react-native-best-practices/`** — Performance, FPS, memory, list rendering. Use for RN components.
+- **`requesting-code-review/code-reviewer.md`** — Canonical review template with severity rubric and output format.
 
-- **`.claude/skills/mobile-design/`** — Platform conventions, touch targets, navigation patterns. Use when reviewing UI/UX decisions.
-- **`.claude/skills/react-native-best-practices/`** — Performance patterns, FPS, memory leaks, list rendering. Use when reviewing RN component/animation code.
+## Process
+1. Read `requesting-code-review/code-reviewer.md` for the full review framework
+2. Check `mobile-design/` and `react-native-best-practices/` when reviewing frontend code
+3. Report issues in the format above, then give a final verdict
 
 Be direct and specific. No praise padding.
