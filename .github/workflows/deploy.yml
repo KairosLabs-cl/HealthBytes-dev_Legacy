@@ -3,6 +3,9 @@ name: Deploy
 on:
   push:
     branches: [main, master]
+    paths-ignore:
+      - "docs/**"
+      - "**.md"
   workflow_dispatch:
     inputs:
       environment:
@@ -20,27 +23,45 @@ concurrency:
 env:
   AWS_REGION: us-east-1
   BACKEND_IMAGE_NAME: healthbytes-backend
-  FRONTEND_IMAGE_NAME: healthbytes-frontend
+
+# ────────────────────────────────────────────────────────────────────────────
+# Required GitHub secrets:
+#
+# AWS (both envs):
+#   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+#
+# Staging:
+#   STAGING_***REDACTED_DATABASE_URL***
+#   STAGING_BACKEND_TASK_DEFINITION  (JSON string of ECS task def)
+#   STAGING_ECS_SERVICE, STAGING_ECS_CLUSTER
+#
+# Production:
+#   PROD_***REDACTED_DATABASE_URL***
+#   PROD_BACKEND_TASK_DEFINITION
+#   PROD_ECS_SERVICE, PROD_ECS_CLUSTER
+#
+# EAS / Play Store (production only):
+#   EXPO_TOKEN                       (expo.dev → Account → Access Tokens)
+#   GOOGLE_SERVICE_ACCOUNT_KEY_JSON  (Play Console → Setup → API access)
+# ────────────────────────────────────────────────────────────────────────────
 
 jobs:
-  # ──────────────────────────────────────────────
-  # Run full CI before deploying
-  # ──────────────────────────────────────────────
+  # ──────────────────────────────────────────────────────────────────────────
+  # Gate: full CI must pass before any deploy
+  # ──────────────────────────────────────────────────────────────────────────
   ci-check:
     name: CI Gate
     uses: ./.github/workflows/ci.yml
 
-  # ──────────────────────────────────────────────
-  # Build & push Docker images to ECR
-  # ──────────────────────────────────────────────
-  build-and-push:
-    name: Build & Push Images
+  # ──────────────────────────────────────────────────────────────────────────
+  # Backend: build Docker image and push to ECR
+  # ──────────────────────────────────────────────────────────────────────────
+  build-backend:
+    name: Build & Push Backend
     runs-on: ubuntu-latest
     needs: [ci-check]
-    environment: staging
     outputs:
-      backend-image: ${{ steps.backend.outputs.image }}
-      frontend-image: ${{ steps.frontend.outputs.image }}
+      image: ${{ steps.push.outputs.image }}
 
     steps:
       - uses: actions/checkout@v4
@@ -57,7 +78,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build & push backend image
-        id: backend
+        id: push
         env:
           ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
@@ -65,31 +86,18 @@ jobs:
           IMAGE=$ECR_REGISTRY/$BACKEND_IMAGE_NAME:$IMAGE_TAG
           docker build -t $IMAGE ./backend
           docker push $IMAGE
-          # Also tag as latest
           docker tag $IMAGE $ECR_REGISTRY/$BACKEND_IMAGE_NAME:latest
           docker push $ECR_REGISTRY/$BACKEND_IMAGE_NAME:latest
           echo "image=$IMAGE" >> $GITHUB_OUTPUT
 
-      - name: Build & push frontend image
-        id: frontend
-        env:
-          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          IMAGE=$ECR_REGISTRY/$FRONTEND_IMAGE_NAME:$IMAGE_TAG
-          docker build -t $IMAGE ./frontend
-          docker push $IMAGE
-          docker tag $IMAGE $ECR_REGISTRY/$FRONTEND_IMAGE_NAME:latest
-          docker push $ECR_REGISTRY/$FRONTEND_IMAGE_NAME:latest
-          echo "image=$IMAGE" >> $GITHUB_OUTPUT
-
-  # ──────────────────────────────────────────────
-  # Deploy to staging (ECS)
-  # ──────────────────────────────────────────────
+  # ──────────────────────────────────────────────────────────────────────────
+  # Staging: deploy backend → ECS (runs on every push to master)
+  # ──────────────────────────────────────────────────────────────────────────
   deploy-staging:
-    name: Deploy → Staging
+    name: Deploy Backend → Staging
     runs-on: ubuntu-latest
-    needs: [build-and-push]
+    needs: [build-backend]
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
     environment:
       name: staging
       url: ${{ secrets.STAGING_URL }}
@@ -117,29 +125,92 @@ jobs:
       - name: Deploy backend to ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
-          task-definition: ${{ secrets.BACKEND_TASK_DEFINITION }}
-          service: ${{ secrets.ECS_BACKEND_SERVICE }}
-          cluster: ${{ secrets.ECS_CLUSTER }}
+          task-definition: ${{ secrets.STAGING_BACKEND_TASK_DEFINITION }}
+          service: ${{ secrets.STAGING_ECS_SERVICE }}
+          cluster: ${{ secrets.STAGING_ECS_CLUSTER }}
           container-name: backend
-          image: ${{ needs.build-and-push.outputs.backend-image }}
+          image: ${{ needs.build-backend.outputs.image }}
           wait-for-service-stability: true
 
-      - name: Deploy frontend to ECS
+      - name: Deploy summary
+        run: echo "✅ Staging deploy — ${{ github.sha }} → ${{ secrets.STAGING_URL }}"
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Production: backend ECS + Android AAB → Play Store (manual only)
+  # ──────────────────────────────────────────────────────────────────────────
+  deploy-production-backend:
+    name: Deploy Backend → Production
+    runs-on: ubuntu-latest
+    needs: [build-backend]
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
+    environment:
+      name: production
+      url: ${{ secrets.PROD_URL }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Run DB migrations
+        env:
+          ***REDACTED_DATABASE_URL***
+        run: |
+          pip install alembic psycopg sqlalchemy pydantic-settings python-dotenv
+          cd backend
+          echo "***REDACTED_DATABASE_URL***
+          echo "JWT_SECRET=placeholder" >> .env
+          python -m alembic upgrade head
+
+      - name: Deploy backend to ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
-          task-definition: ${{ secrets.FRONTEND_TASK_DEFINITION }}
-          service: ${{ secrets.ECS_FRONTEND_SERVICE }}
-          cluster: ${{ secrets.ECS_CLUSTER }}
-          container-name: frontend
-          image: ${{ needs.build-and-push.outputs.frontend-image }}
+          task-definition: ${{ secrets.PROD_BACKEND_TASK_DEFINITION }}
+          service: ${{ secrets.PROD_ECS_SERVICE }}
+          cluster: ${{ secrets.PROD_ECS_CLUSTER }}
+          container-name: backend
+          image: ${{ needs.build-backend.outputs.image }}
           wait-for-service-stability: true
 
-      - name: Notify deploy success
-        if: success()
-        run: |
-          echo "✅ Staging deploy complete — ${{ github.sha }}"
-          echo "URL: ${{ secrets.STAGING_URL }}"
+  deploy-production-android:
+    name: Build & Submit Android → Play Store
+    runs-on: ubuntu-latest
+    needs: [ci-check]
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
+    environment:
+      name: production
 
-      - name: Notify deploy failure
-        if: failure()
-        run: echo "❌ Staging deploy failed — ${{ github.sha }}"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Android AAB (EAS)
+        working-directory: frontend
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: npx eas-cli build --platform android --profile production --non-interactive
+
+      - name: Submit to Google Play
+        working-directory: frontend
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          GOOGLE_SERVICE_ACCOUNT_KEY_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_JSON }}
+        run: npx eas-cli submit --platform android --profile production --latest --non-interactive
