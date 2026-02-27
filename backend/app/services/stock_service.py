@@ -137,9 +137,12 @@ class StockService:
         sorted_items = sorted(items, key=lambda x: x[0])
         product_ids = [item[0] for item in sorted_items]
 
-        # Fetch all products with pessimistic lock
+        # Fetch all products with pessimistic lock in deterministic order
         result = await db.execute(
-            select(Product).where(Product.id.in_(product_ids)).with_for_update()
+            select(Product)
+            .where(Product.id.in_(product_ids))
+            .order_by(Product.id)
+            .with_for_update()
         )
         products = result.scalars().all()
         products_map = {p.id: p for p in products}
@@ -152,8 +155,7 @@ class StockService:
                 detail={"message": f"Products with IDs {list(missing_ids)} not found"},
             )
 
-        # Check stock and reserve
-        updated_products = []
+        # Pass 1: validate all quantities before mutating anything
         for pid, qty in sorted_items:
             product = products_map[pid]
             if product.stock < qty:
@@ -166,8 +168,12 @@ class StockService:
                         "product_id": pid,
                     },
                 )
-            product.stock -= qty
-            updated_products.append(product)
+
+        # Pass 2: apply all decrements only after full validation succeeds
+        updated_products = []
+        for pid, qty in sorted_items:
+            products_map[pid].stock -= qty
+            updated_products.append(products_map[pid])
 
         # Changes are committed by the caller
         return updated_products
