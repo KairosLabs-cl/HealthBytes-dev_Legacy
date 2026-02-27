@@ -67,12 +67,9 @@ async def create_order(db: AsyncSession, user_id: int, order_in: OrderCreate) ->
 
     # Reserve stock with atomic locking (prevents race conditions)
     # This uses SELECT FOR UPDATE to lock rows during transaction
-    for pid, qty in requested_quantities.items():
-        await StockService.reserve_stock_atomic(
-            db=db, product_id=pid, quantity=qty, order_id=None  # Will be set after order creation
-        )
-        # Note: Stock is already reduced by reserve_stock_atomic
-        # No need to manually update product.stock here
+    # Use batch reservation to reduce N+1 queries
+    stock_items = list(requested_quantities.items())
+    await StockService.reserve_stock_batch(db=db, items=stock_items)
 
     # 4. Calculate total and prepare items
     for item in order_in.items:
