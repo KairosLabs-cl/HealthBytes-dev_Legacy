@@ -114,6 +114,71 @@ class StockService:
         return product
 
     @staticmethod
+    async def reserve_stock_batch(
+        db: AsyncSession, items: list[tuple[int, int]]  # [(product_id, quantity), ...]
+    ) -> list[Product]:
+        """
+        Reserve stock for multiple products in a single atomic transaction.
+
+        Args:
+            db: Database session (must be in transaction)
+            items: List of (product_id, quantity) tuples
+
+        Returns:
+            List of updated Product objects
+
+        Raises:
+            HTTPException: If any product is not found or has insufficient stock
+        """
+        if not items:
+            return []
+
+        # Sort items by product_id to prevent deadlocks (canonical ordering)
+        sorted_items = sorted(items, key=lambda x: x[0])
+        product_ids = [item[0] for item in sorted_items]
+
+        # Fetch all products with pessimistic lock in deterministic order
+        result = await db.execute(
+            select(Product)
+            .where(Product.id.in_(product_ids))
+            .order_by(Product.id)
+            .with_for_update()
+        )
+        products = result.scalars().all()
+        products_map = {p.id: p for p in products}
+
+        # Validate all products exist
+        missing_ids = set(product_ids) - set(products_map.keys())
+        if missing_ids:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail={"message": f"Products with IDs {list(missing_ids)} not found"},
+            )
+
+        # Pass 1: validate all quantities before mutating anything
+        for pid, qty in sorted_items:
+            product = products_map[pid]
+            if product.stock < qty:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail={
+                        "message": f"Insufficient stock for {product.name}",
+                        "available": product.stock,
+                        "requested": qty,
+                        "product_id": pid,
+                    },
+                )
+
+        # Pass 2: apply all decrements only after full validation succeeds
+        updated_products = []
+        for pid, qty in sorted_items:
+            products_map[pid].stock -= qty
+            updated_products.append(products_map[pid])
+
+        # Changes are committed by the caller
+        return updated_products
+
+    @staticmethod
     async def release_stock(
         db: AsyncSession, product_id: int, quantity: int, reason: str = "Order cancelled"
     ) -> Product:
