@@ -7,10 +7,11 @@ import { listProducts } from "@/api/products";
 import ProductListItem from "@/components/ProductListItem";
 import FavoritesBar from "@/components/FavoritesBar";
 import RecentlyViewedBar from "@/components/RecentlyViewedBar";
+import DietaryFilterBar from "@/components/DietaryFilterBar";
 import { Header } from "@/components/Header";
 import { Stack, useRouter } from "expo-router";
 import { RefreshCw } from "lucide-react-native";
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 import { useProductFilters, DietaryTag } from "@/store/productFiltersStore";
 import { usePreferencesStore } from "@/store/preferencesStore";
@@ -19,136 +20,72 @@ import { useUser } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Product } from "@/types/product";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  Easing,
-} from "react-native-reanimated";
-
 // ─── Constants ───────────────────────────────────────────────────────────────
-
-const DIET_FILTERS = [
-  { label: "Celiacos", tag: "sin-gluten" },
-  { label: "Veganos", tag: "vegano" },
-  { label: "Sin lactosa", tag: "sin-lactosa" },
-  { label: "Bajo en azucar", tag: "bajo-en-azucar" },
-] as const;
 
 const VALID_DIETARY_TAGS = new Set<string>([
   'sin-gluten', 'vegano', 'sin-lactosa', 'bajo-en-azucar', 'alto-en-proteina', 'para-diabeticos',
 ]);
 
+// Dynamic hero content per active filter
+const HERO_CONTENT: Record<string, { headline: string; subtitle: string }> = {
+  'sin-gluten':     { headline: 'Snacks sin TACC',               subtitle: 'Certificados y deliciosos' },
+  'vegano':         { headline: 'Lo mejor en productos veganos',  subtitle: 'Sin ingredientes de origen animal' },
+  'sin-lactosa':    { headline: 'Sin lactosa, con todo el sabor', subtitle: 'Opciones libres de lactosa' },
+  'bajo-en-azucar': { headline: 'Bajo en azucar, alto en sabor',  subtitle: 'Ideal para controlar la glucosa' },
+};
+const HERO_DEFAULT = { headline: 'Lo mejor en nutricion saludable', subtitle: 'Descuentos especiales hoy' };
+
 const keyExtractor = (item: Product) => item.id.toString();
 
-// ─── AnimatedFilterChip ───────────────────────────────────────────────────────
-
-function AnimatedFilterChip({
-  label,
-  isActive,
-  onPress,
-}: {
-  label: string;
-  isActive: boolean;
-  onPress: () => void;
-}) {
-  const scale = useSharedValue(1);
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  const handlePress = () => {
-    scale.value = withTiming(0.97, { duration: 80, easing: Easing.out(Easing.ease) }, () => {
-      scale.value = withTiming(1, { duration: 150, easing: Easing.out(Easing.ease) });
-    });
-    onPress();
-  };
-
-  return (
-    <Animated.View style={animatedStyle}>
-      <Pressable
-        onPress={handlePress}
-        className={`px-4 py-3 rounded-full border ${isActive ? 'bg-green-500 border-green-600' : 'bg-gray-100 border-gray-200'}`}
-        style={{ minHeight: 44 }}
-      >
-        <Text className={`text-sm font-medium ${isActive ? 'text-white' : 'text-gray-700'}`}>
-          {label}
-        </Text>
-      </Pressable>
-    </Animated.View>
-  );
-}
-
-// ─── DietaryFilters ───────────────────────────────────────────────────────────
-// Isolated: only re-renders when active filters change, not on data refetch
-
-interface DietaryFiltersProps {
-  dietaryTags: DietaryTag[];
-  toggleDietaryTag: (tag: DietaryTag) => void;
-}
-
-const DietaryFilters = React.memo(({ dietaryTags, toggleDietaryTag }: DietaryFiltersProps) => (
-  <View className="px-4 pb-3 bg-white">
-    <View className="flex-row flex-wrap gap-2 mt-2">
-      {DIET_FILTERS.map(({ label, tag }) => (
-        <AnimatedFilterChip
-          key={label}
-          label={label}
-          isActive={dietaryTags.includes(tag)}
-          onPress={() => toggleDietaryTag(tag)}
-        />
-      ))}
-    </View>
-  </View>
-));
-DietaryFilters.displayName = "DietaryFilters";
-
 // ─── HeroBanner ───────────────────────────────────────────────────────────────
-// Isolated: only re-renders when heroProduct changes
 
 interface HeroBannerProps {
   heroProduct: Product | undefined;
+  dietaryTags: DietaryTag[];
   onViewAll: () => void;
 }
 
-const HeroBanner = React.memo(({ heroProduct, onViewAll }: HeroBannerProps) => (
-  <View className="px-4 mt-2">
-    <View className="rounded-3xl bg-black flex-row items-center px-5 py-5 overflow-hidden">
-      <View className="flex-1 pr-3">
-        <Text className="text-[11px] uppercase text-gray-300 tracking-[1px]">
-          Especial para ti
-        </Text>
-        <Text className="text-2xl font-extrabold text-white mt-1">
-          Descubre snacks sin gluten
-        </Text>
-        <Text className="text-sm text-gray-200 mt-2">Hasta 30% de descuento hoy</Text>
-        <Pressable
-          onPress={onViewAll}
-          className="mt-3 self-start bg-white rounded-full px-5 py-3"
-          style={{ minHeight: 44 }}
-        >
-          <Text className="font-semibold text-black">Ver coleccion</Text>
-        </Pressable>
-      </View>
-      <View className="w-28 h-28 rounded-2xl bg-white/10 border border-white/10 items-center justify-center">
-        {heroProduct ? (
-          <Image
-            source={{ uri: heroProduct.image }}
-            className="w-full h-full"
-            resizeMode="contain"
-          />
-        ) : (
-          <Text className="text-white text-sm">Snacks</Text>
-        )}
+const HeroBanner = React.memo(({ heroProduct, dietaryTags, onViewAll }: HeroBannerProps) => {
+  const firstTag = dietaryTags[0];
+  const content = (firstTag && HERO_CONTENT[firstTag]) || HERO_DEFAULT;
+
+  return (
+    <View className="px-4 mt-4">
+      <View className="rounded-3xl bg-black flex-row items-center px-5 py-5 overflow-hidden">
+        <View className="flex-1 pr-3">
+          <Text className="text-[11px] uppercase text-gray-300 tracking-[1px]">
+            Especial para ti
+          </Text>
+          <Text className="text-2xl font-extrabold text-white mt-1">
+            {content.headline}
+          </Text>
+          <Text className="text-sm text-gray-200 mt-2">{content.subtitle}</Text>
+          <Pressable
+            onPress={onViewAll}
+            className="mt-3 self-start bg-white rounded-full px-5 py-3"
+            style={{ minHeight: 44 }}
+          >
+            <Text className="font-semibold text-black">Ver coleccion</Text>
+          </Pressable>
+        </View>
+        <View className="w-28 h-28 rounded-2xl bg-white/10 border border-white/10 items-center justify-center">
+          {heroProduct ? (
+            <Image
+              source={{ uri: heroProduct.image }}
+              className="w-full h-full"
+              resizeMode="contain"
+            />
+          ) : (
+            <Text className="text-white text-sm">Snacks</Text>
+          )}
+        </View>
       </View>
     </View>
-  </View>
-));
+  );
+});
 HeroBanner.displayName = "HeroBanner";
 
 // ─── HomeListHeader ───────────────────────────────────────────────────────────
-// Composes all header sections. Each inner memo component independently
-// skips re-renders when its specific props haven't changed.
 
 interface HomeListHeaderProps {
   userName: string;
@@ -158,6 +95,7 @@ interface HomeListHeaderProps {
   recentlyViewedItems: Product[];
   favoriteProducts: Product[];
   onViewAll: () => void;
+  onClearFilters: () => void;
   onSeeAllRecent: () => void;
   onSeeAllFavorites: () => void;
 }
@@ -170,15 +108,15 @@ const HomeListHeader = React.memo(({
   recentlyViewedItems,
   favoriteProducts,
   onViewAll,
+  onClearFilters,
   onSeeAllRecent,
   onSeeAllFavorites,
 }: HomeListHeaderProps) => (
   <>
     <Header userName={userName} />
-    <DietaryFilters dietaryTags={dietaryTags} toggleDietaryTag={toggleDietaryTag} />
-    <HeroBanner heroProduct={heroProduct} onViewAll={onViewAll} />
+    <DietaryFilterBar dietaryTags={dietaryTags} toggleDietaryTag={toggleDietaryTag} />
+    <HeroBanner heroProduct={heroProduct} dietaryTags={dietaryTags} onViewAll={onViewAll} />
 
-    {/* Only render when there is content — clean on first use */}
     {recentlyViewedItems.length > 0 && (
       <RecentlyViewedBar items={recentlyViewedItems} onSeeAll={onSeeAllRecent} />
     )}
@@ -186,13 +124,15 @@ const HomeListHeader = React.memo(({
       <FavoritesBar products={favoriteProducts} onSeeAll={onSeeAllFavorites} />
     )}
 
-    <View className="px-4 flex-row items-center justify-between mt-2 mb-1">
+    <View className="px-4 flex-row items-center justify-between mt-4 mb-2">
       <Text className="text-lg font-bold text-gray-900">
         {dietaryTags.length > 0 ? "Productos filtrados" : "Todos los productos"}
       </Text>
-      <Pressable onPress={onViewAll} style={{ minHeight: 44, justifyContent: 'center' }}>
-        <Text className="text-sm font-semibold text-green-600">Ver mas</Text>
-      </Pressable>
+      {dietaryTags.length > 0 && (
+        <Pressable onPress={onClearFilters} style={{ minHeight: 44, justifyContent: 'center' }}>
+          <Text className="text-sm font-semibold text-green-600">Limpiar</Text>
+        </Pressable>
+      )}
     </View>
   </>
 ));
@@ -207,8 +147,9 @@ export default function HomeScreen() {
   const { dietaryPreferences } = usePreferencesStore();
   const { favoriteIds } = useFavoritesStore();
   const router = useRouter();
+  const [refreshing, setRefreshing] = useState(false);
 
-  // Pre-apply saved dietary preferences as initial filters on first mount
+  // Pre-apply saved dietary preferences on first mount only
   useEffect(() => {
     if (dietaryPreferences.length > 0) {
       const validTags = dietaryPreferences.filter((t) =>
@@ -216,7 +157,8 @@ export default function HomeScreen() {
       ) as DietaryTag[];
       if (validTags.length > 0) setDietaryTags(validTags);
     }
-  }, [dietaryPreferences]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { data, isLoading, error, isFetching, refetch } = useQuery({
     queryKey: ["products", dietaryTags],
@@ -225,6 +167,12 @@ export default function HomeScreen() {
     }),
     placeholderData: (previousData) => previousData,
   });
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
 
   const numColumns = useBreakpointValue({
     default: 2,
@@ -241,7 +189,6 @@ export default function HomeScreen() {
 
   const userName = user?.firstName || user?.fullName || "Usuario";
 
-  // Stable navigation callbacks — router ref is stable across renders
   const onViewAll = useCallback(() => router.push('/all-products'), [router]);
   const onSeeAllRecent = useCallback(() => router.push('/recently-viewed'), [router]);
   const onSeeAllFavorites = useCallback(() => router.push('/wishlist'), [router]);
@@ -255,7 +202,6 @@ export default function HomeScreen() {
     [numColumns]
   );
 
-  // Memoized header element — inner memo components skip re-renders independently
   const listHeader = useMemo(() => (
     <HomeListHeader
       userName={userName}
@@ -265,10 +211,11 @@ export default function HomeScreen() {
       recentlyViewedItems={recentlyViewedItems}
       favoriteProducts={favoriteProducts}
       onViewAll={onViewAll}
+      onClearFilters={clearFilters}
       onSeeAllRecent={onSeeAllRecent}
       onSeeAllFavorites={onSeeAllFavorites}
     />
-  ), [userName, dietaryTags, toggleDietaryTag, heroProduct, recentlyViewedItems, favoriteProducts, onViewAll, onSeeAllRecent, onSeeAllFavorites]);
+  ), [userName, dietaryTags, toggleDietaryTag, heroProduct, recentlyViewedItems, favoriteProducts, onViewAll, clearFilters, onSeeAllRecent, onSeeAllFavorites]);
 
   if (isLoading && !data) {
     return (
@@ -303,7 +250,7 @@ export default function HomeScreen() {
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
 
-      {isFetching && data && (
+      {isFetching && !refreshing && data && (
         <View className="absolute top-16 left-0 right-0 items-center z-10">
           <View className="bg-white/90 rounded-full px-4 py-2 shadow-md">
             <ActivityIndicator size="small" />
@@ -315,6 +262,8 @@ export default function HomeScreen() {
         className="flex-1 bg-gray-50"
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={listHeader}
+        onRefresh={handleRefresh}
+        refreshing={refreshing}
         ListEmptyComponent={
           <View className="flex-1 items-center justify-center p-8">
             {dietaryTags.length > 0 ? (
