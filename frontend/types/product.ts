@@ -41,6 +41,11 @@ export function normalizeDietaryTag(raw: DietaryTag | string): DietaryTag {
       color: known?.color ?? undefined,
     };
   }
+  // If the backend returned an object with null/missing color, fill from KNOWN_TAGS
+  if (!raw.color) {
+    const known = KNOWN_TAGS[raw.name];
+    return { ...raw, color: known?.color };
+  }
   return raw;
 }
 

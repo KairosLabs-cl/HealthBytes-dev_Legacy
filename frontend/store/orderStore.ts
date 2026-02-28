@@ -2,13 +2,18 @@ import * as ordersApi from "@/api/orders";
 import { Order } from "@/types/order";
 import { create } from "zustand";
 
+const PAGE_SIZE = 50;
+
 type OrdersState = {
   orders: Order[];
   isLoading: boolean;
+  isLoadingMore: boolean;
+  hasMore: boolean;
   error: string | null;
 
   // Methods
-  fetchOrders: (token: string, skip?: number, limit?: number) => Promise<void>;
+  fetchOrders: (token: string) => Promise<void>;
+  loadMoreOrders: (token: string) => Promise<void>;
   fetchOrderById: (
     orderId: string | number,
     token: string
@@ -21,16 +26,22 @@ type OrdersState = {
 export const useOrders = create<OrdersState>((set, get) => ({
   orders: [],
   isLoading: false,
+  isLoadingMore: false,
+  hasMore: false,
   error: null,
 
   /**
-   * Obtener todas las órdenes del usuario
+   * Obtener primera página de órdenes (resetea la lista)
    */
-  fetchOrders: async (token: string, skip = 0, limit = 50) => {
+  fetchOrders: async (token: string) => {
     set({ isLoading: true, error: null });
     try {
-      const orders = await ordersApi.getOrders(token, skip, limit);
-      set({ orders: orders as Order[], isLoading: false });
+      const orders = await ordersApi.getOrders(token, 0, PAGE_SIZE);
+      set({
+        orders: orders as Order[],
+        hasMore: orders.length === PAGE_SIZE,
+        isLoading: false,
+      });
     } catch (error) {
       const errorMsg =
         error instanceof Error
@@ -38,6 +49,29 @@ export const useOrders = create<OrdersState>((set, get) => ({
           : "Error desconocido al cargar órdenes";
       console.error("❌ Error fetching orders:", errorMsg);
       set({ error: errorMsg, isLoading: false });
+    }
+  },
+
+  /**
+   * Cargar más órdenes (agrega a la lista existente)
+   */
+  loadMoreOrders: async (token: string) => {
+    const { orders, isLoadingMore } = get();
+    if (isLoadingMore) return;
+
+    set({ isLoadingMore: true, error: null });
+    try {
+      const newOrders = await ordersApi.getOrders(token, orders.length, PAGE_SIZE);
+      set({
+        orders: [...orders, ...(newOrders as Order[])],
+        hasMore: newOrders.length === PAGE_SIZE,
+        isLoadingMore: false,
+      });
+    } catch (error) {
+      const errorMsg =
+        error instanceof Error ? error.message : "Error desconocido";
+      console.error("❌ Error loading more orders:", errorMsg);
+      set({ error: errorMsg, isLoadingMore: false });
     }
   },
 
@@ -61,20 +95,9 @@ export const useOrders = create<OrdersState>((set, get) => ({
    * Limpiar órdenes
    */
   clearOrders: () => {
-    set({ orders: [], error: null });
+    set({ orders: [], error: null, hasMore: false });
   },
 
-  /**
-   * Establecer error
-   */
-  setError: (error: string | null) => {
-    set({ error });
-  },
-
-  /**
-   * Limpiar error
-   */
-  clearError: () => {
-    set({ error: null });
-  },
+  setError: (error: string | null) => set({ error }),
+  clearError: () => set({ error: null }),
 }));
