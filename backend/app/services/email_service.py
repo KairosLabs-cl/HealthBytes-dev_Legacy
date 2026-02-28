@@ -5,6 +5,7 @@ Sends order confirmation, payment success, and shipping notification emails.
 In dev mode (no RESEND_API_KEY), logs instead of sending.
 """
 
+import html
 import logging
 from dataclasses import dataclass
 from decimal import Decimal
@@ -83,12 +84,14 @@ class EmailService:
         rows = ""
         for item in data.items:
             subtotal = item.price * item.quantity
+            safe_product_name = html.escape(item.product_name)
+            safe_currency = html.escape(data.currency)
             rows += f"""
                 <tr>
-                    <td>{item.product_name}</td>
+                    <td>{safe_product_name}</td>
                     <td style="text-align:center;">{item.quantity}</td>
-                    <td style="text-align:right;">{self._format_price(item.price, data.currency)}</td>
-                    <td style="text-align:right;">{self._format_price(subtotal, data.currency)}</td>
+                    <td style="text-align:right;">{self._format_price(item.price, safe_currency)}</td>
+                    <td style="text-align:right;">{self._format_price(subtotal, safe_currency)}</td>
                 </tr>
             """
 
@@ -106,7 +109,7 @@ class EmailService:
                     {rows}
                     <tr class="total-row">
                         <td colspan="3">Total</td>
-                        <td style="text-align:right;">{self._format_price(data.total, data.currency)}</td>
+                        <td style="text-align:right;">{self._format_price(data.total, html.escape(data.currency))}</td>
                     </tr>
                 </tbody>
             </table>
@@ -114,6 +117,8 @@ class EmailService:
 
     def render_order_confirmation(self, data: OrderEmailData) -> str:
         """Render order confirmation email HTML."""
+        safe_customer_name = html.escape(data.customer_name or 'Cliente')
+        safe_order_id = html.escape(str(data.order_id))
         return f"""
         <!DOCTYPE html>
         <html><head><style>{self._base_style()}</style></head>
@@ -124,11 +129,11 @@ class EmailService:
                     <p>Tu orden ha sido recibida</p>
                 </div>
                 <div class="content">
-                    <p>Hola <strong>{data.customer_name or 'Cliente'}</strong>,</p>
+                    <p>Hola <strong>{safe_customer_name}</strong>,</p>
                     <p>Hemos recibido tu orden y estamos procesandola.</p>
 
                     <div class="order-info">
-                        <h2>Orden #{data.order_id}</h2>
+                        <h2>Orden #{safe_order_id}</h2>
                         <p style="margin:0; color:#6b7280;">Estado: Pendiente de pago</p>
                     </div>
 
@@ -147,6 +152,8 @@ class EmailService:
 
     def render_payment_success(self, data: OrderEmailData) -> str:
         """Render payment success email HTML."""
+        safe_customer_name = html.escape(data.customer_name or 'Cliente')
+        safe_order_id = html.escape(str(data.order_id))
         return f"""
         <!DOCTYPE html>
         <html><head><style>{self._base_style()}</style></head>
@@ -157,11 +164,11 @@ class EmailService:
                     <p>Pago confirmado</p>
                 </div>
                 <div class="content">
-                    <p>Hola <strong>{data.customer_name or 'Cliente'}</strong>,</p>
+                    <p>Hola <strong>{safe_customer_name}</strong>,</p>
                     <p>Tu pago ha sido confirmado exitosamente. Estamos preparando tu pedido.</p>
 
                     <div class="order-info">
-                        <h2>Orden #{data.order_id}</h2>
+                        <h2>Orden #{safe_order_id}</h2>
                         <p style="margin:0; color:#15803d; font-weight:600;">Pago confirmado</p>
                     </div>
 
@@ -180,6 +187,8 @@ class EmailService:
 
     def render_order_shipped(self, data: OrderEmailData) -> str:
         """Render order shipped email HTML."""
+        safe_customer_name = html.escape(data.customer_name or 'Cliente')
+        safe_order_id = html.escape(str(data.order_id))
         return f"""
         <!DOCTYPE html>
         <html><head><style>{self._base_style()}</style></head>
@@ -190,17 +199,17 @@ class EmailService:
                     <p>Tu pedido esta en camino</p>
                 </div>
                 <div class="content">
-                    <p>Hola <strong>{data.customer_name or 'Cliente'}</strong>,</p>
+                    <p>Hola <strong>{safe_customer_name}</strong>,</p>
                     <p>Tu pedido ha sido despachado y esta en camino.</p>
 
                     <div class="order-info" style="background:#eff6ff; border-color:#bfdbfe;">
-                        <h2 style="color:#1d4ed8;">Orden #{data.order_id}</h2>
+                        <h2 style="color:#1d4ed8;">Orden #{safe_order_id}</h2>
                         <p style="margin:0; color:#1d4ed8; font-weight:600;">Enviado</p>
                     </div>
 
                     {self._render_items_table(data)}
 
-                    <a href="{self.frontend_url}/orders/{data.order_id}" class="btn" style="background:#2563eb;">
+                    <a href="{self.frontend_url}/orders/{safe_order_id}" class="btn" style="background:#2563eb;">
                         Ver mi pedido
                     </a>
                 </div>
