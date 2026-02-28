@@ -36,14 +36,14 @@ function HomeSkeleton() {
       </View>
 
       {/* Banner placeholder */}
-      <View className="px-4 mt-2">
+      <View className="px-4 mt-4">
         <Animated.View style={shimmerStyle}>
           <View className="h-36 rounded-3xl bg-gray-200" />
         </Animated.View>
       </View>
 
       {/* Product grid placeholder */}
-      <View className="px-3 mt-4">
+      <View className="px-4 mt-4">
         <View className="flex-row gap-2 mb-2">
           <ProductCardSkeleton shimmerStyle={shimmerStyle} />
           <ProductCardSkeleton shimmerStyle={shimmerStyle} />

@@ -4,7 +4,7 @@ import { Text } from '@/components/ui/text';
 import { useQuery } from '@tanstack/react-query';
 import { fetchProductById } from '@/api/products';
 import { View, ScrollView, Pressable, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCart } from '@/store/cartStore';
 import { useRecentlyViewed } from '@/store/recentlyViewedStore';
 import { useEffect, useMemo } from 'react';
@@ -89,6 +89,7 @@ export default function ProductDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const addProduct = useCart((state) => state.addProduct);
   const cartItems = useCart((state) => state.items);
   const ctaScale = useSharedValue(1);
@@ -188,8 +189,8 @@ export default function ProductDetailsScreen() {
       {/* Floating Back Button */}
       <Pressable
         onPress={handleBack}
-        className="absolute top-12 left-5 z-50 bg-white/90 p-3 rounded-full shadow-lg border border-gray-100"
-        style={{ elevation: 5 }}
+        className="absolute left-5 z-50 bg-white/90 p-3 rounded-full shadow-lg border border-gray-100"
+        style={{ top: insets.top + 8, elevation: 5 }}
       >
         <ArrowLeft size={24} color="black" />
       </Pressable>
@@ -251,7 +252,7 @@ export default function ProductDetailsScreen() {
                 <FavoriteButton productId={Number(id)} size={22} />
               </View>
 
-              <Animated.View style={ctaAnimatedStyle}>
+              <Animated.View style={[ctaAnimatedStyle, { flex: 1 }]}>
                 <View className="flex-1">
                   <Pressable
                     onPress={addToCart}
