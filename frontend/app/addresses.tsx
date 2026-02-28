@@ -31,6 +31,7 @@ export default function AddressesScreen() {
   // Form state
   const [addressLabel, setAddressLabel] = useState("");
   const [addressLine, setAddressLine] = useState("");
+  const [addressPostalCode, setAddressPostalCode] = useState("");
   const [addressComuna, setAddressComuna] = useState("");
   const [showComunaSuggestions, setShowComunaSuggestions] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
@@ -221,7 +222,8 @@ export default function AddressesScreen() {
                 </Input>
 
                 {showComunaSuggestions && filteredComunas.length > 0 && (
-                  <Animated.View entering={FadeIn} className="absolute top-24 left-0 right-0 z-50 bg-white rounded-2xl shadow-xl border border-gray-100 max-h-60 overflow-hidden">
+                  <Animated.View entering={FadeIn} style={{ position: 'absolute', top: 96, left: 0, right: 0, zIndex: 50 }}>
+                    <View className="bg-white rounded-2xl shadow-xl border border-gray-100 max-h-60 overflow-hidden">
                     <ScrollView nestedScrollEnabled>
                       {filteredComunas.map((comuna) => (
                         <Pressable
@@ -236,6 +238,7 @@ export default function AddressesScreen() {
                         </Pressable>
                       ))}
                     </ScrollView>
+                    </View>
                   </Animated.View>
                 )}
               </View>
@@ -288,8 +291,8 @@ export default function AddressesScreen() {
                     key={addr.id}
                     entering={FadeInUp.delay(index * 100)}
                     layout={Layout.springify()}
-                    className="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm flex-row items-center"
                   >
+                    <View className="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm flex-row items-center">
                     <View className="w-12 h-12 bg-green-50 rounded-2xl items-center justify-center">
                       {getLabelIcon(addr.label || "")}
                     </View>
@@ -313,6 +316,7 @@ export default function AddressesScreen() {
                     >
                       <Trash2 size={18} color="#DC2626" />
                     </Pressable>
+                    </View>
                   </Animated.View>
                 ))}
               </View>
