@@ -15,6 +15,7 @@ import {
   RefreshControl,
   ScrollView,
   View,
+  FlatList,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -166,13 +167,156 @@ export default function OrdersScreen() {
   const showEmptyFilter =
     !isLoading && filteredOrders.length === 0 && orders.length > 0;
 
+  // ⚡ Bolt Optimization: Render header inline or call the function to prevent unmount/remount on every state change.
+  // Using ListHeaderComponent={() => ...} or passing a new function reference every render causes React to unmount
+  // the entire header, losing horizontal scroll position of filters and degrading performance.
+  const renderHeader = (
+    <View>
+      {/* Header */}
+      <View className="mb-4">
+        <View className="mb-4">
+          <Text className="text-2xl font-bold text-black">Mis órdenes</Text>
+          <Text className="text-gray-600 mt-1">
+            Ve el estado de tus compras!
+          </Text>
+        </View>
+
+        {/* Botones de filtro */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className="flex-row gap-2"
+          contentContainerStyle={{ paddingRight: 16 }}
+        >
+          {filters.map((filter) => (
+            <Pressable
+              key={filter.id}
+              onPress={() => setSelectedFilter(filter.id as OrderStatus)}
+              className={`px-4 py-2 rounded-full border ${
+                selectedFilter === filter.id
+                  ? "bg-black border-black"
+                  : "bg-white border-gray-300"
+              }`}
+            >
+              <Text
+                className={`font-semibold ${
+                  selectedFilter === filter.id
+                    ? "text-white"
+                    : "text-gray-700"
+                }`}
+              >
+                {filter.label}
+              </Text>
+            </Pressable>
+          ))}
+
+          {/* Botón de mensajes */}
+          <Pressable
+            onPress={() => setSelectedFilter("messages")}
+            className={`px-4 py-2 rounded-full border flex-row items-center gap-2 ${
+              selectedFilter === "messages"
+                ? "bg-black border-black"
+                : "bg-white border-gray-300"
+            }`}
+          >
+            <Icon
+              as={Package}
+              size="sm"
+              className={
+                selectedFilter === "messages" ? "text-white" : "text-gray-700"
+              }
+            />
+            <Text
+              className={`font-semibold ${
+                selectedFilter === "messages" ? "text-white" : "text-gray-700"
+              }`}
+            >
+              Mensajes del vendedor
+            </Text>
+          </Pressable>
+        </ScrollView>
+      </View>
+
+      {/* Contador de resultados */}
+      <View className="mb-4">
+        <Text className="text-gray-600">
+          {filteredOrders.length} orden
+          {filteredOrders.length !== 1 ? "es" : ""}
+          {selectedFilter !== "all" && " encontradas"}
+        </Text>
+      </View>
+
+      {/* Error message */}
+      {error && (
+        <View className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4 flex-row items-start">
+          <Icon
+            as={AlertCircle}
+            size="md"
+            className="text-red-600 mr-3 mt-0.5"
+          />
+          <View className="flex-1">
+            <Text className="text-red-800 font-semibold mb-1">Error</Text>
+            <Text className="text-red-700 text-sm">{error}</Text>
+            <Pressable onPress={() => clearError()} className="mt-2">
+              <Text className="text-red-600 font-semibold text-sm">
+                Descartar
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      )}
+
+      {/* Loading state */}
+      {isLoading && (
+        <View className="flex-1 items-center justify-center py-12">
+          <ActivityIndicator size="large" color="#000000" />
+          <Text className="text-gray-500 mt-4">Cargando órdenes...</Text>
+        </View>
+      )}
+
+      {/* Empty filter results */}
+      {showEmptyFilter && (
+        <View className="items-center justify-center py-12">
+          <Icon as={Package} size="xl" className="text-gray-300 mb-4" />
+          <Text className="text-lg font-semibold text-black mb-2">
+            No se encontraron órdenes
+          </Text>
+          <Text className="text-center text-gray-600 mb-4">
+            No hay órdenes con este estado
+          </Text>
+          <Pressable
+            onPress={() => setSelectedFilter("all")}
+            className="bg-black px-4 py-2 rounded-full"
+          >
+            <Text className="text-white font-semibold">Ver todas</Text>
+          </Pressable>
+        </View>
+      )}
+    </View>
+  );
+
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       <StatusBar style="dark" />
       <Stack.Screen options={{ title: "Mis órdenes" }} />
 
-      <ScrollView
+      {/*
+        ⚡ Bolt Optimization: Replaced ScrollView + .map() with FlatList.
+        🎯 Why: Rendering dynamic lists with ScrollView loads all items synchronously, blocking the main thread.
+        📊 Impact: FlatList virtualizes the list, rendering only visible items. Reduces memory usage significantly
+                   and ensures smooth 60fps scrolling as the order history grows.
+      */}
+      <FlatList
         className="flex-1 bg-white px-4 pt-4"
+        data={!isLoading ? filteredOrders : []}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <OrderListItem
+            order={item}
+            onPress={() => handleOrderPress(item.id)}
+          />
+        )}
+        ListHeaderComponent={renderHeader}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -181,138 +325,8 @@ export default function OrdersScreen() {
           />
         }
         contentContainerStyle={{ paddingBottom: 30 }}
-      >
-        {/* Header */}
-        <View className="mb-4">
-          <View className="mb-4">
-            <Text className="text-2xl font-bold text-black">Mis órdenes</Text>
-            <Text className="text-gray-600 mt-1">
-              Ve el estado de tus compras!
-            </Text>
-          </View>
-
-          {/* Botones de filtro */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="flex-row gap-2"
-            contentContainerStyle={{ paddingRight: 16 }}
-          >
-            {filters.map((filter) => (
-              <Pressable
-                key={filter.id}
-                onPress={() => setSelectedFilter(filter.id as OrderStatus)}
-                className={`px-4 py-2 rounded-full border ${
-                  selectedFilter === filter.id
-                    ? "bg-black border-black"
-                    : "bg-white border-gray-300"
-                }`}
-              >
-                <Text
-                  className={`font-semibold ${
-                    selectedFilter === filter.id
-                      ? "text-white"
-                      : "text-gray-700"
-                  }`}
-                >
-                  {filter.label}
-                </Text>
-              </Pressable>
-            ))}
-
-            {/* Botón de mensajes */}
-            <Pressable
-              onPress={() => setSelectedFilter("messages")}
-              className={`px-4 py-2 rounded-full border flex-row items-center gap-2 ${
-                selectedFilter === "messages"
-                  ? "bg-black border-black"
-                  : "bg-white border-gray-300"
-              }`}
-            >
-              <Icon
-                as={Package}
-                size="sm"
-                className={
-                  selectedFilter === "messages" ? "text-white" : "text-gray-700"
-                }
-              />
-              <Text
-                className={`font-semibold ${
-                  selectedFilter === "messages" ? "text-white" : "text-gray-700"
-                }`}
-              >
-                Mensajes del vendedor
-              </Text>
-            </Pressable>
-          </ScrollView>
-        </View>
-
-        {/* Contador de resultados */}
-        <View className="mb-4">
-          <Text className="text-gray-600">
-            {filteredOrders.length} orden
-            {filteredOrders.length !== 1 ? "es" : ""}
-            {selectedFilter !== "all" && " encontradas"}
-          </Text>
-        </View>
-
-        {/* Error message */}
-        {error && (
-          <View className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4 flex-row items-start">
-            <Icon
-              as={AlertCircle}
-              size="md"
-              className="text-red-600 mr-3 mt-0.5"
-            />
-            <View className="flex-1">
-              <Text className="text-red-800 font-semibold mb-1">Error</Text>
-              <Text className="text-red-700 text-sm">{error}</Text>
-              <Pressable onPress={() => clearError()} className="mt-2">
-                <Text className="text-red-600 font-semibold text-sm">
-                  Descartar
-                </Text>
-              </Pressable>
-            </View>
-          </View>
-        )}
-
-        {/* Loading state */}
-        {isLoading && (
-          <View className="flex-1 items-center justify-center py-12">
-            <ActivityIndicator size="large" color="#000000" />
-            <Text className="text-gray-500 mt-4">Cargando órdenes...</Text>
-          </View>
-        )}
-
-        {/* Empty filter results */}
-        {showEmptyFilter && (
-          <View className="items-center justify-center py-12">
-            <Icon as={Package} size="xl" className="text-gray-300 mb-4" />
-            <Text className="text-lg font-semibold text-black mb-2">
-              No se encontraron órdenes
-            </Text>
-            <Text className="text-center text-gray-600 mb-4">
-              No hay órdenes con este estado
-            </Text>
-            <Pressable
-              onPress={() => setSelectedFilter("all")}
-              className="bg-black px-4 py-2 rounded-full"
-            >
-              <Text className="text-white font-semibold">Ver todas</Text>
-            </Pressable>
-          </View>
-        )}
-
-        {/* Orders list */}
-        {!isLoading &&
-          filteredOrders.map((order) => (
-            <OrderListItem
-              key={order.id}
-              order={order}
-              onPress={() => handleOrderPress(order.id)}
-            />
-          ))}
-      </ScrollView>
+        showsVerticalScrollIndicator={false}
+      />
     </SafeAreaView>
   );
 }
