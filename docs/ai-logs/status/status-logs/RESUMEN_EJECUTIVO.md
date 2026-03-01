@@ -18,10 +18,10 @@
 ┌─────────────────────────────────────────────────────────────┐
 │  ESTADO DEL PROYECTO - FEBRERO 28, 2026                     │
 ├─────────────────────────────────────────────────────────────┤
-│  Fase:              UX Refinement + Navigation Polish       │
-│  Status:            ✅ Navigation completa + nuevas pantallas│
-│  Milestone:         feat/refine-nav-and-ux mergeada ✅ (7949235) │
-│  Progreso General:  █████████░ ~90%                         │
+│  Fase:              Production Hardening (Audit + Webhooks)  │
+│  Status:            ✅ Docker/CI/CD + Webhooks MP + Audit    │
+│  Milestone:         Todos los pendientes resueltos ✅ (Mar 1) │
+│  Progreso General:  █████████░ ~95%                         │
 └─────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────┐
@@ -70,7 +70,7 @@
 │  ✅ Security Screen                                         │
 │  🟡 Dietary Preferences (dietary-preferences.tsx + store)  │
 │  🟡 Messages / Support screens (básicos)                    │
-│  🟡 Webhooks payment confirmation (pendiente)               │
+│  ✅ Webhooks payment confirmation (HMAC-SHA256 + idempotency)│
 │  📋 Filtros Avanzados (Alérgenos)                           │
 │  📋 Recomendaciones (ML)                                    │
 │  📋 Admin Dashboard                                         │
@@ -225,8 +225,13 @@
 - ✅ **Mercado Pago end-to-end** - Checkout con polling y pantallas de estado
 - ✅ **Frontend tests expandidos** - 67+ tests nuevos (stores + API)
 
+### Resueltos en sesión Mar 1, 2026:
+- ✅ **Pydantic V2 deprecations** - Ya migrado (0 warnings activos, todo usa `model_config`)
+- ✅ **Webhooks Mercado Pago** - Completamente implementado (`mercadopago.py` + `mercadopago_service.py`)
+- ✅ **Docker + CI/CD** - Ya configurado (`Dockerfile` x2, `docker-compose.yml`, `.github/workflows/ci.yml` + `deploy.yml`)
+- ✅ **Audit trail** - Añadido a `stock_service.py`, `order_service.py`, `payment_service.py` (9 puntos de auditoría)
+
 ### Pendiente (no bloqueante):
-- ⚠️ 67 warnings de Pydantic V2 deprecations (`class Config` -> `model_config`)
 - ⚠️ `passlib` sigue en `requirements.txt` pero ya no se usa
 - ⚠️ `favorite_service.py` tiene solo 19% de coverage
 
@@ -240,14 +245,14 @@
 [x] Aumentar coverage a 70% - COMPLETADO (179 tests)
 [x] Mercado Pago integration (backend)
 [x] Checkout flow (frontend + polling)
-[ ] Webhooks payment confirmation
+[x] Webhooks payment confirmation ✅
 Objetivo: Payment flow funcional end-to-end
 ```
 
 ### Semana 3 (Feb 24-Mar 2): Testing & Polish
 ```
 [x] Aumentar coverage a 80%+
-[ ] Pydantic V2 migration (resolver 67 warnings)
+[x] Pydantic V2 migration ✅ (ya migrado, 0 warnings)
 [x] Frontend tests (Jest)
 [ ] Error handling mejorado
 Objetivo: Calidad production-ready
@@ -255,8 +260,8 @@ Objetivo: Calidad production-ready
 
 ### Semana 4 (Mar 3-9): DevOps
 ```
-[ ] Docker containerization
-[ ] CI/CD Pipeline (GitHub Actions)
+[x] Docker containerization ✅ (backend + frontend Dockerfiles)
+[x] CI/CD Pipeline (GitHub Actions) ✅ (ci.yml + deploy.yml)
 [ ] AWS RDS setup
 Objetivo: Staging environment live
 ```
@@ -292,9 +297,10 @@ Objetivo: Staging environment live
 3. ✅ UX refinement + nuevas pantallas (feat/refine-nav-and-ux)
 4. ✅ Merge rama feat/refine-nav-and-ux a master (commit 7949235, Feb 28)
 5. ✅ Tests frontend estabilizados (126 tests, 13 suites — commits b029752, b9dd11c, 88686f4)
-6. ⏳ Webhooks Mercado Pago (confirmación de pagos)
-7. ⏳ Resolver warnings Pydantic V2 (67 warnings)
-8. ⏳ Docker + CI/CD setup
+6. ✅ Webhooks Mercado Pago (HMAC-SHA256, idempotency, stock release, email)
+7. ✅ Pydantic V2 ya migrado (0 warnings activos)
+8. ✅ Docker + CI/CD ya configurado (Dockerfiles + ci.yml + deploy.yml)
+9. ✅ Audit trail añadido (stock/order/payment — 9 puntos AUDIT | format)
 
 ---
 
