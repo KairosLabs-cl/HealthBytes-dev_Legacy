@@ -38,41 +38,34 @@ function ProductCardSkeleton({ shimmerStyle }: Props) {
   return (
     <View className="flex-1 rounded-2xl border border-gray-100 bg-white overflow-hidden">
       {/* Image placeholder */}
-      <Animated.View
-        className="w-full bg-gray-200"
-        style={[{ aspectRatio: 4 / 3 }, style]}
-      />
+      <Animated.View style={[{ aspectRatio: 4 / 3 }, style]}>
+        <View className="w-full h-full bg-gray-200" />
+      </Animated.View>
       {/* Content area */}
       <View className="px-3 pt-2.5 pb-3">
         {/* Rating placeholder */}
-        <Animated.View
-          className="h-3 bg-gray-200 rounded w-10 mb-1"
-          style={style}
-        />
+        <Animated.View style={style}>
+          <View className="h-3 bg-gray-200 rounded w-10 mb-1" />
+        </Animated.View>
         {/* Name placeholder */}
-        <Animated.View
-          className="h-4 bg-gray-200 rounded w-4/5 mb-1"
-          style={style}
-        />
-        <Animated.View
-          className="h-4 bg-gray-200 rounded w-3/5 mb-1.5"
-          style={style}
-        />
+        <Animated.View style={style}>
+          <View className="h-4 bg-gray-200 rounded w-4/5 mb-1" />
+        </Animated.View>
+        <Animated.View style={style}>
+          <View className="h-4 bg-gray-200 rounded w-3/5 mb-1.5" />
+        </Animated.View>
         {/* Tag placeholder */}
-        <Animated.View
-          className="h-5 bg-gray-100 rounded-full w-20 mb-2"
-          style={style}
-        />
+        <Animated.View style={style}>
+          <View className="h-5 bg-gray-100 rounded-full w-20 mb-2" />
+        </Animated.View>
         {/* Price placeholder */}
-        <Animated.View
-          className="h-5 bg-gray-200 rounded w-1/3 mb-2.5"
-          style={style}
-        />
+        <Animated.View style={style}>
+          <View className="h-5 bg-gray-200 rounded w-1/3 mb-2.5" />
+        </Animated.View>
         {/* Button placeholder */}
-        <Animated.View
-          className="h-10 bg-gray-200 rounded-xl w-full"
-          style={style}
-        />
+        <Animated.View style={style}>
+          <View className="h-10 bg-gray-200 rounded-xl w-full" />
+        </Animated.View>
       </View>
     </View>
   );

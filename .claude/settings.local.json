@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(pnpm type-check:*)"
+      "Bash(pnpm type-check:*)",
+      "Skill(mobile-design)",
+      "Skill(mobile-design:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:api.github.com)"
     ]
   }
 }

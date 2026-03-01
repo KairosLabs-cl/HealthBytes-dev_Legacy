@@ -35,13 +35,6 @@ backend/.pytest_cache/
 .vscode/
 .idea/
 
-# AI Skills (junctions to .agents/)
-.agent/
-.agents/
-.cursor/
-.claude/
-.mcp.json
-
 # Frontend local artifacts
 frontend/error.log
 frontend/.expo/

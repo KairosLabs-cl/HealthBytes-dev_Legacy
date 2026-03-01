@@ -66,9 +66,9 @@ export default function CartScreen() {
   const removeProduct = useCart((state) => state.removeProduct);
   const router = useRouter();
 
-  const subtotal = items.reduce(
-    (acc, item) => acc + item.product.price * item.quantity,
-    0
+  const subtotal = useMemo(
+    () => items.reduce((acc, item) => acc + item.product.price * item.quantity, 0),
+    [items]
   );
 
   const onCheckout = useCallback(() => {
@@ -115,6 +115,7 @@ export default function CartScreen() {
           <Pressable
             onPress={() => router.push("/")}
             className="px-6 py-3 bg-black rounded-full active:opacity-80"
+            style={{ minHeight: 44 }}
           >
             <Text className="text-white font-semibold">Explorar productos</Text>
           </Pressable>
@@ -134,6 +135,9 @@ export default function CartScreen() {
           renderItem={renderItem}
           keyExtractor={(item) => item.product.id.toString()}
           ListFooterComponent={footerParam}
+          initialNumToRender={8}
+          windowSize={5}
+          maxToRenderPerBatch={5}
         />
       </View>
     </>

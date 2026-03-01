@@ -5,11 +5,11 @@ import { Text } from "@/components/ui/text";
 import type { Product } from "@/types/product";
 import HorizontalProductCard from "@/components/HorizontalProductCard";
 
-type Props = { items?: Product[] };
+type Props = { items?: Product[]; onSeeAll?: () => void };
 
 const cardKeyExtractor = (item: Product) => String(item.id);
 
-export default function RecentlyViewedBar({ items = [] }: Props) {
+export default function RecentlyViewedBar({ items = [], onSeeAll }: Props) {
   const renderItem = useCallback(
     ({ item }: { item: Product }) => <HorizontalProductCard product={item} />,
     []
@@ -17,20 +17,9 @@ export default function RecentlyViewedBar({ items = [] }: Props) {
 
   if (!items.length) {
     return (
-      <View
-        style={{
-          marginHorizontal: 16,
-          marginBottom: 16,
-          backgroundColor: "#F9FAFB",
-          borderRadius: 16,
-          paddingHorizontal: 16,
-          paddingTop: 16,
-          paddingBottom: 24,
-          alignItems: "center",
-        }}
-      >
+      <View className="mx-4 mt-4 mb-4 bg-gray-50 rounded-2xl px-4 pt-4 pb-6 items-center">
         <Clock size={28} color="#9CA3AF" style={{ marginBottom: 8 }} />
-        <Text style={{ fontSize: 13, color: "#9CA3AF", fontWeight: "500" }}>
+        <Text className="text-sm text-gray-400 font-medium">
           Tus productos vistos apareceran aqui
         </Text>
       </View>
@@ -38,26 +27,18 @@ export default function RecentlyViewedBar({ items = [] }: Props) {
   }
 
   return (
-    <View style={{ marginBottom: 16 }}>
-      <View
-        style={{
-          paddingHorizontal: 16,
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 12,
-        }}
-      >
-        <Text style={{ fontSize: 17, fontWeight: "700", color: "#111827" }}>
+    <View className="mt-4 mb-4">
+      <View className="px-4 flex-row items-center justify-between mb-3">
+        <Text className="text-[17px] font-bold text-gray-900">
           {"👀 Vistos recientemente"}
         </Text>
-        <Pressable>
-          <Text style={{ fontSize: 13, fontWeight: "600", color: "#16A34A" }}>Ver mas</Text>
+        <Pressable onPress={onSeeAll} style={{ minHeight: 44, justifyContent: "center" }}>
+          <Text className="text-sm font-semibold text-green-600">Ver mas</Text>
         </Pressable>
       </View>
       <FlatList
         horizontal
-        data={items}
+        data={items.slice(0, 10)}
         keyExtractor={cardKeyExtractor}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 16 }}

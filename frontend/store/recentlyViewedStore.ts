@@ -21,7 +21,7 @@ export const useRecentlyViewed = create<RecentlyViewedState>()(
     persist(
         (set, get) => ({
             items: [],
-            limit: 4,
+            limit: 20,
             add: (product) => {
                 if (!product || product.id === undefined || product.id === null) return;
                 const key = getKey(product.id);
