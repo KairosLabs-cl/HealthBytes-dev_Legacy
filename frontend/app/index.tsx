@@ -3,7 +3,7 @@ import HomeSkeleton from "@/components/HomeSkeleton";
 import { useQuery } from "@tanstack/react-query";
 import { Text } from "@/components/ui/text";
 import { useBreakpointValue } from "@/components/ui/utils/use-break-point-value";
-import { listProducts } from "@/api/products";
+import { listProducts, getFeaturedProduct } from "@/api/products";
 import ProductListItem from "@/components/ProductListItem";
 import FavoritesBar from "@/components/FavoritesBar";
 import RecentlyViewedBar from "@/components/RecentlyViewedBar";
@@ -28,10 +28,12 @@ const VALID_DIETARY_TAGS = new Set<string>([
 
 // Dynamic hero content per active filter
 const HERO_CONTENT: Record<string, { headline: string; subtitle: string }> = {
-  'sin-gluten':     { headline: 'Snacks sin TACC',               subtitle: 'Certificados y deliciosos' },
-  'vegano':         { headline: 'Lo mejor en productos veganos',  subtitle: 'Sin ingredientes de origen animal' },
-  'sin-lactosa':    { headline: 'Sin lactosa, con todo el sabor', subtitle: 'Opciones libres de lactosa' },
-  'bajo-en-azucar': { headline: 'Bajo en azucar, alto en sabor',  subtitle: 'Ideal para controlar la glucosa' },
+  'sin-gluten':       { headline: 'Snacks sin TACC',               subtitle: 'Certificados y deliciosos' },
+  'vegano':           { headline: 'Lo mejor en productos veganos',  subtitle: 'Sin ingredientes de origen animal' },
+  'sin-lactosa':      { headline: 'Sin lactosa, con todo el sabor', subtitle: 'Opciones libres de lactosa' },
+  'bajo-en-azucar':   { headline: 'Bajo en azucar, alto en sabor',  subtitle: 'Ideal para controlar la glucosa' },
+  'alto-en-proteina': { headline: 'Proteína para tu rendimiento',   subtitle: 'Opciones altas en proteína' },
+  'para-diabeticos':  { headline: 'Control glucémico inteligente',  subtitle: 'Productos de bajo índice glucémico' },
 };
 const HERO_DEFAULT = { headline: 'Lo mejor en nutricion saludable', subtitle: 'Descuentos especiales hoy' };
 
@@ -166,6 +168,13 @@ export default function HomeScreen() {
       dietary: dietaryTags.length > 0 ? dietaryTags : undefined
     }),
     placeholderData: (previousData) => previousData,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: heroProduct } = useQuery({
+    queryKey: ["products", "featured"],
+    queryFn: getFeaturedProduct,
+    staleTime: 10 * 60 * 1000,
   });
 
   const handleRefresh = useCallback(async () => {
@@ -179,8 +188,6 @@ export default function HomeScreen() {
     sm: 3,
     xl: 4,
   }) as number;
-
-  const heroProduct = useMemo(() => data?.[0], [data]);
 
   const favoriteProducts = useMemo(() => {
     if (!data) return [];
@@ -202,7 +209,7 @@ export default function HomeScreen() {
     [numColumns]
   );
 
-  const listHeader = useMemo(() => (
+  const renderListHeader = useCallback(() => (
     <HomeListHeader
       userName={userName}
       dietaryTags={dietaryTags}
@@ -251,17 +258,13 @@ export default function HomeScreen() {
       <Stack.Screen options={{ headerShown: false }} />
 
       {isFetching && !refreshing && data && (
-        <View className="absolute top-16 left-0 right-0 items-center z-10">
-          <View className="bg-white/90 rounded-full px-4 py-2 shadow-md">
-            <ActivityIndicator size="small" />
-          </View>
-        </View>
+        <View className="h-0.5 bg-green-500" />
       )}
 
       <FlatList
         className="flex-1 bg-gray-50"
         showsVerticalScrollIndicator={false}
-        ListHeaderComponent={listHeader}
+        ListHeaderComponent={renderListHeader}
         onRefresh={handleRefresh}
         refreshing={refreshing}
         ListEmptyComponent={

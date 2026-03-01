@@ -41,6 +41,15 @@ export async function listProducts(filters?: ProductFilters) {
   return data;
 }
 
+export async function getFeaturedProduct() {
+  const res = await fetch(`${API_URL}/products/featured`);
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error("Error fetching featured product");
+  }
+  return data;
+}
+
 export async function fetchProductById(id: number) {
   const res = await fetch(`${API_URL}/products/${id}`);
   const data = await res.json();

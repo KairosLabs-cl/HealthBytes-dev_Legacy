@@ -52,7 +52,6 @@ export const useCart = create<CartState>((set, get) => ({
   addingProducts: new Set(),
   updatingProducts: new Set(),
   removingProducts: new Set(),
-
   setError: (error) => set({ error }),
   clearError: () => set({ error: null }),
 
