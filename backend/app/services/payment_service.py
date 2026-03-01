@@ -57,7 +57,7 @@ class PaymentService:
         await db.refresh(payment)
 
         logger.info(
-            "AUDIT | op=payment_create | order=%s | amount=%s | currency=%s | provider=%s | payment=%s",
+            "AUDIT | op=payment_create | order=%s | amount=%s | curr=%s | prov=%s | pay=%s",
             order_id,
             amount,
             currency,

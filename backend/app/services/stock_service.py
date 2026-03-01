@@ -113,7 +113,7 @@ class StockService:
         product.stock -= quantity
 
         logger.info(
-            "AUDIT | op=stock_reserve | product=%s | qty=%s | old_stock=%s | new_stock=%s | order=%s",
+            "AUDIT | op=stock_reserve | prod=%s | qty=%s | old=%s | new=%s | order=%s",
             product_id,
             quantity,
             old_stock,
@@ -190,7 +190,7 @@ class StockService:
             updated_products.append(products_map[pid])
 
             logger.info(
-                "AUDIT | op=stock_reserve_batch | product=%s | qty=%s | old_stock=%s | new_stock=%s",
+                "AUDIT | op=stock_reserve_batch | prod=%s | qty=%s | old=%s | new=%s",
                 pid,
                 qty,
                 old_stock,
@@ -235,7 +235,7 @@ class StockService:
         product.stock += quantity
 
         logger.info(
-            "AUDIT | op=stock_release | product=%s | qty=%s | old_stock=%s | new_stock=%s | reason=%s",
+            "AUDIT | op=stock_release | prod=%s | qty=%s | old=%s | new=%s | reason=%s",
             product_id,
             quantity,
             old_stock,
