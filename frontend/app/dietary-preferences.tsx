@@ -19,6 +19,8 @@ const DIETARY_OPTIONS = [
   { slug: "bajo-en-azucar", label: "Bajo en azúcar", emoji: "🍬" },
   { slug: "alto-en-proteina", label: "Alto en proteína", emoji: "💪" },
   { slug: "para-diabeticos", label: "Para diabéticos", emoji: "🩺" },
+  { slug: "sin-nueces", label: "Sin Nueces", emoji: "🥜" },
+  { slug: "sin-mariscos", label: "Sin Mariscos", emoji: "🦐" },
 ] as const;
 
 export default function DietaryPreferencesScreen() {
