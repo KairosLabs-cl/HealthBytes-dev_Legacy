@@ -13,6 +13,29 @@ Reglas, patrones y procesos para trabajar en HealthBytes.
   - Test coverage y problemas resueltos
   - Preparado: 2026-02-05
 
+### 🎨 UX/UI Design & Auditoría
+
+- **[UIUX_QUICK_START.md](./UIUX_QUICK_START.md)** - ⚡ Guía rápida con prompts copy-paste
+  - Comandos específicos para auditar con IA
+  - Workflows de auditoría (pre-release, feature review, bug validation)
+  - Templates de output y checklists
+  - Uso con Copilot/Claude/Cursor
+
+- **[UIUX_AUDIT_EXAMPLES.md](./UIUX_AUDIT_EXAMPLES.md)** - 📚 Ejemplos prácticos de auditoría
+  - Casos de uso detallados (Home, PDP, Checkout, A11y, Performance)
+  - Responses esperadas con scores y fixes
+  - Templates de reporte estructurados
+  - Checklist completo de auditoría
+
+- **[../../UIUX_AUDIT_PROMPT.md](../../UIUX_AUDIT_PROMPT.md)** - 🔍 Prompt especializado completo
+  - Framework de auditoría comprehensivo (10 áreas)
+  - Criterios de evaluación (P0/P1/P2)
+  - Benchmarks de referencia (ML, Amazon, Rappi)
+  - Principios de diseño HealthBytes
+  - Archivos clave a analizar
+  
+**Contexto**: Sistema completo para auditar y mejorar la UX/UI del e-commerce con asistencia de IA. Cubre desde jerarquía visual hasta accesibilidad WCAG 2.1.
+
 ### [git-workflow.md](./git-workflow.md)
 **Convenciones de git y flujo de contribución**
 
