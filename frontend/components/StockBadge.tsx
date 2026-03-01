@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, Platform } from "react-native";
 
 type StockBadgeProps = {
   stock?: number;
@@ -21,11 +21,12 @@ function StockBadge({ stock, variant = "inline" }: StockBadgeProps) {
           paddingVertical: 3,
           borderRadius: 8,
           zIndex: 10,
-          shadowColor: "#000",
-          shadowOpacity: 0.15,
-          shadowRadius: 4,
-          shadowOffset: { width: 0, height: 1 },
-          elevation: 3,
+          ...Platform.select({
+            web: { boxShadow: "0 1px 4px rgba(0,0,0,0.15)" },
+            ios: { shadowColor: "#000", shadowOpacity: 0.15, shadowRadius: 4, shadowOffset: { width: 0, height: 1 } },
+            android: { elevation: 3 },
+            default: {},
+          }),
         }}
       >
         <Text style={{ fontSize: 10, color: "#FFFFFF", fontWeight: "700", letterSpacing: 0.3 }}>
