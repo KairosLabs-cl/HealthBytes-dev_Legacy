@@ -4,6 +4,7 @@ This service handles ONLY database operations for payments.
 Payment provider integrations (Venti, Mercado Pago) will be in separate modules.
 """
 
+import logging
 from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Optional, Sequence
@@ -13,6 +14,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.db.models.payment import Payment, PaymentProvider, PaymentStatus
+
+logger = logging.getLogger(__name__)
 
 
 class PaymentService:
@@ -52,6 +55,16 @@ class PaymentService:
         db.add(payment)
         await db.commit()
         await db.refresh(payment)
+
+        logger.info(
+            "AUDIT | op=payment_create | order=%s | amount=%s | currency=%s | provider=%s | payment=%s",
+            order_id,
+            amount,
+            currency,
+            provider.value,
+            payment.id,
+        )
+
         return payment
 
     @staticmethod
@@ -149,6 +162,7 @@ class PaymentService:
         if not payment:
             return None
 
+        old_status = payment.status
         payment.status = status  # type: ignore
         payment.updated_at = datetime.now(timezone.utc)  # type: ignore
 
@@ -160,6 +174,14 @@ class PaymentService:
 
         if status == PaymentStatus.COMPLETED:
             payment.completed_at = datetime.now(timezone.utc)  # type: ignore
+
+        logger.info(
+            "AUDIT | op=payment_status_change | payment=%s | order=%s | from=%s | to=%s",
+            payment_id,
+            payment.order_id,
+            old_status,
+            status.value,
+        )
 
         await db.commit()
         await db.refresh(payment)
@@ -238,6 +260,13 @@ class PaymentService:
 
         payment.status = PaymentStatus.REFUNDED  # type: ignore
         payment.updated_at = datetime.now(timezone.utc)  # type: ignore
+
+        logger.info(
+            "AUDIT | op=payment_refund | payment=%s | order=%s | amount=%s",
+            payment_id,
+            payment.order_id,
+            payment.amount,
+        )
 
         await db.commit()
         await db.refresh(payment)
