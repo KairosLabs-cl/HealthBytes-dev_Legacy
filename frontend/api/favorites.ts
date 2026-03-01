@@ -1,3 +1,12 @@
+import { Product } from "@/types/product";
+
+export interface Favorite {
+  id: number;
+  user_id: string;
+  product_id: number;
+  product?: Product;
+}
+
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export async function addFavorite(productId: number, token: string) {

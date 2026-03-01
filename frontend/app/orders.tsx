@@ -16,31 +16,28 @@ import {
   ScrollView,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function OrdersScreen() {
   const router = useRouter();
   const { filter } = useLocalSearchParams<{ filter?: string }>();
   const { getToken, isSignedIn, isLoaded } = useAuth();
-  const { orders, isLoading, error, fetchOrders, clearError } = useOrders();
+  const { orders, isLoading, isLoadingMore, hasMore, error, fetchOrders, loadMoreOrders, clearError } = useOrders();
   const [refreshing, setRefreshing] = useState(false);
+  const insets = useSafeAreaInsets();
 
-  // Establecer filtro inicial desde parámetros de URL
-  const [selectedFilter, setSelectedFilter] = useState<
-    "all" | OrderStatus | "messages"
-  >(() => {
-    if (
-      filter &&
-      ["pending", "packed", "in_transit", "delivered", "cancelled"].includes(
-        filter
-      )
-    ) {
-      return filter as OrderStatus;
+  const [selectedFilter, setSelectedFilter] = useState<"all" | OrderStatus>(
+    () => {
+      if (
+        filter &&
+        ["pending", "packed", "in_transit", "delivered", "cancelled"].includes(filter)
+      ) {
+        return filter as OrderStatus;
+      }
+      return "all";
     }
-    return "all";
-  });
+  );
 
-  // Filtros disponibles
   const filters = [
     { id: "pending", label: "Preparando" },
     { id: "in_transit", label: "En tránsito" },
@@ -51,56 +48,34 @@ export default function OrdersScreen() {
     if (isLoaded && !isSignedIn) {
       router.replace("/(auth)/login");
     }
-  }, [isLoaded, isSignedIn]);
+  }, [isLoaded, isSignedIn, router]);
 
-  /**
-   * Cargar órdenes al montar o cuando se autentica
-   */
+  const loadOrders = useCallback(async () => {
+    const token = await getToken();
+    if (token) await fetchOrders(token);
+  }, [getToken, fetchOrders]);
+
   useEffect(() => {
     if (isSignedIn && isLoaded) {
       loadOrders();
     }
-  }, [isSignedIn, isLoaded]);
-
-  const loadOrders = async () => {
-    try {
-      const token = await getToken();
-      if (token) {
-        await fetchOrders(token);
-      }
-    } catch (err) {
-      console.error("Error loading orders:", err);
-    }
-  };
+  }, [isSignedIn, isLoaded, loadOrders]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
       const token = await getToken();
-      if (token) {
-        await fetchOrders(token);
-      }
+      if (token) await fetchOrders(token);
     } finally {
       setRefreshing(false);
     }
   }, [getToken, fetchOrders]);
 
-  /**
-   * Filtrar órdenes según el estado seleccionado
-   */
   const filteredOrders = useMemo(() => {
-    if (selectedFilter === "all") {
-      return orders;
-    }
-    if (selectedFilter === "messages") {
-      return orders; // Por ahora retorna todas, luego implementar mensajes
-    }
-    // Filtrar por status
+    if (selectedFilter === "all") return orders;
     return orders.filter((order) => {
       const normalizedStatus = order.status.toLowerCase().replace(/_/g, "");
       const filterStatus = selectedFilter.toLowerCase().replace(/_/g, "");
-
-      // Para "pending" también incluir "confirmed" y "packed"
       if (
         selectedFilter === "pending" &&
         (normalizedStatus === "pending" ||
@@ -109,16 +84,15 @@ export default function OrdersScreen() {
       ) {
         return true;
       }
-
       return normalizedStatus === filterStatus;
     });
   }, [orders, selectedFilter]);
 
-  const handleOrderPress = (orderId: string | number) => {
-    router.push(`/orders/${orderId}`);
-  };
+  const handleOrderPress = useCallback(
+    (orderId: string | number) => router.push(`/orders/${orderId}`),
+    [router]
+  );
 
-  // Loading state
   if (!isLoaded) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
@@ -128,41 +102,29 @@ export default function OrdersScreen() {
     );
   }
 
-  // Not signed in
-  if (!isSignedIn) {
-    return null;
-  }
+  if (!isSignedIn) return null;
 
-  // Empty state
   if (!isLoading && orders.length === 0) {
     return (
       <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
         <StatusBar style="dark" />
         <Stack.Screen options={{ title: "Mis órdenes" }} />
-
-        <ScrollView className="flex-1 px-4">
-          <View className="flex-1 items-center justify-center py-16">
-            <Icon as={Package} size="xl" className="text-gray-300 mb-4" />
-            <Text className="text-xl font-semibold text-black mb-2">
-              No hay órdenes todavía
-            </Text>
-            <Text className="text-center text-gray-600 mb-6">
-              Cuando hagas tu primera compra, aparecerá aquí el historial de
-              todos tus pedidos.
-            </Text>
-            <Button
-              onPress={() => router.replace("/(tabs)")}
-              className="bg-black rounded-full"
-            >
-              <ButtonText className="text-white">Ver productos</ButtonText>
-            </Button>
-          </View>
-        </ScrollView>
+        <View className="flex-1 items-center justify-center px-6">
+          <Icon as={Package} size="xl" className="text-gray-300 mb-4" />
+          <Text className="text-xl font-semibold text-black mb-2">
+            No hay órdenes todavía
+          </Text>
+          <Text className="text-center text-gray-600 mb-6">
+            Cuando hagas tu primera compra, aparecerá aquí el historial de todos tus pedidos.
+          </Text>
+          <Button onPress={() => router.replace("/")} className="bg-black rounded-full">
+            <ButtonText className="text-white">Ver productos</ButtonText>
+          </Button>
+        </View>
       </SafeAreaView>
     );
   }
 
-  // Empty filtered results
   const showEmptyFilter =
     !isLoading && filteredOrders.length === 0 && orders.length > 0;
 
@@ -180,103 +142,68 @@ export default function OrdersScreen() {
             tintColor="#000000"
           />
         }
-        contentContainerStyle={{ paddingBottom: 30 }}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
       >
         {/* Header */}
         <View className="mb-4">
           <View className="mb-4">
             <Text className="text-2xl font-bold text-black">Mis órdenes</Text>
-            <Text className="text-gray-600 mt-1">
-              Ve el estado de tus compras!
-            </Text>
+            <Text className="text-gray-600 mt-1">Ve el estado de tus compras</Text>
           </View>
 
-          {/* Botones de filtro */}
+          {/* Filter chips */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             className="flex-row gap-2"
-            contentContainerStyle={{ paddingRight: 16 }}
+            contentContainerStyle={{ paddingRight: 16, gap: 8 }}
           >
-            {filters.map((filter) => (
+            {filters.map((f) => (
               <Pressable
-                key={filter.id}
-                onPress={() => setSelectedFilter(filter.id as OrderStatus)}
-                className={`px-4 py-2 rounded-full border ${
-                  selectedFilter === filter.id
+                key={f.id}
+                onPress={() => setSelectedFilter(f.id as OrderStatus)}
+                style={{ minHeight: 44, justifyContent: "center" }}
+                className={`px-4 rounded-full border ${
+                  selectedFilter === f.id
                     ? "bg-black border-black"
                     : "bg-white border-gray-300"
                 }`}
               >
                 <Text
                   className={`font-semibold ${
-                    selectedFilter === filter.id
-                      ? "text-white"
-                      : "text-gray-700"
+                    selectedFilter === f.id ? "text-white" : "text-gray-700"
                   }`}
                 >
-                  {filter.label}
+                  {f.label}
                 </Text>
               </Pressable>
             ))}
-
-            {/* Botón de mensajes */}
-            <Pressable
-              onPress={() => setSelectedFilter("messages")}
-              className={`px-4 py-2 rounded-full border flex-row items-center gap-2 ${
-                selectedFilter === "messages"
-                  ? "bg-black border-black"
-                  : "bg-white border-gray-300"
-              }`}
-            >
-              <Icon
-                as={Package}
-                size="sm"
-                className={
-                  selectedFilter === "messages" ? "text-white" : "text-gray-700"
-                }
-              />
-              <Text
-                className={`font-semibold ${
-                  selectedFilter === "messages" ? "text-white" : "text-gray-700"
-                }`}
-              >
-                Mensajes del vendedor
-              </Text>
-            </Pressable>
           </ScrollView>
         </View>
 
-        {/* Contador de resultados */}
+        {/* Result count */}
         <View className="mb-4">
           <Text className="text-gray-600">
-            {filteredOrders.length} orden
-            {filteredOrders.length !== 1 ? "es" : ""}
+            {filteredOrders.length} orden{filteredOrders.length !== 1 ? "es" : ""}
             {selectedFilter !== "all" && " encontradas"}
           </Text>
         </View>
 
-        {/* Error message */}
+        {/* Error */}
         {error && (
           <View className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4 flex-row items-start">
-            <Icon
-              as={AlertCircle}
-              size="md"
-              className="text-red-600 mr-3 mt-0.5"
-            />
+            <Icon as={AlertCircle} size="md" className="text-red-600 mr-3 mt-0.5" />
             <View className="flex-1">
               <Text className="text-red-800 font-semibold mb-1">Error</Text>
               <Text className="text-red-700 text-sm">{error}</Text>
-              <Pressable onPress={() => clearError()} className="mt-2">
-                <Text className="text-red-600 font-semibold text-sm">
-                  Descartar
-                </Text>
+              <Pressable onPress={clearError} className="mt-2" style={{ minHeight: 44, justifyContent: "center" }}>
+                <Text className="text-red-600 font-semibold text-sm">Descartar</Text>
               </Pressable>
             </View>
           </View>
         )}
 
-        {/* Loading state */}
+        {/* Loading */}
         {isLoading && (
           <View className="flex-1 items-center justify-center py-12">
             <ActivityIndicator size="large" color="#000000" />
@@ -284,7 +211,7 @@ export default function OrdersScreen() {
           </View>
         )}
 
-        {/* Empty filter results */}
+        {/* Empty filter */}
         {showEmptyFilter && (
           <View className="items-center justify-center py-12">
             <Icon as={Package} size="xl" className="text-gray-300 mb-4" />
@@ -296,7 +223,8 @@ export default function OrdersScreen() {
             </Text>
             <Pressable
               onPress={() => setSelectedFilter("all")}
-              className="bg-black px-4 py-2 rounded-full"
+              className="bg-black px-4 rounded-full"
+              style={{ minHeight: 44, justifyContent: "center" }}
             >
               <Text className="text-white font-semibold">Ver todas</Text>
             </Pressable>
@@ -312,6 +240,34 @@ export default function OrdersScreen() {
               onPress={() => handleOrderPress(order.id)}
             />
           ))}
+
+        {/* Load more */}
+        {!isLoading && hasMore && (
+          <View className="mt-4 mb-2">
+            {selectedFilter !== "all" && (
+              <Text className="text-center text-gray-400 text-xs mb-3">
+                Puede haber más órdenes sin cargar
+              </Text>
+            )}
+            <Pressable
+              onPress={async () => {
+                const token = await getToken();
+                if (token) await loadMoreOrders(token);
+              }}
+              disabled={isLoadingMore}
+              className="rounded-full border border-gray-200 items-center justify-center flex-row gap-2 active:bg-gray-50"
+              style={{ minHeight: 48 }}
+            >
+              {isLoadingMore ? (
+                <ActivityIndicator size="small" color="#000" />
+              ) : (
+                <Text className="text-sm font-semibold text-gray-700">
+                  Cargar más órdenes
+                </Text>
+              )}
+            </Pressable>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
