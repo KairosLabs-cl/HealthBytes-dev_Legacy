@@ -50,7 +50,7 @@ const ProductListRow: React.FC<ProductListRowProps> = ({ product }) => {
           resizeMode="contain"
         />
         <View style={{ position: 'absolute', top: 4, right: 4 }}>
-          <FavoriteButton productId={product.id} size={18} />
+          <FavoriteButton productId={Number(product.id)} size={18} />
         </View>
       </Pressable>
 
@@ -68,7 +68,7 @@ const ProductListRow: React.FC<ProductListRowProps> = ({ product }) => {
 
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View style={{
-            backgroundColor: product.stock > 0 ? '#ECFDF5' : '#FEF2F2',
+            backgroundColor: (product.stock ?? 0) > 0 ? '#ECFDF5' : '#FEF2F2',
             paddingHorizontal: 8,
             paddingVertical: 4,
             borderRadius: 6
@@ -76,9 +76,9 @@ const ProductListRow: React.FC<ProductListRowProps> = ({ product }) => {
             <Text style={{
               fontSize: 10,
               fontWeight: '700',
-              color: product.stock > 0 ? '#059669' : '#DC2626'
+              color: (product.stock ?? 0) > 0 ? '#059669' : '#DC2626'
             }}>
-              {product.stock > 0 ? 'STOCK DISPONIBLE' : 'SIN STOCK'}
+              {(product.stock ?? 0) > 0 ? 'STOCK DISPONIBLE' : 'SIN STOCK'}
             </Text>
           </View>
 
