@@ -2,6 +2,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { Icon } from "@/components/ui/icon";
 import BottomNavBar from "@/components/ui/NavBar/BottomNavBar";
+import CartFlyOverlay from "@/components/CartFlyOverlay";
 import {
   Toast,
   ToastDescription,
@@ -171,6 +172,7 @@ function RootLayoutNav() {
       </Stack>
 
       <BottomNavBar />
+      <CartFlyOverlay />
 
       <OnboardingModal
         visible={showOnboarding}

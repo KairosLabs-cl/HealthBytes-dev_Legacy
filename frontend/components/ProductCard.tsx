@@ -3,10 +3,10 @@
  * Used by ProductListItem (grid) and HorizontalProductCard (horizontal scroll).
  * Change the design here and it propagates everywhere automatically.
  */
-import { memo } from "react";
+import { memo, useRef } from "react";
 import { View, Image, Pressable, Platform, GestureResponderEvent } from "react-native";
 import { Text } from "@/components/ui/text";
-import { Info } from "lucide-react-native";
+import { Info, WheatOff, Vegan, MilkOff, Gauge, Dumbbell, Heart } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import type { Product } from "@/types/product";
 import { normalizeDietaryTag } from "@/types/product";
@@ -14,12 +14,22 @@ import { formatPrice } from "@/lib/formatPrice";
 import FavoriteButton from "@/components/FavoriteButton";
 import StockBadge from "@/components/StockBadge";
 import { useCart } from "@/store/cartStore";
+import { useCartAnimation } from "@/store/cartAnimationStore";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   Easing,
 } from "react-native-reanimated";
+
+const DIETARY_ICONS: Record<string, React.ComponentType<{ size?: number; color?: string }>> = {
+  'sin-gluten':       WheatOff,
+  'vegano':           Vegan,
+  'sin-lactosa':      MilkOff,
+  'bajo-en-azucar':   Gauge,
+  'alto-en-proteina': Dumbbell,
+  'para-diabeticos':  Heart,
+};
 
 const TAG_COLORS: Record<string, { bg: string; text: string; border: string }> = {
   green:   { bg: "#F0FDF4", text: "#15803D", border: "#86EFAC" },
@@ -42,8 +52,10 @@ export type ProductCardProps = {
 function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
   const router = useRouter();
   const addProduct = useCart((state) => state.addProduct);
+  const triggerFly = useCartAnimation((s) => s.trigger);
   const isOutOfStock = product.stock === 0;
   const cartScale = useSharedValue(1);
+  const addBtnRef = useRef<any>(null);
 
   const cartAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: cartScale.value }],
@@ -53,16 +65,19 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
     e.preventDefault();
     e.stopPropagation();
     if (isOutOfStock) return;
-    cartScale.value = withTiming(0.97, { duration: 80, easing: Easing.out(Easing.ease) }, () => {
-      cartScale.value = withTiming(1, { duration: 150, easing: Easing.out(Easing.ease) });
+    cartScale.value = withTiming(0.95, { duration: 80, easing: Easing.out(Easing.ease) }, () => {
+      cartScale.value = withTiming(1, { duration: 200, easing: Easing.out(Easing.ease) });
     });
     (onAddToCart ?? (() => addProduct(product)))();
+    addBtnRef.current?.measureInWindow((x: number, y: number, w: number, h: number) => {
+      triggerFly(x + w / 2, y + h / 2);
+    });
   };
 
   const allTags = (product.dietary_tags ?? []).map(normalizeDietaryTag);
-  const storeName = product.category
+  const categoryLabel = product.category
     ? product.category.charAt(0).toUpperCase() + product.category.slice(1)
-    : "HealthBytes";
+    : null;
 
   const containerStyle = width === "full"
     ? { flex: 1 as const }
@@ -72,6 +87,8 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
     <Pressable
       onPress={() => router.push(`/product/${product.id}`)}
       style={containerStyle}
+      accessibilityLabel={`${product.name}, ${formatPrice(product.price)}`}
+      accessibilityHint="Toca para ver detalles del producto"
     >
       <View
         style={{
@@ -100,7 +117,7 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
             source={{ uri: product.image }}
             style={{
               width: "100%",
-              aspectRatio: 4 / 3,
+              aspectRatio: 1,
               borderTopLeftRadius: 20,
               borderTopRightRadius: 20,
               opacity: isOutOfStock ? 0.4 : 1,
@@ -115,10 +132,12 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
 
         {/* Content */}
         <View style={{ paddingHorizontal: 11, paddingTop: 10, paddingBottom: 12 }}>
-          {/* Store */}
-          <Text style={{ fontSize: 10, color: "#6B7280", fontWeight: "500", marginBottom: 4 }} numberOfLines={1}>
-            {storeName}
-          </Text>
+          {/* Category */}
+          {categoryLabel && (
+            <Text style={{ fontSize: 10, color: "#6B7280", fontWeight: "500", marginBottom: 4 }} numberOfLines={1}>
+              {categoryLabel}
+            </Text>
+          )}
 
           {/* Name */}
           <Text
@@ -133,6 +152,7 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 3, marginBottom: 7 }}>
               {allTags.map((tag) => {
                 const c = TAG_COLORS[tag.color || ""] || DEFAULT_TAG;
+                const TagIcon = DIETARY_ICONS[tag.name] ?? Info;
                 return (
                   <View
                     key={tag.name}
@@ -148,8 +168,8 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
                       gap: 3,
                     }}
                   >
-                    <Info size={9} color={c.text} />
-                    <Text style={{ fontSize: 9, fontWeight: "600", color: c.text }}>{tag.display_name}</Text>
+                    <TagIcon size={11} color={c.text} />
+                    <Text style={{ fontSize: 11, fontWeight: "600", color: c.text }}>{tag.display_name}</Text>
                   </View>
                 );
               })}
@@ -168,8 +188,10 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
           {/* Add to cart */}
           <Animated.View style={cartAnimatedStyle}>
             <Pressable
+              ref={addBtnRef}
               onPress={handleAddToCart}
               disabled={isOutOfStock}
+              accessibilityLabel={isOutOfStock ? `${product.name} sin stock` : `Agregar ${product.name} al carrito`}
               style={{
                 width: "100%",
                 borderRadius: 999,
