@@ -1,6 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
-import { Linking } from 'react-native';
+import { render, screen, fireEvent, waitFor, Alert } from '@testing-library/react-native';
+import { Alert as RNAlert, Linking } from 'react-native';
 import CheckoutV2Screen from '../checkout-v2';
 import { useCart } from '@/store/cartStore';
 import { useAddress } from '@/store/addressStore';
@@ -97,8 +97,8 @@ jest.mock('lucide-react-native', () => ({
   PhoneIcon: () => null,
 }));
 
-// alert no está definido en jest-expo — lo definimos como jest.fn()
-global.alert = jest.fn();
+// Mock Alert.alert from React Native
+jest.spyOn(RNAlert, 'alert');
 
 // --- Fixtures ---
 
@@ -199,7 +199,8 @@ describe('CheckoutV2Screen', () => {
       setupStores({ addresses: [mockAddress], defaultAddress: null });
       render(<CheckoutV2Screen />);
       fireEvent.press(screen.getByText('Continuar'));
-      expect(global.alert).toHaveBeenCalledWith(
+      expect(RNAlert.alert).toHaveBeenCalledWith(
+        'Dirección requerida',
         'Por favor selecciona una dirección de envío'
       );
     });
@@ -226,7 +227,8 @@ describe('CheckoutV2Screen', () => {
     it('lanza alerta si se intenta continuar sin método de pago', async () => {
       await renderAtStep('payment');
       fireEvent.press(screen.getByText('Revisar Ord.'));
-      expect(global.alert).toHaveBeenCalledWith(
+      expect(RNAlert.alert).toHaveBeenCalledWith(
+        'Método de pago requerido',
         'Por favor selecciona un método de pago'
       );
     });
@@ -333,7 +335,7 @@ describe('CheckoutV2Screen', () => {
       await renderAtStep('summary');
       fireEvent.press(screen.getByText('Confirmar Orden'));
       await waitFor(() => {
-        expect(global.alert).toHaveBeenCalledWith('Stock insuficiente');
+        expect(RNAlert.alert).toHaveBeenCalledWith('Error', 'Stock insuficiente');
       });
     });
 
@@ -345,7 +347,7 @@ describe('CheckoutV2Screen', () => {
       await renderAtStep('summary');
       fireEvent.press(screen.getByText('Confirmar Orden'));
       await waitFor(() => {
-        expect(global.alert).toHaveBeenCalledWith('Error al crear preferencia');
+        expect(RNAlert.alert).toHaveBeenCalledWith('Error', 'Error al crear preferencia');
       });
     });
 
