@@ -12,7 +12,7 @@ type OrdersState = {
   error: string | null;
 
   // Methods
-  fetchOrders: (token: string) => Promise<void>;
+  fetchOrders: (token: string, skip?: number, limit?: number) => Promise<void>;
   loadMoreOrders: (token: string) => Promise<void>;
   fetchOrderById: (
     orderId: string | number,
@@ -33,10 +33,10 @@ export const useOrders = create<OrdersState>((set, get) => ({
   /**
    * Obtener primera página de órdenes (resetea la lista)
    */
-  fetchOrders: async (token: string) => {
+  fetchOrders: async (token: string, skip = 0, limit = PAGE_SIZE) => {
     set({ isLoading: true, error: null });
     try {
-      const orders = await ordersApi.getOrders(token, 0, PAGE_SIZE);
+      const orders = await ordersApi.getOrders(token, skip, limit);
       set({
         orders: orders as Order[],
         hasMore: orders.length === PAGE_SIZE,
