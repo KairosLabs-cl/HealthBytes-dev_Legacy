@@ -1,8 +1,11 @@
+import logging
 from typing import Optional
 
 from dotenv import load_dotenv
 from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -44,6 +47,7 @@ class Settings(BaseSettings):
     # configured using FastAPI's upload mechanisms and not rely on this default.
     MAX_REQUEST_BODY_SIZE: int = 10 * 1024 * 1024  # 10 MB
     ENABLE_DIAGNOSTIC_ENDPOINTS: bool = False
+    DEV_BYPASS_AUTH: bool = False
 
     @property
     def clerk_jwks_url(self) -> str:
@@ -74,11 +78,7 @@ class Settings(BaseSettings):
 
                 return f"https://{frontend_api}/.well-known/jwks.json"
             except Exception as e:
-                print(f"Error generating JWKS URL: {e}")
-                if "key_part" in locals():
-                    print(f"Publishable key part: {key_part}")
-                if "frontend_api" in locals():
-                    print(f"Decoded frontend API: {frontend_api}")
+                logger.error("Error generating JWKS URL: %s", type(e).__name__)
         return ""
 
     model_config = ConfigDict(env_file=".env", case_sensitive=True, extra="ignore")

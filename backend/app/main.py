@@ -78,7 +78,8 @@ async def limit_request_body_size(request: Request, call_next):
         try:
             length = int(content_length)
         except (TypeError, ValueError):
-            # Non-numeric Content-Length is malformed header (400 Bad Request), not oversized payload (413)
+            # Non-numeric Content-Length is malformed (400),
+            # not oversized payload (413)
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid Content-Length header",
@@ -91,9 +92,9 @@ async def limit_request_body_size(request: Request, call_next):
             )
 
     # Read and validate actual body size (covers chunked transfer encoding)
-    # WARNING: This loads the entire request into memory. For requests near MAX_REQUEST_BODY_SIZE,
-    # this could cause memory pressure under high concurrency. Chunked requests without Content-Length
-    # will buffer up to MAX_REQUEST_BODY_SIZE before being rejected.
+    # WARNING: This loads the entire body into memory. Chunked requests
+    # without Content-Length buffer up to MAX_REQUEST_BODY_SIZE before
+    # being rejected. Plan capacity: 10 MB * concurrent reqs = RAM.
     # Consider capacity planning: 10 MB default * concurrent requests = memory footprint
     body = await request.body()
     if len(body) > settings.MAX_REQUEST_BODY_SIZE:
@@ -104,23 +105,43 @@ async def limit_request_body_size(request: Request, call_next):
     return await call_next(request)
 
 
-# CORS Configuration - Replica of Node.js CORS settings
+# CORS Configuration
+# SECURITY: Never use wildcard (*) with allow_credentials=True — browsers reject it.
+# In dev, we use a broad but explicit list of local origins.
 cors_origins = [
     "http://localhost:8081",
     "http://127.0.0.1:8081",
     "http://127.0.0.1:8082",
-    "http://0.0.0.0:8081",  # Web (local)
-    "http://10.98.204.33:8081",  # Tu IP actual (Wi-Fi)
-    "exp://10.98.204.33:8081",  # Expo Protocol
+    "http://0.0.0.0:8081",
+    "http://localhost:3000",
+    "http://localhost:19006",  # Expo web
 ]
 
-# En dev, permitir desde cualquier origen para facilitar testing
 if settings.ENVIRONMENT == "dev":
-    cors_origins = ["*"]
+    # Add common local development origins
+    cors_origins += [
+        "http://localhost:8080",
+        "http://localhost:19000",
+        "http://localhost:19001",
+        "http://10.0.0.0/8:8081",  # Private network range (covered by regex below)
+    ]
+
+# Allow private network IPs in dev via allow_origin_regex
+cors_origin_regex = None
+if settings.ENVIRONMENT == "dev":
+    # Match any http://10.x.x.x, http://192.168.x.x, http://172.16-31.x.x on common ports
+    cors_origin_regex = (
+        r"^https?://(10\.\d{1,3}\.\d{1,3}\.\d{1,3}"
+        r"|192\.168\.\d{1,3}\.\d{1,3}"
+        r"|172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}"
+        r"|localhost"
+        r")(:\d+)?$"
+    )
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
+    allow_origin_regex=cors_origin_regex,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Content-Type", "Authorization"],

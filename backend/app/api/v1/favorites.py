@@ -34,7 +34,7 @@ async def add_favorite(
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
     except Exception as e:
-        logger.error(f"Error adding favorite: {str(e)}")
+        logger.error("Error adding favorite: %s", type(e).__name__)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to add favorite"
         )
@@ -59,7 +59,7 @@ async def remove_favorite(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error removing favorite: {str(e)}")
+        logger.error("Error removing favorite: %s", type(e).__name__)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to remove favorite"
         )
@@ -82,7 +82,7 @@ async def get_favorites(
         )
         return favorites
     except Exception as e:
-        logger.error(f"Error getting favorites: {str(e)}")
+        logger.error("Error getting favorites: %s", type(e).__name__)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to get favorites"
         )
@@ -104,7 +104,7 @@ async def check_favorite(
         )
         return FavoriteCheckResponse(is_favorite=is_fav, favorite_id=fav_id)
     except Exception as e:
-        logger.error(f"Error checking favorite: {str(e)}")
+        logger.error("Error checking favorite: %s", type(e).__name__)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to check favorite"
         )
@@ -122,7 +122,7 @@ async def get_favorite_ids(
         product_ids = await favorite_service.get_favorite_product_ids(db, user_id=current_user.id)
         return product_ids
     except Exception as e:
-        logger.error(f"Error getting favorite IDs: {str(e)}")
+        logger.error("Error getting favorite IDs: %s", type(e).__name__)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to get favorite IDs"
         )

@@ -25,7 +25,7 @@ async def add_favorite(db: AsyncSession, user_id: int, product_id: int) -> UserF
             )
         )
         if existing.scalar_one_or_none():
-            logger.info(f"Product {product_id} already in favorites for user {user_id}")
+            logger.info("Product %s already in favorites for user %s", product_id, user_id)
             raise ValueError("Product already in favorites")
 
         # Create new favorite
@@ -42,12 +42,12 @@ async def add_favorite(db: AsyncSession, user_id: int, product_id: int) -> UserF
         )
         favorite_with_product = result.scalar_one()
 
-        logger.info(f"Added product {product_id} to favorites for user {user_id}")
+        logger.info("Added product %s to favorites for user %s", product_id, user_id)
         return favorite_with_product
 
     except Exception as e:
         await db.rollback()
-        logger.error(f"Error adding favorite: {str(e)}")
+        logger.error("Error adding favorite: %s", type(e).__name__)
         raise
 
 
@@ -65,18 +65,18 @@ async def remove_favorite(db: AsyncSession, user_id: int, product_id: int) -> bo
         favorite = result.scalar_one_or_none()
 
         if not favorite:
-            logger.warning(f"Favorite not found for user {user_id}, product {product_id}")
+            logger.warning("Favorite not found for user %s, product %s", user_id, product_id)
             return False
 
         await db.delete(favorite)
         await db.commit()
 
-        logger.info(f"Removed product {product_id} from favorites for user {user_id}")
+        logger.info("Removed product %s from favorites for user %s", product_id, user_id)
         return True
 
     except Exception as e:
         await db.rollback()
-        logger.error(f"Error removing favorite: {str(e)}")
+        logger.error("Error removing favorite: %s", type(e).__name__)
         raise
 
 
@@ -97,11 +97,11 @@ async def get_user_favorites(
         )
         favorites = result.scalars().all()
 
-        logger.info(f"Retrieved {len(favorites)} favorites for user {user_id}")
+        logger.info("Retrieved %s favorites for user %s", len(favorites), user_id)
         return favorites
 
     except Exception as e:
-        logger.error(f"Error getting favorites: {str(e)}")
+        logger.error("Error getting favorites: %s", type(e).__name__)
         raise
 
 
@@ -125,7 +125,7 @@ async def is_favorite(
         return (False, None)
 
     except Exception as e:
-        logger.error(f"Error checking favorite: {str(e)}")
+        logger.error("Error checking favorite: %s", type(e).__name__)
         raise
 
 
@@ -142,5 +142,5 @@ async def get_favorite_product_ids(db: AsyncSession, user_id: int) -> List[int]:
         return product_ids
 
     except Exception as e:
-        logger.error(f"Error getting favorite IDs: {str(e)}")
+        logger.error("Error getting favorite IDs: %s", type(e).__name__)
         raise

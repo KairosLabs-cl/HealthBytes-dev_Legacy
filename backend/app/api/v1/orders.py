@@ -116,7 +116,7 @@ async def create_order(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error creating order: {type(e).__name__}: {str(e)}")
+        logger.error("Error creating order: %s: %s", type(e).__name__, type(e).__name__)
         await db.rollback()
         error = ErrorResponse.server_error(
             message="An unexpected error occurred while creating the order",
@@ -191,7 +191,7 @@ async def list_orders(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error listing orders: {str(e)}")
+        logger.error("Error listing orders: %s", type(e).__name__)
         error = ErrorResponse.server_error(
             message="An error occurred while fetching orders",
             path="/api/v1/orders",
@@ -256,7 +256,7 @@ async def get_order(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error fetching order {id}: {str(e)}")
+        logger.error("Error fetching order %s: %s", id, type(e).__name__)
         error = ErrorResponse.server_error(
             message="An error occurred while fetching the order",
             path=f"/api/v1/orders/{id}",
@@ -352,7 +352,7 @@ async def update_order(
         raise
     except Exception as e:
         await db.rollback()
-        logger.error(f"Error updating order {id}: {str(e)}")
+        logger.error("Error updating order %s: %s", id, type(e).__name__)
         error = ErrorResponse.server_error(
             message="An error occurred while updating the order",
             path=f"/api/v1/orders/{id}",
@@ -399,7 +399,7 @@ async def delete_order(
         raise
     except Exception as e:
         await db.rollback()
-        logger.error(f"Error deleting order {id}: {str(e)}")
+        logger.error("Error deleting order %s: %s", id, type(e).__name__)
         error = ErrorResponse.server_error(
             message="An error occurred while deleting the order",
             path=f"/api/v1/orders/{id}",
