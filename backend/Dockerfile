@@ -1,7 +1,13 @@
 # Multi-stage build for FastAPI backend
+#
+# Python version policy:
+#   - Image uses python:3.13-slim (latest stable with official Docker image).
+#   - Local dev runs Python 3.14.2 (no stable Docker image yet as of 2026-02).
+#   - pyproject.toml requires >=3.12, so 3.13 satisfies all constraints.
+#   - When python:3.14-slim is stable, bump both stages and ci.yml together.
 
 # Stage 1: Builder
-FROM python:3.12-slim as builder
+FROM python:3.13-slim as builder
 
 WORKDIR /build
 
@@ -18,7 +24,7 @@ COPY requirements.txt .
 RUN pip install --user --no-cache-dir -r requirements.txt
 
 # Stage 2: Runtime
-FROM python:3.12-slim
+FROM python:3.13-slim
 
 WORKDIR /app
 
