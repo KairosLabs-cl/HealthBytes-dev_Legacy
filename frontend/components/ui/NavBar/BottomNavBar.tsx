@@ -32,7 +32,7 @@ const AnimatedPressable = isMobile
   : null;
 
 // Screens where the nav bar should be hidden
-const HIDDEN_ROUTES = ["/product/", "/checkout-v2"];
+const HIDDEN_ROUTES = ["/product/", "/checkout-v2", "/orders"];
 
 const TAB_CONFIG = [
   { href: "/", label: "Inicio", icon: Home, hasBadge: false },

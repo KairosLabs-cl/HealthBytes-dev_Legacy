@@ -80,8 +80,8 @@ async def login(request: Request, credentials: UserLogin, db: AsyncSession = Dep
         user = result.scalar_one_or_none()
 
         if not user:
-            # Prevent timing attacks by simulating password verification
-
+            # Prevent timing attacks by simulating password verification to prevent user enumeration.
+            # Runs a dummy bcrypt hashing even if the user is not found.
             verify_password_mock(credentials.password)
             raise HTTPException(status_code=401, detail={"error": "Authentication failed"})
 

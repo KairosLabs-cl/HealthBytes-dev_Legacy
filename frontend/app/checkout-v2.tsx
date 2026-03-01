@@ -13,12 +13,12 @@ import { useAddress } from "@/store/addressStore";
 import { useCart } from "@/store/cartStore";
 import { Address } from "@/types/address";
 import { useAuth } from "@clerk/clerk-expo";
-import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "expo-router";
-import { CheckCircleIcon, MapPinIcon, PhoneIcon } from "lucide-react-native";
+import { Stack, useRouter } from "expo-router";
+import { MapPinIcon, PhoneIcon } from "lucide-react-native";
 import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Linking,
   Pressable,
   ScrollView,
@@ -42,8 +42,6 @@ export default function CheckoutV2Screen() {
     null
   );
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [orderData, setOrderData] = useState<any>(null);
 
   useEffect(() => {
     const loadAddresses = async () => {
@@ -62,72 +60,31 @@ export default function CheckoutV2Screen() {
   }, []);
 
   const subtotal = useMemo(
-    () =>
-      items.reduce((acc, item) => acc + item.product.price * item.quantity, 0),
+    () => items.reduce((acc, item) => acc + item.product.price * item.quantity, 0),
     [items]
   );
 
-  const shipping = 0; // Envío gratis
+  const shipping = 0;
   const total = subtotal + shipping;
 
-  const createOrderMutation = useMutation({
-    mutationFn: () => {
-      if (!selectedAddress || !selectedPayment) {
-        throw new Error("Dirección y método de pago requeridos");
-      }
-
-      return createOrder(
-        items.map((item) => ({
-          productId: Number(item.product.id),
-          quantity: item.quantity,
-          price: item.product.price,
-        })),
-        selectedAddress.id,
-        selectedPayment,
-        getToken
-      );
-    },
-    onSuccess: (data) => {
-      setOrderData(data);
-      setIsProcessing(false);
-      setIsSuccess(true);
-
-      // Redirigir después de 2 segundos
-      setTimeout(() => {
-        resetCart();
-        router.replace("/orders");
-      }, 2000);
-    },
-    onError: (error) => {
-      setIsProcessing(false);
-      alert(
-        error.message ||
-          "Hubo un error al procesar la orden. Inténtalo de nuevo."
-      );
-    },
-  });
-
   const handleNext = async () => {
-    // Validar paso actual
     if (currentStep === "address" && !selectedAddress) {
-      alert("Por favor selecciona una dirección de envío");
+      Alert.alert("Dirección requerida", "Por favor selecciona una dirección de envío");
       return;
     }
 
     if (currentStep === "payment" && !selectedPayment) {
-      alert("Por favor selecciona un método de pago");
+      Alert.alert("Método de pago requerido", "Por favor selecciona un método de pago");
       return;
     }
 
-    // Ir al siguiente paso o procesar orden
     if (currentStep === "address") {
       setCurrentStep("payment");
     } else if (currentStep === "payment") {
       setCurrentStep("summary");
     } else if (currentStep === "summary") {
-      // ========== PROCESAR PAGO CON MERCADO PAGO ==========
       if (!isSignedIn) {
-        alert("Necesitas haber iniciado una sesión para realizar una compra.");
+        Alert.alert("Sesión requerida", "Necesitas iniciar sesión para realizar una compra.");
         router.push("/(auth)/login");
         return;
       }
@@ -143,7 +100,7 @@ export default function CheckoutV2Screen() {
       }
 
       if (!token) {
-        alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
+        Alert.alert("Sesión expirada", "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
         router.push("/(auth)/login");
         return;
       }
@@ -151,8 +108,7 @@ export default function CheckoutV2Screen() {
       setIsProcessing(true);
 
       try {
-        // STEP 1: Crear la orden en el backend
-        console.log("📋 Creando orden...");
+        if (__DEV__) console.log("📋 Creando orden...");
         const orderResponse = await createOrder(
           items.map((item) => ({
             productId: Number(item.product.id),
@@ -165,40 +121,32 @@ export default function CheckoutV2Screen() {
         );
 
         const orderId = orderResponse.id;
-        console.log("✅ Orden creada:", orderId);
+        if (__DEV__) console.log("✅ Orden creada:", orderId);
 
-        // STEP 2: Crear preference de Mercado Pago
-        console.log("💳 Creando preference de Mercado Pago...");
+        if (__DEV__) console.log("💳 Creando preference de Mercado Pago...");
         const preference = await createMercadoPagoPreference(
           {
             order_id: orderId,
             description: `HealthBytes Order #${orderId}`,
-            payer_email: undefined, // Opcional
+            payer_email: undefined,
           },
           getToken
         );
 
-        console.log("✅ Preference creada:", preference.preference_id);
+        if (__DEV__) console.log("✅ Preference creada:", preference.preference_id);
 
-        // STEP 3: Redirigir a Mercado Pago
-        // Use sandbox URL for testing, production URL otherwise
-        const checkoutUrl =
-          preference.sandbox_init_point || preference.init_point;
-        console.log("🔗 Redirigiendo a:", checkoutUrl);
+        const checkoutUrl = preference.sandbox_init_point || preference.init_point;
+        if (__DEV__) console.log("🔗 Redirigiendo a:", checkoutUrl);
 
         const canOpen = await Linking.canOpenURL(checkoutUrl);
         if (canOpen) {
           await Linking.openURL(checkoutUrl);
         } else {
-          console.warn("No se pudo abrir URL con Linking");
-          alert(
-            "No se pudo redirigir a Mercado Pago. Por favor, intenta nuevamente."
-          );
+          Alert.alert("Error", "No se pudo redirigir a Mercado Pago. Por favor, intenta nuevamente.");
           setIsProcessing(false);
           return;
         }
 
-        // STEP 4: Navegar a pantalla de polling mientras el usuario paga
         resetCart();
         router.replace({
           pathname: "/payment/pending",
@@ -209,9 +157,10 @@ export default function CheckoutV2Screen() {
           },
         });
       } catch (error) {
-        console.error("❌ Error durante checkout:", error);
+        if (__DEV__) console.error("❌ Error durante checkout:", error);
         setIsProcessing(false);
-        alert(
+        Alert.alert(
+          "Error",
           error instanceof Error
             ? error.message
             : "Hubo un error al procesar tu orden. Intenta nuevamente."
@@ -228,29 +177,9 @@ export default function CheckoutV2Screen() {
     }
   };
 
-  if (isSuccess) {
-    return (
-      <View className="flex-1 bg-white justify-center items-center p-6">
-        <View className="bg-green-100 p-6 rounded-full mb-6">
-          <CheckCircleIcon size={64} color="#16a34a" />
-        </View>
-        <Text className="text-2xl font-bold text-center mb-2 text-black">
-          ¡Pago Exitoso!
-        </Text>
-        <Text className="text-gray-500 text-center mb-4">
-          Tu orden ha sido procesada correctamente.
-        </Text>
-        {orderData?.id && (
-          <Text className="text-sm text-gray-400 text-center">
-            Orden ID: {orderData.id}
-          </Text>
-        )}
-      </View>
-    );
-  }
-
   return (
     <View className="flex-1 bg-white">
+      <Stack.Screen options={{ headerShown: false }} />
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1 p-6">
         {/* Header */}
         <View className="mb-8">
@@ -472,7 +401,6 @@ export default function CheckoutV2Screen() {
       {/* Bottom Action Buttons */}
       <View className="p-6 bg-white border-t border-gray-100">
         <VStack space="md">
-          {/* Back Button (visible on steps 2 and 3) */}
           {(currentStep === "payment" || currentStep === "summary") && (
             <Button
               size="lg"
@@ -487,7 +415,6 @@ export default function CheckoutV2Screen() {
             </Button>
           )}
 
-          {/* Next/Confirm Button */}
           <Button
             size="lg"
             className="bg-black h-16 rounded-full shadow-xl"
@@ -498,9 +425,7 @@ export default function CheckoutV2Screen() {
               <HStack space="md" className="items-center">
                 <ActivityIndicator color="white" />
                 <ButtonText className="text-white font-semibold text-lg">
-                  {currentStep === "summary"
-                    ? "Confirmando..."
-                    : "Procesando..."}
+                  {currentStep === "summary" ? "Confirmando..." : "Procesando..."}
                 </ButtonText>
               </HStack>
             ) : (
