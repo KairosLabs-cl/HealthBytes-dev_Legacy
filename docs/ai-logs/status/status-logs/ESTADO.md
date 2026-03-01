@@ -504,7 +504,7 @@ main (production-ready)
 ### Code Quality
 - **Linting**: Black (Python), ESLint (TypeScript)
 - **Type Checking**: mypy (Python), tsc (TypeScript)
-- **Testing**: pytest (Python), Jest (React Native — tests escritos, Babel/Jest bloqueado)
+- **Testing**: pytest (Python), Jest (React Native — 126 tests passing, 13 suites ✅)
 - **Documentation**: Inline docstrings + READMEs
 
 ### CI/CD Pipeline (Planned)

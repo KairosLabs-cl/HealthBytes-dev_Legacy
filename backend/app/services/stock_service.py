@@ -3,6 +3,7 @@ Stock Service
 Business logic for inventory management with race condition prevention
 """
 
+import logging
 from enum import Enum
 from typing import Any, Dict, Optional
 
@@ -11,6 +12,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.schemas import Product
+
+logger = logging.getLogger(__name__)
 
 
 class StockStatus(str, Enum):
@@ -106,7 +109,17 @@ class StockService:
             )
 
         # Reserve stock (reduce)
+        old_stock = product.stock
         product.stock -= quantity
+
+        logger.info(
+            "AUDIT | op=stock_reserve | product=%s | qty=%s | old_stock=%s | new_stock=%s | order=%s",
+            product_id,
+            quantity,
+            old_stock,
+            product.stock,
+            order_id,
+        )
 
         # NOTE: Changes will be committed by the calling transaction
         # Do NOT commit here - let the order creation handle it
@@ -172,8 +185,17 @@ class StockService:
         # Pass 2: apply all decrements only after full validation succeeds
         updated_products = []
         for pid, qty in sorted_items:
+            old_stock = products_map[pid].stock
             products_map[pid].stock -= qty
             updated_products.append(products_map[pid])
+
+            logger.info(
+                "AUDIT | op=stock_reserve_batch | product=%s | qty=%s | old_stock=%s | new_stock=%s",
+                pid,
+                qty,
+                old_stock,
+                products_map[pid].stock,
+            )
 
         # Changes are committed by the caller
         return updated_products
@@ -209,7 +231,17 @@ class StockService:
             )
 
         # Return stock
+        old_stock = product.stock
         product.stock += quantity
+
+        logger.info(
+            "AUDIT | op=stock_release | product=%s | qty=%s | old_stock=%s | new_stock=%s | reason=%s",
+            product_id,
+            quantity,
+            old_stock,
+            product.stock,
+            reason,
+        )
 
         await db.commit()
         await db.refresh(product)
@@ -247,14 +279,19 @@ class StockService:
                 detail={"message": f"Product {product_id} not found"},
             )
 
+        old_stock = product.stock
         product.stock = new_stock
+
+        logger.info(
+            "AUDIT | op=stock_admin_update | user=%s | product=%s | old_stock=%s | new_stock=%s",
+            admin_user_id,
+            product_id,
+            old_stock,
+            new_stock,
+        )
 
         await db.commit()
         await db.refresh(product)
-
-        # TODO: Log stock change for audit trail
-        # logger.info(f"Stock updated by admin {admin_user_id}: "
-        #            f"Product {product_id} from {old_stock} to {new_stock}")
 
         return product
 

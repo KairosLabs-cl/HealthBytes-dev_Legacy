@@ -104,6 +104,14 @@ async def create_order(db: AsyncSession, user_id: int, order_in: OrderCreate) ->
 
     await db.commit()
 
+    logger.info(
+        "AUDIT | op=order_create | user=%s | order=%s | total=%s | items=%s",
+        user_id,
+        new_order.id,
+        total,
+        len(validated_items),
+    )
+
     # Fetch order with items in a single efficient query
     result = await db.execute(
         select(Order).where(Order.id == new_order.id).options(selectinload(Order.items))
@@ -195,6 +203,14 @@ async def update_order_status(db: AsyncSession, order_id: int, status: str) -> O
             )
 
     db_order.status = status
+
+    logger.info(
+        "AUDIT | op=order_status_change | order=%s | from=%s | to=%s",
+        order_id,
+        current_status,
+        status,
+    )
+
     await db.commit()
     await db.refresh(db_order)
     return db_order
