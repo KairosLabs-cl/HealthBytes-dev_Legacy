@@ -44,7 +44,7 @@ async def list_users(
             for user in users
         ]
     except Exception as e:
-        logger.error(f"Error listing users: {str(e)}")
+        logger.error("Error listing users: %s", type(e).__name__)
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
@@ -79,7 +79,7 @@ async def get_user_by_id(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error getting user {id}: {str(e)}")
+        logger.error("Error getting user %s: %s", id, type(e).__name__)
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
@@ -129,7 +129,7 @@ async def update_user(
         raise
     except Exception as e:
         await db.rollback()
-        logger.error(f"Error updating user {id}: {str(e)}")
+        logger.error("Error updating user %s: %s", id, type(e).__name__)
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
@@ -157,7 +157,11 @@ async def update_my_dietary_preferences(
         raise
     except Exception as e:
         await db.rollback()
-        logger.error(f"Error updating dietary preferences for user {current_user.id}: {str(e)}")
+        logger.error(
+            "Error updating dietary preferences for user %s: %s",
+            current_user.id,
+            type(e).__name__,
+        )
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
@@ -186,5 +190,5 @@ async def delete_user(
         raise
     except Exception as e:
         await db.rollback()
-        logger.error(f"Error deleting user {id}: {str(e)}")
+        logger.error("Error deleting user %s: %s", id, type(e).__name__)
         raise HTTPException(status_code=500, detail="Internal Server Error")

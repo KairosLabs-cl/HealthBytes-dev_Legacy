@@ -49,8 +49,20 @@ async def list_products(
             max_price=max_price,
         )
     except Exception as e:
-        logger.error(f"Error listing/searching products: {str(e)}")
+        logger.error("Error listing/searching products: %s", type(e).__name__)
         raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+@router.get("/featured", response_model=ProductResponse)
+async def get_featured_product(db: AsyncSession = Depends(get_db)):
+    """
+    GET /products/featured
+    Get the newest in-stock product for the hero banner.
+    """
+    product = await product_service.get_featured_product(db)
+    if not product:
+        raise HTTPException(status_code=404, detail="No featured product available")
+    return product
 
 
 @router.get("/batch", response_model=List[ProductResponse])
@@ -71,7 +83,7 @@ async def get_products_by_ids(ids: str, db: AsyncSession = Depends(get_db)):
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid ID format")
     except Exception as e:
-        logger.error(f"Error getting products batch: {str(e)}")
+        logger.error("Error getting products batch: %s", type(e).__name__)
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
@@ -92,7 +104,7 @@ async def get_product_by_id(id: int, db: AsyncSession = Depends(get_db)):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error getting product {id}: {str(e)}")
+        logger.error("Error getting product %s: %s", id, type(e).__name__)
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
@@ -110,7 +122,7 @@ async def create_product(
     try:
         return await product_service.create_product(db, product_data)
     except Exception as e:
-        logger.error(f"Error creating product: {str(e)}")
+        logger.error("Error creating product: %s", type(e).__name__)
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
@@ -136,7 +148,7 @@ async def update_product(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error updating product {id}: {str(e)}")
+        logger.error("Error updating product %s: %s", id, type(e).__name__)
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
@@ -159,5 +171,5 @@ async def delete_product(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error deleting product {id}: {str(e)}")
+        logger.error("Error deleting product %s: %s", id, type(e).__name__)
         raise HTTPException(status_code=500, detail="Internal Server Error")

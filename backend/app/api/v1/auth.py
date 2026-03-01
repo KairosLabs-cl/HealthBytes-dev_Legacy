@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,6 +14,8 @@ from app.core.security import (
 from app.db.database import get_db
 from app.db.schemas import User
 from app.schemas.user import UserCreate, UserLogin, UserResponse, UserWithToken
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -61,7 +65,7 @@ async def register(request: Request, user_data: UserCreate, db: AsyncSession = D
     except HTTPException:
         raise
     except Exception as e:
-        print(e)
+        logger.error("Registration failed: %s", type(e).__name__)
         await db.rollback()
         raise HTTPException(status_code=500, detail="Something went wrong")
 
@@ -103,5 +107,5 @@ async def login(request: Request, credentials: UserLogin, db: AsyncSession = Dep
     except HTTPException:
         raise
     except Exception as e:
-        print(e)
+        logger.error("Login failed: %s", type(e).__name__)
         raise HTTPException(status_code=500, detail="Something went wrong")

@@ -57,6 +57,18 @@ async def list_products(
     return result.scalars().all()
 
 
+async def get_featured_product(db: AsyncSession) -> Optional[Product]:
+    """Return the newest in-stock product to use as hero banner."""
+    result = await db.execute(
+        select(Product)
+        .options(selectinload(Product.dietary_tags))
+        .where(Product.stock > 0)
+        .order_by(Product.id.desc())
+        .limit(1)
+    )
+    return result.scalar_one_or_none()
+
+
 async def get_product(db: AsyncSession, product_id: int) -> Optional[Product]:
     """
     Get product by ID with dietary tags loaded.
@@ -209,7 +221,7 @@ async def search_products(
 
     except Exception as e:
         # Log error and fallback to simple LIKE search
-        logger.warning(f"Full-text search failed, falling back to LIKE: {str(e)}")
+        logger.warning("Full-text search failed, falling back to LIKE: %s", type(e).__name__)
 
         # Fallback: simple LIKE search in name and description
         search_pattern = f"%{clean_query}%"

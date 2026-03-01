@@ -1,28 +1,79 @@
 """Authentication endpoints tests."""
 
+import logging
 from unittest.mock import patch
 
 import pytest
 
-
-@pytest.mark.unit
-@pytest.mark.auth
-def test_register_user(client, sample_user_data):
-    """Test POST /auth/register endpoint."""
-    response = client.post("/auth/register", json=sample_user_data)
-    # Adjust status codes based on actual implementation
-    assert response.status_code in [200, 201, 400, 409]
+from app.core.security import get_password_hash
 
 
 @pytest.mark.unit
 @pytest.mark.auth
-def test_login_user(client, sample_user_data):
-    """Test POST /auth/login endpoint."""
-    response = client.post(
-        "/auth/login",
-        json={"email": sample_user_data["email"], "password": sample_user_data["password"]},
+def test_register_user_success(client):
+    """Test POST /auth/register creates user and returns token."""
+    data = {"email": "new@example.com", "password": "SecurePass123", "name": "New User"}
+    response = client.post("/auth/register", json=data)
+    assert response.status_code == 201
+    body = response.json()
+    assert "token" in body
+    assert body["user"]["email"] == "new@example.com"
+    assert body["user"]["role"] == "user"
+
+
+@pytest.mark.unit
+@pytest.mark.auth
+def test_register_user_duplicate_email(client, db_session):
+    """Test POST /auth/register with duplicate email returns 400."""
+    from tests.conftest import create_test_user
+
+    create_test_user(db_session, email="dup@example.com", password=get_password_hash("pass1234"))
+    data = {"email": "dup@example.com", "password": "AnotherPass1", "name": "Dup User"}
+    response = client.post("/auth/register", json=data)
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Something went wrong"
+
+
+@pytest.mark.unit
+@pytest.mark.auth
+def test_register_user_missing_fields(client):
+    """Test POST /auth/register with missing fields returns 422."""
+    response = client.post("/auth/register", json={"email": "x@example.com"})
+    assert response.status_code == 422
+
+
+@pytest.mark.unit
+@pytest.mark.auth
+def test_login_user_success(client, db_session):
+    """Test POST /auth/login with correct credentials returns token."""
+    from tests.conftest import create_test_user
+
+    create_test_user(
+        db_session, email="login@example.com", password=get_password_hash("MyPassword1")
     )
-    assert response.status_code in [200, 401, 404]
+    response = client.post(
+        "/auth/login", json={"email": "login@example.com", "password": "MyPassword1"}
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert "token" in body
+    assert body["user"]["email"] == "login@example.com"
+
+
+@pytest.mark.unit
+@pytest.mark.auth
+def test_login_user_wrong_password(client, db_session):
+    """Test POST /auth/login with wrong password returns 401."""
+    from tests.conftest import create_test_user
+
+    create_test_user(
+        db_session, email="wrongpw@example.com", password=get_password_hash("RealPass1")
+    )
+    response = client.post(
+        "/auth/login", json={"email": "wrongpw@example.com", "password": "WrongPass1"}
+    )
+    assert response.status_code == 401
+    assert response.json() == {"detail": {"error": "Authentication failed"}}
 
 
 @pytest.mark.unit
@@ -40,16 +91,7 @@ def test_login_user_not_found(client):
 @pytest.mark.unit
 @pytest.mark.auth
 def test_login_user_not_found_calls_mock_verification(client):
-    """Verify that verify_password_mock is called when the email does not exist.
-
-    This test enforces the anti-timing-attack contract: when a login attempt is made
-    with an unknown email, the endpoint MUST invoke verify_password_mock() to simulate
-    bcrypt work and keep response times indistinguishable from a real failed login.
-
-    Note: actual timing equality is not asserted here — doing so reliably requires
-    integration/load tests in a controlled environment. This test only ensures the
-    code path that provides the protection is not accidentally removed.
-    """
+    """Verify that verify_password_mock is called when the email does not exist."""
     with patch("app.api.v1.auth.verify_password_mock") as mock_verify:
         response = client.post(
             "/auth/login",
@@ -57,3 +99,41 @@ def test_login_user_not_found_calls_mock_verification(client):
         )
     assert response.status_code == 401
     mock_verify.assert_called_once_with("somepassword")
+
+
+@pytest.mark.unit
+@pytest.mark.auth
+def test_login_missing_fields(client):
+    """Test POST /auth/login with missing fields returns 422."""
+    response = client.post("/auth/login", json={"email": "x@example.com"})
+    assert response.status_code == 422
+
+
+@pytest.mark.unit
+@pytest.mark.auth
+def test_register_exception_logging(client, caplog):
+    """Test that unexpected exceptions during registration are logged, not printed."""
+    with patch("app.api.v1.auth.get_password_hash", side_effect=RuntimeError("boom")):
+        with caplog.at_level(logging.ERROR, logger="app.api.v1.auth"):
+            response = client.post(
+                "/auth/register",
+                json={"email": "exc@example.com", "password": "Pwd12345", "name": "Exc"},
+            )
+    assert response.status_code == 500
+    assert "Registration failed" in caplog.text
+
+
+@pytest.mark.unit
+@pytest.mark.auth
+def test_login_exception_logging(client, caplog):
+    """Test that unexpected exceptions during login are logged, not printed."""
+    with patch(
+        "app.api.v1.auth.verify_password_mock", side_effect=RuntimeError("boom")
+    ):
+        with caplog.at_level(logging.ERROR, logger="app.api.v1.auth"):
+            response = client.post(
+                "/auth/login",
+                json={"email": "exc2@example.com", "password": "Pwd12345"},
+            )
+    assert response.status_code == 500
+    assert "Login failed" in caplog.text

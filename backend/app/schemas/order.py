@@ -11,7 +11,7 @@ class OrderItemCreate(BaseModel):
 
     product_id: int = Field(..., gt=0, alias="productId", description="Product ID must be positive")
     quantity: int = Field(..., ge=1, le=1000, description="Quantity must be 1-1000")
-    price: int = Field(..., gt=0, description="Price in CLP (integer, no decimals)")
+    price: Optional[int] = Field(None, description="Ignored — price is always fetched from DB")
 
     @field_validator("quantity")
     @classmethod
@@ -21,16 +21,6 @@ class OrderItemCreate(BaseModel):
             raise ValueError("Quantity must be at least 1")
         if v > 1000:
             raise ValueError("Quantity cannot exceed 1000 per item")
-        return v
-
-    @field_validator("price")
-    @classmethod
-    def validate_price(cls, v: int) -> int:
-        """Ensure price is reasonable"""
-        if v <= 0:
-            raise ValueError("Price must be positive")
-        if v > 999999999:
-            raise ValueError("Price is unreasonably high")
         return v
 
 
