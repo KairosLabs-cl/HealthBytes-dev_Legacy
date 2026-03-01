@@ -15,7 +15,8 @@ import { Address } from "@/types/address";
 import { useAuth } from "@clerk/clerk-expo";
 import { Stack, useRouter } from "expo-router";
 import { MapPinIcon, PhoneIcon } from "lucide-react-native";
-import { useEffect, useMemo, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -42,6 +43,7 @@ export default function CheckoutV2Screen() {
     null
   );
   const [isProcessing, setIsProcessing] = useState(false);
+  const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
     const loadAddresses = async () => {
@@ -57,7 +59,7 @@ export default function CheckoutV2Screen() {
       }
     };
     loadAddresses();
-  }, []);
+  }, [getToken, fetchAddresses]);
 
   const subtotal = useMemo(
     () => items.reduce((acc, item) => acc + item.product.price * item.quantity, 0),
@@ -80,8 +82,10 @@ export default function CheckoutV2Screen() {
 
     if (currentStep === "address") {
       setCurrentStep("payment");
+      scrollRef.current?.scrollTo({ y: 0, animated: true });
     } else if (currentStep === "payment") {
       setCurrentStep("summary");
+      scrollRef.current?.scrollTo({ y: 0, animated: true });
     } else if (currentStep === "summary") {
       if (!isSignedIn) {
         Alert.alert("Sesión requerida", "Necesitas iniciar sesión para realizar una compra.");
@@ -172,15 +176,17 @@ export default function CheckoutV2Screen() {
   const handleBack = () => {
     if (currentStep === "payment") {
       setCurrentStep("address");
+      scrollRef.current?.scrollTo({ y: 0, animated: true });
     } else if (currentStep === "summary") {
       setCurrentStep("payment");
+      scrollRef.current?.scrollTo({ y: 0, animated: true });
     }
   };
 
   return (
-    <View className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white" edges={['top', 'bottom']}>
       <Stack.Screen options={{ headerShown: false }} />
-      <ScrollView showsVerticalScrollIndicator={false} className="flex-1 p-6">
+      <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false} className="flex-1 p-6">
         {/* Header */}
         <View className="mb-8">
           <Text className="text-3xl font-bold text-black mb-2">Checkout</Text>
@@ -247,14 +253,14 @@ export default function CheckoutV2Screen() {
 
                         {/* Checkbox */}
                         <View
-                          className={`w-6 h-6 rounded border-2 items-center justify-center ml-3 ${
+                          className={`w-6 h-6 rounded-full border-2 items-center justify-center ml-3 ${
                             selectedAddress?.id === address.id
                               ? "border-blue-600 bg-blue-600"
                               : "border-gray-300"
                           }`}
                         >
                           {selectedAddress?.id === address.id && (
-                            <Text className="text-white font-bold">✓</Text>
+                            <View className="w-3 h-3 rounded-full bg-white" />
                           )}
                         </View>
                       </HStack>
@@ -433,13 +439,13 @@ export default function CheckoutV2Screen() {
                 {currentStep === "address"
                   ? "Continuar"
                   : currentStep === "payment"
-                    ? "Revisar Ord."
+                    ? "Revisar Orden"
                     : "Confirmar Orden"}
               </ButtonText>
             )}
           </Button>
         </VStack>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

@@ -153,7 +153,7 @@ async function renderAtStep(step: 'address' | 'payment' | 'summary') {
   if (step === 'payment') return;
 
   fireEvent.press(screen.getByTestId('payment-selector'));
-  fireEvent.press(screen.getByText('Revisar Ord.'));
+  fireEvent.press(screen.getByText('Revisar Orden'));
   await waitFor(() => screen.getByText('Confirmar Orden'));
 }
 
@@ -227,7 +227,7 @@ describe('CheckoutV2Screen', () => {
 
     it('lanza alerta si se intenta continuar sin método de pago', async () => {
       await renderAtStep('payment');
-      fireEvent.press(screen.getByText('Revisar Ord.'));
+      fireEvent.press(screen.getByText('Revisar Orden'));
       expect(alertMock).toHaveBeenCalledWith(
         'Método de pago requerido',
         'Por favor selecciona un método de pago'
