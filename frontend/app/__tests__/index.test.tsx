@@ -111,9 +111,9 @@ jest.mock('react-native-reanimated', () => {
 jest.mock('@/components/HomeSkeleton', () => () => null);
 
 jest.mock('expo-router', () => ({
-  Stack: {
-    Screen: () => null,
-  },
+  Stack: { Screen: () => null },
+  useRouter: () => ({ push: jest.fn(), replace: jest.fn(), back: jest.fn() }),
+  useLocalSearchParams: () => ({}),
 }));
 
 jest.mock('react-native-safe-area-context', () => ({
