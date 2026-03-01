@@ -1,8 +1,8 @@
 # 🏗️ HealthBytes - Arquitectura Técnica
 
-**Fecha**: Febrero 24, 2026
-**Versión**: MVP v2.3.1 - Security Hardened + Payments
-**Estado**: ✅ Minimatch HIGH vulnerability resuelto + Clerk actualizado
+**Fecha**: Febrero 28, 2026
+**Versión**: MVP v2.4.0 - UX Refinement + Navigation Polish
+**Estado**: ✅ Minimatch HIGH resuelto + Payments + UX refinado + nuevas pantallas
 
 ---
 
@@ -269,27 +269,71 @@ GET    /api/v1/auth/me           # Get current user
 
 ### Component Structure
 ```
-app/                    # Screens (Expo Router)
-├── _layout.tsx        # Root layout + Clerk provider
-├── index.tsx          # Home (products + filters)
-├── cart.tsx           # Shopping cart
-├── checkout.tsx       # Payment flow
-└── product/[id].tsx   # Product details
+app/                         # Screens (Expo Router file-based)
+├── _layout.tsx             # Root layout + Clerk provider
+├── index.tsx               # Home (products + filters)
+├── cart.tsx                # Shopping cart
+├── checkout-v2.tsx         # Payment flow (StepIndicator)
+├── product/[id].tsx        # Product details
+├── orders.tsx              # Orders list
+├── orders/[id].tsx         # Order detail
+├── wishlist.tsx            # Wishlist/Favorites
+├── addresses.tsx           # Address management CRUD
+├── profile.tsx             # User profile
+├── profile-settings.tsx    # Profile settings
+├── search.tsx              # Full-text search
+├── recently-viewed.tsx     # Recently viewed products
+├── dietary-preferences.tsx # Dietary prefs (en progreso)
+├── security.tsx            # Security settings
+├── messages.tsx            # Messages (básico)
+├── support.tsx             # Support (básico)
+├── all-products.tsx        # All products listing
+├── payments.tsx            # Payment methods
+├── payment/                # Payment status screens
+│   ├── success.tsx
+│   ├── failure.tsx
+│   └── pending.tsx
+└── (auth)/login.tsx        # Auth screen
 
-components/            # Reusable UI
-├── ui/               # Gluestack components
-├── ProductCard.tsx   # Product display
-├── QuickFilters.tsx  # Category filters
-└── Header.tsx        # Navigation header
+components/                  # Reusable UI
+├── ui/                     # Gluestack components + BottomNavBar
+├── ProductCard.tsx          # Product card (shared)
+├── DietaryFilterBar.tsx     # Dietary filter chips (shared)
+├── AddressCard.tsx          # Address display
+├── CartItem.tsx             # Cart item row
+├── DietaryBadge.tsx         # Dietary tag badge
+├── ErrorBoundary.tsx        # Error boundary
+├── FavoriteButton.tsx       # Favorite toggle
+├── FavoritesBar.tsx         # Horizontal favorites list
+├── HomeSkeleton.tsx         # Home skeleton loader
+├── HorizontalProductCard.tsx # Product card horizontal
+├── OnboardingModal.tsx      # Onboarding (en progreso)
+├── OrderListItem.tsx        # Order list row
+├── PaymentMethodSelector.tsx # Payment method UI
+├── ProductCardSkeleton.tsx   # Product skeleton
+├── ProductListItem.tsx      # Product list row
+├── ProductListRow.tsx       # Product grid row
+├── RecentlyViewedBar.tsx    # Recently viewed bar
+├── RecentOrders.tsx         # Recent orders component
+├── SectionHeader.tsx        # Section header
+├── StepIndicator.tsx        # Checkout step indicator
+├── StockBadge.tsx           # Stock status badge
+└── WishlistTableRow.tsx     # Wishlist row
 
-store/                # State management
-├── cartStore.ts      # Cart state + API sync
-└── authStore.ts      # Auth state (planned)
+store/                       # Zustand state management
+├── cartStore.ts             # Cart state + API sync
+├── authStore.ts             # Auth state
+├── addressStore.ts          # Addresses CRUD
+├── favoritesStore.ts        # Favorites/wishlist
+├── orderStore.ts            # Orders state
+├── productFiltersStore.ts   # Filter persistence
+├── preferencesStore.ts      # Dietary preferences
+└── recentlyViewedStore.ts   # Recently viewed
 
-api/                  # HTTP clients
-├── products.ts       # Product API calls
-├── cart.ts           # Cart API calls
-└── orders.ts         # Order API calls
+api/                         # HTTP clients
+├── products.ts              # Product API calls
+├── cart.ts                  # Cart API calls
+└── orders.ts                # Order API calls
 ```
 
 ### State Management (Zustand)
@@ -460,7 +504,7 @@ main (production-ready)
 ### Code Quality
 - **Linting**: Black (Python), ESLint (TypeScript)
 - **Type Checking**: mypy (Python), tsc (TypeScript)
-- **Testing**: pytest (Python), Jest (planned)
+- **Testing**: pytest (Python), Jest (React Native — tests escritos, Babel/Jest bloqueado)
 - **Documentation**: Inline docstrings + READMEs
 
 ### CI/CD Pipeline (Planned)
@@ -507,14 +551,19 @@ main (production-ready)
 ## 🚨 Known Issues & Technical Debt
 
 ### High Priority
-- **Test Coverage**: Backend ~58% (target 80%)
-- **Error Handling**: Some endpoints lack proper error responses
-- **Database Migrations**: Manual schema changes (Alembic planned)
+- **Database Migrations**: Alembic activo pero migraciones manuales en algunos cambios
+- **Webhooks Mercado Pago**: Confirmación de pagos pendiente
+- **Pydantic V2 warnings**: 67 deprecation warnings (`class Config` → `model_config`)
 
 ### Medium Priority
-- **Frontend Tests**: No automated testing yet
-- **Performance**: N+1 queries in some endpoints
-- **Security**: Password truncation (bcrypt 72 byte limit)
+- **Performance**: Revisar N+1 restantes (orders ya resuelto)
+- **Security**: bcrypt 72-byte truncation (ya implementado workaround)
+- **E2E Tests**: Checkout flow sin tests end-to-end
+
+### Low Priority
+- **Documentation**: API docs incompletos
+- **Monitoring**: Sin logging/metrics en producción
+- **Docker**: Paths corregidas pero no completamente funcional
 
 ### Low Priority
 - **Documentation**: API docs incomplete

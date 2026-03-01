@@ -6,7 +6,14 @@
       "Skill(mobile-design:*)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:api.github.com)"
+      "WebFetch(domain:api.github.com)",
+      "Bash(pnpm test)",
+      "Bash(pnpm test --testPathPattern=\"index.test\")",
+      "Bash(python:*)",
+      "Bash(.venv/Scripts/python:*)",
+      "Bash(git:*)",
+      "Bash(find:*)",
+      "Bash(pnpm ls:*)"
     ]
   }
 }
