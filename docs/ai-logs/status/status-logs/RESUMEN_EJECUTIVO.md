@@ -1,8 +1,8 @@
 # 📊 HealthBytes - Resumen Ejecutivo
 
-**Fecha**: 24 de Febrero, 2026
-**Versión**: MVP v2.3.1 - Security Hardened + Payments
-**Estado**: ✅ Payments integrados + Security vulnerabilities resueltas
+**Fecha**: 28 de Febrero, 2026
+**Versión**: MVP v2.4.0 - UX Refinement + Navigation Polish
+**Estado**: ✅ UX refinado + navegación completa + nuevas pantallas integradas
 
 ---
 
@@ -16,12 +16,12 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  ESTADO DEL PROYECTO - FEBRERO 24, 2026                     │
+│  ESTADO DEL PROYECTO - FEBRERO 28, 2026                     │
 ├─────────────────────────────────────────────────────────────┤
-│  Fase:              Payment Integration + Security Hardened │
-│  Status:            ✅ Payments E2E + Security vulnerables OK │
-│  Milestone:         Checkout funcional + minimatch HIGH fix │
-│  Progreso General:  █████████░ 85%                          │
+│  Fase:              UX Refinement + Navigation Polish       │
+│  Status:            ✅ Navigation completa + nuevas pantallas│
+│  Milestone:         feat/refine-nav-and-ux mergeada ✅ (7949235) │
+│  Progreso General:  █████████░ ~90%                         │
 └─────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────┐
@@ -38,9 +38,9 @@
 │  TESTING & CALIDAD                                          │
 ├─────────────────────────────────────────────────────────────┤
 │  Backend Tests:     ✅ Green (suite estable)                 │
-│  Frontend Tests:    ✅ +67 tests nuevos (Zustand + API)      │
+│  Frontend Tests:    ✅ 126 tests passing (13 suites)          │
 │  Failures:          0 ✅                                    │
-│  Coverage:          85% (target alcanzado)                  │
+│  Coverage:          Backend 366 tests / Frontend 126 tests   │
 │  Python:            3.14.2 ✅ Configurado                   │
 │  Security Tests:    16 tests ✅                             │
 │  Performance Tests: 9 tests ✅                              │
@@ -66,6 +66,11 @@
 │  ✅ Información Nutricional (DB + UI)                       │
 │  ✅ Favoritos/Wishlist                                      │
 │  ✅ Payment Integration (Mercado Pago)                      │
+│  ✅ Profile completo (profile.tsx + profile-settings.tsx)   │
+│  ✅ Security Screen                                         │
+│  🟡 Dietary Preferences (dietary-preferences.tsx + store)  │
+│  🟡 Messages / Support screens (básicos)                    │
+│  🟡 Webhooks payment confirmation (pendiente)               │
 │  📋 Filtros Avanzados (Alérgenos)                           │
 │  📋 Recomendaciones (ML)                                    │
 │  📋 Admin Dashboard                                         │
@@ -87,7 +92,9 @@
 | **Febrero 2026** | Address CRUD + Stock Management | ✅ |
 | **Febrero 2026** | Payment Flow (Mercado Pago) | ✅ |
 | **Febrero 24, 2026** | Security: Dependency Hardening (minimatch HIGH fix) | ✅ |
-| Marzo (Est.) | Docker + CI/CD | 📋 |
+| **Febrero 28, 2026** | UX Refinement: home polish, new screens, nav refactor | ✅ |
+| **Febrero 28, 2026** | Merge feat/refine-nav-and-ux → master (7949235) | ✅ |
+| Marzo (Est.) | Docker + CI/CD completo | 📋 |
 | Abril (Est.) | MVP Launch | 📋 |
 
 ---
@@ -108,8 +115,8 @@
 | Aspecto | Tecnología | Versión |
 |--------|------------|---------|
 | Lenguaje | TypeScript | Latest |
-| Framework | React Native | 0.76.5 |
-| Bundler | Expo | ~52.0.0 |
+| Framework | React Native | 0.81.5 |
+| Bundler | Expo | ~54.0.33 |
 | UI Kit | Gluestack | Latest |
 | State | Zustand | Latest |
 | Router | Expo Router | File-based |
@@ -277,12 +284,17 @@ Objetivo: Staging environment live
 - Frontend: React Native Specialist
 - DevOps: AWS/Docker Specialist
 
-**Próxima Revisión**: 27 de Febrero, 2026
+**Próxima Revisión**: 7 de Marzo, 2026
 
 **Acciones Inmediatas**:
 1. ✅ Test suite estabilizado (backend + frontend)
 2. ✅ Mercado Pago integration end-to-end
-3. ⏳ Resolver warnings Pydantic V2 y cleanup de dependencias
+3. ✅ UX refinement + nuevas pantallas (feat/refine-nav-and-ux)
+4. ✅ Merge rama feat/refine-nav-and-ux a master (commit 7949235, Feb 28)
+5. ✅ Tests frontend estabilizados (126 tests, 13 suites — commits b029752, b9dd11c, 88686f4)
+6. ⏳ Webhooks Mercado Pago (confirmación de pagos)
+7. ⏳ Resolver warnings Pydantic V2 (67 warnings)
+8. ⏳ Docker + CI/CD setup
 
 ---
 
@@ -298,4 +310,4 @@ Objetivo: Staging environment live
 
 ---
 
-**Última actualización**: 23 de Febrero, 2026
+**Última actualización**: 28 de Febrero, 2026

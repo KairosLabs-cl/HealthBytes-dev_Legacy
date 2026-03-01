@@ -1,7 +1,7 @@
 # 🗺️ HealthBytes - Roadmap Completo 2026
 
-> **📅 Última actualización**: Febrero 16, 2026  
-> **🎯 Estado del Proyecto**: MVP en Estadio Final - Payment Integration Activo  
+> **📅 Última actualización**: Febrero 28, 2026
+> **🎯 Estado del Proyecto**: MVP en Estadio Final - UX Refinement + Navigation Polish
 > **🚀 Versión Target**: v1.0.0 (Marzo-Abril 2026)
 
 ---
@@ -14,9 +14,9 @@
 
 | Objetivo | Target | Status |
 |----------|--------|--------|
-| 🚢 **MVP Launch** | Marzo-Abril 2026 | 🟠 En progreso (80% completo) |
+| 🚢 **MVP Launch** | Marzo-Abril 2026 | 🟠 En progreso (~90% completo) |
 | 👥 **Beta Users** | 100 usuarios | 🟡 Próximo sprint |
-| 💳 **Payment Live** | Marzo 2026 | 🟡 Integración Mercado Pago 80% |
+| 💳 **Payment Live** | Marzo 2026 | 🟡 Mercado Pago integrado, webhooks pendientes |
 | 🐳 **Dockerized** | Marzo 2026 | 🟡 Docker paths corregidas |
 | �️ **Security Hardened** | Febrero 2026 | ✅ Completado (minimatch HIGH resuelto) |
 | �📱 **App Store** | Mayo 2026 | 📋 Planeado |
@@ -59,23 +59,30 @@
 
 | Feature | Estado | Evidencia |
 |---------|--------|-----------|
-| **Bottom Navigation** | ✅ Completo | 3 tabs (Home, Cart, Profile) |
-| **Product Listing** | ✅ Completo | Grid con infinite scroll |
-| **Product Detail** | ✅ Completo | Nutritional info + badges |
-| **Search** | ✅ Completo | Full-text con filtros |
-| **Dietary Filter Chips** | ✅ Completo | Filtros interactivos |
-| **Wishlist/Favorites** | ✅ Completo | Corazones + backend sync |
-| **Cart Management** | ✅ Completo | Add/Remove/Update qty |
-| **Orders List** | ✅ Completo | Estado con timeline + filtros |
-| **Authentication** | ✅ Completo | Clerk OAuth |
-| **Recently Viewed** | ✅ Completo | AsyncStorage + horizontal scroll |
-| **Stock Badges** | ✅ Completo | "Agotado", "Últimas unidades" |
-| **Skeleton Loaders** | ✅ Completo | Shimmer effect |
-| **Empty States** | ✅ Completo | Ilustraciones amigables |
-| **Address Management** | ✅ Completo | AddressCard + addressStore |
-| **Payment Methods** | ✅ Completo | PaymentMethodSelector |
-| **Step Indicator** | ✅ Completo | Checkout steps visualization |
-| **Payment Screens** | ✅ Completo | Success, failure, pending screens |
+| **Bottom Navigation** | ✅ Completo | BottomNavBar + Expo Router tabs |
+| **Product Listing** | ✅ Completo | Grid + lista + infinite scroll (index.tsx, all-products.tsx) |
+| **Product Detail** | ✅ Completo | Nutritional info + badges (product/[id].tsx) |
+| **Search** | ✅ Completo | Full-text con filtros (search.tsx) |
+| **Dietary Filter Chips** | ✅ Completo | DietaryFilterBar component + productFiltersStore |
+| **Wishlist/Favorites** | ✅ Completo | wishlist.tsx + FavoritesBar + favoritesStore |
+| **Cart Management** | ✅ Completo | cart.tsx + cartStore |
+| **Checkout Flow** | ✅ Completo | checkout-v2.tsx con StepIndicator |
+| **Orders List** | ✅ Completo | orders.tsx + orders/[id].tsx |
+| **Authentication** | ✅ Completo | (auth)/login.tsx + Clerk OAuth |
+| **Recently Viewed** | ✅ Completo | recently-viewed.tsx + recentlyViewedStore |
+| **Stock Badges** | ✅ Completo | StockBadge component |
+| **Skeleton Loaders** | ✅ Completo | HomeSkeleton + ProductCardSkeleton |
+| **Address Management** | ✅ Completo | addresses.tsx + AddressCard + addressStore |
+| **Payment Methods** | ✅ Completo | PaymentMethodSelector + payments.tsx |
+| **Step Indicator** | ✅ Completo | StepIndicator component |
+| **Payment Screens** | ✅ Completo | payment/success.tsx, failure.tsx, pending.tsx |
+| **Profile** | ✅ Completo | profile.tsx + profile-settings.tsx |
+| **Dietary Preferences** | 🟡 En progreso | dietary-preferences.tsx + preferencesStore |
+| **Error Boundaries** | ✅ Completo | ErrorBoundary component |
+| **Onboarding Modal** | 🟡 En progreso | OnboardingModal component |
+| **Security Screen** | ✅ Completo | security.tsx |
+| **Messages Screen** | 🟡 Básico | messages.tsx |
+| **Support Screen** | 🟡 Básico | support.tsx |
 
 ### Infraestructura
 
@@ -154,12 +161,12 @@
 
 | Feature | Estimación | Impacto | Owner |
 |---------|-----------|---------|-------|
-| **Onboarding Dietary Preferences** | 3 días | 🔥 Alto - Pre-filtrar correctamente | Frontend + Backend |
+| **Onboarding Dietary Preferences** | 1-2 días | 🔥 Alto - Pre-filtrar correctamente | Frontend + Backend | 🟡 En progreso (dietary-preferences.tsx + preferencesStore creados) |
 | **Push Notifications (Orders)** | 1.5 semanas | 🔥 Alto - Engagement | Backend + Frontend |
 | **Product Recommendations** | 1 semana | 🔥 Alto - Aumenta ventas | Backend |
 | **Order History Enhanced** | 3 días | 🔥 Alto - Re-compra fácil | Frontend |
 | **Reviews & Ratings (Basic)** | 1 semana | ✨ Medio - Social proof | Backend + Frontend |
-| **Filter Persistence** | 1 día | ✨ Medio - UX | Frontend |
+| **Filter Persistence** | ✅ Completado | ✨ Medio - UX | Frontend | productFiltersStore implementado |
 | **Deep Linking** | 4 días | ✨ Medio - Compartir productos | Frontend |
 
 **Total P1**: ~4-5 semanas
@@ -264,8 +271,8 @@
 Febrero 2026
 ├─ Semana 1-2 (3-9 feb): P0 Backend (Payment integration 80%) ✅
 ├─ Semana 3-4 (10-14): P0 Frontend (Checkout, Address, Payment screens) ✅ + Testing P0 (Backend 85%, Frontend 67 tests) ✅
-├─ Semana 4-5 (17-23): Finalizar P0, Docker fixes, CI/CD
-└─ Semana 5 (24+): Email integration (Resend ✅), webhooks payment
+├─ Semana 4-5 (17-23): Security hardening ✅, UX/nav refinement ✅, new screens ✅
+└─ Semana 5 (24-28): UX polish (home spacing, mobile fixes), ProductCard/DietaryFilterBar refactor ✅
 
 Marzo 2026
 ├─ Semana 1-2: P0 Backend completion + E2E tests
@@ -402,41 +409,50 @@ Este documento debe revisarse:
 - **Quincenalmente**: Durante fase P1-P2
 - **Mensualmente**: Durante fase P3
 
-**Próxima revisión**: Febrero 20, 2026
+**Próxima revisión**: Marzo 7, 2026
 
 ---
 
-## 📋 Cambios Recientes (10-16 feb 2026)
+## 📋 Cambios Recientes (17-28 feb 2026)
 
-### ✅ Completado Esta Semana
+### ✅ Completado (semana 4-5)
 
 **Frontend**:
-- Payment status polling en pending screen
-- Payment screens (success, failure, pending) con navegación
-- Address management (AddressCard + addressStore Zustand)
-- Payment method selector + Step indicator
-- 67+ nuevos tests (Zustand stores, API clients, Jest setup)
-- Refactor: eliminación de `any` types, debug logs gateados con `__DEV__`
-- CI/CD: Frontend tests job, coverage threshold aumentado
+- Refinamiento UX home: spacing unificado, fixes mobile (db1a8f6)
+- Extracción componentes compartidos: `ProductCard`, `DietaryFilterBar` (0069e29)
+- Pantalla de gestión de direcciones con CRUD completo y validación (dd71526)
+- Página de detalle de producto, skeleton loading, AddressCard (35ebdfd)
+- Nav refinement: `BottomNavBar`, mejoras de interacción (70a2da1, 74072fd)
+- Nuevas pantallas: `dietary-preferences.tsx`, `security.tsx`, `messages.tsx`, `support.tsx`, `all-products.tsx`, `profile-settings.tsx`
+- Nuevos stores: `productFiltersStore`, `preferencesStore`, `recentlyViewedStore`
 
 **Backend**:
-- Integración Mercado Pago conectada a frontend (80% completo)
-- Router y schema tests comprehensivos (85% coverage)
-- Email transaccional con Resend integrado
-- Docker paths corregidas
+- Fix: dietary tag filtering corregido (3080e41, 868b648)
+- Fix: auth timing attack mitigation
+- Tests: restauración de tests de dietary tags post-merge
 
-### 🟡 En Progreso
+### ✅ Post-Merge (28 Feb — commits tras 7949235)
+
+- CI: Upgrade Python 3.14 → 3.13 en GitHub Actions + frontend Docker build validation (197cf80)
+- Fix: Skip/limit params en fetchOrders para TS2554 (c92ab7e)
+- Fix tests: alinear mocks de Alert, useRouter (88686f4, b9dd11c, b029752)
+
+### 🟡 En Progreso (al 28 feb)
 
 - Webhooks de payment confirmation (Mercado Pago)
 - E2E tests para checkout flow
-- AWS deployment setup
+- ~~Merge de rama `feat/refine-nav-and-ux` a master~~ → ✅ **COMPLETADO** (commit 7949235, Feb 28)
+- Integración Venti (portal de pagos alternativo)
+- Pydantic V2 migration (67 warnings pendientes)
 
-### 📊 Métricas Actualizado
+### 📊 Métricas al 28 Feb 2026
 
-- Backend Coverage: 70% → **85%** ✅
-- Frontend Tests: 0 → **67+** tests ✅
-- Payment Integration: 0% → **80%** 🟡
-- MVP Status: 70% → **80%** ✅
+- Backend Tests: **366 tests** ✅ (ratio 1.25 test/prod lines)
+- Backend Coverage: ~40% real (pytest) — objetivo 80% pendiente
+- Frontend Tests: **126 tests passing** (13 suites) ✅
+- Payment Integration: **Completo** (Mercado Pago) 🟡 (webhooks pendientes)
+- MVP Status: 80% → **~90%** ✅
+- Commits desde Feb 16: **59+ commits** (incluye post-merge fixes)
 
 ---
 
@@ -446,5 +462,5 @@ Este documento debe revisarse:
 
 ---
 
-**Última actualización**: Febrero 16, 2026  
-**Versión**: 1.1.0
+**Última actualización**: Febrero 28, 2026
+**Versión**: 1.2.0
