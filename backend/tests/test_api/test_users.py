@@ -3,9 +3,10 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from app.core.security import create_access_token
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
+
+from app.core.security import create_access_token
 from tests.conftest import create_test_user
 
 

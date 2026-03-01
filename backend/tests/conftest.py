@@ -5,14 +5,15 @@ from typing import Generator
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from app.db.database import Base, get_db
-
-# Import app components
-from app.main import app
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
+
+from app.db.database import Base, get_db
+
+# Import app components
+from app.main import app
 
 # Database setup for testing - Use SQLite for tests
 DATABASE_URL = "sqlite:///:memory:"

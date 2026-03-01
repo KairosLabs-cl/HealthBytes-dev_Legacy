@@ -9,3 +9,7 @@
 **Learning:** This allowed attackers to enumerate valid email addresses by measuring response times.
 **Prevention:** Implemented `verify_password_mock()` to ensure consistent response times regardless of user existence. Always ensure constant-time operations for sensitive lookups.
 >>>>>>> master
+## 2024-05-24 - [Fix HTML Injection in Email Templates]
+**Vulnerability:** HTML Injection in transaction emails. Unescaped inputs like `customer_name`, `order_id`, `currency`, and `product_name` were directly injected into HTML templates using f-strings in `backend/app/services/email_service.py`.
+**Learning:** Email templates dynamically rendered using f-strings in Python are susceptible to HTML injection (and potentially XSS in email clients) if the data comes from user input and is not properly escaped.
+**Prevention:** Always use `html.escape()` on any dynamic data being interpolated into HTML templates when not using a dedicated templating engine like Jinja2 (which handles auto-escaping).

@@ -1,6 +1,8 @@
 """Unit tests for cart_service"""
 
 import pytest
+from fastapi import HTTPException
+
 from app.db.schemas import CartItem, Product
 from app.schemas.cart import CartItemCreate
 from app.services.cart_service import (
@@ -11,7 +13,6 @@ from app.services.cart_service import (
     remove_from_cart,
     update_cart_item,
 )
-from fastapi import HTTPException
 from tests.conftest import MockAsyncSession
 
 # --- Fixtures ---

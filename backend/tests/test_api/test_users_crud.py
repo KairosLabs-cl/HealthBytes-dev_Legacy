@@ -4,6 +4,7 @@ Covers list, get, update, delete with auth and role checks.
 """
 
 import pytest
+
 from app.db.schemas import User
 from app.main import app
 from app.middleware.auth import get_current_user, verify_admin

@@ -3,6 +3,7 @@ Test Address API endpoints
 """
 
 import pytest
+
 from app.core.security import create_access_token
 from tests.conftest import create_test_user
 

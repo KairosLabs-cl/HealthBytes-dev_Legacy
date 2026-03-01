@@ -1,20 +1,20 @@
 """Unit tests for order_service"""
 
-import pytest
-from app.db.schemas import Order, Product, User
-from sqlalchemy import select
 from decimal import Decimal
-from app.services.order_service import (
-    create_order,
-    get_user_orders,
-    get_order,
-    update_order_status,
-)
+
+import pytest
+from sqlalchemy import select
+
+from app.db.schemas import Order, Product, User
 from app.schemas.order import OrderCreate, OrderItemCreate
 from app.schemas.user import UserCreate
 from app.services.auth_service import register_user
-from app.services.order_service import create_order, get_order, get_user_orders, update_order_status
-from sqlalchemy import select
+from app.services.order_service import (
+    create_order,
+    get_order,
+    get_user_orders,
+    update_order_status,
+)
 from tests.conftest import MockAsyncSession
 
 

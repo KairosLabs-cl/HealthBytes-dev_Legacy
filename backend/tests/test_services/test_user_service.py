@@ -1,11 +1,12 @@
 """Unit tests for user_service"""
 
 import pytest
+from sqlalchemy import select
+
 from app.db.schemas import User
 from app.schemas.user import UserCreate, UserUpdate
 from app.services.auth_service import register_user
 from app.services.user_service import delete_user, get_user, update_user
-from sqlalchemy import select
 from tests.conftest import MockAsyncSession
 
 

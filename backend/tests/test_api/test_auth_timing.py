@@ -1,10 +1,12 @@
 import time
+
 import pytest
+
 from app.core.security import (
+    DUMMY_PASSWORD_HASH,
+    get_password_hash,
     verify_password,
     verify_password_mock,
-    get_password_hash,
-    DUMMY_PASSWORD_HASH,
 )
 
 
