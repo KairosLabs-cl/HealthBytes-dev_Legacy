@@ -5,10 +5,11 @@ Sends order confirmation, payment success, and shipping notification emails.
 In dev mode (no ***REDACTED_RESEND_KEY***
 """
 
+import html
 import logging
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import resend
 from sqlalchemy import select
@@ -16,6 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.config import Settings
+from app.db.schemas import Order, OrderItem
 
 logger = logging.getLogger(__name__)
 
@@ -81,14 +83,16 @@ class EmailService:
     def _render_items_table(self, data: OrderEmailData) -> str:
         """Render the order items table HTML."""
         rows = ""
+        safe_currency = html.escape(data.currency)
         for item in data.items:
             subtotal = item.price * item.quantity
+            safe_product_name = html.escape(item.product_name)
             rows += f"""
                 <tr>
-                    <td>{item.product_name}</td>
+                    <td>{safe_product_name}</td>
                     <td style="text-align:center;">{item.quantity}</td>
-                    <td style="text-align:right;">{self._format_price(item.price, data.currency)}</td>
-                    <td style="text-align:right;">{self._format_price(subtotal, data.currency)}</td>
+                    <td style="text-align:right;">{self._format_price(item.price, safe_currency)}</td>
+                    <td style="text-align:right;">{self._format_price(subtotal, safe_currency)}</td>
                 </tr>
             """
 
@@ -106,7 +110,7 @@ class EmailService:
                     {rows}
                     <tr class="total-row">
                         <td colspan="3">Total</td>
-                        <td style="text-align:right;">{self._format_price(data.total, data.currency)}</td>
+                        <td style="text-align:right;">{self._format_price(data.total, safe_currency)}</td>
                     </tr>
                 </tbody>
             </table>
@@ -114,6 +118,8 @@ class EmailService:
 
     def render_order_confirmation(self, data: OrderEmailData) -> str:
         """Render order confirmation email HTML."""
+        safe_name = html.escape(data.customer_name or "Cliente")
+        safe_order_id = html.escape(str(data.order_id))
         return f"""
         <!DOCTYPE html>
         <html><head><style>{self._base_style()}</style></head>
@@ -124,11 +130,11 @@ class EmailService:
                     <p>Tu orden ha sido recibida</p>
                 </div>
                 <div class="content">
-                    <p>Hola <strong>{data.customer_name or 'Cliente'}</strong>,</p>
+                    <p>Hola <strong>{safe_name}</strong>,</p>
                     <p>Hemos recibido tu orden y estamos procesandola.</p>
 
                     <div class="order-info">
-                        <h2>Orden #{data.order_id}</h2>
+                        <h2>Orden #{safe_order_id}</h2>
                         <p style="margin:0; color:#6b7280;">Estado: Pendiente de pago</p>
                     </div>
 
@@ -147,6 +153,8 @@ class EmailService:
 
     def render_payment_success(self, data: OrderEmailData) -> str:
         """Render payment success email HTML."""
+        safe_name = html.escape(data.customer_name or "Cliente")
+        safe_order_id = html.escape(str(data.order_id))
         return f"""
         <!DOCTYPE html>
         <html><head><style>{self._base_style()}</style></head>
@@ -157,11 +165,11 @@ class EmailService:
                     <p>Pago confirmado</p>
                 </div>
                 <div class="content">
-                    <p>Hola <strong>{data.customer_name or 'Cliente'}</strong>,</p>
+                    <p>Hola <strong>{safe_name}</strong>,</p>
                     <p>Tu pago ha sido confirmado exitosamente. Estamos preparando tu pedido.</p>
 
                     <div class="order-info">
-                        <h2>Orden #{data.order_id}</h2>
+                        <h2>Orden #{safe_order_id}</h2>
                         <p style="margin:0; color:#15803d; font-weight:600;">Pago confirmado</p>
                     </div>
 
@@ -180,6 +188,8 @@ class EmailService:
 
     def render_order_shipped(self, data: OrderEmailData) -> str:
         """Render order shipped email HTML."""
+        safe_name = html.escape(data.customer_name or "Cliente")
+        safe_order_id = html.escape(str(data.order_id))
         return f"""
         <!DOCTYPE html>
         <html><head><style>{self._base_style()}</style></head>
@@ -190,17 +200,17 @@ class EmailService:
                     <p>Tu pedido esta en camino</p>
                 </div>
                 <div class="content">
-                    <p>Hola <strong>{data.customer_name or 'Cliente'}</strong>,</p>
+                    <p>Hola <strong>{safe_name}</strong>,</p>
                     <p>Tu pedido ha sido despachado y esta en camino.</p>
 
                     <div class="order-info" style="background:#eff6ff; border-color:#bfdbfe;">
-                        <h2 style="color:#1d4ed8;">Orden #{data.order_id}</h2>
+                        <h2 style="color:#1d4ed8;">Orden #{safe_order_id}</h2>
                         <p style="margin:0; color:#1d4ed8; font-weight:600;">Enviado</p>
                     </div>
 
                     {self._render_items_table(data)}
 
-                    <a href="{self.frontend_url}/orders/{data.order_id}" class="btn" style="background:#2563eb;">
+                    <a href="{self.frontend_url}/orders/{safe_order_id}" class="btn" style="background:#2563eb;">
                         Ver mi pedido
                     </a>
                 </div>
@@ -266,45 +276,57 @@ class EmailService:
         )
 
 
-async def build_order_email_data(db: AsyncSession, order_id: int) -> Optional[OrderEmailData]:
+async def build_order_email_data(
+    db: AsyncSession, order_source: Union[int, Order]
+) -> Optional[OrderEmailData]:
     """
     Build OrderEmailData from database for a given order.
-    Fetches order with items + user in minimal queries.
+    Accepts either an already-loaded Order object or an order ID (int).
+    When called with an Order object, avoids redundant DB queries.
     Returns None if order or user not found.
     """
-    from app.db.schemas import Order, Product, User
+    from app.db.schemas import Product, User
 
-    # Fetch order with items
-    result = await db.execute(
-        select(Order).where(Order.id == order_id).options(selectinload(Order.items))
-    )
-    order = result.scalar_one_or_none()
+    if isinstance(order_source, int):
+        result = await db.execute(
+            select(Order)
+            .where(Order.id == order_source)
+            .options(
+                selectinload(Order.items).selectinload(OrderItem.product),
+                selectinload(Order.user),
+            )
+        )
+        order = result.scalar_one_or_none()
+    else:
+        order = order_source
+
     if not order:
         return None
 
-    # Fetch user
-    result = await db.execute(select(User).where(User.id == order.user_id))
-    user = result.scalar_one_or_none()
+    # Use eager-loaded user if available, fall back to explicit query
+    user = order.user if hasattr(order, "user") and order.user else None
+    if not user:
+        result = await db.execute(select(User).where(User.id == order.user_id))
+        user = result.scalar_one_or_none()
     if not user or not user.email:
         return None
 
-    # Fetch product names for the items
-    product_ids = [item.product_id for item in order.items]
-    products_map = {}
-    if product_ids:
-        result = await db.execute(select(Product).where(Product.id.in_(product_ids)))
-        products_map = {p.id: p for p in result.scalars().all()}
-
-    items = [
-        OrderItemData(
-            product_name=products_map.get(item.product_id, None)
-            and products_map[item.product_id].name
-            or f"Producto #{item.product_id}",
-            quantity=item.quantity,
-            price=Decimal(str(item.price)),
+    items = []
+    for item in order.items:
+        # Use eager-loaded product if available
+        if hasattr(item, "product") and item.product:
+            product_name = item.product.name
+        else:
+            result = await db.execute(select(Product).where(Product.id == item.product_id))
+            product = result.scalar_one_or_none()
+            product_name = product.name if product else f"Producto #{item.product_id}"
+        items.append(
+            OrderItemData(
+                product_name=product_name,
+                quantity=item.quantity,
+                price=Decimal(str(item.price)),
+            )
         )
-        for item in order.items
-    ]
 
     return OrderEmailData(
         order_id=order.id,
