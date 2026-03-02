@@ -13,7 +13,8 @@
       "Bash(.venv/Scripts/python:*)",
       "Bash(git:*)",
       "Bash(find:*)",
-      "Bash(pnpm ls:*)"
+      "Bash(pnpm ls:*)",
+      "Bash(./.venv/Scripts/python.exe:*)"
     ]
   }
 }

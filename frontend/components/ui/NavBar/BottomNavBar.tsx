@@ -9,6 +9,7 @@ import Animated, {
   Easing,
   useAnimatedStyle,
   useSharedValue,
+  withSequence,
   withSpring,
   withTiming,
 } from "react-native-reanimated";
@@ -46,9 +47,10 @@ const AnimatedBadge = React.memo(({ count }: { count: number }) => {
 
   useEffect(() => {
     if (count > 0 && isMobile) {
-      scale.value = withSpring(1.3, { damping: 8, stiffness: 200 }, () => {
-        scale.value = withSpring(1, { damping: 12, stiffness: 150 });
-      });
+      scale.value = withSequence(
+        withSpring(1.3, { damping: 8, stiffness: 200 }),
+        withSpring(1, { damping: 12, stiffness: 150 })
+      );
     }
   }, [count, scale]);
 
@@ -186,7 +188,7 @@ TabItem.displayName = "TabItem";
 // --- Main BottomNavBar ---
 function BottomNavBar() {
   const pathname = usePathname();
-  const cartCount = useCart((state) => state.items.length);
+  const cartCount = useCart((state) => state.items.reduce((sum, item) => sum + item.quantity, 0));
   const insets = useSafeAreaInsets();
 
   // Determine visibility based on current route

@@ -38,7 +38,7 @@ if (!publishableKey) {
 }
 
 function RootLayoutNav() {
-  const cartItemsNum = useCart((state) => state.items.length);
+  const cartItemsNum = useCart((state) => state.items.reduce((sum, item) => sum + item.quantity, 0));
   const setAuth = useCart((state) => state.setAuth);
   const mergeAndSync = useCart((state) => state.mergeAndSync);
   const error = useCart((state) => state.error);
