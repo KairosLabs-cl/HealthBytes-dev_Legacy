@@ -8,6 +8,7 @@ jest.mock('@/api/cart', () => ({
   removeFromCart: jest.fn(),
   updateCartItem: jest.fn(),
   clearCart: jest.fn(),
+  getCart: jest.fn(),
 }));
 
 describe('Cart Store Logic', () => {
@@ -30,8 +31,9 @@ describe('Cart Store Logic', () => {
   };
 
   test('addProduct rolls back on API failure', async () => {
-    // Setup API failure
+    // Setup API failure; server still has empty cart
     (cartApi.addToCart as jest.Mock).mockRejectedValue(new Error('API Error'));
+    (cartApi.getCart as jest.Mock).mockResolvedValue({ items: [], total: 0 });
 
     // Initial state: empty
     expect(useCart.getState().items).toHaveLength(0);
@@ -44,7 +46,7 @@ describe('Cart Store Logic', () => {
     //    but we check that it TRIED to call API)
     expect(cartApi.addToCart).toHaveBeenCalledWith('fake-token', 1, 1);
 
-    // 2. Final state should be empty (rolled back)
+    // 2. Final state should be empty (synced from server)
     expect(useCart.getState().items).toHaveLength(0);
   });
 
@@ -54,8 +56,12 @@ describe('Cart Store Logic', () => {
       items: [{ product: product, quantity: 1 }]
     });
 
-    // Setup API failure
+    // Setup API failure; server still has the item
     (cartApi.removeFromCart as jest.Mock).mockRejectedValue(new Error('API Error'));
+    (cartApi.getCart as jest.Mock).mockResolvedValue({
+      items: [{ id: 1, product_id: 1, quantity: 1, created_at: '', product: { id: 1, name: 'Test Product', price: 100, stock: 10 } }],
+      total: 100,
+    });
 
     // Action
     await useCart.getState().removeProduct(product.id);
@@ -63,7 +69,7 @@ describe('Cart Store Logic', () => {
     // Expectation:
     expect(cartApi.removeFromCart).toHaveBeenCalledWith('fake-token', 1);
 
-    // Final state should still have the item (rolled back)
+    // Final state should still have the item (synced from server)
     expect(useCart.getState().items).toHaveLength(1);
     expect(useCart.getState().items[0].product.id).toBe(1);
   });
@@ -74,8 +80,12 @@ describe('Cart Store Logic', () => {
       items: [{ product: product, quantity: 2 }]
     });
 
-    // Setup API failure
+    // Setup API failure; server still has quantity 2
     (cartApi.updateCartItem as jest.Mock).mockRejectedValue(new Error('API Error'));
+    (cartApi.getCart as jest.Mock).mockResolvedValue({
+      items: [{ id: 1, product_id: 1, quantity: 2, created_at: '', product: { id: 1, name: 'Test Product', price: 100, stock: 10 } }],
+      total: 200,
+    });
 
     // Action
     await useCart.getState().decrementProduct(product.id);
@@ -83,7 +93,7 @@ describe('Cart Store Logic', () => {
     // Expectation:
     expect(cartApi.updateCartItem).toHaveBeenCalledWith('fake-token', 1, 1);
 
-    // Final state should still have quantity 2 (rolled back)
+    // Final state should still have quantity 2 (synced from server)
     expect(useCart.getState().items[0].quantity).toBe(2);
   });
 
@@ -93,8 +103,12 @@ describe('Cart Store Logic', () => {
       items: [{ product: product, quantity: 1 }]
     });
 
-    // Setup API failure
+    // Setup API failure; server still has the item at quantity 1
     (cartApi.removeFromCart as jest.Mock).mockRejectedValue(new Error('API Error'));
+    (cartApi.getCart as jest.Mock).mockResolvedValue({
+      items: [{ id: 1, product_id: 1, quantity: 1, created_at: '', product: { id: 1, name: 'Test Product', price: 100, stock: 10 } }],
+      total: 100,
+    });
 
     // Action
     await useCart.getState().decrementProduct(product.id);
@@ -102,7 +116,7 @@ describe('Cart Store Logic', () => {
     // Expectation:
     expect(cartApi.removeFromCart).toHaveBeenCalledWith('fake-token', 1);
 
-    // Final state should still have item (rolled back)
+    // Final state should still have item (synced from server)
     expect(useCart.getState().items).toHaveLength(1);
   });
 
