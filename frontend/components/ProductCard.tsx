@@ -19,6 +19,8 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
+  withSequence,
+  cancelAnimation,
   Easing,
 } from "react-native-reanimated";
 
@@ -65,9 +67,11 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
     e.preventDefault();
     e.stopPropagation();
     if (isOutOfStock) return;
-    cartScale.value = withTiming(0.95, { duration: 80, easing: Easing.out(Easing.ease) }, () => {
-      cartScale.value = withTiming(1, { duration: 200, easing: Easing.out(Easing.ease) });
-    });
+    cancelAnimation(cartScale);
+    cartScale.value = withSequence(
+      withTiming(0.95, { duration: 80, easing: Easing.out(Easing.ease) }),
+      withTiming(1, { duration: 200, easing: Easing.out(Easing.ease) })
+    );
     (onAddToCart ?? (() => addProduct(product)))();
     addBtnRef.current?.measureInWindow((x: number, y: number, w: number, h: number) => {
       triggerFly(x + w / 2, y + h / 2);

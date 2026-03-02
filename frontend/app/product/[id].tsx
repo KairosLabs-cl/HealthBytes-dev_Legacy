@@ -22,6 +22,7 @@ import Animated, {
   withSequence,
   withDelay,
   withSpring,
+  cancelAnimation,
   Easing,
 } from 'react-native-reanimated';
 
@@ -97,6 +98,7 @@ export default function ProductDetailsScreen() {
 
   // Fly-to-cart animation
   const ctaBtnRef = useRef<any>(null);
+  const cartBounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flyX = useSharedValue(0);
   const flyY = useSharedValue(0);
   const flyScale = useSharedValue(0);
@@ -126,6 +128,18 @@ export default function ProductDetailsScreen() {
   }));
 
   const triggerFlyAnimation = (startX: number, startY: number) => {
+    // Cancel any in-flight animations so rapid presses start clean
+    cancelAnimation(flyX);
+    cancelAnimation(flyY);
+    cancelAnimation(flyScale);
+    cancelAnimation(flyOpacity);
+    cancelAnimation(flyRotate);
+    cancelAnimation(cartBtnScale);
+    if (cartBounceTimer.current) {
+      clearTimeout(cartBounceTimer.current);
+      cartBounceTimer.current = null;
+    }
+
     // Target: cart button top-right (right: 20, top: insets.top + 8, size 48px)
     const targetX = SCREEN_WIDTH - 20 - 24; // right margin + half button
     const targetY = insets.top + 8 + 24;    // top margin + half button
@@ -175,10 +189,12 @@ export default function ProductDetailsScreen() {
     );
 
     // Cart button bounces when bubble arrives (~950ms)
-    setTimeout(() => {
+    cartBounceTimer.current = setTimeout(() => {
+      cartBounceTimer.current = null;
+      cancelAnimation(cartBtnScale);
       cartBtnScale.value = withSequence(
-        withSpring(1.35, { damping: 6, stiffness: 250 }),
-        withSpring(1, { damping: 10, stiffness: 180 })
+        withTiming(1.25, { duration: 200, easing: Easing.out(Easing.back(1.5)) }),
+        withTiming(1, { duration: 400, easing: Easing.out(Easing.ease) })
       );
     }, 950);
   };
@@ -209,9 +225,11 @@ export default function ProductDetailsScreen() {
   }, [product, addRecentlyViewed]);
 
   const handleAddToCart = () => {
-    ctaScale.value = withTiming(0.95, { duration: 80, easing: Easing.out(Easing.ease) }, () => {
-      ctaScale.value = withTiming(1, { duration: 200, easing: Easing.out(Easing.back(2)) });
-    });
+    cancelAnimation(ctaScale);
+    ctaScale.value = withSequence(
+      withTiming(0.95, { duration: 80, easing: Easing.out(Easing.ease) }),
+      withTiming(1, { duration: 200, easing: Easing.out(Easing.back(2)) })
+    );
 
     if (!product || !canAddMore) return;
 

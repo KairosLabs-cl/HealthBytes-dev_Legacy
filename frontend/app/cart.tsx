@@ -101,7 +101,7 @@ export default function CartScreen() {
   if (items.length === 0) {
     return (
       <>
-        <Stack.Screen options={{ title: "Carrito de Compras" }} />
+        <Stack.Screen options={{ headerShown: false }} />
         <View className="flex-1 items-center justify-center bg-white px-6">
           <View className="w-24 h-24 rounded-full bg-gray-100 items-center justify-center mb-4">
             <ShoppingBag size={40} color="#9CA3AF" />
@@ -126,7 +126,7 @@ export default function CartScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: "Carrito de Compras" }} />
+      <Stack.Screen options={{ headerShown: false }} />
       <View className="flex-1 bg-gray-50">
         <FlatList
           data={items}

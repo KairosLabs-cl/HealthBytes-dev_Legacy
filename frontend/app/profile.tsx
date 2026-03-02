@@ -87,7 +87,7 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       <StatusBar style="dark" />
-      <Stack.Screen options={{ title: "Mi Perfil" }} />
+      <Stack.Screen options={{ headerShown: false }} />
 
       <ScrollView
         className="flex-1 bg-white px-4"
