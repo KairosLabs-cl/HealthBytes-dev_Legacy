@@ -6,7 +6,7 @@ import logging
 from decimal import Decimal
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Request
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -86,6 +86,7 @@ async def create_payment_preference(
 @router.post("/webhook")
 async def mercadopago_webhook(
     request: Request,
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
     x_signature: Optional[str] = Header(None),
     x_request_id: Optional[str] = Header(None),
@@ -94,6 +95,9 @@ async def mercadopago_webhook(
     Webhook endpoint for Mercado Pago payment notifications.
 
     MP will POST here when payment status changes.
+    The payment-success email is dispatched as a FastAPI BackgroundTask so the
+    response is returned to Mercado Pago immediately, minimising retries and
+    fully decoupling email delivery from the request DB session lifecycle.
     """
     mp_service = MercadoPagoService(settings)
 
@@ -114,6 +118,7 @@ async def mercadopago_webhook(
                 topic="payment",
                 webhook_signature=x_signature,
                 request_id=x_request_id,
+                background_tasks=background_tasks,
             )
 
             return {"status": "ok", "result": result}
