@@ -187,8 +187,9 @@ export const useCart = create<CartState>((set, get) => ({
         await cartApi.addToCart(authToken, Number(product.id), 1);
       } catch (error) {
         console.error('Failed to sync add to server:', error);
-        // Rollback to previous state
-        set({ items: previousItems, error: "No se pudo agregar el producto al carrito. Por favor intenta de nuevo." });
+        // Rollback: re-fetch actual server state instead of restoring stale snapshot
+        await get().syncWithServer();
+        set({ error: "No se pudo agregar el producto al carrito. Por favor intenta de nuevo." });
       }
     }
 
@@ -238,8 +239,8 @@ export const useCart = create<CartState>((set, get) => ({
         await cartApi.updateCartItem(authToken, Number(productId), newQuantity);
       } catch (error) {
         console.error('Failed to sync quantity update to server:', error);
-        // Rollback to previous state
-        set({ items: previousItems, error: "No se pudo actualizar la cantidad. Por favor intenta de nuevo." });
+        await get().syncWithServer();
+        set({ error: "No se pudo actualizar la cantidad. Por favor intenta de nuevo." });
       }
     }
 
@@ -301,8 +302,8 @@ export const useCart = create<CartState>((set, get) => ({
         }
       } catch (error) {
         console.error('Failed to sync decrement to server:', error);
-        // Rollback to previous state
-        set({ items: previousItems, error: "No se pudo actualizar el carrito. Por favor intenta de nuevo." });
+        await get().syncWithServer();
+        set({ error: "No se pudo actualizar el carrito. Por favor intenta de nuevo." });
       }
     }
 
@@ -341,8 +342,8 @@ export const useCart = create<CartState>((set, get) => ({
         await cartApi.removeFromCart(authToken, Number(productId));
       } catch (error) {
         console.error('Failed to sync remove to server:', error);
-        // Rollback to previous state
-        set({ items: previousItems, error: "No se pudo eliminar el producto. Por favor intenta de nuevo." });
+        await get().syncWithServer();
+        set({ error: "No se pudo eliminar el producto. Por favor intenta de nuevo." });
       }
     }
 

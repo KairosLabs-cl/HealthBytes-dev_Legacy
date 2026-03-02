@@ -68,7 +68,7 @@ class OrderItemResponse(BaseModel):
     order_id: int
     product_id: int
     quantity: int
-    price: int
+    price: float  # DB stores Numeric(10,2); float preserves cents without breaking JSON serialization
 
     model_config = ConfigDict(from_attributes=True)
 

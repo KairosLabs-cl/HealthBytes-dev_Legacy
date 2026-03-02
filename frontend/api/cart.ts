@@ -1,3 +1,5 @@
+import { getAuthHeader } from '@/lib/authHeaders';
+
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export interface CartItem {
@@ -31,7 +33,7 @@ export interface CartItemCreate {
 export async function getCart(token: string): Promise<Cart> {
   const res = await fetch(`${API_URL}/cart`, {
     headers: {
-      'Authorization': token,
+      ...getAuthHeader(token),
     },
   });
 
@@ -53,7 +55,7 @@ export async function addToCart(
   const res = await fetch(`${API_URL}/cart/items`, {
     method: 'POST',
     headers: {
-      'Authorization': token,
+      ...getAuthHeader(token),
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -80,7 +82,7 @@ export async function updateCartItem(
   const res = await fetch(`${API_URL}/cart/items/${productId}`, {
     method: 'PUT',
     headers: {
-      'Authorization': token,
+      ...getAuthHeader(token),
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ quantity }),
@@ -103,7 +105,7 @@ export async function removeFromCart(
   const res = await fetch(`${API_URL}/cart/items/${productId}`, {
     method: 'DELETE',
     headers: {
-      'Authorization': token,
+      ...getAuthHeader(token),
     },
   });
 
@@ -119,7 +121,7 @@ export async function clearCart(token: string): Promise<void> {
   const res = await fetch(`${API_URL}/cart`, {
     method: 'DELETE',
     headers: {
-      'Authorization': token,
+      ...getAuthHeader(token),
     },
   });
 
@@ -138,7 +140,7 @@ export async function mergeCart(
   const res = await fetch(`${API_URL}/cart/merge`, {
     method: 'POST',
     headers: {
-      'Authorization': token,
+      ...getAuthHeader(token),
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ items: localItems }),

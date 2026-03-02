@@ -96,11 +96,7 @@ export default function CheckoutV2Screen() {
       let token = await getToken();
 
       if (!token) {
-        for (let attempt = 1; attempt <= 3; attempt++) {
-          await new Promise((resolve) => setTimeout(resolve, 500));
-          token = await getToken();
-          if (token) break;
-        }
+        token = await getToken({ forcedRefresh: true });
       }
 
       if (!token) {
@@ -151,7 +147,8 @@ export default function CheckoutV2Screen() {
           return;
         }
 
-        resetCart();
+        // Cart is reset by payment/success.tsx and payment/failure.tsx on confirmed outcome.
+        // Do NOT reset here — if user cancels MP, they would lose their cart.
         router.replace({
           pathname: "/payment/pending",
           params: {

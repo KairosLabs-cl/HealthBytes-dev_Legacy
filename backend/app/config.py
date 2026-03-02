@@ -34,8 +34,11 @@ class Settings(BaseSettings):
     EMAIL_FROM_ADDRESS: str = "HealthBytes <onboarding@resend.dev>"
 
     # URLs for callbacks
-    BACKEND_URL: str = "http://127.0.0.1:3001"
-    FRONTEND_URL: str = "http://localhost:8081"
+    BACKEND_URL: str = "http://127.0.0.1:3001"  # Override in production
+    FRONTEND_URL: str = "http://localhost:8081"  # Override in production
+
+    # Observability
+    SENTRY_DSN: Optional[str] = None
 
     # Environment
     ENVIRONMENT: str = "dev"
@@ -85,3 +88,24 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+
+def _validate_production_config(s: Settings) -> None:
+    """Raise if critical production secrets are missing when ENVIRONMENT=production."""
+    if getattr(s, "ENVIRONMENT", "development") != "production":
+        return
+    required = {
+        "DATABASE_URL": s.DATABASE_URL if hasattr(s, "DATABASE_URL") else None,
+        "MERCADO_PAGO_WEBHOOK_SECRET": (
+            s.MERCADO_PAGO_WEBHOOK_SECRET if hasattr(s, "MERCADO_PAGO_WEBHOOK_SECRET") else None
+        ),
+        "CLERK_SECRET_KEY": s.CLERK_SECRET_KEY if hasattr(s, "CLERK_SECRET_KEY") else None,
+    }
+    missing = [k for k, v in required.items() if not v]
+    if missing:
+        raise RuntimeError(
+            f"Production environment requires these secrets to be set: {missing}"
+        )
+
+
+_validate_production_config(settings)
