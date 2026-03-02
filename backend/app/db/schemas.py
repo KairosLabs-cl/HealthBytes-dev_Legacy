@@ -75,7 +75,7 @@ if product_dietary_tags is None:
             Integer,
             ForeignKey("dietary_tags.id", ondelete="CASCADE"),
             primary_key=True,
-            index=True,  # ⚡ Bolt: Added index to speed up product filtering by dietary_tag_id (avoids full table scans on reverse lookups)
+            index=True,  # ⚡ Bolt: Index to speed up reverse lookups
         ),
     )
 
