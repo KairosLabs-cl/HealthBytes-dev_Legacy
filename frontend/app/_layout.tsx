@@ -23,6 +23,18 @@ import { User } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Pressable } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import * as Sentry from "@sentry/react-native";
+
+// Initialize Sentry if DSN is configured
+const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN;
+if (SENTRY_DSN) {
+  Sentry.init({
+    dsn: SENTRY_DSN,
+    environment: __DEV__ ? "development" : "production",
+    debug: __DEV__,
+    tracesSampleRate: __DEV__ ? 0 : 0.1,
+  });
+}
 
 // Constants removed
 
@@ -183,7 +195,7 @@ function RootLayoutNav() {
   );
 }
 
-export default function RootLayout() {
+export default Sentry.wrap(function RootLayout() {
   return (
     <SafeAreaProvider>
       <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
@@ -199,4 +211,4 @@ export default function RootLayout() {
       </ClerkProvider>
     </SafeAreaProvider>
   );
-}
+});

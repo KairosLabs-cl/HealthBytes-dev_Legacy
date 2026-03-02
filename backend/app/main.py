@@ -1,6 +1,9 @@
+import sentry_sdk
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
+from sentry_sdk.integrations.fastapi import FastApiIntegration
+from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
@@ -18,6 +21,21 @@ from app.api.v1 import (
 )
 from app.config import settings
 from app.core.limiter import limiter
+
+
+def init_sentry() -> None:
+    """Initialize Sentry if DSN is configured."""
+    if settings.SENTRY_DSN:
+        sentry_sdk.init(
+            dsn=settings.SENTRY_DSN,
+            integrations=[FastApiIntegration(), SqlalchemyIntegration()],
+            environment=settings.ENVIRONMENT,
+            traces_sample_rate=0.1,  # 10% of requests for performance monitoring
+            send_default_pii=False,  # Never send PII
+        )
+
+
+init_sentry()
 
 # Create FastAPI application
 app = FastAPI(
