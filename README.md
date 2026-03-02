@@ -53,20 +53,21 @@ Las personas con condiciones como celiaquía, diabetes o alergias alimentarias e
 **Versión:** MVP en Desarrollo Activo
 **Última actualización:** Febrero 24, 2026
 
-| Componente         | Estado           | Descripción                      |
-| ------------------ | ---------------- | --------------------------------- |
-| 🎨 Frontend Mobile | ✅ Funcional     | React Native + Expo               |
-| ⚙️ Backend API   | ✅ Funcional     | FastAPI + SQLAlchemy async        |
-| 🗄️ Base de Datos | ✅ Funcional     | PostgreSQL con modelos core       |
-| 🔐 Autenticación  | ✅ Implementado  | JWT + Clerk (dual auth)          |
-| 🧪 Tests           | ✅ Estable       | 179 tests passing, 70% coverage  |
-| 🛡️ Security      | ✅ Hardened      | minimatch HIGH resuelto, Clerk actualizado |
-| 🐳 Docker          | 📝 Planeado      | Containerización pendiente       |
-| 🚀 Deploy          | 📝 Planeado      | AWS (preparado)                   |
+| Componente         | Estado          | Descripción                               |
+| ------------------ | --------------- | ------------------------------------------ |
+| 🎨 Frontend Mobile | ✅ Funcional    | React Native + Expo                        |
+| ⚙️ Backend API   | ✅ Funcional    | FastAPI + SQLAlchemy async                 |
+| 🗄️ Base de Datos | ✅ Funcional    | PostgreSQL con modelos core                |
+| 🔐 Autenticación  | ✅ Implementado | JWT + Clerk (dual auth)                    |
+| 🧪 Tests           | ✅ Estable      | 179 tests passing, 70% coverage            |
+| 🛡️ Security      | ✅ Hardened     | minimatch HIGH resuelto, Clerk actualizado |
+| 🐳 Docker          | 📝 Planeado     | Containerización pendiente                |
+| 🚀 Deploy          | 📝 Planeado     | AWS (preparado)                            |
 
 ### 🛡️ Estado de Seguridad (Febrero 2026)
 
 **Vulnerabilidades Resueltas:**
+
 - ✅ **minimatch ReDoS** (HIGH) - Resuelto con glob 11.0.0 + minimatch 10.2.2 override
 - ✅ **@clerk/clerk-expo** - Actualizado a 2.19.26 (reduce exposición bn.js)
 - ⚠️ **ajv MEDIUM** - Deferred (ESLint 9 ecosystem pending v2.0 plugins, dev-only)
@@ -96,6 +97,7 @@ code HealthBytes.code-workspace
 ```
 
 **Incluye**:
+
 - ✅ Backend + Frontend + Docs en carpetas separadas
 - ✅ Debugger preconfigured para FastAPI
 - ✅ Tasks para iniciar servicios
@@ -155,6 +157,7 @@ pnpm install
 ```
 
 **El script te preguntará:**
+
 - ¿Usarás solo Web, Expo Go, o ambos?
 - ¿Actualizar CORS del backend?
 
@@ -330,35 +333,35 @@ HealthBytes-dev/
 
 ### Para Humanos 👨‍💻
 
-| Documento | Para Qué |
-|-----------|----------|
-| [frontend/README.md](frontend/README.md) | Guía completa del frontend |
-| [backend/README.md](backend/README.md) | Guía completa del backend |
-| [docs/README.md](docs/README.md) | Índice centralizado de toda documentación |
-| [docs/frontend/SETUP.md](docs/frontend/SETUP.md) | Configuración del frontend (setup-env.ps1) |
-| [docs/SECURITY.md](docs/SECURITY.md) | Mejoras de seguridad implementadas |
-| [docs/IMPLEMENTATION_SUMMARY.md](docs/IMPLEMENTATION_SUMMARY.md) | Full-Text Search implementado |
+| Documento                                                     | Para Qué                                   |
+| ------------------------------------------------------------- | ------------------------------------------- |
+| [frontend/README.md](frontend/README.md)                         | Guía completa del frontend                 |
+| [backend/README.md](backend/README.md)                           | Guía completa del backend                  |
+| [docs/README.md](docs/README.md)                                 | Índice centralizado de toda documentación |
+| [docs/frontend/SETUP.md](docs/frontend/SETUP.md)                 | Configuración del frontend (setup-env.ps1) |
+| [docs/SECURITY.md](docs/SECURITY.md)                             | Mejoras de seguridad implementadas          |
+| [docs/IMPLEMENTATION_SUMMARY.md](docs/IMPLEMENTATION_SUMMARY.md) | Full-Text Search implementado               |
 
 ### Para Asistentes de IA 🤖
 
-| Documento | Para Qué |
-|-----------|----------|
-| [backend/AI-README.md](backend/AI-README.md) | Patrones, reglas y arquitectura del backend |
-| [frontend/AI-README.md](frontend/AI-README.md) | Patrones, reglas y arquitectura del frontend |
-| [.cursorrules](.cursorrules) | **CRÍTICO**: Reglas obligatorias y prohibiciones |
-| [.github/copilot-instructions.md](.github/copilot-instructions.md) | Instrucciones globales para IA |
+| Documento                                                       | Para Qué                                               |
+| --------------------------------------------------------------- | ------------------------------------------------------- |
+| [backend/AI-README.md](backend/AI-README.md)                       | Patrones, reglas y arquitectura del backend             |
+| [frontend/AI-README.md](frontend/AI-README.md)                     | Patrones, reglas y arquitectura del frontend            |
+| [.cursorrules](.cursorrules)                                       | **CRÍTICO**: Reglas obligatorias y prohibiciones |
+| [.github/copilot-instructions.md](.github/copilot-instructions.md) | Instrucciones globales para IA                          |
 
 ### Navegación Rápida
 
-| Necesito...                 | Ve a...                                                                                   |
-| --------------------------- | ----------------------------------------------------------------------------------------- |
-| Documentación principal     | [docs/README.md](docs/README.md) |
-| Ver estado del proyecto     | [docs/ai-logs/status/](docs/ai-logs/status/) |
-| Backend info                | [backend/README.md](backend/README.md) |
-| Frontend info               | [frontend/README.md](frontend/README.md) |
-| Tools scripts               | [Tools/README.md](Tools/README.md) |
-| Reglas para IA              | [.cursorrules](.cursorrules) |
-| Convención de branches      | [Sección Contribuir](#-contribuir) |
+| Necesito...              | Ve a...                                   |
+| ------------------------ | ----------------------------------------- |
+| Documentación principal | [docs/README.md](docs/README.md)             |
+| Ver estado del proyecto  | [docs/ai-logs/status/](docs/ai-logs/status/) |
+| Backend info             | [backend/README.md](backend/README.md)       |
+| Frontend info            | [frontend/README.md](frontend/README.md)     |
+| Tools scripts            | [Tools/README.md](Tools/README.md)           |
+| Reglas para IA           | [.cursorrules](.cursorrules)                 |
+| Convención de branches  | [Sección Contribuir](#-contribuir)          |
 
 ---
 
@@ -374,22 +377,26 @@ cd frontend
 ```
 
 **El script configurará automáticamente:**
+
 - ✅ Detecta tu IP local de red (192.168.x.x)
 - ✅ Configura el archivo `.env` según tu modo de desarrollo
 - ✅ Actualiza el CORS del backend (opcional)
 - ✅ Te da instrucciones claras de próximos pasos
 
 **Opciones disponibles:**
+
 - **[1] Solo Web**: Usa `localhost` (para desarrollo en navegador)
 - **[2] Solo Expo Go**: Usa tu IP local (para celular/tablet)
 - **[3] Ambos**: Usa tu IP local (funciona en ambos casos) ✨ **Recomendado**
 
 **¿Por qué usar tu IP local?**
+
 - ✅ `localhost` NO funciona en Expo Go (el celular busca su propio localhost)
 - ✅ Tu IP local (ej: `192.168.1.127`) funciona tanto en web como en Expo Go
 - ✅ Ambos dispositivos deben estar en la **misma red WiFi**
 
 **Si tu IP cambia** (cambiar de red WiFi, reiniciar router):
+
 ```powershell
 .\setup-env.ps1  # Vuelve a ejecutar el script
 ```
@@ -494,13 +501,14 @@ Si ves la URL de tu base de datos, ¡todo está bien! 🎉
 
 ---
 
-## �️ Herramientas de Desarrollo
+## ⚙️Herramientas de Desarrollo
 
 ### VS Code Workspace (Recomendado)
 
 Este proyecto incluye un archivo de workspace multi-root (`HealthBytes.code-workspace`) que organiza el proyecto en carpetas específicas y proporciona configuraciones optimizadas.
 
 **✨ Beneficios del Workspace:**
+
 - **4 carpetas separadas**: Backend, Frontend, Docs y Root (organización clara)
 - **Debugger preconfigurado**: Depurador de FastAPI listo para usar (F5)
 - **Tasks integradas**: Comandos para iniciar backend/frontend desde el menú de tareas
@@ -510,28 +518,30 @@ Este proyecto incluye un archivo de workspace multi-root (`HealthBytes.code-work
 **🚀 Cómo usarlo:**
 
 1. **Abrir el workspace** (en lugar del proyecto):
+
    ```bash
    # Opción 1: Desde la línea de comandos
    code HealthBytes.code-workspace
-   
+
    # Opción 2: Desde VS Code
    File → Open Workspace from File → HealthBytes.code-workspace
    ```
-
 2. **Instalar extensiones recomendadas**:
+
    - VS Code mostrará una notificación automáticamente
    - O ve a Extensions (Ctrl+Shift+X) y busca "Workspace Recommendations"
-
 3. **Usar el debugger** (Backend):
+
    - Coloca breakpoints en tu código Python
    - Presiona `F5` o ve a Run → Start Debugging
    - El servidor arrancará en modo debug con hot reload
-
 4. **Ejecutar tasks**:
+
    - `Ctrl+Shift+P` → "Tasks: Run Task"
    - Selecciona "Start Backend" o "Start Frontend"
 
 **📁 Estructura del Workspace:**
+
 ```
 HealthBytes (Workspace)
 ├── Backend    → backend/      (Python, FastAPI, pytest)
@@ -550,12 +560,12 @@ Los pre-commit hooks ejecutan verificaciones automáticas **antes de cada commit
 
 **🔧 Herramientas incluidas:**
 
-| Tool      | Propósito                                      | Ejemplo                                    |
-|-----------|------------------------------------------------|--------------------------------------------|
-| **Black** | Formateador automático (líneas máx: 100)      | Corrige indentación y espaciado            |
-| **Flake8**| Linter que detecta errores y malas prácticas  | "Variable no usada", "Import sin usar"     |
-| **isort** | Ordena y organiza imports automáticamente      | Agrupa imports en stdlib, third-party, local |
-| **Bandit**| Escanea vulnerabilidades de seguridad         | Detecta `eval()`, contraseñas hardcoded    |
+| Tool             | Propósito                                    | Ejemplo                                      |
+| ---------------- | --------------------------------------------- | -------------------------------------------- |
+| **Black**  | Formateador automático (líneas máx: 100)   | Corrige indentación y espaciado             |
+| **Flake8** | Linter que detecta errores y malas prácticas | "Variable no usada", "Import sin usar"       |
+| **isort**  | Ordena y organiza imports automáticamente    | Agrupa imports en stdlib, third-party, local |
+| **Bandit** | Escanea vulnerabilidades de seguridad         | Detecta `eval()`, contraseñas hardcoded   |
 
 **📦 Instalación (una sola vez):**
 
@@ -571,6 +581,7 @@ chmod +x setup-hooks.sh
 ```
 
 El script hace 3 cosas:
+
 1. Instala `pre-commit` (si no lo tienes)
 2. Instala los hooks en tu repositorio local
 3. Verifica que todo funcione correctamente
@@ -611,6 +622,7 @@ git commit -m "feat: agregar búsqueda de productos"
 **⚙️ Configuración:**
 
 Los hooks están configurados en:
+
 - `backend/.pre-commit-config.yaml` - Qué herramientas ejecutar
 - `backend/pyproject.toml` - Configuración de Black, pytest, isort y Bandit
 
@@ -645,15 +657,15 @@ pre-commit run --files app/api/v1/products.py
 
 ---
 
-## �📚 Documentación
+## 📚 Documentación
 
 ### Documentación del Proyecto
 
-| Documento                                                                        | Descripción                                                  | Audiencia |
-| -------------------------------------------------------------------------------- | ------------------------------------------------------------- | --------- |
+| Documento                                                                          | Descripción                                       | Audiencia |
+| ---------------------------------------------------------------------------------- | -------------------------------------------------- | --------- |
 | [Análisis Proyecto](docs/ai-logs/status/status-logs/ANALISIS_PROFUNDO_2026-01-27.md) | ⭐**Estado completo** - Análisis exhaustivo | Todos     |
-| [Resumen Ejecutivo](docs/ai-logs/status/status-logs/RESUMEN_EJECUTIVO.md)            | Dashboard ejecutivo del proyecto              | Todos     |
-| [docs/README.md](docs/README.md)                                                    | Índice general de documentación                             | Todos     |
+| [Resumen Ejecutivo](docs/ai-logs/status/status-logs/RESUMEN_EJECUTIVO.md)             | Dashboard ejecutivo del proyecto                   | Todos     |
+| [docs/README.md](docs/README.md)                                                      | Índice general de documentación                  | Todos     |
 
 ### READMEs Específicos
 
@@ -715,13 +727,13 @@ pytest -v
 
 Nota: El detalle por modulo se debe refrescar con la proxima corrida de coverage.
 
-| Módulo      | Tests | Coverage | Estado           |
-| ------------ | ----- | -------- | ---------------- |
-| Services     | 68    | ~93%     | ✅ Completo      |
-| API Endpoints| 84    | ~70%     | ✅ Funcional     |
-| Security     | 16    | ~80%     | ✅ Funcional     |
-| Performance  | 9     | -        | ✅ Funcional     |
-| Config       | 2     | ~81%     | ✅ Funcional     |
+| Módulo       | Tests | Coverage | Estado       |
+| ------------- | ----- | -------- | ------------ |
+| Services      | 68    | ~93%     | ✅ Completo  |
+| API Endpoints | 84    | ~70%     | ✅ Funcional |
+| Security      | 16    | ~80%     | ✅ Funcional |
+| Performance   | 9     | -        | ✅ Funcional |
+| Config        | 2     | ~81%     | ✅ Funcional |
 
 Ver más detalles en [tests/README.md](backend/tests/README.md)
 
@@ -742,37 +754,41 @@ Convertir HealthBytes en la **plataforma líder** de e-commerce para personas co
 
 ### 📅 Hitos Principales
 
-| Milestone | Target | Status | Progress |
-|-----------|--------|--------|----------|
-| 🚀 **MVP Launch** | Abril 2026 | 🟡 En progreso | 70% |
-| 💳 **Payment Integration** | Febrero 2026 | ✅ Implementado | 100% |
-| 📱 **App Store Release** | Mayo 2026 | 📋 Planeado | 0% |
-| 👥 **100 Beta Users** | Abril 2026 | 📋 Planeado | 0% |
+| Milestone                       | Target       | Status          | Progress |
+| ------------------------------- | ------------ | --------------- | -------- |
+| 🚀**MVP Launch**          | Abril 2026   | 🟡 En progreso  | 70%      |
+| 💳**Payment Integration** | Febrero 2026 | ✅ Implementado | 100%     |
+| 📱**App Store Release**   | Mayo 2026    | 📋 Planeado     | 0%       |
+| 👥**100 Beta Users**      | Abril 2026   | 📋 Planeado     | 0%       |
 
 ### 🔴 Prioridades Críticas (P0) - Febrero-Marzo 2026
 
 **Bloqueadores para MVP Launch**:
 
 #### Backend
-- [x] **Payment Integration** (Mercado Pago) - ✅ Implementado
-- [x] **Address CRUD** - ✅ Implementado
-- [x] **Stock Management** - ✅ Implementado (locking atómico)
+
+- [X] **Payment Integration** (Mercado Pago) - ✅ Implementado
+- [X] **Address CRUD** - ✅ Implementado
+- [X] **Stock Management** - ✅ Implementado (locking atómico)
 - [ ] **Webhooks Payment Confirmation** - 3 días
 - [ ] **Order Emails** (SendGrid) - 2 días
 
 #### Frontend
-- [x] **Checkout Flow Completo** - ✅ Implementado
-- [x] **Address Selection UI** - ✅ Implementado
-- [x] **Payment Method Selection** - ✅ Implementado
-- [x] **Order Success Screen** - ✅ Implementado
+
+- [X] **Checkout Flow Completo** - ✅ Implementado
+- [X] **Address Selection UI** - ✅ Implementado
+- [X] **Payment Method Selection** - ✅ Implementado
+- [X] **Order Success Screen** - ✅ Implementado
 
 #### DevOps
+
 - [ ] **Docker Setup** - 2 días
 - [ ] **CI/CD Pipeline** (GitHub Actions) - 1 semana
 
 ### 🟠 Alta Prioridad (P1) - Abril 2026
 
 **Post-MVP Features para engagement**:
+
 - [ ] Onboarding de preferencias dietéticas
 - [ ] Push Notifications para órdenes
 - [ ] Sistema de recomendaciones
@@ -782,6 +798,7 @@ Convertir HealthBytes en la **plataforma líder** de e-commerce para personas co
 ### 🟡 Media Prioridad (P2) - Mayo 2026
 
 **Polish & Accesibilidad**:
+
 - [ ] Dark Mode
 - [ ] A11y Audit (WCAG 2.1 AA)
 - [ ] Performance Optimization
@@ -796,15 +813,16 @@ Convertir HealthBytes en la **plataforma líder** de e-commerce para personas co
 
 ### 🚧 Features en Progreso
 
-| Feature | Owner | ETA | Status |
-|---------|-------|-----|--------|
-| Backend Testing 80%+ | QA | Feb 20 | 🟡 70% (179 tests passing) |
-| Docker Configuration | DevOps | Mar 1 | 📋 Planeado |
-| Payment Integration (Mercado Pago) | Backend | Mar 15 | 📋 Not started |
+| Feature                            | Owner   | ETA    | Status                     |
+| ---------------------------------- | ------- | ------ | -------------------------- |
+| Backend Testing 80%+               | QA      | Feb 20 | 🟡 70% (179 tests passing) |
+| Docker Configuration               | DevOps  | Mar 1  | 📋 Planeado                |
+| Payment Integration (Mercado Pago) | Backend | Mar 15 | 📋 Not started             |
 
 ### ❌ Features Descartadas
 
 Por razones de **ROI vs esfuerzo**, estas features NO están en el roadmap:
+
 - ❌ Historial de búsquedas (bajo impacto)
 - ❌ Typeahead de búsqueda (premature optimization)
 - ❌ 2FA avanzado (Clerk es suficiente para MVP)
