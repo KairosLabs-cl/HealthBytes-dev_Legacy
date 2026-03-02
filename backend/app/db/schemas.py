@@ -156,6 +156,7 @@ class Order(Base):
 
     items = relationship("OrderItem", back_populates="order")
     shipping_address = relationship("Address")
+    user = relationship("User")
 
 
 class OrderItem(Base):
@@ -170,6 +171,7 @@ class OrderItem(Base):
     price = Column(Numeric(10, 2), nullable=False)
 
     order = relationship("Order", back_populates="items")
+    product = relationship("Product")
 
 
 class CartItem(Base):
