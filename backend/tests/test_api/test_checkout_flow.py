@@ -37,7 +37,7 @@ def checkout_product(db_session):
 def user_address(db_session, checkout_user):
     """Active address belonging to checkout_user."""
     addr = Address(
-        user_id=checkout_user.clerk_id,
+        user_id=checkout_user.id,
         label="Casa",
         street="Av. Providencia",
         street_number="1234",
@@ -125,7 +125,7 @@ class TestCheckoutWithAddress:
     ):
         """Address belonging to another user must return 404."""
         other_addr = Address(
-            user_id="clerk_other_user_999",
+            user_id=9999,  # non-existent user → ownership check must reject
             street="Calle Ajena",
             street_number="99",
             city="Valparaíso",
@@ -153,7 +153,7 @@ class TestCheckoutWithAddress:
     ):
         """Inactive address (soft-deleted) must return 404."""
         inactive_addr = Address(
-            user_id=checkout_user.clerk_id,
+            user_id=checkout_user.id,
             street="Calle Inactiva",
             street_number="1",
             city="Santiago",
