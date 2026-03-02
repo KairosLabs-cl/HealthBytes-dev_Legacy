@@ -40,7 +40,7 @@ def default_address_data():
     )
 
 
-USER_ID = "clerk_user_123"
+USER_ID = 1
 
 
 # --- create_address ---
@@ -153,7 +153,7 @@ async def test_get_user_addresses_isolation(db_session, address_data):
     mock_db = MockAsyncSession(db_session)
     await AddressService.create_address(mock_db, USER_ID, address_data)
 
-    other_user_addresses = await AddressService.get_user_addresses(mock_db, "other_user_456")
+    other_user_addresses = await AddressService.get_user_addresses(mock_db, 999)
     assert len(other_user_addresses) == 0
 
 
@@ -184,7 +184,7 @@ async def test_get_address_by_id_wrong_user(db_session, address_data):
     created = await AddressService.create_address(mock_db, USER_ID, address_data)
 
     with pytest.raises(HTTPException) as exc_info:
-        await AddressService.get_address_by_id(mock_db, created.id, "wrong_user")
+        await AddressService.get_address_by_id(mock_db, created.id, 999)
     assert exc_info.value.status_code == 404
 
 

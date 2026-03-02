@@ -18,7 +18,7 @@ class AddressService:
 
     @staticmethod
     async def create_address(
-        db: AsyncSession, user_id: str, address_data: AddressCreate
+        db: AsyncSession, user_id: int, address_data: AddressCreate
     ) -> Address:
         """
         Create new address for user
@@ -40,13 +40,13 @@ class AddressService:
 
     @staticmethod
     async def get_user_addresses(
-        db: AsyncSession, user_id: str, include_inactive: bool = False
+        db: AsyncSession, user_id: int, include_inactive: bool = False
     ) -> List[Address]:
         """
         Get all addresses for a user
 
         Args:
-            user_id: Clerk user ID
+            user_id: DB integer user ID
             include_inactive: Include soft-deleted addresses
         """
         query = select(Address).where(Address.user_id == user_id)
@@ -61,7 +61,7 @@ class AddressService:
 
     @staticmethod
     async def get_address_by_id(
-        db: AsyncSession, address_id: int, user_id: str
+        db: AsyncSession, address_id: int, user_id: int
     ) -> Optional[Address]:
         """
         Get specific address by ID (must belong to user)
@@ -82,7 +82,7 @@ class AddressService:
         return address
 
     @staticmethod
-    async def get_default_address(db: AsyncSession, user_id: str) -> Optional[Address]:
+    async def get_default_address(db: AsyncSession, user_id: int) -> Optional[Address]:
         """Get user's default address"""
         query = select(Address).where(
             and_(
@@ -97,7 +97,7 @@ class AddressService:
 
     @staticmethod
     async def update_address(
-        db: AsyncSession, address_id: int, user_id: str, address_data: AddressUpdate
+        db: AsyncSession, address_id: int, user_id: int, address_data: AddressUpdate
     ) -> Address:
         """
         Update address
@@ -122,7 +122,7 @@ class AddressService:
         return address
 
     @staticmethod
-    async def delete_address(db: AsyncSession, address_id: int, user_id: str) -> dict:
+    async def delete_address(db: AsyncSession, address_id: int, user_id: int) -> dict:
         """
         Soft delete address (set is_active=False)
 
@@ -156,7 +156,7 @@ class AddressService:
         return {"message": f"Address {address_id} deleted successfully"}
 
     @staticmethod
-    async def set_default_address(db: AsyncSession, address_id: int, user_id: str) -> Address:
+    async def set_default_address(db: AsyncSession, address_id: int, user_id: int) -> Address:
         """
         Set address as default
 
@@ -175,7 +175,7 @@ class AddressService:
         return address
 
     @staticmethod
-    async def _unset_default_addresses(db: AsyncSession, user_id: str) -> None:
+    async def _unset_default_addresses(db: AsyncSession, user_id: int) -> None:
         """Helper: Unset all default addresses for user"""
         stmt = (
             update(Address)
