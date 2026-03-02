@@ -25,8 +25,8 @@ cd frontend
 # Instalar dependencias (usar pnpm)
 pnpm install
 
-# Iniciar el servidor de desarrollo
-pnpm start
+# Iniciar el servidor de desarrollo seguro (con validación de Node)
+.\start.ps1
 ```
 
 ### Ejecutar en Emulador/Dispositivo
@@ -38,8 +38,8 @@ pnpm ios
 # Android
 pnpm android
 
-# Expo Go (escanear QR con celular)
-pnpm start
+# Expo Go (escanear QR con celular, con validación de entorno)
+.\start.ps1
 ```
 
 ---

@@ -176,9 +176,10 @@ export default function ProductDetailsScreen() {
 
     // Cart button bounces when bubble arrives (~950ms)
     setTimeout(() => {
-      cartBtnScale.value = withSpring(1.35, { damping: 6, stiffness: 250 }, () => {
-        cartBtnScale.value = withSpring(1, { damping: 10, stiffness: 180 });
-      });
+      cartBtnScale.value = withSequence(
+        withSpring(1.35, { damping: 6, stiffness: 250 }),
+        withSpring(1, { damping: 10, stiffness: 180 })
+      );
     }, 950);
   };
 
@@ -305,7 +306,9 @@ export default function ProductDetailsScreen() {
               <View
                 className="absolute -top-2 -right-2 bg-red-500 rounded-full min-w-[18px] h-[18px] px-1 items-center justify-center"
               >
-                <Text className="text-white text-[10px] font-bold">{cartItems.length}</Text>
+                <Text className="text-white text-[10px] font-bold">
+                  {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
+                </Text>
               </View>
             )}
           </View>
