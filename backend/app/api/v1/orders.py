@@ -56,7 +56,7 @@ async def create_order(
                 addr_result = await db.execute(
                     select(Address).where(
                         Address.id == order_data.address_id,
-                        Address.user_id == current_user.clerk_id,
+                        Address.user_id == current_user.id,
                         Address.is_active.is_(True),
                     )
                 )
