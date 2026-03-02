@@ -158,6 +158,11 @@ class Order(Base):
     shipping_address = relationship("Address")
     user = relationship("User")
 
+    __table_args__ = (
+        Index("idx_order_status", "status"),
+        Index("idx_order_created_at", "created_at"),
+    )
+
 
 class OrderItem(Base):
     """Order items table - Replica of orderItemsTable from Drizzle"""
