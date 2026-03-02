@@ -62,6 +62,7 @@
     "react-native-worklets": "0.5.1",
     "react-native-worklets-core": "^1.6.2",
     "tailwindcss": "^3.4.19",
+    "@sentry/react-native": "^6.0.0",
     "zustand": "^5.0.10"
   },
   "devDependencies": {

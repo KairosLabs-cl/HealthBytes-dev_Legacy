@@ -49,6 +49,9 @@ class Settings(BaseSettings):
     ENABLE_DIAGNOSTIC_ENDPOINTS: bool = False
     DEV_BYPASS_AUTH: bool = False
 
+    # Observability
+    SENTRY_DSN: Optional[str] = None  # Set in production for error tracking
+
     @property
     def clerk_jwks_url(self) -> str:
         """Get Clerk JWKS URL from publishable key"""
