@@ -8,7 +8,7 @@ import hmac
 import logging
 from datetime import UTC, datetime
 from decimal import Decimal
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 import httpx
 from sqlalchemy import select
@@ -213,6 +213,7 @@ class MercadoPagoService:
         topic: str,
         webhook_signature: Optional[str] = None,
         request_id: Optional[str] = None,
+        background_tasks: Optional[Any] = None,
     ) -> Dict:
         """
         Process Mercado Pago webhook notification
@@ -222,6 +223,11 @@ class MercadoPagoService:
             payment_id: Mercado Pago payment ID
             topic: Notification topic (payment, merchant_order)
             webhook_signature: Optional x-signature header for validation
+            request_id: Optional x-request-id header for signature validation
+            background_tasks: Optional FastAPI BackgroundTasks instance. When
+                provided, the payment-success email is enqueued as a background
+                task (decoupled from the DB session lifecycle). When None, the
+                email is sent inline with a try/except fallback.
 
         Returns:
             Dict with processing status
@@ -327,15 +333,27 @@ class MercadoPagoService:
 
         # Send payment success email only on actual transition to COMPLETED
         if new_status == PaymentStatus.COMPLETED and previous_status != PaymentStatus.COMPLETED:
-            try:
-                from app.services.email_service import EmailService, build_order_email_data
+            if background_tasks is not None:
+                # Enqueue as a background task so the webhook response is returned
+                # to Mercado Pago immediately, fully decoupled from the DB session.
+                background_tasks.add_task(
+                    self._send_payment_success_email,
+                    order_id=order_id,
+                )
+            else:
+                # Fallback: send inline (e.g. when called from tests or other
+                # contexts that do not provide a BackgroundTasks instance).
+                try:
+                    from app.services.email_service import EmailService, build_order_email_data
 
-                email_svc = EmailService(self.settings)
-                email_data = await build_order_email_data(db, order_id)
-                if email_data:
-                    await email_svc.send_payment_success(email_data)
-            except Exception:
-                logger.exception("Failed to send payment success email for order %s", order_id)
+                    email_svc = EmailService(self.settings)
+                    email_data = await build_order_email_data(db, order_id)
+                    if email_data:
+                        await email_svc.send_payment_success(email_data)
+                except Exception:
+                    logger.exception(
+                        "Failed to send payment success email for order %s", order_id
+                    )
 
         logger.info(
             "Webhook processed: order=%s, mp_payment=%s, status=%s",
@@ -350,6 +368,36 @@ class MercadoPagoService:
             "status": new_status.value,
             "mp_payment_id": payment_id,
         }
+
+    async def _send_payment_success_email(self, order_id: int) -> None:
+        """
+        Send the payment-success email for an order.
+
+        Opens its own DB session so it is safe to call from a FastAPI
+        BackgroundTask (the original request session may already be closed).
+        Failures are caught and logged — they must never propagate to the
+        background-task runner and trigger an unhandled exception.
+        """
+        try:
+            from app.db.database import AsyncSessionLocal
+            from app.services.email_service import EmailService, build_order_email_data
+
+            async with AsyncSessionLocal() as db:
+                email_svc = EmailService(self.settings)
+                email_data = await build_order_email_data(db, order_id)
+                if email_data:
+                    await email_svc.send_payment_success(email_data)
+                    logger.info(
+                        "Payment success email sent for order %s", order_id
+                    )
+                else:
+                    logger.warning(
+                        "Could not build email data for order %s — email skipped", order_id
+                    )
+        except Exception:
+            logger.exception(
+                "Failed to send payment success email for order %s", order_id
+            )
 
     def _validate_x_signature(
         self, x_signature: str, data_id: str, request_id: Optional[str] = None
