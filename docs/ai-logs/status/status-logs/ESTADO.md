@@ -1,3 +1,5 @@
+<!-- NOTE: This file contains architecture documentation. See ARQUITECTURA.md for canonical architecture reference. -->
+
 # 🏗️ HealthBytes - Arquitectura Técnica
 
 **Fecha**: Febrero 28, 2026
