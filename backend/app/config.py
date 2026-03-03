@@ -39,7 +39,7 @@ class Settings(BaseSettings):
 
     # Environment
     ENVIRONMENT: str = "dev"
-    HOST: str = "0.0.0.0"
+    HOST: str = "127.0.0.1"
     PORT: int = 3001
     # Default max request body size for general API requests.
     # 10 MB supports typical e-commerce JSON payloads and small media.
