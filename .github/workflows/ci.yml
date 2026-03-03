@@ -171,3 +171,29 @@ jobs:
 
       - name: Build frontend image
         run: docker build -t healthbytes-frontend ./frontend
+
+  # ==========================================================================
+  # PRODUCTION DEPLOYMENT (Manual Approval Gate)
+  # ==========================================================================
+  # The manual approval is configured in GitHub UI, NOT in this file:
+  #   GitHub Settings → Environments → "production" → Required reviewers
+  # Add at least one reviewer there to enforce a manual approval step before
+  # this job runs. Without that configuration, the job will run automatically.
+  # ==========================================================================
+  deploy-production:
+    name: Deploy to Production
+    needs: [backend-test, frontend-test, sast, secret-scan, docker-build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    environment:
+      name: production
+      url: https://api.healthbytes.com
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy placeholder
+        run: |
+          echo "Production deployment approved."
+          echo "Configure EAS Build (mobile) or ECS deploy (backend) here."
+          echo "See docs/architecture/ for deployment strategy."

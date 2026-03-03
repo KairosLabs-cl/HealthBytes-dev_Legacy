@@ -95,33 +95,10 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  # Redis Cache (Optional - for future use)
-  redis:
-    image: redis:7-alpine
-    container_name: healthbytes-cache
-    restart: unless-stopped
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_dev}
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - healthbytes_network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+  # Redis (removed for MVP — add back when caching is needed)
 
 volumes:
   postgres_data:
-    driver: local
-  redis_data:
     driver: local
 
 networks:

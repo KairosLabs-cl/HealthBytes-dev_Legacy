@@ -1,7 +1,7 @@
 import logging
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
@@ -16,7 +16,7 @@ router = APIRouter()
 
 @router.get("/", response_model=List[ProductResponse])
 async def list_products(
-    search: Optional[str] = None,
+    search: Optional[str] = Query(None, max_length=100, description="Search term"),
     category: Optional[str] = None,
     dietary: Optional[str] = None,  # Comma-separated tags: "vegano,sin-gluten"
     min_price: Optional[float] = None,

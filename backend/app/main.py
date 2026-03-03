@@ -1,3 +1,8 @@
+import json
+import logging
+import traceback
+from datetime import datetime, timezone
+
 import sentry_sdk
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,6 +26,38 @@ from app.api.v1 import (
 )
 from app.config import settings
 from app.core.limiter import limiter
+
+
+class JSONLogFormatter(logging.Formatter):
+    """Emit log records as single-line JSON for structured log ingestion."""
+
+    def format(self, record: logging.LogRecord) -> str:
+        log_entry: dict = {
+            "timestamp": datetime.fromtimestamp(record.created, tz=timezone.utc).isoformat(),
+            "level": record.levelname,
+            "name": record.name,
+            "message": record.getMessage(),
+        }
+        if record.exc_info and record.exc_info[0] is not None:
+            log_entry["traceback"] = traceback.format_exception(*record.exc_info)
+        return json.dumps(log_entry, default=str)
+
+
+def configure_logging() -> None:
+    """Configure root logger: JSON in staging/production, plain text in dev."""
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO)
+
+    if settings.ENVIRONMENT == "dev":
+        logging.basicConfig(level=logging.INFO, format="%(levelname)s:%(name)s: %(message)s")
+    else:
+        handler = logging.StreamHandler()
+        handler.setFormatter(JSONLogFormatter())
+        root_logger.handlers.clear()
+        root_logger.addHandler(handler)
+
+
+configure_logging()
 
 
 def init_sentry() -> None:

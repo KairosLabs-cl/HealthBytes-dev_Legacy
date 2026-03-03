@@ -8,15 +8,15 @@
 
 ## 📈 Nivel de Madurez: **65 / 100**
 
-| Dimensión | Score | Estado |
-|-----------|-------|--------|
-| Arquitectura del código | 78 | Sólida, 3 capas respetadas |
-| Seguridad (auth/headers) | 72 | Hardening hecho, gaps en pipeline |
-| Testing (backend 87%, FE 126 tests) | 70 | Buena cobertura, paths críticos sin cubrir |
-| DevOps / Observabilidad | 32 | **El hueco más grande** |
-| Modelo de datos | 55 | Inconsistencia crítica de IDs |
-| Calidad frontend | 64 | Race conditions + token bugs |
-| Documentación | 58 | Extensa pero desactualizada |
+| Dimensión                          | Score | Estado                                      |
+| ----------------------------------- | ----- | ------------------------------------------- |
+| Arquitectura del código            | 78    | Sólida, 3 capas respetadas                 |
+| Seguridad (auth/headers)            | 72    | Hardening hecho, gaps en pipeline           |
+| Testing (backend 87%, FE 126 tests) | 70    | Buena cobertura, paths críticos sin cubrir |
+| DevOps / Observabilidad             | 32    | **El hueco más grande**              |
+| Modelo de datos                     | 55    | Inconsistencia crítica de IDs              |
+| Calidad frontend                    | 64    | Race conditions + token bugs                |
+| Documentación                      | 58    | Extensa pero desactualizada                 |
 
 Un 65 significa: código bien pensado para el estadio, fundamentos sólidos, pero **no está listo para producción hoy**. Necesita 2–3 semanas de trabajo focalizado, no un rewrite.
 
@@ -25,6 +25,7 @@ Un 65 significa: código bien pensado para el estadio, fundamentos sólidos, per
 ## 🔴 Riesgos Críticos (Bloqueantes de producción)
 
 ### 1. Inconsistencia de IDs en el modelo de datos
+
 **Archivos**: `backend/db/schemas.py`, `backend/db/models/address.py`, `backend/app/api/v1/orders.py:55–70`
 
 `User.id` es `Integer`. `Address.user_id` es `String` (espera Clerk ID). `Order.user_id` es `Integer`. El router en `api/v1/orders.py:55–70` filtra `Address.user_id == current_user.clerk_id` pero pasa `user_id=user_id` (Integer) al servicio. **Esto rompe la validación de domicilio en producción**: un usuario puede comprar a una dirección que no le pertenece, o los pedidos fallan silenciosamente al crear. Es el bug más peligroso del proyecto.
@@ -34,6 +35,7 @@ Un 65 significa: código bien pensado para el estadio, fundamentos sólidos, per
 ---
 
 ### 2. Race condition en carrito
+
 **Archivo**: `frontend/store/cartStore.ts:152–201`
 
 Si el usuario agrega el mismo producto rápidamente (doble tap, red lenta), se disparan requests concurrentes sin serialización. El servidor puede quedar con qty=1 mientras el cliente muestra qty=3. El rollback solo restaura el estado previo al primer tap, no al estado del servidor. Resultado: checkout cobra mal o falla.
@@ -43,6 +45,7 @@ Si el usuario agrega el mismo producto rápidamente (doble tap, red lenta), se d
 ---
 
 ### 3. Token sin prefijo Bearer en `api/cart.ts:34`
+
 **Archivo**: `frontend/api/cart.ts:34`
 
 Todos los módulos API usan `Authorization: Bearer ${token}`, excepto `cart.ts` que envía el token desnudo. El backend espera un formato consistente. Genera 401s intermitentes en operaciones de carrito — imposible de debuggear sin herramientas de observabilidad.
@@ -52,6 +55,7 @@ Todos los módulos API usan `Authorization: Bearer ${token}`, excepto `cart.ts` 
 ---
 
 ### 4. Frontend Dockerfile ejecuta dev server en producción
+
 **Archivo**: `frontend/Dockerfile`
 
 El Dockerfile ejecuta `pnpm start` (Metro Bundler). Esto no es un build de producción: sin minificación, sin tree-shaking, Metro Bundler expuesto. Para una app mobile-first con Expo, el artefacto de producción debe construirse con **EAS Build**, no desplegarse como contenedor. El Dockerfile de frontend es esencialmente inútil para producción real.
@@ -61,11 +65,13 @@ El Dockerfile ejecuta `pnpm start` (Metro Bundler). Esto no es un build de produ
 ---
 
 ### 5. Cero observabilidad
+
 **Scope**: Todo el stack
 
 No hay logging estructurado centralizado, no hay métricas, no hay alertas, no hay error tracking (Sentry). Si algo falla en producción — un payment webhook que falla, un pedido que queda en estado inconsistente, un spike de 500s — **no hay manera de saberlo**. Esto convierte cualquier bug en producción en una catástrofe sin diagnóstico.
 
 **Fix (prioridad máxima)**:
+
 1. Integrar Sentry en backend (`sentry-sdk`) y frontend (`@sentry/react-native`) — 2 horas
 2. Structured JSON logging en FastAPI — 4 horas
 3. Alertas básicas (Slack webhook en 500s) — 2 horas
@@ -73,6 +79,7 @@ No hay logging estructurado centralizado, no hay métricas, no hay alertas, no h
 ---
 
 ### 6. Sin escaneo de seguridad en CI
+
 **Archivo**: `.github/workflows/ci.yml`
 
 No hay SAST (Semgrep/Snyk), no hay secret scanning (TruffleHog/Gitleaks), no hay container scanning (Trivy). Un secret hardcodeado accidentalmente, una dependencia con CVE conocido, o una vulnerabilidad de inyección puede llegar a producción sin ninguna alerta.
@@ -82,6 +89,7 @@ No hay SAST (Semgrep/Snyk), no hay secret scanning (TruffleHog/Gitleaks), no hay
 ---
 
 ### 7. Webhook de Mercado Pago sin transacción atómica
+
 **Archivo**: `backend/app/services/mercadopago_service.py:326`
 
 El `commit()` ocurre antes de que el email se envíe. Si el email falla, el estado del pago se actualizó pero el usuario no recibió confirmación. Más grave: si el cliente de Mercado Pago reintenta el webhook, el guard de idempotencia lo rechaza porque el estado ya cambió. **Resultado**: pagos confirmados sin email, estados inconsistentes, sin posibilidad de retry.
@@ -123,23 +131,16 @@ El `commit()` ocurre antes de que el email se envíe. Si el email falla, el esta
 ### Para el lanzamiento inmediato (ROI máximo, esfuerzo mínimo)
 
 1. **Sentry** (frontend + backend): 2 horas de setup. Primera línea de defensa en producción. Sin esto, cualquier bug en prod requiere análisis forense manual.
-
 2. **Estandarizar IDs de dominio**: Decidir ahora — Integer IDs en FK everywhere, Clerk ID solo como campo de autenticación. Un día de trabajo, evita una categoría entera de bugs de producción.
-
 3. **Queue de operaciones en cartStore**: Agregar un flag `isProcessing` por producto antes de llamadas al servidor en `addProduct` y `updateQuantity`. Previene el race condition sin cambiar la arquitectura.
-
 4. **Validar `MERCADO_PAGO_WEBHOOK_SECRET` en startup**: Una línea en `config.py`: si el campo es None y `ENVIRONMENT == "production"`, raise error. Fail fast en lugar de fail silently.
 
 ### A mediano plazo (2–6 semanas)
 
 5. **Migrar precios a Decimal**: Backend ya usa `Numeric(10,2)` en DB — la inconsistencia es solo en schemas Pydantic y tipos TypeScript. Cambio quirúrgico, evita errores contables con AFIP.
-
 6. **Caché de productos con Redis**: Redis ya está en docker-compose pero no conectado al backend. `functools.lru_cache` o Redis para el endpoint de home page. Con 1,000 usuarios concurrentes, son 1,000 queries idénticas a Postgres hoy.
-
 7. **CI: Snyk + TruffleHog**: Ambos tienen free tier suficiente para un MVP. Jobs paralelos en `ci.yml`. 3 horas de trabajo, elimina un vector de riesgo de seguridad permanente.
-
 8. **E2E test del checkout**: El camino crítico (add→cart→checkout→payment redirect) no tiene prueba de integración. Un test con mocks del API de Mercado Pago que valide el flujo completo de estado.
-
 9. **Mercado Pago webhook async**: Mover el procesamiento del webhook a un background task (Celery o `asyncio.create_task`). El endpoint actual es synchronous — con volumen, Resend lento hace que Mercado Pago haga timeout y reintente, generando estados inconsistentes.
 
 ---
@@ -151,6 +152,7 @@ El `commit()` ocurre antes de que el email se envíe. Si el email falla, el esta
 El README tiene 1,060 líneas y cubre lo necesario para que un dev nuevo levante el proyecto. Los quick starts están bien. El troubleshooting de Expo Go (por qué no funciona localhost) es el tipo de detalle que ahorra 2 horas a un nuevo dev.
 
 **Problemas concretos**:
+
 - Docker figura como "📝 Planeado" cuando está implementado y funcional
 - Coverage dice "70%, 179 tests" — la realidad es 87%, 387 tests
 - "Payment Integration: Febrero 2026 - En proceso" — ya está implementado
@@ -176,16 +178,16 @@ La separación en 3 capas (routers → services → models) es sólida y es el *
 
 ### Inconsistencias internas
 
-| Área | Inconsistencia |
-|------|----------------|
-| Roadmap | Payment Integration marcado "pendiente" pero implementado desde Feb |
-| README | 179 tests / 70% coverage cuando son 387 / 87% |
-| Docker status | README dice "Planeado", docker-compose está completo |
-| IDs | `User.id` Integer, `Address.user_id` String, `Order.user_id` Integer |
-| Token format | `cart.ts` sin Bearer, resto de la app con Bearer |
-| Precios | DB Numeric(10,2), Pydantic float, TypeScript number |
-| Python version | Local dev 3.14, CI usa 3.13 (mismatch documentado pero confuso) |
-| `ESTADO.md` | Nombre dice "estado" pero contiene arquitectura |
+| Área          | Inconsistencia                                                             |
+| -------------- | -------------------------------------------------------------------------- |
+| Roadmap        | Payment Integration marcado "pendiente" pero implementado desde Feb        |
+| README         | 179 tests / 70% coverage cuando son 387 / 87%                              |
+| Docker status  | README dice "Planeado", docker-compose está completo                      |
+| IDs            | `User.id` Integer, `Address.user_id` String, `Order.user_id` Integer |
+| Token format   | `cart.ts` sin Bearer, resto de la app con Bearer                         |
+| Precios        | DB Numeric(10,2), Pydantic float, TypeScript number                        |
+| Python version | Local dev 3.14, CI usa 3.13 (mismatch documentado pero confuso)            |
+| `ESTADO.md`  | Nombre dice "estado" pero contiene arquitectura                            |
 
 ---
 
@@ -206,6 +208,7 @@ La separación en 3 capas (routers → services → models) es sólida y es el *
 La arquitectura de código es apropiada para el estadio. Three-layer backend, React Query, Zustand stores con optimistic updates — estos no son over-engineering, son patrones que pagan dividendos desde el día 1 en producción. La alternativa (useState + fetch en componentes) hubiera sido deuda técnica inmediata.
 
 Donde sí hay sobre-complejidad:
+
 - 40+ archivos de AI logs que son historia de desarrollo, no documentación técnica
 - docker-compose con Redis y frontend container que no se usan en el flujo real de deploy
 - CI con 5 jobs paralelos bien diseñados, pero sin las validaciones críticas de seguridad que realmente importan
@@ -216,17 +219,11 @@ Donde sí hay sobre-complejidad:
 ## 🧨 Decisiones que podrían salir mal en 6 meses
 
 1. **El ID mismatch (int vs string) no resuelto** → A medida que crezca el dataset, las órdenes mal vinculadas a domicilios generarán surface de fraude: un usuario podría recibir pedidos en domicilios de otros usuarios.
-
 2. **Sin observabilidad → blind flying** → Cuando (no si) haya un outage, el tiempo de diagnóstico se va a medir en horas. Los primeros usuarios de producción van a ser los que paguen el costo de discovery.
-
 3. **Float prices acumulados** → Con volumen, los errores de redondeo en totales de órdenes generan discrepancias contables. Mercado Pago cobra centavos de más o de menos, lo cual escala a problemas con AFIP.
-
 4. **El carrito desincronizado** → En una promoción viral, la tasa de double-taps sube. El race condition se manifiesta justo cuando más importa. Los usuarios ven inconsistencias en sus carritos y pierden confianza.
-
 5. **Sin caché de productos** → El primer pico de tráfico hace full table scan en Postgres en cada request de home. El backend se cae exactamente cuando importa que esté arriba.
-
 6. **Mercado Pago webhook síncrono** → Con volumen, los emails lentos de Resend hacen que el endpoint demore, Mercado Pago reintenta, el idempotency guard rechaza el retry, y el estado del pago queda inconsistente. Cada orden problemática requiere intervención manual.
-
 7. **Sin staging gate en CI** → Un bug que rompe checkout llega a producción en el próximo push. Sin smoke tests post-deploy, puede estar roto por horas antes de que un usuario lo reporte.
 
 ---

@@ -1,7 +1,8 @@
 from datetime import datetime
+from decimal import Decimal
 from typing import List
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_serializer
 
 from app.schemas.product import ProductResponse
 
@@ -35,7 +36,12 @@ class CartResponse(BaseModel):
     """Complete cart with all items and total"""
 
     items: List[CartItemResponse]
-    total: float = Field(..., description="Total price of all items in cart")
+    total: Decimal = Field(..., description="Total price of all items in cart")
+
+    @field_serializer("total")
+    def serialize_total(self, v: Decimal) -> float:
+        """Serialize Decimal as JSON number for frontend compatibility."""
+        return float(v)
 
 
 class CartMergeRequest(BaseModel):

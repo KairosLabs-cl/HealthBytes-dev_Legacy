@@ -14,7 +14,19 @@
       "Bash(git:*)",
       "Bash(find:*)",
       "Bash(pnpm ls:*)",
-      "Bash(./.venv/Scripts/python.exe:*)"
+      "Bash(./.venv/Scripts/python.exe:*)",
+      "Bash(.venv/Scripts/pip install:*)",
+      "Bash(pnpm add:*)",
+      "Bash(.venv/Scripts/pip:*)",
+      "Bash(.venv/Scripts/python.exe:*)",
+      "Bash(pnpm test:*)",
+      "Bash(docker compose:*)",
+      "Bash(source:)",
+      "Bash(ls:*)",
+      "Bash(source:*)",
+      "Bash(\"C:\\\\Users\\\\benja\\\\Proyects\\\\Code\\\\Work\\\\HealthBytes-dev\\\\backend\\\\.venv\\\\Scripts\\\\python.exe\":*)",
+      "Bash(gh pr:*)",
+      "Bash(python3:*)"
     ]
   }
 }

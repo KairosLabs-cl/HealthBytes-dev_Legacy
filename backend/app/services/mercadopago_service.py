@@ -118,6 +118,11 @@ class MercadoPagoService:
         # Works for production and for staging/testing with ngrok or similar public URLs
         backend_url = self.settings.BACKEND_URL or ""
         frontend_url = self.settings.FRONTEND_URL or ""
+
+        if is_production and (not backend_url or not frontend_url):
+            raise PaymentError(
+                "BACKEND_URL and FRONTEND_URL must be configured in production"
+            )
         is_public = is_production or backend_url.startswith("https://")
 
         if is_public and frontend_url:
@@ -418,7 +423,12 @@ class MercadoPagoService:
             True if signature is valid
         """
         if not self.webhook_secret:
-            return True  # Skip validation if no secret configured
+            if self.settings.ENVIRONMENT == "production":
+                raise PaymentError("Webhook signature validation not configured")
+            logger.warning(
+                "MERCADO_PAGO_WEBHOOK_SECRET not set — skipping signature validation"
+            )
+            return True
 
         try:
             # Parse x-signature: "ts=12345,v1=abcdef..."

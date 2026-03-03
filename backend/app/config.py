@@ -33,12 +33,9 @@ class Settings(BaseSettings):
     RESEND_API_KEY: Optional[str] = None
     EMAIL_FROM_ADDRESS: str = "HealthBytes <onboarding@resend.dev>"
 
-    # URLs for callbacks
-    BACKEND_URL: str = "http://127.0.0.1:3001"  # Override in production
-    FRONTEND_URL: str = "http://localhost:8081"  # Override in production
-
-    # Observability
-    SENTRY_DSN: Optional[str] = None
+    # URLs for callbacks (required in production — no localhost defaults)
+    BACKEND_URL: Optional[str] = None
+    FRONTEND_URL: Optional[str] = None
 
     # Environment
     ENVIRONMENT: str = "dev"
@@ -103,6 +100,8 @@ def _validate_production_config(s: Settings) -> None:
             s.MERCADO_PAGO_WEBHOOK_SECRET if hasattr(s, "MERCADO_PAGO_WEBHOOK_SECRET") else None
         ),
         "CLERK_SECRET_KEY": s.CLERK_SECRET_KEY if hasattr(s, "CLERK_SECRET_KEY") else None,
+        "BACKEND_URL": s.BACKEND_URL,
+        "FRONTEND_URL": s.FRONTEND_URL,
     }
     missing = [k for k, v in required.items() if not v]
     if missing:
