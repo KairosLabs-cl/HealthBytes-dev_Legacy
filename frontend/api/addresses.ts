@@ -25,6 +25,13 @@ export async function fetchAddresses(
     },
   });
 
+  if (res.status === 429) {
+    if (__DEV__) {
+      console.warn("fetchAddresses: rate limited (429), returning empty list");
+    }
+    return { addresses: [] } as AddressListResponse;
+  }
+
   if (!res.ok) {
     const error = await res.json();
     throw new Error(error.detail?.message || "Error fetching addresses");

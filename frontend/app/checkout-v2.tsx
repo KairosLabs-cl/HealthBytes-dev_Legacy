@@ -26,6 +26,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AuthGate } from "@/components/AuthGate";
 
 type CheckoutStep = "address" | "payment" | "summary";
 
@@ -59,7 +60,8 @@ export default function CheckoutV2Screen() {
       }
     };
     loadAddresses();
-  }, [getToken, fetchAddresses]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const subtotal = useMemo(
     () =>
@@ -94,12 +96,12 @@ export default function CheckoutV2Screen() {
       setCurrentStep("summary");
       scrollRef.current?.scrollTo({ y: 0, animated: true });
     } else if (currentStep === "summary") {
+      // Safety net: hard auth check before any payment processing
       if (!isSignedIn) {
         Alert.alert(
-          "Sesión requerida",
-          "Necesitas iniciar sesión para realizar una compra."
+          "Sesion requerida",
+          "Debes iniciar sesion antes de confirmar tu compra."
         );
-        router.push("/(auth)/login");
         return;
       }
 
@@ -200,6 +202,7 @@ export default function CheckoutV2Screen() {
   };
 
   return (
+    <AuthGate message="Inicia sesion para completar tu compra.">
     <SafeAreaView className="flex-1 bg-white" edges={["top", "bottom"]}>
       <Stack.Screen options={{ headerShown: false }} />
       <ScrollView
@@ -469,5 +472,6 @@ export default function CheckoutV2Screen() {
         </VStack>
       </View>
     </SafeAreaView>
+    </AuthGate>
   );
 }

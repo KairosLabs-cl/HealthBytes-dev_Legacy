@@ -18,6 +18,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { AuthGate } from "@/components/AuthGate";
 
 export default function OrdersScreen() {
   const router = useRouter();
@@ -44,12 +45,6 @@ export default function OrdersScreen() {
     { id: "in_transit", label: "En tránsito" },
     { id: "delivered", label: "Entregado o por entregar" },
   ] as const;
-
-  useEffect(() => {
-    if (isLoaded && !isSignedIn) {
-      router.replace("/(auth)/login");
-    }
-  }, [isLoaded, isSignedIn, router]);
 
   const loadOrders = useCallback(async () => {
     const token = await getToken();
@@ -93,17 +88,6 @@ export default function OrdersScreen() {
     (orderId: string | number) => router.push(`/orders/${orderId}`),
     [router]
   );
-
-  if (!isLoaded) {
-    return (
-      <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" />
-        <Text className="mt-4 text-gray-500">Cargando...</Text>
-      </View>
-    );
-  }
-
-  if (!isSignedIn) return null;
 
   if (!isLoading && orders.length === 0) {
     return (
@@ -249,6 +233,7 @@ export default function OrdersScreen() {
   ) : null;
 
   return (
+    <AuthGate message="Inicia sesion para ver el historial de tus pedidos.">
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       <StatusBar style="dark" />
       <Stack.Screen options={{ title: "Mis órdenes" }} />
@@ -278,5 +263,6 @@ export default function OrdersScreen() {
         showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>
+    </AuthGate>
   );
 }

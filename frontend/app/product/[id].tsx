@@ -13,6 +13,7 @@ import { formatPrice } from '@/lib/formatPrice';
 import { DietaryBadgeList } from '@/components/DietaryBadge';
 import StockBadge from '@/components/StockBadge';
 import FavoriteButton from '@/components/FavoriteButton';
+import { useAuth } from '@clerk/clerk-expo';
 import Animated, {
   FadeIn,
   FadeInUp,
@@ -86,6 +87,7 @@ export default function ProductDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const router = useRouter();
+  const { isSignedIn } = useAuth();
   const insets = useSafeAreaInsets();
   const addProduct = useCart((state) => state.addProduct);
   const decrementProduct = useCart((state) => state.decrementProduct);
@@ -225,6 +227,18 @@ export default function ProductDetailsScreen() {
   }, [product, addRecentlyViewed]);
 
   const handleAddToCart = () => {
+    if (!isSignedIn) {
+      Alert.alert(
+        "Inicia sesion",
+        "Necesitas iniciar sesion para agregar productos al carrito.",
+        [
+          { text: "Cancelar", style: "cancel" },
+          { text: "Iniciar sesion", onPress: () => router.push("/(auth)/login") },
+        ]
+      );
+      return;
+    }
+
     cancelAnimation(ctaScale);
     ctaScale.value = withSequence(
       withTiming(0.95, { duration: 80, easing: Easing.out(Easing.ease) }),

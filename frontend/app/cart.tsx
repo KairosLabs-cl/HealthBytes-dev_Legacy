@@ -1,3 +1,4 @@
+import { AuthGate } from "@/components/AuthGate";
 import CartItem from "@/components/CartItem";
 import { Text } from "@/components/ui/text";
 import { formatPrice } from "@/lib/formatPrice";
@@ -98,48 +99,48 @@ export default function CartScreen() {
     [items.length, subtotal, onCheckout]
   );
 
-  if (items.length === 0) {
-    return (
-      <>
-        <Stack.Screen options={{ headerShown: false }} />
-        <View className="flex-1 items-center justify-center bg-white px-6">
-          <View className="w-24 h-24 rounded-full bg-gray-100 items-center justify-center mb-4">
-            <ShoppingBag size={40} color="#9CA3AF" />
-          </View>
-          <Text className="text-xl font-bold text-gray-900 mb-2">
-            Tu carrito está vacío
-          </Text>
-          <Text className="text-center text-gray-500 mb-6">
-            Agrega productos para comenzar tu compra
-          </Text>
-          <Pressable
-            onPress={() => router.push("/")}
-            className="px-6 py-3 bg-black rounded-full active:opacity-80"
-            style={{ minHeight: 44 }}
-          >
-            <Text className="text-white font-semibold">Explorar productos</Text>
-          </Pressable>
-        </View>
-      </>
-    );
-  }
-
   return (
-    <>
-      <Stack.Screen options={{ headerShown: false }} />
-      <View className="flex-1 bg-gray-50">
-        <FlatList
-          data={items}
-          contentContainerClassName="gap-3 p-4 pb-32"
-          showsVerticalScrollIndicator={false}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.product.id.toString()}
-          ListFooterComponent={footerParam}
-          initialNumToRender={8}
-          windowSize={5}
-          maxToRenderPerBatch={5}
-        />
-      </View>
-    </>
+    <AuthGate message="Necesitas una cuenta para ver tu carrito.">
+      {items.length === 0 ? (
+        <>
+          <Stack.Screen options={{ headerShown: false }} />
+          <View className="flex-1 items-center justify-center bg-white px-6">
+            <View className="w-24 h-24 rounded-full bg-gray-100 items-center justify-center mb-4">
+              <ShoppingBag size={40} color="#9CA3AF" />
+            </View>
+            <Text className="text-xl font-bold text-gray-900 mb-2">
+              Tu carrito está vacío
+            </Text>
+            <Text className="text-center text-gray-500 mb-6">
+              Agrega productos para comenzar tu compra
+            </Text>
+            <Pressable
+              onPress={() => router.push("/")}
+              className="px-6 py-3 bg-black rounded-full active:opacity-80"
+              style={{ minHeight: 44 }}
+            >
+              <Text className="text-white font-semibold">Explorar productos</Text>
+            </Pressable>
+          </View>
+        </>
+      ) : (
+        <>
+          <Stack.Screen options={{ headerShown: false }} />
+          <View className="flex-1 bg-gray-50">
+            <FlatList
+              data={items}
+              contentContainerClassName="gap-3 p-4 pb-32"
+              showsVerticalScrollIndicator={false}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.product.id.toString()}
+              ListFooterComponent={footerParam}
+              initialNumToRender={8}
+              windowSize={5}
+              maxToRenderPerBatch={5}
+            />
+          </View>
+        </>
+      )}
+    </AuthGate>
   );
 }

@@ -84,14 +84,14 @@ export default function WishlistScreen() {
         <Header userName="Usuario" showBackButton={true} />
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-gray-900 text-lg mb-4 text-center">
-            Inicia sesión para ver tu lista de deseos
+            Inicia sesion para ver tu lista de deseos
           </Text>
           <Pressable
             onPress={() => router.push("/(auth)/login")}
             className="bg-black px-6 py-3 rounded-full active:opacity-80"
             style={{ minHeight: 44 }}
           >
-            <Text className="text-white font-bold">Iniciar sesión</Text>
+            <Text className="text-white font-bold">Iniciar sesion</Text>
           </Pressable>
         </View>
       </SafeAreaView>

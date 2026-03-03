@@ -1,4 +1,4 @@
-import { ActivityIndicator, FlatList, View, Image, Pressable } from "react-native";
+import { ActivityIndicator, FlatList, View, Image, Pressable, Modal } from "react-native";
 import HomeSkeleton from "@/components/HomeSkeleton";
 import { useQuery } from "@tanstack/react-query";
 import { Text } from "@/components/ui/text";
@@ -10,13 +10,13 @@ import RecentlyViewedBar from "@/components/RecentlyViewedBar";
 import DietaryFilterBar from "@/components/DietaryFilterBar";
 import { Header } from "@/components/Header";
 import { Stack, useRouter } from "expo-router";
-import { RefreshCw } from "lucide-react-native";
+import { RefreshCw, X } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 import { useProductFilters, DietaryTag } from "@/store/productFiltersStore";
 import { usePreferencesStore } from "@/store/preferencesStore";
 import { useFavoritesStore } from "@/store/favoritesStore";
-import { useUser } from "@clerk/clerk-expo";
+import { useUser, useAuth } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Product } from "@/types/product";
@@ -146,10 +146,18 @@ export default function HomeScreen() {
   const { items: recentlyViewedItems } = useRecentlyViewed();
   const { dietaryTags, toggleDietaryTag, setDietaryTags, clearFilters } = useProductFilters();
   const { user } = useUser();
+  const { isSignedIn, isLoaded } = useAuth();
   const { dietaryPreferences } = usePreferencesStore();
   const { favoriteIds } = useFavoritesStore();
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
+  const [guestModalVisible, setGuestModalVisible] = useState(false);
+
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      setGuestModalVisible(true);
+    }
+  }, [isLoaded, isSignedIn]);
 
   // Pre-apply saved dietary preferences on first mount only
   useEffect(() => {
@@ -260,6 +268,61 @@ export default function HomeScreen() {
       {isFetching && !refreshing && data && (
         <View className="h-0.5 bg-green-500" />
       )}
+
+      <Modal
+        visible={guestModalVisible}
+        transparent={false}
+        animationType="slide"
+        onRequestClose={() => setGuestModalVisible(false)}
+      >
+        <SafeAreaView className="flex-1 bg-white" edges={["top", "bottom"]}>
+          {/* Close */}
+          <Pressable
+            onPress={() => setGuestModalVisible(false)}
+            className="self-end mt-4 mr-4 p-2 active:opacity-60"
+            hitSlop={8}
+          >
+            <X size={22} color="#9CA3AF" />
+          </Pressable>
+
+          {/* Centered content */}
+          <View className="flex-1 justify-center px-8">
+            {/* Icon */}
+            <View className="w-20 h-20 rounded-full bg-green-50 items-center justify-center mb-6 self-center">
+              <Text className="text-4xl">🥗</Text>
+            </View>
+
+            <Text className="text-3xl font-extrabold text-gray-900 text-center mb-3">
+              Bienvenido a{"\n"}HealthBytes
+            </Text>
+            <Text className="text-base text-gray-500 text-center leading-6 mb-10">
+              Inicia sesión para guardar tus preferencias dietéticas y ver productos especiales para ti.
+            </Text>
+
+            {/* Google button */}
+            <Pressable
+              onPress={() => {
+                setGuestModalVisible(false);
+                router.push("/(auth)/login");
+              }}
+              className="flex-row items-center justify-center bg-white border border-gray-200 rounded-xl px-5 py-4 mb-4 active:bg-gray-50"
+              style={{ minHeight: 52 }}
+            >
+              <Text className="text-lg font-bold text-gray-600 mr-3">G</Text>
+              <Text className="text-base font-semibold text-gray-900">Continuar con Google</Text>
+            </Pressable>
+
+            {/* Skip */}
+            <Pressable
+              onPress={() => setGuestModalVisible(false)}
+              className="items-center py-3 active:opacity-60"
+              style={{ minHeight: 44 }}
+            >
+              <Text className="text-sm text-gray-400">Explorar sin cuenta</Text>
+            </Pressable>
+          </View>
+        </SafeAreaView>
+      </Modal>
 
       <FlatList
         className="flex-1 bg-gray-50"

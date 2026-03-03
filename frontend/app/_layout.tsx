@@ -18,7 +18,7 @@ import { updateDietaryPreferences } from "@/api/preferences";
 import OnboardingModal from "@/components/OnboardingModal";
 import { ClerkLoaded, ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Link, Stack } from "expo-router";
+import { Link, Stack, usePathname } from "expo-router";
 import { User } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Pressable } from "react-native";
@@ -137,6 +137,9 @@ function RootLayoutNav() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSignedIn]);
 
+  const pathname = usePathname();
+  const hideNavBar = pathname.startsWith("/(auth)");
+
   return (
     <>
       <Stack>
@@ -183,7 +186,7 @@ function RootLayoutNav() {
         />
       </Stack>
 
-      <BottomNavBar />
+      {!hideNavBar && <BottomNavBar />}
       <CartFlyOverlay />
 
       <OnboardingModal

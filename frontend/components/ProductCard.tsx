@@ -4,10 +4,11 @@
  * Change the design here and it propagates everywhere automatically.
  */
 import { memo, useRef } from "react";
-import { View, Image, Pressable, Platform, GestureResponderEvent } from "react-native";
+import { View, Image, Pressable, Platform, GestureResponderEvent, Alert } from "react-native";
 import { Text } from "@/components/ui/text";
 import { Info, WheatOff, Vegan, MilkOff, Gauge, Dumbbell, Heart } from "lucide-react-native";
 import { useRouter } from "expo-router";
+import { useAuth } from "@clerk/clerk-expo";
 import type { Product } from "@/types/product";
 import { normalizeDietaryTag } from "@/types/product";
 import { formatPrice } from "@/lib/formatPrice";
@@ -53,6 +54,7 @@ export type ProductCardProps = {
 
 function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
   const router = useRouter();
+  const { isSignedIn } = useAuth();
   const addProduct = useCart((state) => state.addProduct);
   const triggerFly = useCartAnimation((s) => s.trigger);
   const isOutOfStock = product.stock === 0;
@@ -67,6 +69,17 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
     e.preventDefault();
     e.stopPropagation();
     if (isOutOfStock) return;
+    if (!isSignedIn) {
+      Alert.alert(
+        "Inicia sesion",
+        "Necesitas iniciar sesion para agregar productos al carrito.",
+        [
+          { text: "Cancelar", style: "cancel" },
+          { text: "Iniciar sesion", onPress: () => router.push("/(auth)/login") },
+        ]
+      );
+      return;
+    }
     cancelAnimation(cartScale);
     cartScale.value = withSequence(
       withTiming(0.95, { duration: 80, easing: Easing.out(Easing.ease) }),

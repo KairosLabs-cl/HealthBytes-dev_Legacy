@@ -1,6 +1,7 @@
+import { AuthGate } from "@/components/AuthGate";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
-import { useAuth, useClerk, useUser } from "@clerk/clerk-expo";
+import { useClerk, useUser } from "@clerk/clerk-expo";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import {
@@ -16,9 +17,7 @@ import {
   Settings,
   Truck,
 } from "lucide-react-native";
-import { useEffect } from "react";
 import {
-  ActivityIndicator,
   Image,
   Pressable,
   ScrollView,
@@ -55,36 +54,15 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { signOut } = useClerk();
 
-  const { isSignedIn, isLoaded } = useAuth();
   const { user } = useUser();
-
-  useEffect(() => {
-    if (isLoaded && !isSignedIn) {
-      router.replace("/(auth)/login");
-    }
-  }, [isLoaded, isSignedIn]);
 
   const handleLogout = async () => {
     await signOut();
     router.replace("/(auth)/login");
   };
 
-  // Mostrar loading mientras verifica autenticación
-  if (!isLoaded) {
-    return (
-      <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" />
-        <Text className="mt-4 text-gray-500">Cargando...</Text>
-      </View>
-    );
-  }
-
-  // Si no está logeado, no renderizar nada (el useEffect redirigirá)
-  if (!isSignedIn) {
-    return null;
-  }
-
   return (
+    <AuthGate message="Inicia sesion para ver tu perfil.">
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
@@ -203,5 +181,6 @@ export default function ProfileScreen() {
         </View>
       </ScrollView>
     </SafeAreaView>
+    </AuthGate>
   );
 }
