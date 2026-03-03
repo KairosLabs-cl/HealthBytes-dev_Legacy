@@ -1,4 +1,5 @@
 /// <reference types="nativewind/types" />
+import { AuthGate } from "@/components/AuthGate";
 import { Pressable, ScrollView, View } from "react-native";
 import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -61,6 +62,7 @@ export default function DietaryPreferencesScreen() {
   };
 
   return (
+    <AuthGate message="Inicia sesión para configurar tus preferencias dietéticas.">
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       <StatusBar style="dark" />
       <Stack.Screen options={{ title: "Preferencias alimentarias" }} />
@@ -129,5 +131,6 @@ export default function DietaryPreferencesScreen() {
         </Button>
       </ScrollView>
     </SafeAreaView>
+    </AuthGate>
   );
 }

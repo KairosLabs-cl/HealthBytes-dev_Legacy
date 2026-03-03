@@ -1,4 +1,5 @@
 import { getAuthHeader } from '@/lib/authHeaders';
+import { throwIfNotOk } from '@/lib/apiError';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -37,10 +38,7 @@ export async function getCart(token: string): Promise<Cart> {
     },
   });
 
-  if (!res.ok) {
-    throw new Error('Failed to fetch cart');
-  }
-
+  await throwIfNotOk(res, 'Failed to fetch cart');
   return res.json();
 }
 
@@ -64,10 +62,7 @@ export async function addToCart(
     }),
   });
 
-  if (!res.ok) {
-    throw new Error('Failed to add item to cart');
-  }
-
+  await throwIfNotOk(res, 'Failed to add item to cart');
   return res.json();
 }
 
@@ -88,10 +83,7 @@ export async function updateCartItem(
     body: JSON.stringify({ quantity }),
   });
 
-  if (!res.ok) {
-    throw new Error('Failed to update cart item');
-  }
-
+  await throwIfNotOk(res, 'Failed to update cart item');
   return res.json();
 }
 
@@ -109,9 +101,7 @@ export async function removeFromCart(
     },
   });
 
-  if (!res.ok) {
-    throw new Error('Failed to remove item from cart');
-  }
+  await throwIfNotOk(res, 'Failed to remove item from cart');
 }
 
 /**
@@ -125,9 +115,7 @@ export async function clearCart(token: string): Promise<void> {
     },
   });
 
-  if (!res.ok) {
-    throw new Error('Failed to clear cart');
-  }
+  await throwIfNotOk(res, 'Failed to clear cart');
 }
 
 /**
@@ -146,9 +134,6 @@ export async function mergeCart(
     body: JSON.stringify({ items: localItems }),
   });
 
-  if (!res.ok) {
-    throw new Error('Failed to merge cart');
-  }
-
+  await throwIfNotOk(res, 'Failed to merge cart');
   return res.json();
 }

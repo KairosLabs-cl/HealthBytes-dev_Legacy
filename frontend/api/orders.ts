@@ -1,4 +1,5 @@
 import { OrderResponse } from "@/types/order";
+import { throwIfNotOk } from "@/lib/apiError";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -52,35 +53,9 @@ export async function createOrder(
     body: JSON.stringify(orderPayload),
   });
 
-  const data = await res.json();
+  await throwIfNotOk(res, "Error creando la orden");
 
-  if (!res.ok) {
-    if (__DEV__) {
-      console.log("Error del servidor - Status:", res.status);
-      console.log("Error del servidor - Response:", JSON.stringify(data, null, 2));
-    }
-
-    /* Lanzar error específico del backend para mostrar en la UI */
-    let errorMsg = `Error ${res.status}`;
-
-    // Intentar extraer mensaje de error del backend
-    if (typeof data.detail === "string") {
-      errorMsg = data.detail;
-    } else if (typeof data.detail === "object" && data.detail?.message) {
-      errorMsg = data.detail.message;
-    } else if (data.message) {
-      errorMsg = data.message;
-    } else if (data.error) {
-      errorMsg = data.error;
-    }
-
-    if (__DEV__) {
-      console.error("Error finalizado:", errorMsg);
-    }
-    throw new Error(errorMsg);
-  }
-
-  return data;
+  return res.json();
 }
 
 /**
@@ -103,25 +78,9 @@ export async function getOrders(
     },
   });
 
+  await throwIfNotOk(res, "Error obteniendo órdenes");
+
   const data = await res.json();
-
-  if (!res.ok) {
-    if (__DEV__) {
-      console.error("Error obteniendo órdenes:", data);
-    }
-    let errorMsg = `Error ${res.status}`;
-
-    if (typeof data.detail === "string") {
-      errorMsg = data.detail;
-    } else if (typeof data.detail === "object" && data.detail?.message) {
-      errorMsg = data.detail.message;
-    } else if (data.message) {
-      errorMsg = data.message;
-    }
-
-    throw new Error(errorMsg);
-  }
-
   return Array.isArray(data) ? data : [];
 }
 
@@ -144,14 +103,7 @@ export async function getOrderById(
     },
   });
 
-  const data = await res.json();
+  await throwIfNotOk(res, "Error al obtener la orden");
 
-  if (!res.ok) {
-    if (__DEV__) {
-      console.error("Error obteniendo orden:", data);
-    }
-    throw new Error(data.detail || "Error al obtener la orden");
-  }
-
-  return data;
+  return res.json();
 }

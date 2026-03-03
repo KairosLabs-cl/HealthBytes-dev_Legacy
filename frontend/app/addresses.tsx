@@ -1,4 +1,5 @@
 /// <reference types="nativewind/types" />
+import { AuthGate } from "@/components/AuthGate";
 import { ActivityIndicator, Pressable, ScrollView, View } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -52,7 +53,7 @@ export default function AddressesScreen() {
           await fetchAddresses(token);
         }
       } catch (err) {
-        console.error("Error loading addresses:", err);
+        if (__DEV__) console.error("Error loading addresses:", err);
       }
     };
     loadAddresses();
@@ -168,7 +169,7 @@ export default function AddressesScreen() {
       setSuccess("Dirección eliminada");
       setTimeout(() => setSuccess(null), 2000);
     } catch (err) {
-      console.error("Delete error:", err);
+      if (__DEV__) console.error("Delete error:", err);
     }
   };
 
@@ -180,6 +181,7 @@ export default function AddressesScreen() {
   };
 
   return (
+    <AuthGate message="Inicia sesión para gestionar tus direcciones.">
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
@@ -410,5 +412,6 @@ export default function AddressesScreen() {
         </View>
       </ScrollView>
     </SafeAreaView>
+    </AuthGate>
   );
 }

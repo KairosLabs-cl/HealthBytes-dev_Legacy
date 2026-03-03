@@ -129,15 +129,21 @@ export default function CartScreen() {
           <View className="flex-1 bg-gray-50">
             <FlatList
               data={items}
-              contentContainerClassName="gap-3 p-4 pb-32"
+              contentContainerClassName="gap-3 p-4 pb-40"
               showsVerticalScrollIndicator={false}
               renderItem={renderItem}
               keyExtractor={(item) => item.product.id.toString()}
-              ListFooterComponent={footerParam}
               initialNumToRender={8}
               windowSize={5}
               maxToRenderPerBatch={5}
             />
+            <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 pt-3 pb-6">
+              <CartFooter
+                itemCount={items.length}
+                subtotal={subtotal}
+                onCheckout={onCheckout}
+              />
+            </View>
           </View>
         </>
       )}

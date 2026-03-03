@@ -1,3 +1,4 @@
+import { AuthGate } from "@/components/AuthGate";
 import { View } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -9,6 +10,7 @@ export default function PaymentsScreen() {
   const router = useRouter();
 
   return (
+    <AuthGate message="Inicia sesión para ver tu historial de pagos.">
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       <StatusBar style="dark" />
       <Stack.Screen options={{ title: "Métodos de pago" }} />
@@ -30,5 +32,6 @@ export default function PaymentsScreen() {
         </Button>
       </View>
     </SafeAreaView>
+    </AuthGate>
   );
 }

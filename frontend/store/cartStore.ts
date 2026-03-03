@@ -95,7 +95,7 @@ export const useCart = create<CartState>((set, get) => ({
 
       set({ items });
     } catch (error) {
-      console.error('Failed to sync cart from server:', error);
+      if (__DEV__) console.error('Failed to sync cart from server:', error);
       set({ error: "No se pudo sincronizar el carrito." });
     }
   },
@@ -139,7 +139,7 @@ export const useCart = create<CartState>((set, get) => ({
         await get().syncWithServer();
       }
     } catch (error) {
-      console.error('Failed to merge cart:', error);
+      if (__DEV__) console.error('Failed to merge cart:', error);
       set({ error: "No se pudo fusionar el carrito." });
       // Fallback: just sync from server
       await get().syncWithServer();
@@ -186,7 +186,7 @@ export const useCart = create<CartState>((set, get) => ({
       try {
         await cartApi.addToCart(authToken, Number(product.id), 1);
       } catch (error) {
-        console.error('Failed to sync add to server:', error);
+        if (__DEV__) console.error('Failed to sync add to server:', error);
         // Rollback: re-fetch actual server state instead of restoring stale snapshot
         await get().syncWithServer();
         set({ error: "No se pudo agregar el producto al carrito. Por favor intenta de nuevo." });
@@ -238,7 +238,7 @@ export const useCart = create<CartState>((set, get) => ({
       try {
         await cartApi.updateCartItem(authToken, Number(productId), newQuantity);
       } catch (error) {
-        console.error('Failed to sync quantity update to server:', error);
+        if (__DEV__) console.error('Failed to sync quantity update to server:', error);
         await get().syncWithServer();
         set({ error: "No se pudo actualizar la cantidad. Por favor intenta de nuevo." });
       }
@@ -301,7 +301,7 @@ export const useCart = create<CartState>((set, get) => ({
           await cartApi.removeFromCart(authToken, Number(productId));
         }
       } catch (error) {
-        console.error('Failed to sync decrement to server:', error);
+        if (__DEV__) console.error('Failed to sync decrement to server:', error);
         await get().syncWithServer();
         set({ error: "No se pudo actualizar el carrito. Por favor intenta de nuevo." });
       }
@@ -341,7 +341,7 @@ export const useCart = create<CartState>((set, get) => ({
       try {
         await cartApi.removeFromCart(authToken, Number(productId));
       } catch (error) {
-        console.error('Failed to sync remove to server:', error);
+        if (__DEV__) console.error('Failed to sync remove to server:', error);
         await get().syncWithServer();
         set({ error: "No se pudo eliminar el producto. Por favor intenta de nuevo." });
       }
@@ -369,7 +369,7 @@ export const useCart = create<CartState>((set, get) => ({
       try {
         await cartApi.clearCart(authToken);
       } catch (error) {
-        console.error('Failed to clear cart on server:', error);
+        if (__DEV__) console.error('Failed to clear cart on server:', error);
         // Rollback to previous state
         set({ items: previousItems, error: "No se pudo vaciar el carrito. Por favor intenta de nuevo." });
       }

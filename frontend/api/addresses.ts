@@ -9,6 +9,7 @@ import type {
   AddressListResponse,
   AddressUpdate,
 } from "@/types/address";
+import { throwIfNotOk } from "@/lib/apiError";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -29,14 +30,10 @@ export async function fetchAddresses(
     if (__DEV__) {
       console.warn("fetchAddresses: rate limited (429), returning empty list");
     }
-    return { addresses: [] } as AddressListResponse;
+    return { addresses: [], total: 0, default_address_id: null } as AddressListResponse;
   }
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.detail?.message || "Error fetching addresses");
-  }
-
+  await throwIfNotOk(res, "Error fetching addresses");
   return res.json();
 }
 
@@ -54,11 +51,7 @@ export async function fetchAddressById(
     },
   });
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.detail?.message || "Error fetching address");
-  }
-
+  await throwIfNotOk(res, "Error fetching address");
   return res.json();
 }
 
@@ -78,11 +71,7 @@ export async function createAddress(
     body: JSON.stringify(data),
   });
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.detail?.message || "Error creating address");
-  }
-
+  await throwIfNotOk(res, "Error creating address");
   return res.json();
 }
 
@@ -103,11 +92,7 @@ export async function updateAddress(
     body: JSON.stringify(data),
   });
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.detail?.message || "Error updating address");
-  }
-
+  await throwIfNotOk(res, "Error updating address");
   return res.json();
 }
 
@@ -126,10 +111,7 @@ export async function deleteAddress(
     },
   });
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.detail?.message || "Error deleting address");
-  }
+  await throwIfNotOk(res, "Error deleting address");
 }
 
 /**
@@ -147,10 +129,6 @@ export async function setDefaultAddress(
     },
   });
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.detail?.message || "Error setting default address");
-  }
-
+  await throwIfNotOk(res, "Error setting default address");
   return res.json();
 }

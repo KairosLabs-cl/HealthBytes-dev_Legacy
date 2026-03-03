@@ -1,3 +1,4 @@
+import { AuthGate } from "@/components/AuthGate";
 import { FlatList, Pressable, View } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -77,26 +78,7 @@ export default function WishlistScreen() {
     );
   }
 
-  if (!isSignedIn) {
-    return (
-      <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
-        <Stack.Screen options={{ headerShown: false }} />
-        <Header userName="Usuario" showBackButton={true} />
-        <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-gray-900 text-lg mb-4 text-center">
-            Inicia sesion para ver tu lista de deseos
-          </Text>
-          <Pressable
-            onPress={() => router.push("/(auth)/login")}
-            className="bg-black px-6 py-3 rounded-full active:opacity-80"
-            style={{ minHeight: 44 }}
-          >
-            <Text className="text-white font-bold">Iniciar sesion</Text>
-          </Pressable>
-        </View>
-      </SafeAreaView>
-    );
-  }
+
 
   if (error) {
     return (
@@ -121,6 +103,7 @@ export default function WishlistScreen() {
   }
 
   return (
+    <AuthGate message="Inicia sesión para ver tu lista de deseos.">
     <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
@@ -139,5 +122,6 @@ export default function WishlistScreen() {
         maxToRenderPerBatch={6}
       />
     </SafeAreaView>
+    </AuthGate>
   );
 }

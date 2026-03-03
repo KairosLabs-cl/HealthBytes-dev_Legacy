@@ -1,4 +1,5 @@
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { AuthGate } from "@/components/AuthGate";
 import { useQuery } from "@tanstack/react-query";
 import { ActivityIndicator, View, ScrollView, Pressable } from "react-native";
 import { Text } from "@/components/ui/text";
@@ -59,7 +60,7 @@ function getStatusIndex(status: OrderStatus): number {
   return STATUS_TIMELINE.findIndex((s) => s.status === status);
 }
 
-export default function OrderDetailScreen() {
+function OrderDetailScreenContent() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
 
@@ -334,5 +335,13 @@ export default function OrderDetailScreen() {
         )}
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+export default function OrderDetailScreen() {
+  return (
+    <AuthGate message="Inicia sesión para ver el detalle de tu pedido.">
+      <OrderDetailScreenContent />
+    </AuthGate>
   );
 }

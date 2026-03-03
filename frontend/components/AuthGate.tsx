@@ -44,20 +44,10 @@ export function AuthGate({
 
         <Pressable
           onPress={() => router.push("/(auth)/login")}
-          className="w-full h-14 bg-black rounded-full items-center justify-center active:opacity-80 mb-3"
+          className="w-full h-14 bg-black rounded-full items-center justify-center active:opacity-80 mb-6"
           style={{ minHeight: 52 }}
         >
-          <Text className="text-white font-bold text-base">Crear cuenta</Text>
-        </Pressable>
-
-        <Pressable
-          onPress={() => router.push("/(auth)/login")}
-          className="w-full h-14 rounded-full items-center justify-center border-2 border-gray-200 active:bg-gray-50 mb-6"
-          style={{ minHeight: 52 }}
-        >
-          <Text className="text-gray-900 font-bold text-base">
-            Ya tengo cuenta
-          </Text>
+          <Text className="text-white font-bold text-base">Inicia sesión</Text>
         </Pressable>
 
         <Pressable

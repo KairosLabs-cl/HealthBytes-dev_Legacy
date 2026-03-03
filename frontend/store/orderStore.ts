@@ -47,7 +47,7 @@ export const useOrders = create<OrdersState>((set, get) => ({
         error instanceof Error
           ? error.message
           : "Error desconocido al cargar órdenes";
-      console.error("❌ Error fetching orders:", errorMsg);
+      if (__DEV__) console.error("❌ Error fetching orders:", errorMsg);
       set({ error: errorMsg, isLoading: false });
     }
   },
@@ -70,7 +70,7 @@ export const useOrders = create<OrdersState>((set, get) => ({
     } catch (error) {
       const errorMsg =
         error instanceof Error ? error.message : "Error desconocido";
-      console.error("❌ Error loading more orders:", errorMsg);
+      if (__DEV__) console.error("❌ Error loading more orders:", errorMsg);
       set({ error: errorMsg, isLoadingMore: false });
     }
   },
@@ -85,7 +85,7 @@ export const useOrders = create<OrdersState>((set, get) => ({
     } catch (error) {
       const errorMsg =
         error instanceof Error ? error.message : "Error desconocido";
-      console.error(`❌ Error fetching order ${orderId}:`, errorMsg);
+      if (__DEV__) console.error(`❌ Error fetching order ${orderId}:`, errorMsg);
       set({ error: errorMsg });
       return null;
     }
