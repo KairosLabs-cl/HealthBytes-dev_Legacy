@@ -2,20 +2,20 @@
   "folders": [
     {
       "name": "📁 Root",
-      "path": "."
+      "path": ".",
     },
     {
       "name": "📚 Documentation",
-      "path": "docs"
+      "path": "docs",
     },
     {
       "name": "🐍 Backend (FastAPI)",
-      "path": "backend"
+      "path": "backend",
     },
     {
       "name": "⚛️ Frontend (React Native)",
-      "path": "frontend"
-    }
+      "path": "frontend",
+    },
   ],
   "settings": {
     "python.defaultInterpreterPath": "${workspaceFolder:🐍 Backend (FastAPI)}/.venv/Scripts/python.exe",
@@ -98,6 +98,9 @@
         },
       },
       "inputs": [],
+    },
+    "chat.tools.terminal.autoApprove": {
+      "pytest": true,
     },
   },
   "extensions": {

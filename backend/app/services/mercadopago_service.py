@@ -120,9 +120,7 @@ class MercadoPagoService:
         frontend_url = self.settings.FRONTEND_URL or ""
 
         if is_production and (not backend_url or not frontend_url):
-            raise PaymentError(
-                "BACKEND_URL and FRONTEND_URL must be configured in production"
-            )
+            raise PaymentError("BACKEND_URL and FRONTEND_URL must be configured in production")
         is_public = is_production or backend_url.startswith("https://")
 
         if is_public and frontend_url:
@@ -356,9 +354,7 @@ class MercadoPagoService:
                     if email_data:
                         await email_svc.send_payment_success(email_data)
                 except Exception:
-                    logger.exception(
-                        "Failed to send payment success email for order %s", order_id
-                    )
+                    logger.exception("Failed to send payment success email for order %s", order_id)
 
         logger.info(
             "Webhook processed: order=%s, mp_payment=%s, status=%s",
@@ -392,17 +388,13 @@ class MercadoPagoService:
                 email_data = await build_order_email_data(db, order_id)
                 if email_data:
                     await email_svc.send_payment_success(email_data)
-                    logger.info(
-                        "Payment success email sent for order %s", order_id
-                    )
+                    logger.info("Payment success email sent for order %s", order_id)
                 else:
                     logger.warning(
                         "Could not build email data for order %s — email skipped", order_id
                     )
         except Exception:
-            logger.exception(
-                "Failed to send payment success email for order %s", order_id
-            )
+            logger.exception("Failed to send payment success email for order %s", order_id)
 
     def _validate_x_signature(
         self, x_signature: str, data_id: str, request_id: Optional[str] = None
@@ -425,9 +417,7 @@ class MercadoPagoService:
         if not self.webhook_secret:
             if self.settings.ENVIRONMENT == "production":
                 raise PaymentError("Webhook signature validation not configured")
-            logger.warning(
-                "MERCADO_PAGO_WEBHOOK_SECRET not set — skipping signature validation"
-            )
+            logger.warning("MERCADO_PAGO_WEBHOOK_SECRET not set — skipping signature validation")
             return True
 
         try:

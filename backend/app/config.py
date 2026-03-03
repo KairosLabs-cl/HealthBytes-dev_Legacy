@@ -105,9 +105,7 @@ def _validate_production_config(s: Settings) -> None:
     }
     missing = [k for k, v in required.items() if not v]
     if missing:
-        raise RuntimeError(
-            f"Production environment requires these secrets to be set: {missing}"
-        )
+        raise RuntimeError(f"Production environment requires these secrets to be set: {missing}")
 
 
 _validate_production_config(settings)

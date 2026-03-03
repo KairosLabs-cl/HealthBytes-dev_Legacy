@@ -96,7 +96,8 @@ export default function CheckoutV2Screen() {
       let token = await getToken();
 
       if (!token) {
-        token = await getToken({ forcedRefresh: true });
+        // Retry token retrieval - Clerk may need to re-authenticate
+        token = await getToken();
       }
 
       if (!token) {
