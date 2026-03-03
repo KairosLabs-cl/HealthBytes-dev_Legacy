@@ -195,7 +195,7 @@ La separación en 3 capas (routers → services → models) es sólida y es el *
 
 1. **El Dockerfile de frontend** — para una app Expo, el artifact es un binario `.ipa`/`.apk`. El Dockerfile existe pero no sirve para producción móvil. Confunde a nuevos devs.
 2. **Redis en docker-compose sin integración backend** — declarado pero no conectado. O se conecta (caché de productos) o se quita para no confundir.
-3. **La mayoría de los archivos en `docs/ai-logs/`** — 40+ archivos de historia de desarrollo. Para un dev nuevo son ruido puro. Mantener `ARQUITECTURA.md`, `ESTADO.md` actualizado, archivar el resto.
+3. ~~**La mayoría de los archivos en `docs/ai-logs/`**~~ — ✅ **ELIMINADO** (2026-03-03). Consolidado en `docs/development/`. Mantener solo `ESTADO.md`, `ROADMAP.md` y `inspections/`.
 4. **`verify_password_mock()` en `core/security.py`** — si está activo en algún path de producción, es un riesgo. Si es solo para tests, debería vivir en `conftest.py`.
 5. **`python-jose` y `PyJWT` simultáneos** — se puede consolidar en uno. Deuda que confunde.
 

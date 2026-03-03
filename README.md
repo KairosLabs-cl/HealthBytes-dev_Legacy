@@ -300,9 +300,9 @@ HealthBytes-dev/
 │                             # (Ver backend/README.md para detalles)
 │
 ├── 📚 docs/                  # Documentación del proyecto
-│   ├── ai-logs/              # Sesiones de desarrollo con IA
 │   ├── architecture/         # Arquitectura y decisiones
-│   ├── development/          # Roadmap, testing, guías
+│   ├── development/          # Roadmap, testing, guías, ESTADO
+│   │   └── inspections/      # Reportes de inspección
 │   ├── features/             # Documentación de features
 │   ├── security/             # Seguridad
 │   └── diagramas/            # Diagramas de arquitectura
@@ -356,7 +356,7 @@ HealthBytes-dev/
 | Necesito...              | Ve a...                                   |
 | ------------------------ | ----------------------------------------- |
 | Documentación principal | [docs/README.md](docs/README.md)             |
-| Ver estado del proyecto  | [docs/ai-logs/status/](docs/ai-logs/status/) |
+| Ver estado del proyecto  | [docs/development/ESTADO.md](docs/development/ESTADO.md) |
 | Backend info             | [backend/README.md](backend/README.md)       |
 | Frontend info            | [frontend/README.md](frontend/README.md)     |
 | Tools scripts            | [Tools/README.md](Tools/README.md)           |
@@ -663,8 +663,7 @@ pre-commit run --files app/api/v1/products.py
 
 | Documento                                                                          | Descripción                                       | Audiencia |
 | ---------------------------------------------------------------------------------- | -------------------------------------------------- | --------- |
-| [Análisis Proyecto](docs/ai-logs/status/status-logs/ANALISIS_PROFUNDO_2026-01-27.md) | ⭐**Estado completo** - Análisis exhaustivo | Todos     |
-| [Resumen Ejecutivo](docs/ai-logs/status/status-logs/RESUMEN_EJECUTIVO.md)             | Dashboard ejecutivo del proyecto                   | Todos     |
+| [Estado del Proyecto](docs/development/ESTADO.md) | ⭐**Estado completo** - Arquitectura y análisis exhaustivo | Todos     |
 | [docs/README.md](docs/README.md)                                                      | Índice general de documentación                  | Todos     |
 
 ### READMEs Específicos
@@ -1004,7 +1003,7 @@ git push origin feat/product-filters
 - ⚠️ Frontend tests pendientes (Jest configurado, tests por escribir)
 - ⚠️ Payment integration pendiente (Mercado Pago)
 
-**Ver**: [Análisis Completo](docs/ai-logs/status/status-logs/ANALISIS_PROFUNDO_2026-01-27.md)
+**Ver**: [Estado Completo](docs/development/ESTADO.md)
 
 ---
 

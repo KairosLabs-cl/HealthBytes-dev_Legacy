@@ -205,7 +205,7 @@ frontend/
 ## 🔍 Last Verified
 - **Date:** 2026-02-28
 - **By:** Claude Inspector Agent
-- **Full Report:** `docs/ai-logs/inspections/FRONTEND_INSPECTION_REPORT.md`
+- **Full Report:** `docs/development/inspections/FRONTEND_INSPECTION_REPORT.md`
 
 ## 📞 Contact
 For questions about this inspection, refer to the full report or contact the development team.

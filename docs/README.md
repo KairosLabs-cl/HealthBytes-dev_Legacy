@@ -37,16 +37,14 @@ Guías para trabajar en el código:
 - **[git-workflow.md](./development/git-workflow.md)** - Flujo de git y commits
 - **[code-standards.md](./development/code-standards.md)** - Estándares de código
 
-### 🤖 [ai-logs/](./ai-logs/) - Sesiones de Desarrollo con IA
-Documentación de sesiones con Copilot y análisis del proyecto:
-
-**⭐ Acceso Rápido:**
-- **[ai-logs/latest/](./ai-logs/latest/)** - Reportes más recientes
-- **[ai-logs/status/](./ai-logs/status/)** - Estado del proyecto
-- **[ai-logs/features/](./ai-logs/features/)** - Features desarrolladas
-- **[ai-logs/auth/](./ai-logs/auth/)** - Autenticación
-- **[ai-logs/security/](./ai-logs/security/)** - Mejoras de seguridad
-- **[ai-logs/archived/](./ai-logs/archived/)** - Reportes obsoletos archivados
+### 👨‍💻 [development/](./development/) - Para Desarrolladores
+Guías para trabajar en el código:
+- **[ESTADO.md](./development/ESTADO.md)** - Estado actual del proyecto y arquitectura
+- **[ROADMAP.md](./development/ROADMAP.md)** - Roadmap de desarrollo
+- **[ROADMAP_VISUAL.md](./development/ROADMAP_VISUAL.md)** - 🗺️ Roadmap visual con diagramas Gantt
+- **[UIUX_ROADMAP.md](./development/UIUX_ROADMAP.md)** - Roadmap UI/UX detallado
+- **[TESTING_REPORT.md](./development/TESTING_REPORT.md)** - Reporte de pruebas
+- **[inspections/](./development/inspections/)** - Reportes de inspección de código
 
 ---
 
@@ -61,7 +59,7 @@ Documentación de sesiones con Copilot y análisis del proyecto:
 | ✨ Ver features | [features/](./features/) |
 | 🔐 Seguridad | [security/](./security/) |
 | 👨‍💻 Contribuir | [development/](./development/) |
-| 📊 Estado del proyecto | [ai-logs/status/](./ai-logs/status/) |
+| 📊 Estado del proyecto | [development/ESTADO.md](./development/ESTADO.md) |
 
 ---
 

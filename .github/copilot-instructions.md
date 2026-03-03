@@ -94,14 +94,12 @@ HealthBytes-dev/
 │   ├── architecture/     # Design & architecture decisions
 │   ├── features/         # Implemented features documentation
 │   ├── security/         # Security improvements & guidelines
-│   ├── development/      # Developer guides (testing, git, code standards)
-│   └── ai-logs/          # AI session documentation
-│       ├── README.md     # AI logs index & navigation
-│       ├── latest/       # Most recent session reports
-│       ├── status/       # Project state (ARQUITECTURA, ESTADO, PLAN, RESUMEN)
-│       ├── features/     # Feature development logs
-│       ├── auth/         # Authentication debugging logs
-│       └── security/     # Security improvements logs
+│   ├── development/      # Developer guides, roadmaps, testing, ESTADO
+│   │   ├── ESTADO.md    # Project state & architecture
+│   │   ├── ROADMAP.md   # Development roadmap
+│   │   ├── inspections/ # Code inspection reports
+│   │   └── ...          # Testing guides, git workflow, code standards
+│   └── diagramas/       # Architecture diagrams
 │
 ├── Tools/
 │   ├── README.md         # Tools index
@@ -289,7 +287,7 @@ Frontend shows errors via `@gluestack-ui/toast` (already configured in `_layout.
 - ✅ Authentication (Clerk + JWT fallback)
 - ✅ Services layer with business logic
 - ✅ Full-text search implementation
-- ⚠️ Testing at ~70% coverage (see `docs/ai-logs/latest/`)
+- ⚠️ Testing at ~70% coverage (see `docs/development/`)
 - 📝 Planned: Docker containerization, AWS deployment, payment flow completion
 
 ## Where to Find What
@@ -369,7 +367,7 @@ Skills are your source of truth for:
 - ✅ Full-text search implementation
 - ✅ Testing & Security guidelines (see skills/)
 - ✅ **Development tools** (VS Code workspace, pre-commit hooks)
-- ⚠️ Testing coverage at ~70% (see `docs/ai-logs/latest/`)
+- ⚠️ Testing coverage at ~70% (see `docs/development/`)
 - 📝 Planned: Docker containerization, AWS deployment, payment flow completion
 | Authentication flow | [backend/app/middleware/auth.py](../backend/app/middleware/auth.py) |
 | API client patterns | [frontend/api/products.ts](../frontend/api/products.ts) |
