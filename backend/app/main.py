@@ -39,7 +39,7 @@ class JSONLogFormatter(logging.Formatter):
             "message": record.getMessage(),
         }
         if record.exc_info and record.exc_info[0] is not None:
-            log_entry["traceback"] = traceback.format_exception(*record.exc_info)
+            log_entry["traceback"] = "".join(traceback.format_exception(*record.exc_info))
         return json.dumps(log_entry, default=str)
 
 

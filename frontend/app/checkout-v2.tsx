@@ -15,7 +15,6 @@ import { Address } from "@/types/address";
 import { useAuth } from "@clerk/clerk-expo";
 import { Stack, useRouter } from "expo-router";
 import { MapPinIcon, PhoneIcon } from "lucide-react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -26,6 +25,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type CheckoutStep = "address" | "payment" | "summary";
 
@@ -62,7 +62,8 @@ export default function CheckoutV2Screen() {
   }, [getToken, fetchAddresses]);
 
   const subtotal = useMemo(
-    () => items.reduce((acc, item) => acc + item.product.price * item.quantity, 0),
+    () =>
+      items.reduce((acc, item) => acc + item.product.price * item.quantity, 0),
     [items]
   );
 
@@ -71,12 +72,18 @@ export default function CheckoutV2Screen() {
 
   const handleNext = async () => {
     if (currentStep === "address" && !selectedAddress) {
-      Alert.alert("Dirección requerida", "Por favor selecciona una dirección de envío");
+      Alert.alert(
+        "Dirección requerida",
+        "Por favor selecciona una dirección de envío"
+      );
       return;
     }
 
     if (currentStep === "payment" && !selectedPayment) {
-      Alert.alert("Método de pago requerido", "Por favor selecciona un método de pago");
+      Alert.alert(
+        "Método de pago requerido",
+        "Por favor selecciona un método de pago"
+      );
       return;
     }
 
@@ -88,7 +95,10 @@ export default function CheckoutV2Screen() {
       scrollRef.current?.scrollTo({ y: 0, animated: true });
     } else if (currentStep === "summary") {
       if (!isSignedIn) {
-        Alert.alert("Sesión requerida", "Necesitas iniciar sesión para realizar una compra.");
+        Alert.alert(
+          "Sesión requerida",
+          "Necesitas iniciar sesión para realizar una compra."
+        );
         router.push("/(auth)/login");
         return;
       }
@@ -101,7 +111,10 @@ export default function CheckoutV2Screen() {
       }
 
       if (!token) {
-        Alert.alert("Sesión expirada", "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
+        Alert.alert(
+          "Sesión expirada",
+          "Tu sesión ha expirado. Por favor, inicia sesión nuevamente."
+        );
         router.push("/(auth)/login");
         return;
       }
@@ -134,16 +147,21 @@ export default function CheckoutV2Screen() {
           getToken
         );
 
-        if (__DEV__) console.log("✅ Preference creada:", preference.preference_id);
+        if (__DEV__)
+          console.log("✅ Preference creada:", preference.preference_id);
 
-        const checkoutUrl = preference.sandbox_init_point || preference.init_point;
+        const checkoutUrl =
+          preference.sandbox_init_point || preference.init_point;
         if (__DEV__) console.log("🔗 Redirigiendo a:", checkoutUrl);
 
         const canOpen = await Linking.canOpenURL(checkoutUrl);
         if (canOpen) {
           await Linking.openURL(checkoutUrl);
         } else {
-          Alert.alert("Error", "No se pudo redirigir a Mercado Pago. Por favor, intenta nuevamente.");
+          Alert.alert(
+            "Error",
+            "No se pudo redirigir a Mercado Pago. Por favor, intenta nuevamente."
+          );
           setIsProcessing(false);
           return;
         }
@@ -182,9 +200,13 @@ export default function CheckoutV2Screen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-white" edges={["top", "bottom"]}>
       <Stack.Screen options={{ headerShown: false }} />
-      <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false} className="flex-1 p-6">
+      <ScrollView
+        ref={scrollRef}
+        showsVerticalScrollIndicator={false}
+        className="flex-1 p-6"
+      >
         {/* Header */}
         <View className="mb-8">
           <Text className="text-3xl font-bold text-black mb-2">Checkout</Text>
@@ -429,7 +451,9 @@ export default function CheckoutV2Screen() {
               <HStack space="md" className="items-center">
                 <ActivityIndicator color="white" />
                 <ButtonText className="text-white font-semibold text-lg">
-                  {currentStep === "summary" ? "Confirmando..." : "Procesando..."}
+                  {currentStep === "summary"
+                    ? "Confirmando..."
+                    : "Procesando..."}
                 </ButtonText>
               </HStack>
             ) : (
