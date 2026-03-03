@@ -4,14 +4,11 @@ Reglas, patrones y procesos para trabajar en HealthBytes.
 
 ## 📋 Contenido
 
-### 📄 Reportes y Análisis
+### 📄 Estado y Análisis
 
-- **[testing-report.md](./testing-report.md)** - Reporte completo de pruebas del sistema
-  - Backend tests (health check, endpoints)
-  - Frontend structure y archivos creados
-  - Integration flow y color system
-  - Test coverage y problemas resueltos
-  - Preparado: 2026-02-05
+- **[ESTADO.md](./ESTADO.md)** - Estado actual del proyecto, arquitectura y scorecard
+- **[ROADMAP.md](./ROADMAP.md)** - Roadmap de desarrollo con tareas
+- **[TESTING_REPORT.md](./TESTING_REPORT.md)** - Reporte completo de pruebas
 
 ### 🎨 UX/UI Design & Auditoría
 
@@ -36,35 +33,9 @@ Reglas, patrones y procesos para trabajar en HealthBytes.
   
 **Contexto**: Sistema completo para auditar y mejorar la UX/UI del e-commerce con asistencia de IA. Cubre desde jerarquía visual hasta accesibilidad WCAG 2.1.
 
-### [git-workflow.md](./git-workflow.md)
-**Convenciones de git y flujo de contribución**
+### 📂 Inspections
 
-**Contiene:**
-- Conventional Commits format
-- Branch naming convention
-- PR process with templates
-- Code review guidelines
-- Merge strategy
-
-### [testing-guide.md](./testing-guide.md)
-**Testing strategy y ejecución**
-
-**Contiene:**
-- Unit testing con pytest
-- Integration testing
-- Test fixtures y mocks
-- Coverage goals (70%+)
-- Cómo ejecutar tests
-
-### [code-standards.md](./code-standards.md)
-**Estándares de código para backend y frontend**
-
-**Contiene:**
-- Python conventions (PEP8)
-- TypeScript best practices
-- Naming conventions
-- Code organization
-- Anti-patterns prohibidos
+- **[inspections/](./inspections/)** - Reportes de inspección de código
 
 ---
 
@@ -217,4 +188,4 @@ pnpm test                           # Jest
 
 ---
 
-Última actualización: Feb 4, 2026
+Última actualización: Marzo 3, 2026

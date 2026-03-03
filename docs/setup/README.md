@@ -8,7 +8,7 @@ Guías paso a paso para configurar y ejecutar HealthBytes en tu entorno local.
 Variables de entorno necesarias para backend y frontend.
 
 **Contiene:**
-- `.env` del backend (DATABASE_URL, JWT_SECRET, CLERK_KEYS, STRIPE_KEYS)
+- `.env` del backend (DATABASE_URL, JWT_SECRET, CLERK_KEYS, MERCADOPAGO_KEYS)
 - `.env` del frontend (API_URL, CLERK_PUBLISHABLE_KEY)
 - Valores de ejemplo para desarrollo
 
@@ -48,7 +48,7 @@ DATABASE_URL=postgresql://user:password@localhost/healthbytes
 JWT_SECRET=your-secret-key-min-32-chars
 CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
-STRIPE_SECRET_KEY=sk_test_...
+MERCADOPAGO_ACCESS_TOKEN=TEST-...
 ```
 
 ### Frontend (.env)
@@ -84,4 +84,4 @@ pnpm install
 curl https://{your-frontend-api}/.well-known/jwks.json
 ```
 
-Última actualización: Feb 4, 2026
+Última actualización: Marzo 3, 2026

@@ -30,15 +30,6 @@ Información sobre seguridad y mejoras implementadas:
 
 ### 👨‍💻 [development/](./development/) - Para Desarrolladores
 Guías para trabajar en el código:
-- **[ROADMAP_VISUAL.md](./development/ROADMAP_VISUAL.md)** - 🗺️ Roadmap visual con diagramas Gantt
-- **[UIUX_ROADMAP.md](./development/UIUX_ROADMAP.md)** - Roadmap UI/UX detallado
-- **[testing-report.md](./development/testing-report.md)** - Reporte de pruebas (2026-02-05)
-- **[testing-guide.md](./development/testing-guide.md)** - Estrategia de testing
-- **[git-workflow.md](./development/git-workflow.md)** - Flujo de git y commits
-- **[code-standards.md](./development/code-standards.md)** - Estándares de código
-
-### 👨‍💻 [development/](./development/) - Para Desarrolladores
-Guías para trabajar en el código:
 - **[ESTADO.md](./development/ESTADO.md)** - Estado actual del proyecto y arquitectura
 - **[ROADMAP.md](./development/ROADMAP.md)** - Roadmap de desarrollo
 - **[ROADMAP_VISUAL.md](./development/ROADMAP_VISUAL.md)** - 🗺️ Roadmap visual con diagramas Gantt
@@ -53,7 +44,7 @@ Guías para trabajar en el código:
 | Necesito | Ir a |
 |----------|------|
 | 🚀 Empezar rápido | [setup/](./setup/) |
-| 🗺️ Ver roadmap | [../ROADMAP.md](../ROADMAP.md) ⭐ |
+| 🗺️ Ver roadmap | [development/ROADMAP.md](./development/ROADMAP.md) ⭐ |
 | 📊 Timeline visual | [development/ROADMAP_VISUAL.md](./development/ROADMAP_VISUAL.md) |
 | 🏗️ Entender arquitectura | [architecture/](./architecture/) |
 | ✨ Ver features | [features/](./features/) |
@@ -79,13 +70,13 @@ Guías para trabajar en el código:
 
 ---
 
-**Última actualización:** Febrero 23, 2026 ✅
+**Última actualización:** Marzo 3, 2026 ✅
 
-- **Requisitos**: Python 3.14+, Node.js 18+, PostgreSQL 14+
+- **Requisitos**: Python 3.13+, Node.js 18+, PostgreSQL 16+
 - **Lenguajes**: Python (backend), TypeScript (frontend)
 - **Arquitectura**: FastAPI + React Native (Expo)
-- **Base de Datos**: PostgreSQL (prod), SQLite (testing)
-- **Tests**: Suite green, 85% coverage target, 0 failures
+- **Base de Datos**: PostgreSQL 16 (prod), SQLite (testing)
+- **Tests**: 422 tests passing, 88% coverage, 0 failures
 
 ---
 
