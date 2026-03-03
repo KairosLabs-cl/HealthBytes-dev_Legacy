@@ -1,8 +1,6 @@
 import pytest
-from httpx import AsyncClient
 from app.main import app
 from tests.conftest import create_test_user
-import json
 
 @pytest.fixture
 def customer_user(db_session):
