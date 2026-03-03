@@ -7,7 +7,7 @@
 ## Score Breakdown
 | Category | Score | Status |
 |----------|-------|--------|
-| Architecture | 9/10 | ✅ Perfect CLAUDE.md adherence |
+| Architecture | 9/10 | ✅ Clean, well-structured architecture |
 | Code Quality | 8/10 | ✅ Clean, type-safe, minor issues |
 | Testing | 3/10 | 🔴 Tests broken (Babel issue) |
 | Dependencies | 8/10 | ✅ Modern, maintained, secure |
@@ -107,7 +107,7 @@ pnpm add -D babel-plugin-istanbul@latest
 ## ✅ Strengths
 
 ### Architecture
-- ✅ Perfect CLAUDE.md adherence (100% compliance)
+- ✅ Consistent architecture standards (100% compliance)
 - ✅ Clear separation of concerns (components, stores, API)
 - ✅ No business logic in components
 - ✅ No hardcoded URLs or secrets

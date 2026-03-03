@@ -38,3 +38,7 @@ backend/.pytest_cache/
 # Frontend local artifacts
 frontend/error.log
 frontend/.expo/
+
+# AI context files (degrade AI performance, increase cost, and cause errors)
+CLAUDE.md
+AGENT.md
