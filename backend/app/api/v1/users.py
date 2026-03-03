@@ -108,6 +108,10 @@ async def update_user(
         # Update fields
         update_data = user_data.model_dump(exclude_unset=True)
 
+        # Prevent privilege escalation: non-admins cannot change roles
+        if current_user.role != "admin" and "role" in update_data:
+            update_data.pop("role")
+
         # Hash password if provided
         if "password" in update_data and update_data["password"]:
             update_data["password"] = get_password_hash(update_data["password"])
