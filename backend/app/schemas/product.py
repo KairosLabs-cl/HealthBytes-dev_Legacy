@@ -24,6 +24,7 @@ class ProductBase(BaseModel):
     price: Decimal = Field(..., gt=0)
     stock: int = Field(0, ge=0)
     category: Optional[str] = Field(None, max_length=100)
+    vendor_name: Optional[str] = Field(None, max_length=255)
 
     @field_serializer("price")
     def serialize_price(self, v: Decimal) -> float:

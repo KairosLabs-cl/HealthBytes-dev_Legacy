@@ -41,6 +41,7 @@ class Product(Base):
     price = Column(Numeric(10, 2), nullable=False)
     stock = Column(Integer, nullable=False, default=0)
     category = Column(String(100), nullable=True, index=True)
+    vendor_name = Column(String(255), nullable=True)
     nutritional_info = Column(Text, nullable=True)
 
     # Full-text search column
