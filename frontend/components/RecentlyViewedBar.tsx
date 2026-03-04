@@ -1,39 +1,39 @@
-import { useCallback } from "react";
-import { View, FlatList, Pressable } from "react-native";
-import { Clock } from "lucide-react-native";
-import { Text } from "@/components/ui/text";
-import type { Product } from "@/types/product";
 import HorizontalProductCard from "@/components/HorizontalProductCard";
-
-type Props = { items?: Product[]; onSeeAll?: () => void };
+import { Text } from "@/components/ui/text";
+import { useRecentlyViewed } from "@/store/recentlyViewedStore";
+import type { Product } from "@/types/product";
+import { useRouter } from "expo-router";
+import { useCallback } from "react";
+import { FlatList, Pressable, View } from "react-native";
 
 const cardKeyExtractor = (item: Product) => String(item.id);
 
-export default function RecentlyViewedBar({ items = [], onSeeAll }: Props) {
+export default function RecentlyViewedBar() {
+  const { items } = useRecentlyViewed();
+  const router = useRouter();
+
+  const onSeeAll = useCallback(() => router.push("/recently-viewed"), [router]);
+
   const renderItem = useCallback(
     ({ item }: { item: Product }) => <HorizontalProductCard product={item} />,
     []
   );
 
   if (!items.length) {
-    return (
-      <View className="mx-4 mt-4 mb-4 bg-gray-50 rounded-2xl px-4 pt-4 pb-6 items-center">
-        <Clock size={28} color="#9CA3AF" style={{ marginBottom: 8 }} />
-        <Text className="text-sm text-gray-400 font-medium">
-          Tus productos vistos apareceran aqui
-        </Text>
-      </View>
-    );
+    return null;
   }
 
   return (
-    <View className="mt-4 mb-4">
-      <View className="px-4 flex-row items-center justify-between mb-3">
+    <View className="mt-4 mb-4 bg-gradient-to-b from-blue-50 to-transparent rounded-2xl px-4 pt-4 pb-3 mx-4 border border-blue-100">
+      <View className="flex-row items-center justify-between mb-3">
         <Text className="text-[17px] font-bold text-gray-900">
           {"👀 Vistos recientemente"}
         </Text>
-        <Pressable onPress={onSeeAll} style={{ minHeight: 44, justifyContent: "center" }}>
-          <Text className="text-sm font-semibold text-green-600">Ver mas</Text>
+        <Pressable
+          onPress={onSeeAll}
+          style={{ minHeight: 44, justifyContent: "center" }}
+        >
+          <Text className="text-sm font-semibold text-blue-600">Ver mas</Text>
         </Pressable>
       </View>
       <FlatList
@@ -41,7 +41,7 @@ export default function RecentlyViewedBar({ items = [], onSeeAll }: Props) {
         data={items.slice(0, 10)}
         keyExtractor={cardKeyExtractor}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16 }}
+        contentContainerStyle={{ paddingHorizontal: 0 }}
         renderItem={renderItem}
         initialNumToRender={3}
         maxToRenderPerBatch={3}
