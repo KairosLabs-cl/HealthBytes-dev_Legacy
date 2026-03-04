@@ -2,9 +2,9 @@
 
 # 🏗️ HealthBytes - Arquitectura Técnica
 
-**Fecha**: Febrero 28, 2026
-**Versión**: MVP v2.4.0 - UX Refinement + Navigation Polish
-**Estado**: ✅ Minimatch HIGH resuelto + Payments + UX refinado + nuevas pantallas
+**Fecha**: Marzo 3, 2026
+**Versión**: MVP v2.5.0 - Audit Fixes + CI/CD + Security Hardening
+**Estado**: ✅ 548 tests passing, CI/CD activo, seguridad auditada
 
 ---
 
@@ -507,17 +507,21 @@ main (production-ready)
 - **Linting**: Black (Python), ESLint (TypeScript)
 - **Type Checking**: mypy (Python), tsc (TypeScript)
 - **Testing**: pytest (Python), Jest (React Native — 126 tests passing, 13 suites ✅)
+- **CI/CD**: GitHub Actions (lint, test, security, deploy) ✅
 - **Documentation**: Inline docstrings + READMEs
 
-### CI/CD Pipeline (Planned)
+### CI/CD Pipeline (Implementado ✅)
 ```yaml
 # .github/workflows/ci.yml
-- Lint & Type Check
-- Run Tests (80% coverage required)
-- Build Docker Images
-- Deploy to Staging
-- Integration Tests
-- Deploy to Production
+- Backend Lint (Black, isort, Flake8)
+- Backend Tests (pytest, 80%+ coverage required)
+- Frontend Lint & Types (ESLint, TypeScript)
+- Frontend Tests (Jest, 126 tests)
+- Secret Scanning (Gitleaks)
+- SAST (Bandit)
+- Docker Build Test
+- Dependency Audits (pip safety, pnpm audit)
+- Production Deploy (manual approval gate)
 ```
 
 ---
@@ -553,24 +557,16 @@ main (production-ready)
 ## 🚨 Known Issues & Technical Debt
 
 ### High Priority
-- **Database Migrations**: Alembic activo pero migraciones manuales en algunos cambios
-- **Webhooks Mercado Pago**: Confirmación de pagos pendiente
-- **Pydantic V2 warnings**: 67 deprecation warnings (`class Config` → `model_config`)
+- **Seller Order Filtering**: Requiere agregar `seller_id` al schema de Product (parche temporal aplicado)
+- **Order Emails**: SendGrid integration pendiente
 
 ### Medium Priority
 - **Performance**: Revisar N+1 restantes (orders ya resuelto)
-- **Security**: bcrypt 72-byte truncation (ya implementado workaround)
 - **E2E Tests**: Checkout flow sin tests end-to-end
 
 ### Low Priority
-- **Documentation**: API docs incompletos
 - **Monitoring**: Sin logging/metrics en producción
-- **Docker**: Paths corregidas pero no completamente funcional
-
-### Low Priority
-- **Documentation**: API docs incomplete
-- **Monitoring**: No logging/metrics in production
-- **Docker**: Containerization not implemented
+- **Multi-vendor**: Arquitectura multi-vendor por definir
 
 ---
 

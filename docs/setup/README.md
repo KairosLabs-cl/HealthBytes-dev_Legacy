@@ -4,16 +4,14 @@ Guías paso a paso para configurar y ejecutar HealthBytes en tu entorno local.
 
 ## 📋 Contenido
 
-### [environment-variables.md](./environment-variables.md)
-Variables de entorno necesarias para backend y frontend.
-
-**Contiene:**
-- `.env` del backend (DATABASE_URL, JWT_SECRET, CLERK_KEYS, MERCADOPAGO_KEYS)
-- `.env` del frontend (API_URL, CLERK_PUBLISHABLE_KEY)
-- Valores de ejemplo para desarrollo
-
 ### [frontend-setup.md](./frontend-setup.md)
 Configuración completa del frontend React Native.
+
+### [DOCKER_SETUP.md](./DOCKER_SETUP.md)
+Guía de configuración Docker para el proyecto.
+
+### [ANDROID_BUILD_GUIDE.md](./ANDROID_BUILD_GUIDE.md)
+Guía para compilar y desplegar en Android.
 
 **Contiene:**
 - Requisitos previos (Node, pnpm, Expo)
@@ -61,7 +59,7 @@ EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 
 Para instrucciones completas, consulta:
 - **Frontend**: [frontend-setup.md](./frontend-setup.md)
-- **Variables de Entorno**: [environment-variables.md](./environment-variables.md)
+- **Docker**: [DOCKER_SETUP.md](./DOCKER_SETUP.md)
 - **Backend**: [backend/README.md](../../backend/README.md)
 
 ## 🆘 Troubleshooting

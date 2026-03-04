@@ -51,18 +51,18 @@ Las personas con condiciones como celiaquía, diabetes o alergias alimentarias e
 ### Estado Actual del Proyecto
 
 **Versión:** MVP en Desarrollo Activo
-**Última actualización:** Febrero 24, 2026
+**Última actualización:** Marzo 3, 2026
 
-| Componente         | Estado          | Descripción                               |
-| ------------------ | --------------- | ------------------------------------------ |
-| 🎨 Frontend Mobile | ✅ Funcional    | React Native + Expo                        |
-| ⚙️ Backend API   | ✅ Funcional    | FastAPI + SQLAlchemy async                 |
-| 🗄️ Base de Datos | ✅ Funcional    | PostgreSQL con modelos core                |
-| 🔐 Autenticación  | ✅ Implementado | JWT + Clerk (dual auth)                    |
-| 🧪 Tests           | ✅ Estable      | 179 tests passing, 70% coverage            |
-| 🛡️ Security      | ✅ Hardened     | minimatch HIGH resuelto, Clerk actualizado |
-| 🐳 Docker          | 📝 Planeado     | Containerización pendiente                |
-| 🚀 Deploy          | 📝 Planeado     | AWS (preparado)                            |
+| Componente         | Estado          | Descripción                                      |
+| ------------------ | --------------- | ------------------------------------------------- |
+| 🎨 Frontend Mobile | ✅ Funcional    | React Native + Expo (126 tests)                   |
+| ⚙️ Backend API   | ✅ Funcional    | FastAPI + SQLAlchemy async (422 tests)             |
+| 🗄️ Base de Datos | ✅ Funcional    | PostgreSQL con modelos core + índices optimizados |
+| 🔐 Autenticación  | ✅ Implementado | JWT + Clerk (dual auth)                           |
+| 🧪 Tests           | ✅ Estable      | 548 tests passing (422+126), 80%+ coverage        |
+| 🛡️ Security      | ✅ Hardened     | Auditoría completa, CI security scanning          |
+| 🐳 Docker          | ✅ Funcional    | docker-compose con backend + DB                   |
+| 🚀 CI/CD           | ✅ Implementado | GitHub Actions (lint, test, security, deploy)      |
 
 ### 🛡️ Estado de Seguridad (Febrero 2026)
 
@@ -280,11 +280,11 @@ HealthBytes sigue una arquitectura **monolítica modular** que facilita el desar
 - **bcrypt**: Hash de contraseñas
 - **CORS**: Configuración para mobile apps
 
-### DevOps (Roadmap)
+### DevOps
 
-- Docker + Docker Compose
-- AWS (EC2, RDS, S3)
-- GitHub Actions (CI/CD)
+- ✅ Docker + Docker Compose (funcional)
+- ✅ GitHub Actions CI/CD (lint, test, security, deploy)
+- AWS (EC2, RDS, S3) — preparado
 
 ---
 
@@ -337,10 +337,10 @@ HealthBytes-dev/
 | ------------------------------------------------------------- | ------------------------------------------- |
 | [frontend/README.md](frontend/README.md)                         | Guía completa del frontend                 |
 | [backend/README.md](backend/README.md)                           | Guía completa del backend                  |
-| [docs/README.md](docs/README.md)                                 | Índice centralizado de toda documentación |
-| [docs/frontend/SETUP.md](docs/frontend/SETUP.md)                 | Configuración del frontend (setup-env.ps1) |
-| [docs/SECURITY.md](docs/SECURITY.md)                             | Mejoras de seguridad implementadas          |
-| [docs/IMPLEMENTATION_SUMMARY.md](docs/IMPLEMENTATION_SUMMARY.md) | Full-Text Search implementado               |
+| [docs/README.md](docs/README.md)                                 | Índice centralizado de toda documentación  |
+| [docs/setup/frontend-setup.md](docs/setup/frontend-setup.md)     | Configuración del frontend (setup-env.ps1) |
+| [docs/security/security-improvements.md](docs/security/security-improvements.md) | Mejoras de seguridad implementadas |
+| [docs/features/full-text-search.md](docs/features/full-text-search.md) | Full-Text Search implementado         |
 
 ### Para Asistentes de IA 🤖
 
@@ -722,17 +722,13 @@ pytest -v
 
 ### Estado Actual de Tests
 
-**Suite green (backend + frontend) | 85% coverage target | 0 failures**
+**Suite green (backend + frontend) | 80%+ coverage | 0 failures**
 
-Nota: El detalle por modulo se debe refrescar con la proxima corrida de coverage.
-
-| Módulo       | Tests | Coverage | Estado       |
-| ------------- | ----- | -------- | ------------ |
-| Services      | 68    | ~93%     | ✅ Completo  |
-| API Endpoints | 84    | ~70%     | ✅ Funcional |
-| Security      | 16    | ~80%     | ✅ Funcional |
-| Performance   | 9     | -        | ✅ Funcional |
-| Config        | 2     | ~81%     | ✅ Funcional |
+| Suite    | Tests | Estado       |
+| -------- | ----- | ------------ |
+| Backend  | 422   | ✅ Passing   |
+| Frontend | 126   | ✅ Passing   |
+| **Total**| **548** | ✅ **All green** |
 
 Ver más detalles en [tests/README.md](backend/tests/README.md)
 
@@ -769,7 +765,7 @@ Convertir HealthBytes en la **plataforma líder** de e-commerce para personas co
 - [X] **Payment Integration** (Mercado Pago) - ✅ Implementado
 - [X] **Address CRUD** - ✅ Implementado
 - [X] **Stock Management** - ✅ Implementado (locking atómico)
-- [ ] **Webhooks Payment Confirmation** - 3 días
+- [X] **Webhooks Payment Confirmation** - ✅ Implementado
 - [ ] **Order Emails** (SendGrid) - 2 días
 
 #### Frontend
@@ -781,8 +777,8 @@ Convertir HealthBytes en la **plataforma líder** de e-commerce para personas co
 
 #### DevOps
 
-- [ ] **Docker Setup** - 2 días
-- [ ] **CI/CD Pipeline** (GitHub Actions) - 1 semana
+- [X] **Docker Setup** - ✅ Implementado
+- [X] **CI/CD Pipeline** (GitHub Actions) - ✅ Implementado
 
 ### 🟠 Alta Prioridad (P1) - Abril 2026
 
@@ -806,17 +802,16 @@ Convertir HealthBytes en la **plataforma líder** de e-commerce para personas co
 
 ### 📊 Documentación Completa
 
-- **Roadmap Detallado**: [docs/development/ROADMAP.md](docs/development/ROADMAP.md) - Plan completo con estimaciones y dependencias
-- **Roadmap Visual**: [docs/development/ROADMAP_VISUAL.md](docs/development/ROADMAP_VISUAL.md) - Diagramas Gantt y dependencias
 - **UI/UX Roadmap**: [docs/development/UIUX_ROADMAP.md](docs/development/UIUX_ROADMAP.md) - Mejoras de experiencia de usuario
+- **Estado del Proyecto**: [docs/development/ESTADO.md](docs/development/ESTADO.md) - Arquitectura y estado actual
 
 ### 🚧 Features en Progreso
 
-| Feature                            | Owner   | ETA    | Status                     |
-| ---------------------------------- | ------- | ------ | -------------------------- |
-| Backend Testing 80%+               | QA      | Feb 20 | 🟡 70% (179 tests passing) |
-| Docker Configuration               | DevOps  | Mar 1  | 📋 Planeado                |
-| Payment Integration (Mercado Pago) | Backend | Mar 15 | 📋 Not started             |
+| Feature                            | Owner   | ETA    | Status                         |
+| ---------------------------------- | ------- | ------ | ------------------------------ |
+| Backend Testing 80%+               | QA      | Mar 3  | ✅ Done (422 tests, 80%+ cov) |
+| Docker Configuration               | DevOps  | Mar 1  | ✅ Done                        |
+| Payment Integration (Mercado Pago) | Backend | Mar 3  | ✅ Implementado                |
 
 ### ❌ Features Descartadas
 
@@ -992,16 +987,17 @@ git push origin feat/product-filters
 
 ---
 
-## 📊 Estado del Proyecto (Actualizado: 13/02/2026)
+## 📊 Estado del Proyecto (Actualizado: 03/03/2026)
 
-**Calificación Global**: 🟢 **88/100** - Muy Bueno
+**Calificación Global**: 🟢 **92/100** - Muy Bueno
 
 - ✅ Arquitectura sólida (100% backend, 90% frontend)
-- ✅ Seguridad correcta (security headers, bcrypt, JWT + Clerk)
-- ✅ Testing estable (179 tests, 70% coverage, 0 failures)
+- ✅ Seguridad hardened (auditoría completa, CI scanning, CORS, webhooks)
+- ✅ Testing robusto (548 tests, 80%+ coverage, 0 failures)
 - ✅ N+1 queries optimizados (batch queries + stock locking)
-- ⚠️ Frontend tests pendientes (Jest configurado, tests por escribir)
-- ⚠️ Payment integration pendiente (Mercado Pago)
+- ✅ Frontend tests completos (126 tests, 13 suites)
+- ✅ Payment integration completa (Mercado Pago)
+- ✅ CI/CD Pipeline activo (GitHub Actions)
 
 **Ver**: [Estado Completo](docs/development/ESTADO.md)
 
@@ -1071,6 +1067,6 @@ Al usar HealthBytes, el usuario acepta que:
 
 Hecho con ❤️ por el equipo de HealthBytes
 
-_Última actualización: 13 Febrero 2026_
+_Última actualización: 3 Marzo 2026_
 
 </div>
