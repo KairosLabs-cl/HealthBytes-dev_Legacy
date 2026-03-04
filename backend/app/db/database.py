@@ -43,6 +43,7 @@ async def get_db():
 
 # Redis client for caching
 import logging
+
 import redis.asyncio as aioredis
 
 _redis_logger = logging.getLogger(__name__)

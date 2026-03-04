@@ -243,8 +243,9 @@ async def search_products(
 
 # Redis cache wrapper for products
 import json
-from app.db.database import get_redis
+
 from app.config import settings
+from app.db.database import get_redis
 
 _PRODUCTS_CACHE_KEY = (
     "products:list:search={search}:skip={skip}:limit={limit}:category={category}:tags={tags}"
