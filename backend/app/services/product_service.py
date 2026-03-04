@@ -246,7 +246,9 @@ import json
 from app.db.database import get_redis
 from app.config import settings
 
-_PRODUCTS_CACHE_KEY = "products:list:search={search}:skip={skip}:limit={limit}:category={category}:tags={tags}"
+_PRODUCTS_CACHE_KEY = (
+    "products:list:search={search}:skip={skip}:limit={limit}:category={category}:tags={tags}"
+)
 
 
 async def get_products_cached(
@@ -301,16 +303,20 @@ async def get_products_cached(
             # Serialize products - handle SQLAlchemy objects
             products_data = []
             for p in results:
-                products_data.append({
-                    "id": p.id,
-                    "name": p.name,
-                    "description": p.description,
-                    "price": float(p.price),
-                    "stock": p.stock,
-                    "category": p.category,
-                    "image": p.image,
-                })
-            await redis.setex(cache_key, settings.REDIS_CACHE_TTL_SECONDS, json.dumps(products_data))
+                products_data.append(
+                    {
+                        "id": p.id,
+                        "name": p.name,
+                        "description": p.description,
+                        "price": float(p.price),
+                        "stock": p.stock,
+                        "category": p.category,
+                        "image": p.image,
+                    }
+                )
+            await redis.setex(
+                cache_key, settings.REDIS_CACHE_TTL_SECONDS, json.dumps(products_data)
+            )
             logger.info("Cached products: %s", cache_key)
     except Exception as e:
         logger.warning("Redis cache write failed: %s", e)

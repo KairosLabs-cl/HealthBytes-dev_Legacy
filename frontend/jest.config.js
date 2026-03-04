@@ -24,6 +24,8 @@ module.exports = {
     '**/?(*.)+(spec|test).{ts,tsx}'
   ],
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/$1'
+    '^@/(.*)$': '<rootDir>/$1',
+    '^@react-native-async-storage/async-storage$':
+      require.resolve('@react-native-async-storage/async-storage/jest/async-storage-mock'),
   }
 };
