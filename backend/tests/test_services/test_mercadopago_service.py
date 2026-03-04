@@ -451,13 +451,14 @@ def test_validate_x_signature_invalid(mp_service):
 
 
 def test_validate_x_signature_no_secret():
-    """Test signature validation skipped when no secret configured"""
+    """Test signature validation raises error when no secret configured"""
     settings = MagicMock(spec=Settings)
     settings.MERCADO_PAGO_ACCESS_TOKEN = "test"
     settings.MERCADO_PAGO_WEBHOOK_SECRET = None
 
     service = MercadoPagoService(settings)
-    assert service._validate_x_signature("ts=1,v1=abc", "12345") is True
+    with pytest.raises(PaymentError, match="requerido"):
+        service._validate_x_signature("ts=1,v1=abc", "12345")
 
 
 def test_validate_x_signature_malformed(mp_service):

@@ -415,11 +415,9 @@ class MercadoPagoService:
             True if signature is valid
         """
         if not self.webhook_secret:
-            environment = getattr(self.settings, "ENVIRONMENT", "dev")
-            if environment == "production":
-                raise PaymentError("Webhook signature validation not configured")
-            logger.warning("MERCADO_PAGO_WEBHOOK_SECRET not set — skipping signature validation")
-            return True
+            raise PaymentError(
+                "MERCADO_PAGO_WEBHOOK_SECRET es requerido para validar webhooks de Mercado Pago"
+            )
 
         try:
             # Parse x-signature: "ts=12345,v1=abcdef..."

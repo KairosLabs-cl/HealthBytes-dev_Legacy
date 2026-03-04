@@ -112,14 +112,18 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
       - name: Run DB migrations
+        working-directory: backend
         env:
           DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+          JWT_SECRET: placeholder
         run: |
           pip install alembic psycopg sqlalchemy pydantic-settings python-dotenv
-          cd backend
-          echo "DATABASE_URL=$DATABASE_URL" > .env
-          echo "JWT_SECRET=placeholder" >> .env
           python -m alembic upgrade head
 
       - name: Deploy backend to ECS
@@ -132,8 +136,16 @@ jobs:
           image: ${{ needs.build-backend.outputs.image }}
           wait-for-service-stability: true
 
+      - name: Run smoke tests
+        env:
+          STAGING_URL: ${{ secrets.STAGING_URL }}
+        run: |
+          sleep 15
+          pip install requests
+          python backend/scripts/smoke_tests.py ${STAGING_URL:-https://staging.healthbytes.com}
+
       - name: Deploy summary
-        run: echo "✅ Staging deploy — ${{ github.sha }} → ${{ secrets.STAGING_URL }}"
+        run: echo "Staging deploy complete — ${{ github.sha }}"
 
   # ──────────────────────────────────────────────────────────────────────────
   # Production: backend ECS + Android AAB → Play Store (manual only)
@@ -157,14 +169,18 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
       - name: Run DB migrations
+        working-directory: backend
         env:
           DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+          JWT_SECRET: placeholder
         run: |
           pip install alembic psycopg sqlalchemy pydantic-settings python-dotenv
-          cd backend
-          echo "DATABASE_URL=$DATABASE_URL" > .env
-          echo "JWT_SECRET=placeholder" >> .env
           python -m alembic upgrade head
 
       - name: Deploy backend to ECS

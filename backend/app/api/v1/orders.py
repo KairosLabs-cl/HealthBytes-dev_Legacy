@@ -116,7 +116,7 @@ async def create_order(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("Error creating order: %s: %s", type(e).__name__, type(e).__name__)
+        logger.error("Error creating order: %s: %s", type(e).__name__, str(e))
         await db.rollback()
         error = ErrorResponse.server_error(
             message="An unexpected error occurred while creating the order",
@@ -145,8 +145,9 @@ async def list_orders(
         if current_user.role == "admin":
             stmt = select(Order)
         elif current_user.role == "seller":
-            # TODO: Filter by seller's products
-            stmt = select(Order)
+            # TODO: Filter by seller's products once seller_id is added to Product schema
+            # For now, sellers only see their own orders (same as regular users)
+            stmt = select(Order).where(Order.user_id == current_user.id)
         else:
             stmt = select(Order).where(Order.user_id == current_user.id)
 

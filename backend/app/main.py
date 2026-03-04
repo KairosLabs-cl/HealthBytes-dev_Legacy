@@ -165,20 +165,19 @@ async def limit_request_body_size(request: Request, call_next):
 # In dev, we use a broad but explicit list of local origins.
 cors_origins = [
     "http://localhost:8081",
+    "http://localhost:3000",
+    "http://localhost:19006",  # Expo web
+    "http://localhost:8080",
     "http://127.0.0.1:8081",
     "http://127.0.0.1:8082",
     "http://0.0.0.0:8081",
-    "http://localhost:3000",
-    "http://localhost:19006",  # Expo web
 ]
 
 if settings.ENVIRONMENT == "dev":
     # Add common local development origins
     cors_origins += [
-        "http://localhost:8080",
         "http://localhost:19000",
         "http://localhost:19001",
-        "http://10.0.0.0/8:8081",  # Private network range (covered by regex below)
     ]
 
 # Allow private network IPs in dev via allow_origin_regex
@@ -189,7 +188,6 @@ if settings.ENVIRONMENT == "dev":
         r"^https?://(10\.\d{1,3}\.\d{1,3}\.\d{1,3}"
         r"|192\.168\.\d{1,3}\.\d{1,3}"
         r"|172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}"
-        r"|localhost"
         r")(:\d+)?$"
     )
 
