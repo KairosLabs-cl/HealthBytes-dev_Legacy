@@ -1,0 +1,97 @@
+{
+  "family": "healthbytes-backend",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "backend",
+      "image": "ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/healthbytes-backend:latest",
+      "portMappings": [
+        {
+          "containerPort": 3001,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "PORT",
+          "value": "3001"
+        },
+        {
+          "name": "HOST",
+          "value": "0.0.0.0"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "DATABASE_URL",
+          "valueFrom": "/healthbytes/prod/DATABASE_URL"
+        },
+        {
+          "name": "JWT_SECRET",
+          "valueFrom": "/healthbytes/prod/JWT_SECRET"
+        },
+        {
+          "name": "CLERK_PUBLISHABLE_KEY",
+          "valueFrom": "/healthbytes/prod/CLERK_PUBLISHABLE_KEY"
+        },
+        {
+          "name": "CLERK_SECRET_KEY",
+          "valueFrom": "/healthbytes/prod/CLERK_SECRET_KEY"
+        },
+        {
+          "name": "MERCADO_PAGO_ACCESS_TOKEN",
+          "valueFrom": "/healthbytes/prod/MERCADO_PAGO_ACCESS_TOKEN"
+        },
+        {
+          "name": "MERCADO_PAGO_WEBHOOK_SECRET",
+          "valueFrom": "/healthbytes/prod/MERCADO_PAGO_WEBHOOK_SECRET"
+        },
+        {
+          "name": "RESEND_API_KEY",
+          "valueFrom": "/healthbytes/prod/RESEND_API_KEY"
+        },
+        {
+          "name": "EMAIL_FROM_ADDRESS",
+          "valueFrom": "/healthbytes/prod/EMAIL_FROM_ADDRESS"
+        },
+        {
+          "name": "BACKEND_URL",
+          "valueFrom": "/healthbytes/prod/BACKEND_URL"
+        },
+        {
+          "name": "FRONTEND_URL",
+          "valueFrom": "/healthbytes/prod/FRONTEND_URL"
+        },
+        {
+          "name": "ENVIRONMENT",
+          "valueFrom": "/healthbytes/prod/ENVIRONMENT"
+        },
+        {
+          "name": "SENTRY_DSN",
+          "valueFrom": "/healthbytes/prod/SENTRY_DSN"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/healthbytes-backend",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:3001/health || exit 1"],
+        "interval": 30,
+        "timeout": 10,
+        "retries": 3,
+        "startPeriod": 60
+      }
+    }
+  ]
+}
