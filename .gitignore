@@ -35,6 +35,11 @@ backend/.pytest_cache/
 .vscode/
 .idea/
 
+# AI tool local/generated files
+.opencode/node_modules/
+.opencode/bun.lock
+.claude/settings.local.json
+
 # Frontend local artifacts
 frontend/error.log
 frontend/.expo/
