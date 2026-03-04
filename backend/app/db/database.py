@@ -1,3 +1,6 @@
+import logging
+
+import redis.asyncio as aioredis
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
@@ -42,10 +45,6 @@ async def get_db():
 
 
 # Redis client for caching
-import logging
-
-import redis.asyncio as aioredis
-
 _redis_logger = logging.getLogger(__name__)
 _redis_client: "aioredis.Redis | None" = None
 

@@ -1,5 +1,6 @@
 """Product service - All product business logic."""
 
+import json
 import logging
 from typing import List, Optional
 
@@ -7,6 +8,8 @@ from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.config import settings
+from app.db.database import get_redis
 from app.db.schemas import DietaryTag, Product
 from app.schemas.product import ProductCreate, ProductUpdate
 
@@ -242,11 +245,6 @@ async def search_products(
 
 
 # Redis cache wrapper for products
-import json
-
-from app.config import settings
-from app.db.database import get_redis
-
 _PRODUCTS_CACHE_KEY = (
     "products:list:search={search}:skip={skip}:limit={limit}:category={category}:tags={tags}"
 )
