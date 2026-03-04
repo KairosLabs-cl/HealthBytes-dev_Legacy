@@ -26,7 +26,12 @@
       "Bash(source:*)",
       "Bash(\"C:\\\\Users\\\\benja\\\\Proyects\\\\Code\\\\Work\\\\HealthBytes-dev\\\\backend\\\\.venv\\\\Scripts\\\\python.exe\":*)",
       "Bash(gh pr:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(wc:*)",
+      "Bash(xargs grep:*)",
+      "Bash(npm test:*)",
+      "Bash(grep:*)",
+      "Bash(pip install:*)"
     ]
   }
 }
