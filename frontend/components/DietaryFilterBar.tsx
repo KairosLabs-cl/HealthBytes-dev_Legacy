@@ -1,12 +1,12 @@
-import React from "react";
-import { View, Pressable } from "react-native";
 import { Text } from "@/components/ui/text";
 import { DietaryTag } from "@/store/productFiltersStore";
+import React from "react";
+import { Pressable, ScrollView, View } from "react-native";
 import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
   Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
 } from "react-native-reanimated";
 
 export const DIET_FILTERS = [
@@ -14,6 +14,8 @@ export const DIET_FILTERS = [
   { label: "Veganos", tag: "vegano" },
   { label: "Sin lactosa", tag: "sin-lactosa" },
   { label: "Bajo en azucar", tag: "bajo-en-azucar" },
+  { label: "Alto en proteína", tag: "alto-en-proteina" },
+  { label: "Diabéticos", tag: "para-diabeticos" },
 ] as const;
 
 function AnimatedFilterChip({
@@ -31,9 +33,16 @@ function AnimatedFilterChip({
   }));
 
   const handlePress = () => {
-    scale.value = withTiming(0.97, { duration: 80, easing: Easing.out(Easing.ease) }, () => {
-      scale.value = withTiming(1, { duration: 150, easing: Easing.out(Easing.ease) });
-    });
+    scale.value = withTiming(
+      0.97,
+      { duration: 80, easing: Easing.out(Easing.ease) },
+      () => {
+        scale.value = withTiming(1, {
+          duration: 150,
+          easing: Easing.out(Easing.ease),
+        });
+      }
+    );
     onPress();
   };
 
@@ -44,7 +53,9 @@ function AnimatedFilterChip({
         className={`px-4 py-3 rounded-full border ${isActive ? "bg-green-500 border-green-600" : "bg-gray-100 border-gray-200"}`}
         style={{ minHeight: 44 }}
       >
-        <Text className={`text-sm font-medium ${isActive ? "text-white" : "text-gray-700"}`}>
+        <Text
+          className={`text-sm font-medium ${isActive ? "text-white" : "text-gray-700"}`}
+        >
           {label}
         </Text>
       </Pressable>
@@ -62,8 +73,12 @@ export default React.memo(function DietaryFilterBar({
   toggleDietaryTag,
 }: DietaryFilterBarProps) {
   return (
-    <View className="px-4 pb-3 bg-white">
-      <View className="flex-row flex-wrap gap-2 mt-2">
+    <View className="bg-white pb-3">
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 8, gap: 8 }}
+      >
         {DIET_FILTERS.map(({ label, tag }) => (
           <AnimatedFilterChip
             key={label}
@@ -72,7 +87,7 @@ export default React.memo(function DietaryFilterBar({
             onPress={() => toggleDietaryTag(tag)}
           />
         ))}
-      </View>
+      </ScrollView>
     </View>
   );
 });

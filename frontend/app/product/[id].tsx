@@ -1,34 +1,42 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { Image } from '@/components/ui/image';
-import { Text } from '@/components/ui/text';
-import { useQuery } from '@tanstack/react-query';
-import { fetchProductById } from '@/api/products';
-import { View, ScrollView, Pressable, Alert, Dimensions } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useCart } from '@/store/cartStore';
-import { useRecentlyViewed } from '@/store/recentlyViewedStore';
-import { useEffect, useMemo, useRef } from 'react';
-import { ShoppingCart, RefreshCw, ArrowLeft, Minus, Plus } from 'lucide-react-native';
-import { formatPrice } from '@/lib/formatPrice';
-import { DietaryBadgeList } from '@/components/DietaryBadge';
-import StockBadge from '@/components/StockBadge';
-import FavoriteButton from '@/components/FavoriteButton';
-import { useAuth } from '@clerk/clerk-expo';
+import { fetchProductById } from "@/api/products";
+import { DietaryBadgeList } from "@/components/DietaryBadge";
+import FavoriteButton from "@/components/FavoriteButton";
+import { useShimmerStyle } from "@/components/ProductCardSkeleton";
+import StockBadge from "@/components/StockBadge";
+import { Image } from "@/components/ui/image";
+import { Text } from "@/components/ui/text";
+import { formatPrice } from "@/lib/formatPrice";
+import { useCart } from "@/store/cartStore";
+import { useRecentlyViewed } from "@/store/recentlyViewedStore";
+import { useAuth } from "@clerk/clerk-expo";
+import { useQuery } from "@tanstack/react-query";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import {
+  ArrowLeft,
+  Minus,
+  Plus,
+  RefreshCw,
+  ShoppingCart,
+} from "lucide-react-native";
+import { useEffect, useMemo, useRef } from "react";
+import { Alert, Dimensions, Pressable, ScrollView, View } from "react-native";
 import Animated, {
-  FadeIn,
-  FadeInUp,
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSequence,
-  withDelay,
-  withSpring,
   cancelAnimation,
   Easing,
-} from 'react-native-reanimated';
+  FadeIn,
+  FadeInUp,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withSequence,
+  withTiming,
+} from "react-native-reanimated";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-import { useShimmerStyle } from '@/components/ProductCardSkeleton';
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 function ProductDetailSkeleton() {
   const shimmer = useShimmerStyle();
@@ -111,15 +119,15 @@ export default function ProductDetailsScreen() {
   const cartBtnScale = useSharedValue(1);
 
   const flyingStyle = useAnimatedStyle(() => ({
-    position: 'absolute',
+    position: "absolute",
     left: flyX.value,
     top: flyY.value,
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#111827',
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
+    backgroundColor: "#111827",
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
     opacity: flyOpacity.value,
     transform: [{ scale: flyScale.value }, { rotate: `${flyRotate.value}deg` }],
     zIndex: 9999,
@@ -144,7 +152,7 @@ export default function ProductDetailsScreen() {
 
     // Target: cart button top-right (right: 20, top: insets.top + 8, size 48px)
     const targetX = SCREEN_WIDTH - 20 - 24; // right margin + half button
-    const targetY = insets.top + 8 + 24;    // top margin + half button
+    const targetY = insets.top + 8 + 24; // top margin + half button
 
     flyX.value = startX - 22;
     flyY.value = startY - 22;
@@ -157,10 +165,10 @@ export default function ProductDetailsScreen() {
       withTiming(1.35, { duration: 180, easing: Easing.out(Easing.back(2.5)) }),
       withTiming(1.05, { duration: 120 }),
       withTiming(1.18, { duration: 100, easing: Easing.inOut(Easing.ease) }),
-      withTiming(1.0,  { duration: 100, easing: Easing.inOut(Easing.ease) }),
+      withTiming(1.0, { duration: 100, easing: Easing.inOut(Easing.ease) }),
       // ─── Phase 2 (500–1000ms): shrink on arrival ─────────────────────
       withTiming(0.5, { duration: 350, easing: Easing.in(Easing.cubic) }),
-      withTiming(0,   { duration: 150 })
+      withTiming(0, { duration: 150 })
     ); // 180+120+100+100+350+150 = 1000ms
 
     flyOpacity.value = withSequence(
@@ -171,23 +179,32 @@ export default function ProductDetailsScreen() {
     // Jiggle then full spin
     flyRotate.value = withSequence(
       withTiming(-22, { duration: 130 }),
-      withTiming( 22, { duration: 130 }),
+      withTiming(22, { duration: 130 }),
       withTiming(-12, { duration: 90 }),
-      withTiming( 12, { duration: 90 }),
-      withTiming(  0, { duration: 60 }),
+      withTiming(12, { duration: 90 }),
+      withTiming(0, { duration: 60 }),
       withTiming(360, { duration: 500, easing: Easing.linear })
     ); // 1000ms
 
     // Y: float up slightly during jiggle, then fly straight to cart button
     flyY.value = withSequence(
-      withTiming(startY - 52, { duration: 500, easing: Easing.out(Easing.ease) }),
-      withTiming(targetY - 22, { duration: 500, easing: Easing.bezier(0.4, 0, 0.2, 1) })
+      withTiming(startY - 52, {
+        duration: 500,
+        easing: Easing.out(Easing.ease),
+      }),
+      withTiming(targetY - 22, {
+        duration: 500,
+        easing: Easing.bezier(0.4, 0, 0.2, 1),
+      })
     );
 
     // X: hold while jiggling, then glide to target
     flyX.value = withDelay(
       500,
-      withTiming(targetX - 22, { duration: 500, easing: Easing.bezier(0.25, 0.46, 0.45, 0.94) })
+      withTiming(targetX - 22, {
+        duration: 500,
+        easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
+      })
     );
 
     // Cart button bounces when bubble arrives (~950ms)
@@ -195,7 +212,10 @@ export default function ProductDetailsScreen() {
       cartBounceTimer.current = null;
       cancelAnimation(cartBtnScale);
       cartBtnScale.value = withSequence(
-        withTiming(1.25, { duration: 200, easing: Easing.out(Easing.back(1.5)) }),
+        withTiming(1.25, {
+          duration: 200,
+          easing: Easing.out(Easing.back(1.5)),
+        }),
         withTiming(1, { duration: 400, easing: Easing.out(Easing.ease) })
       );
     }, 950);
@@ -207,16 +227,18 @@ export default function ProductDetailsScreen() {
     error,
     refetch,
   } = useQuery({
-    queryKey: ['products', id],
+    queryKey: ["products", id],
     queryFn: () => fetchProductById(Number(id)),
   });
 
   const currentInCart = useMemo(
-    () => cartItems.find(i => i.product.id === product?.id)?.quantity || 0,
+    () => cartItems.find((i) => i.product.id === product?.id)?.quantity || 0,
     [cartItems, product?.id]
   );
 
-  const canAddMore = product ? (product.stock ?? 0) > 0 && currentInCart < (product.stock ?? 0) : false;
+  const canAddMore = product
+    ? (product.stock ?? 0) > 0 && currentInCart < (product.stock ?? 0)
+    : false;
 
   const addRecentlyViewed = useRecentlyViewed((state) => state.add);
 
@@ -233,7 +255,10 @@ export default function ProductDetailsScreen() {
         "Necesitas iniciar sesion para agregar productos al carrito.",
         [
           { text: "Cancelar", style: "cancel" },
-          { text: "Iniciar sesion", onPress: () => router.push("/(auth)/login") },
+          {
+            text: "Iniciar sesion",
+            onPress: () => router.push("/(auth)/login"),
+          },
         ]
       );
       return;
@@ -249,11 +274,16 @@ export default function ProductDetailsScreen() {
 
     try {
       addProduct(product);
-      ctaBtnRef.current?.measureInWindow((x: number, y: number, w: number, h: number) => {
-        triggerFlyAnimation(x + w / 2, y + h / 2);
-      });
+      ctaBtnRef.current?.measureInWindow(
+        (x: number, y: number, w: number, h: number) => {
+          triggerFlyAnimation(x + w / 2, y + h / 2);
+        }
+      );
     } catch (err) {
-      Alert.alert('Error', 'No se pudo agregar al carrito. Intenta nuevamente.');
+      Alert.alert(
+        "Error",
+        "No se pudo agregar al carrito. Intenta nuevamente."
+      );
     }
   };
 
@@ -266,15 +296,15 @@ export default function ProductDetailsScreen() {
     if (router.canGoBack()) {
       router.back();
     } else {
-      router.push('/');
+      router.push("/");
     }
   };
 
   const ctaLabel = () => {
-    if (!product || product.stock === 0) return 'Agotado';
-    if (currentInCart >= product.stock) return 'Máximo alcanzado';
-    if (currentInCart > 0) return 'Agregar uno más';
-    return 'Agregar al carrito';
+    if (!product || product.stock === 0) return "Agotado";
+    if (currentInCart >= product.stock) return "Máximo alcanzado";
+    if (currentInCart > 0) return "Agregar uno más";
+    return "Agregar al carrito";
   };
 
   if (isLoading) {
@@ -291,7 +321,9 @@ export default function ProductDetailsScreen() {
       <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
         <Stack.Screen options={{ headerShown: false }} />
         <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-red-500 text-lg mb-4">Producto no encontrado</Text>
+          <Text className="text-red-500 text-lg mb-4">
+            Producto no encontrado
+          </Text>
           <Pressable
             onPress={() => refetch()}
             className="flex-row items-center gap-2 bg-black px-6 py-3 rounded-full"
@@ -320,13 +352,22 @@ export default function ProductDetailsScreen() {
 
       {/* Floating Cart Button — nav bar style, fly-to-cart target */}
       <Animated.View
-        style={[cartBtnAnimatedStyle, { position: 'absolute', right: 20, top: insets.top + 8, zIndex: 50, elevation: 5 }]}
+        style={[
+          cartBtnAnimatedStyle,
+          {
+            position: "absolute",
+            right: 20,
+            top: insets.top + 8,
+            zIndex: 50,
+            elevation: 5,
+          },
+        ]}
       >
         <Pressable
-          onPress={() => router.push('/cart')}
+          onPress={() => router.push("/cart")}
           className="bg-black p-3 rounded-full"
           style={{
-            shadowColor: '#000',
+            shadowColor: "#000",
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.2,
             shadowRadius: 8,
@@ -335,9 +376,7 @@ export default function ProductDetailsScreen() {
           <View>
             <ShoppingCart size={24} color="white" />
             {cartItems.length > 0 && (
-              <View
-                className="absolute -top-2 -right-2 bg-red-500 rounded-full min-w-[18px] h-[18px] px-1 items-center justify-center"
-              >
+              <View className="absolute -top-2 -right-2 bg-red-500 rounded-full min-w-[18px] h-[18px] px-1 items-center justify-center">
                 <Text className="text-white text-[10px] font-bold">
                   {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
                 </Text>
@@ -352,12 +391,12 @@ export default function ProductDetailsScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 + insets.bottom }}
       >
-        {/* Hero Image — compact to push content above fold */}
+        {/* Hero Image */}
         <Animated.View entering={FadeIn.duration(400)}>
-          <View className="bg-gray-50 items-center justify-center py-4">
+          <View className="bg-gradient-to-b from-gray-50 to-white items-center justify-center py-6">
             <Image
               source={{ uri: product.image }}
-              className="w-full h-64"
+              className="w-full h-72"
               alt={`${product.name} image`}
               resizeMode="contain"
             />
@@ -365,111 +404,152 @@ export default function ProductDetailsScreen() {
         </Animated.View>
 
         {/* Product Info */}
-        <View className="px-5 py-5">
-          {/* Dietary trust badges */}
+        <View className="px-5 py-6">
+          {/* SECTION 1: Trust Badges + Name + Price */}
           <Animated.View entering={FadeInUp.delay(100).duration(400)}>
             <DietaryBadgeList tags={product.dietary_tags} />
           </Animated.View>
 
-          {/* Name */}
-          <Animated.View entering={FadeInUp.delay(200).duration(400)}>
-            <Text className="text-2xl font-bold text-gray-900 leading-tight mb-2">
+          <Animated.View
+            entering={FadeInUp.delay(160).duration(400)}
+            className="mt-3"
+          >
+            <Text className="text-3xl font-extrabold text-gray-900 leading-tight mb-4">
               {product.name}
             </Text>
           </Animated.View>
 
-          {/* Price + Stock — same row, left-aligned */}
-          <Animated.View entering={FadeInUp.delay(280).duration(400)}>
-            <View className="flex-row items-center gap-3 mb-5">
-              <Text className="text-2xl font-extrabold text-gray-900">
+          {/* Price + Stock — clear visual hierarchy */}
+          <Animated.View
+            entering={FadeInUp.delay(220).duration(400)}
+            className="mb-6"
+          >
+            <View className="flex-row items-baseline gap-3">
+              <Text className="text-3xl font-black text-black">
                 {formatPrice(product.price)}
               </Text>
               {product.stock === 0 ? (
-                <View className="flex-row items-center">
+                <View className="flex-row items-center bg-red-50 px-3 py-1.5 rounded-full">
                   <View className="w-2 h-2 rounded-full bg-red-500 mr-1.5" />
-                  <Text className="text-sm font-medium text-red-600">Agotado</Text>
+                  <Text className="text-xs font-semibold text-red-700">
+                    Agotado
+                  </Text>
                 </View>
               ) : product.stock <= 5 ? (
                 <StockBadge stock={product.stock} variant="inline" />
               ) : (
-                <View className="flex-row items-center">
+                <View className="flex-row items-center bg-green-50 px-3 py-1.5 rounded-full">
                   <View className="w-2 h-2 rounded-full bg-green-500 mr-1.5" />
-                  <Text className="text-sm text-gray-500">En stock</Text>
+                  <Text className="text-xs font-semibold text-green-700">
+                    En stock
+                  </Text>
                 </View>
               )}
             </View>
           </Animated.View>
 
+          {/* Separator */}
+          <View className="h-0.5 bg-gray-100 mb-6" />
+
           {/* Description */}
-          <Animated.View entering={FadeInUp.delay(400).duration(400)}>
-            <View className="mb-6">
-              <Text className="text-base font-semibold text-gray-900 mb-2">
-                Descripción
-              </Text>
-              <Text className="text-base text-gray-600 leading-6">
-                {product.description || 'Producto de alta calidad especialmente seleccionado para personas con restricciones alimentarias. Ingredientes cuidadosamente verificados para garantizar su seguridad.'}
-              </Text>
-            </View>
+          <Animated.View
+            entering={FadeInUp.delay(340).duration(400)}
+            className="mb-6"
+          >
+            <Text className="text-xs uppercase tracking-wider font-bold text-gray-500 mb-2">
+              Descripción
+            </Text>
+            <Text className="text-base leading-6 text-gray-700">
+              {product.description ||
+                "Producto de alta calidad especialmente seleccionado para personas con restricciones alimentarias. Ingredientes cuidadosamente verificados para garantizar su seguridad."}
+            </Text>
           </Animated.View>
 
+          {/* Separator */}
+          <View className="h-0.5 bg-gray-100 mb-6" />
+
           {/* Nutritional Info */}
-          {product.nutritional_info && (() => {
-            try {
-              const nutrition = JSON.parse(product.nutritional_info);
-              return (
-                <Animated.View entering={FadeInUp.delay(460).duration(400)}>
-                  <View className="mb-6 p-4 rounded-2xl bg-gray-50 border border-gray-100">
-                    <Text className="text-base font-semibold text-gray-900 mb-3">
+          {product.nutritional_info &&
+            (() => {
+              try {
+                const nutrition = JSON.parse(product.nutritional_info);
+                return (
+                  <Animated.View entering={FadeInUp.delay(400).duration(400)}>
+                    <Text className="text-xs uppercase tracking-wider font-bold text-gray-500 mb-3">
                       Información nutricional
                     </Text>
-                    <View className="gap-2">
-                      <View className="flex-row justify-between py-1 border-b border-gray-100">
-                        <Text className="text-sm text-gray-600">Calorías</Text>
-                        <Text className="text-sm font-medium text-gray-900">{nutrition.calories} kcal</Text>
-                      </View>
-                      <View className="flex-row justify-between py-1 border-b border-gray-100">
-                        <Text className="text-sm text-gray-600">Proteínas</Text>
-                        <Text className="text-sm font-medium text-gray-900">{nutrition.protein}g</Text>
-                      </View>
-                      <View className="flex-row justify-between py-1 border-b border-gray-100">
-                        <Text className="text-sm text-gray-600">Carbohidratos</Text>
-                        <Text className="text-sm font-medium text-gray-900">{nutrition.carbs}g</Text>
-                      </View>
-                      <View className="flex-row justify-between py-1">
-                        <Text className="text-sm text-gray-600">Grasas</Text>
-                        <Text className="text-sm font-medium text-gray-900">{nutrition.fat}g</Text>
+                    <View className="rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 p-4">
+                      <View className="gap-3">
+                        <View className="flex-row justify-between py-2">
+                          <Text className="text-sm text-gray-600 font-medium">
+                            Calorías
+                          </Text>
+                          <Text className="text-sm font-bold text-gray-900">
+                            {nutrition.calories} kcal
+                          </Text>
+                        </View>
+                        <View className="h-px bg-gray-200" />
+                        <View className="flex-row justify-between py-2">
+                          <Text className="text-sm text-gray-600 font-medium">
+                            Proteínas
+                          </Text>
+                          <Text className="text-sm font-bold text-gray-900">
+                            {nutrition.protein}g
+                          </Text>
+                        </View>
+                        <View className="h-px bg-gray-200" />
+                        <View className="flex-row justify-between py-2">
+                          <Text className="text-sm text-gray-600 font-medium">
+                            Carbohidratos
+                          </Text>
+                          <Text className="text-sm font-bold text-gray-900">
+                            {nutrition.carbs}g
+                          </Text>
+                        </View>
+                        <View className="h-px bg-gray-200" />
+                        <View className="flex-row justify-between py-2">
+                          <Text className="text-sm text-gray-600 font-medium">
+                            Grasas
+                          </Text>
+                          <Text className="text-sm font-bold text-gray-900">
+                            {nutrition.fat}g
+                          </Text>
+                        </View>
                       </View>
                     </View>
-                  </View>
-                </Animated.View>
-              );
-            } catch (e) {
-              return null;
-            }
-          })()}
+                  </Animated.View>
+                );
+              } catch (e) {
+                return null;
+              }
+            })()}
         </View>
       </ScrollView>
 
       {/* Sticky CTA bar */}
       <View
         className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-5 pt-3"
-        style={{ paddingBottom: insets.bottom + 12, elevation: 10 }}
+        style={{
+          paddingBottom: insets.bottom + 12,
+          elevation: 10,
+          backgroundColor: "rgba(255,255,255,0.98)",
+        }}
       >
-        <View className="flex-row items-center gap-3">
+        <View className="flex-row items-center gap-2">
           {/* Favorite button */}
-          <View className="w-12 h-12 rounded-full border border-gray-200 items-center justify-center">
-            <FavoriteButton productId={Number(id)} size={22} />
+          <View className="w-12 h-12 rounded-full border border-gray-200 items-center justify-center bg-gray-50">
+            <FavoriteButton productId={Number(id)} size={20} />
           </View>
 
           {/* Quantity selector — visible only when item already in cart */}
           {currentInCart > 0 && (
-            <View className="flex-row items-center border border-gray-200 rounded-full overflow-hidden h-12">
+            <View className="flex-row items-center border border-gray-300 rounded-full overflow-hidden h-12 bg-gray-50">
               <Pressable
                 onPress={handleDecrement}
-                className="w-11 h-12 items-center justify-center active:bg-gray-100"
+                className="w-11 h-12 items-center justify-center active:bg-gray-200"
                 style={{ minWidth: 44 }}
               >
-                <Minus size={18} color="#111827" />
+                <Minus size={16} color="#111827" />
               </Pressable>
               <Text className="text-base font-bold w-6 text-center text-gray-900">
                 {currentInCart}
@@ -477,10 +557,10 @@ export default function ProductDetailsScreen() {
               <Pressable
                 onPress={handleAddToCart}
                 disabled={!canAddMore}
-                className="w-11 h-12 items-center justify-center active:bg-gray-100"
+                className="w-11 h-12 items-center justify-center active:bg-gray-200"
                 style={{ minWidth: 44 }}
               >
-                <Plus size={18} color={canAddMore ? '#111827' : '#D1D5DB'} />
+                <Plus size={16} color={canAddMore ? "#111827" : "#D1D5DB"} />
               </Pressable>
             </View>
           )}
@@ -491,13 +571,18 @@ export default function ProductDetailsScreen() {
               ref={ctaBtnRef}
               onPress={handleAddToCart}
               disabled={!canAddMore}
-              className={`h-12 rounded-full items-center justify-center flex-row gap-2 ${
-                canAddMore ? 'bg-black active:opacity-80' : 'bg-gray-200'
+              className={`h-12 rounded-xl items-center justify-center flex-row gap-2 ${
+                canAddMore ? "bg-black active:opacity-80" : "bg-gray-300"
               }`}
               style={{ minHeight: 48 }}
             >
-              <ShoppingCart size={20} color={canAddMore ? 'white' : '#9CA3AF'} />
-              <Text className={`font-semibold text-base ${canAddMore ? 'text-white' : 'text-gray-400'}`}>
+              <ShoppingCart
+                size={18}
+                color={canAddMore ? "white" : "#9CA3AF"}
+              />
+              <Text
+                className={`font-semibold text-base ${canAddMore ? "text-white" : "text-gray-500"}`}
+              >
                 {ctaLabel()}
               </Text>
             </Pressable>
