@@ -6,7 +6,7 @@ permissions:
 
 on:
   push:
-    branches: [master, main]
+    branches: ['**']
     paths-ignore:
       - "docs/**"
       - "**.md"
@@ -80,6 +80,12 @@ jobs:
       - name: Run tests
         run: pytest --tb=short --cov=app --cov-fail-under=80 -q
 
+      - name: Audit Python dependencies
+        run: |
+          pip install safety
+          safety check -r requirements.txt --continue-on-error
+        continue-on-error: true
+
   frontend-lint:
     name: Frontend Lint & Types
     runs-on: ubuntu-latest
@@ -135,6 +141,31 @@ jobs:
 
       - name: Run tests
         run: pnpm exec jest --ci --forceExit
+
+  frontend-audit:
+    name: Frontend Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+
+      - name: Audit dependencies
+        working-directory: frontend
+        run: pnpm audit --audit-level=moderate
+        continue-on-error: true
 
   secret-scan:
     name: Secret Scanning
