@@ -37,3 +37,6 @@ mangum>=0.20.0
 
 # Observability
 sentry-sdk[fastapi]>=2.0.0
+
+# Redis (cache)
+redis[asyncio]>=5.0.0

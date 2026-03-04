@@ -222,9 +222,82 @@ async def search_products(
 
         return result.scalars().all()
 
+
+# Redis cache wrapper for products
+import json
+from app.db.database import get_redis
+from app.config import settings
+
+_PRODUCTS_CACHE_KEY = "products:list:search={search}:skip={skip}:limit={limit}:category={category}:tags={tags}"
+
+
+async def get_products_cached(
+    db: AsyncSession,
+    search: str = None,
+    skip: int = 0,
+    limit: int = 100,
+    category: Optional[str] = None,
+    dietary_tags: Optional[List[str]] = None,
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
+) -> List[Product]:
+    """
+    Wrapper for list_products with Redis cache.
+    Gracefully degrades to DB-only if Redis is unavailable.
+    """
+    cache_key = _PRODUCTS_CACHE_KEY.format(
+        search=search or "none",
+        skip=skip,
+        limit=limit,
+        category=category or "none",
+        tags=",".join(dietary_tags) if dietary_tags else "none",
+    )
+
+    # Try cache first
+    try:
+        redis = await get_redis()
+        if redis:
+            cached = await redis.get(cache_key)
+            if cached:
+                logger.info("Cache hit for products: %s", cache_key)
+                return json.loads(cached)
     except Exception as e:
-        # Log error and fallback to simple LIKE search
-        logger.warning("Full-text search failed, falling back to LIKE: %s", type(e).__name__)
+        logger.warning("Redis cache read failed, falling back to DB: %s", e)
+
+    # Fetch from DB
+    results = await list_products(
+        db=db,
+        search=search,
+        skip=skip,
+        limit=limit,
+        category=category,
+        dietary_tags=dietary_tags,
+        min_price=min_price,
+        max_price=max_price,
+    )
+
+    # Try to cache result
+    try:
+        redis = await get_redis()
+        if redis:
+            # Serialize products - handle SQLAlchemy objects
+            products_data = []
+            for p in results:
+                products_data.append({
+                    "id": p.id,
+                    "name": p.name,
+                    "description": p.description,
+                    "price": float(p.price),
+                    "stock": p.stock,
+                    "category": p.category,
+                    "image": p.image,
+                })
+            await redis.setex(cache_key, settings.REDIS_CACHE_TTL_SECONDS, json.dumps(products_data))
+            logger.info("Cached products: %s", cache_key)
+    except Exception as e:
+        logger.warning("Redis cache write failed: %s", e)
+
+    return results
 
         # Fallback: simple LIKE search in name and description
         search_pattern = f"%{clean_query}%"
