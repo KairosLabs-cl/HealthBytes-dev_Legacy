@@ -125,9 +125,7 @@ async def get_current_user(
 
                     # Check for email collision before creating
                     if email:
-                        existing_result = await db.execute(
-                            select(User).where(User.email == email)
-                        )
+                        existing_result = await db.execute(select(User).where(User.email == email))
                         existing_user = existing_result.scalar_one_or_none()
                         if existing_user:
                             # Email exists under different Clerk ID — update clerk_id

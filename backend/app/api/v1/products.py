@@ -80,9 +80,7 @@ async def get_products_by_ids(ids: str, db: AsyncSession = Depends(get_db)):
             return []
 
         if len(id_list) > 50:
-            raise HTTPException(
-                status_code=400, detail="Máximo 50 IDs por consulta batch"
-            )
+            raise HTTPException(status_code=400, detail="Máximo 50 IDs por consulta batch")
 
         return await product_service.get_products_by_ids(db, id_list)
     except ValueError:

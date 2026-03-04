@@ -134,10 +134,7 @@ async def update_cart_item(
     if quantity > available_stock and quantity >= cart_item.quantity:
         raise HTTPException(
             status_code=400,
-            detail=(
-                f"Stock insuficiente. Solo quedan "
-                f"{available_stock} unidades disponibles."
-            ),
+            detail=(f"Stock insuficiente. Solo quedan " f"{available_stock} unidades disponibles."),
         )
 
     cart_item.quantity = quantity
