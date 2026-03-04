@@ -2,15 +2,33 @@
 Cart service - Business logic for shopping cart operations
 """
 
+import logging
 from typing import List
 
 from fastapi import HTTPException
-from sqlalchemy import delete, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from app.db.schemas import CartItem, Product
+from app.db.schemas import CartItem, OrderItem, Product
 from app.schemas.cart import CartItemCreate, CartItemResponse, CartResponse
+
+logger = logging.getLogger(__name__)
+
+
+async def _get_available_stock(db: AsyncSession, product: Product) -> int:
+    """Calculate available stock by subtracting reserved stock from pending orders."""
+    from app.db.schemas import Order
+
+    result = await db.execute(
+        select(func.coalesce(func.sum(OrderItem.quantity), 0)).where(
+            OrderItem.product_id == product.id,
+            OrderItem.order_id == Order.id,
+            Order.status.in_(["pending", "confirmed"]),
+        )
+    )
+    reserved = result.scalar()
+    return max(0, product.stock - reserved)
 
 
 async def get_cart(user_id: int, db: AsyncSession) -> CartResponse:
@@ -45,7 +63,8 @@ async def add_to_cart(
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    if quantity > product.stock:
+    available_stock = await _get_available_stock(db, product)
+    if quantity > available_stock:
         raise HTTPException(status_code=400, detail="Insufficient stock")
 
     # Check if item already in cart
@@ -59,10 +78,10 @@ async def add_to_cart(
     if existing_item:
         # Increment quantity
         new_quantity = existing_item.quantity + quantity
-        if new_quantity > product.stock:
+        if new_quantity > available_stock:
             raise HTTPException(
                 status_code=400,
-                detail=f"Stock insuficiente. Solo quedan {product.stock} unidades disponibles.",
+                detail=f"Stock insuficiente. Solo quedan {available_stock} unidades disponibles.",
             )
 
         existing_item.quantity = new_quantity
@@ -111,12 +130,13 @@ async def update_cart_item(
 
     # Validar stock solo si estamos aumentando la cantidad o manteniéndola
     # Si el usuario reduce la cantidad (aunque siga por encima del stock), permitimos la operación
-    if quantity > cart_item.product.stock and quantity >= cart_item.quantity:
+    available_stock = await _get_available_stock(db, cart_item.product)
+    if quantity > available_stock and quantity >= cart_item.quantity:
         raise HTTPException(
             status_code=400,
             detail=(
                 f"Stock insuficiente. Solo quedan "
-                f"{cart_item.product.stock} unidades disponibles."
+                f"{available_stock} unidades disponibles."
             ),
         )
 

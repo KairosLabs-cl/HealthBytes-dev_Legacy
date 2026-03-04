@@ -52,7 +52,7 @@ async def create_payment_preference(
     request: Request,
     body: CreatePreferenceRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
 ):
     """
     Create a Mercado Pago payment preference for an order.
@@ -136,7 +136,7 @@ async def mercadopago_webhook(
 async def get_payment_status(
     payment_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
 ):
     """
     Get payment status from Mercado Pago.

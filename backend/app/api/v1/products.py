@@ -22,7 +22,7 @@ async def list_products(
     min_price: Optional[float] = None,
     max_price: Optional[float] = None,
     skip: int = 0,
-    limit: int = 100,
+    limit: int = Query(20, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -31,16 +31,16 @@ async def list_products(
     GET /products?category=Snacks&dietary=vegano,sin-gluten&min_price=1000
     """
     try:
-        # If search is provided, use FTS search
-        # TODO: Enhance search_products to also accept filters if needed
-        if search:
-            return await product_service.search_products(db, search, skip=skip, limit=limit)
-
         # Parse dietary tags string into a list
         dietary_tags = [t.strip() for t in dietary.split(",") if t.strip()] if dietary else None
 
+        # Normalize search: treat whitespace-only as no search
+        clean_search = search.strip() if search else None
+
+        # Always apply all filters together (search + category + dietary + price)
         return await product_service.list_products(
             db,
+            search=clean_search or None,
             skip=skip,
             limit=limit,
             category=category,
@@ -78,6 +78,11 @@ async def get_products_by_ids(ids: str, db: AsyncSession = Depends(get_db)):
 
         if not id_list:
             return []
+
+        if len(id_list) > 50:
+            raise HTTPException(
+                status_code=400, detail="Máximo 50 IDs por consulta batch"
+            )
 
         return await product_service.get_products_by_ids(db, id_list)
     except ValueError:

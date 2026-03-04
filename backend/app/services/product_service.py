@@ -29,9 +29,12 @@ async def list_products(
     # Eagerly load dietary_tags relationship
     query = select(Product).options(selectinload(Product.dietary_tags))
 
-    # Apply search filter
+    # Apply search filter (name or description)
     if search:
-        query = query.where(Product.name.ilike(f"%{search}%"))
+        search_pattern = f"%{search}%"
+        query = query.where(
+            (Product.name.ilike(search_pattern)) | (Product.description.ilike(search_pattern))
+        )
 
     # Apply category filter
     if category:
