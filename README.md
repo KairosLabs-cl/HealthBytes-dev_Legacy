@@ -50,19 +50,21 @@ Las personas con condiciones como celiaquía, diabetes o alergias alimentarias e
 
 ### Estado Actual del Proyecto
 
-**Versión:** MVP en Desarrollo Activo
-**Última actualización:** Marzo 3, 2026
+**Versión:** MVP Listo para Launch
+**Última actualización:** Marzo 4, 2026
 
 | Componente         | Estado          | Descripción                                      |
-| ------------------ | --------------- | ------------------------------------------------- |
+| ------------------ | --------------- | ------------------------------------------------ |
 | 🎨 Frontend Mobile | ✅ Funcional    | React Native + Expo (126 tests)                   |
-| ⚙️ Backend API   | ✅ Funcional    | FastAPI + SQLAlchemy async (422 tests)             |
+| ⚙️ Backend API   | ✅ Funcional    | FastAPI + SQLAlchemy async (430+ tests)             |
 | 🗄️ Base de Datos | ✅ Funcional    | PostgreSQL con modelos core + índices optimizados |
 | 🔐 Autenticación  | ✅ Implementado | JWT + Clerk (dual auth)                           |
-| 🧪 Tests           | ✅ Estable      | 548 tests passing (422+126), 80%+ coverage        |
+| 🧪 Tests           | ✅ Estable      | 556 tests passing (430+126), 80%+ coverage        |
 | 🛡️ Security      | ✅ Hardened     | Auditoría completa, CI security scanning          |
-| 🐳 Docker          | ✅ Funcional    | docker-compose con backend + DB                   |
-| 🚀 CI/CD           | ✅ Implementado | GitHub Actions (lint, test, security, deploy)      |
+| 🐳 Docker          | ✅ Funcional    | docker-compose con backend + DB + Redis           |
+| 🚀 CI/CD           | ✅ Implementado | GitHub Actions (lint, test, security, deploy)    |
+| 💾 Redis Cache    | ✅ Implementado | Cache de productos con TTL 5min                   |
+| ☁️ AWS Infra      | ✅ Implementado | Scripts ECS/ECR/SSM en infra/                    |
 
 ### 🛡️ Estado de Seguridad (Febrero 2026)
 
@@ -348,8 +350,10 @@ HealthBytes-dev/
 | --------------------------------------------------------------- | ------------------------------------------------------- |
 | [backend/AI-README.md](backend/AI-README.md)                       | Patrones, reglas y arquitectura del backend             |
 | [frontend/AI-README.md](frontend/AI-README.md)                     | Patrones, reglas y arquitectura del frontend            |
-| [.cursorrules](.cursorrules)                                       | **CRÍTICO**: Reglas obligatorias y prohibiciones |
-| [.github/copilot-instructions.md](.github/copilot-instructions.md) | Instrucciones globales para IA                          |
+| [.cursorrules](.cursorrules)                                       | **CRÍTICO**: Reglas obligatorias y prohibiciones        |
+| [.github/copilot-instructions.md](.github/copilot-instructions.md) | Instrucciones globales para IA                         |
+| [docs/plans/2026-03-04-mvp-closure.md](docs/plans/2026-03-04-mvp-closure.md) | Plan de cierre del MVP (implementado)                 |
+| [docs/plans/PRODUCTION_CHECKLIST.md](docs/plans/PRODUCTION_CHECKLIST.md) | Checklist para deploy a producción                     |
 
 ### Navegación Rápida
 
@@ -726,9 +730,9 @@ pytest -v
 
 | Suite    | Tests | Estado       |
 | -------- | ----- | ------------ |
-| Backend  | 422   | ✅ Passing   |
+| Backend  | 430+  | ✅ Passing   |
 | Frontend | 126   | ✅ Passing   |
-| **Total**| **548** | ✅ **All green** |
+| **Total**| **556+** | ✅ **All green** |
 
 Ver más detalles en [tests/README.md](backend/tests/README.md)
 
@@ -751,8 +755,8 @@ Convertir HealthBytes en la **plataforma líder** de e-commerce para personas co
 
 | Milestone                       | Target       | Status          | Progress |
 | ------------------------------- | ------------ | --------------- | -------- |
-| 🚀**MVP Launch**          | Abril 2026   | 🟡 En progreso  | 70%      |
-| 💳**Payment Integration** | Febrero 2026 | ✅ Implementado | 100%     |
+| 🚀**MVP Launch**          | Abril 2026   | 🟢 En progreso  | 90%      |
+| 💳**Payment Integration** | Febrero 2026 | ✅ Completado | 100%     |
 | 📱**App Store Release**   | Mayo 2026    | 📋 Planeado     | 0%       |
 | 👥**100 Beta Users**      | Abril 2026   | 📋 Planeado     | 0%       |
 
@@ -762,29 +766,35 @@ Convertir HealthBytes en la **plataforma líder** de e-commerce para personas co
 
 #### Backend
 
-- [X] **Payment Integration** (Mercado Pago) - ✅ Implementado
-- [X] **Address CRUD** - ✅ Implementado
-- [X] **Stock Management** - ✅ Implementado (locking atómico)
-- [X] **Webhooks Payment Confirmation** - ✅ Implementado
-- [ ] **Order Emails** (SendGrid) - 2 días
+- [X] **Payment Integration** (Mercado Pago) - ✅ Completado
+- [X] **Address CRUD** - ✅ Completado
+- [X] **Stock Management** - ✅ Completado (locking atómico)
+- [X] **Webhooks Payment Confirmation** - ✅ Completado
+- [X] **Order Emails** (Resend) - ✅ Completado (configurar RESEND_API_KEY en prod)
+- [X] **AWS Infrastructure** (ECS, ECR, SSM) - ✅ Completado (scripts en infra/)
+- [X] **E2E Tests** - ✅ Completado (8 tests)
+- [X] **Redis Cache** - ✅ Completado (TTL 5min en products)
 
 #### Frontend
 
-- [X] **Checkout Flow Completo** - ✅ Implementado
-- [X] **Address Selection UI** - ✅ Implementado
-- [X] **Payment Method Selection** - ✅ Implementado
-- [X] **Order Success Screen** - ✅ Implementado
+- [X] **Checkout Flow Completo** - ✅ Completado
+- [X] **Address Selection UI** - ✅ Completado
+- [X] **Payment Method Selection** - ✅ Completado
+- [X] **Order Success Screen** - ✅ Completado
+- [X] **Onboarding Modal** - ✅ Completado (cableado en _layout.tsx)
+- [X] **App Config Fixes** - ✅ Completado (slug, scheme, name, eas.json)
 
 #### DevOps
 
-- [X] **Docker Setup** - ✅ Implementado
-- [X] **CI/CD Pipeline** (GitHub Actions) - ✅ Implementado
+- [X] **Docker Setup** - ✅ Completado
+- [X] **CI/CD Pipeline** (GitHub Actions) - ✅ Completado
+- [X] **AWS Scripts** - ✅ Completado (ecr-setup.sh, secrets-setup.sh, ecs-task-definition.json)
+- [X] **pnpm version alignment** - ✅ Completado (v10 en CI)
 
 ### 🟠 Alta Prioridad (P1) - Abril 2026
 
 **Post-MVP Features para engagement**:
 
-- [ ] Onboarding de preferencias dietéticas
 - [ ] Push Notifications para órdenes
 - [ ] Sistema de recomendaciones
 - [ ] Reviews & Ratings (básico)
@@ -811,7 +821,12 @@ Convertir HealthBytes en la **plataforma líder** de e-commerce para personas co
 | ---------------------------------- | ------- | ------ | ------------------------------ |
 | Backend Testing 80%+               | QA      | Mar 3  | ✅ Done (422 tests, 80%+ cov) |
 | Docker Configuration               | DevOps  | Mar 1  | ✅ Done                        |
-| Payment Integration (Mercado Pago) | Backend | Mar 3  | ✅ Implementado                |
+| Payment Integration (Mercado Pago) | Backend | Mar 3  | ✅ Done                        |
+| AWS Infrastructure Scripts         | DevOps  | Mar 4  | ✅ Done                        |
+| E2E Tests Suite                   | QA      | Mar 4  | ✅ Done                        |
+| Redis Cache                       | Backend | Mar 4  | ✅ Done                        |
+| Onboarding Modal                   | Frontend| Mar 4  | ✅ Done                        |
+| PRODUCTION_CHECKLIST              | DevOps  | Mar 4  | ✅ Done                        |
 
 ### ❌ Features Descartadas
 
@@ -1067,6 +1082,6 @@ Al usar HealthBytes, el usuario acepta que:
 
 Hecho con ❤️ por el equipo de HealthBytes
 
-_Última actualización: 3 Marzo 2026_
+_Última actualización: 4 Marzo 2026_
 
 </div>
