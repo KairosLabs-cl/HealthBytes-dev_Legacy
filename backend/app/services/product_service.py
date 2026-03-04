@@ -222,6 +222,24 @@ async def search_products(
 
         return result.scalars().all()
 
+    except Exception as e:
+        # Log error and fallback to simple LIKE search
+        logger.warning("Full-text search failed, falling back to LIKE: %s", type(e).__name__)
+
+        # Fallback: simple LIKE search in name and description
+        search_pattern = f"%{clean_query}%"
+        result = await db.execute(
+            select(Product)
+            .options(selectinload(Product.dietary_tags))
+            .where(
+                (Product.name.ilike(search_pattern)) | (Product.description.ilike(search_pattern))
+            )
+            .offset(int(skip) if skip else 0)
+            .limit(int(limit) if limit else 100)
+        )
+
+        return result.scalars().all()
+
 
 # Redis cache wrapper for products
 import json
@@ -298,17 +316,3 @@ async def get_products_cached(
         logger.warning("Redis cache write failed: %s", e)
 
     return results
-
-        # Fallback: simple LIKE search in name and description
-        search_pattern = f"%{clean_query}%"
-        result = await db.execute(
-            select(Product)
-            .options(selectinload(Product.dietary_tags))
-            .where(
-                (Product.name.ilike(search_pattern)) | (Product.description.ilike(search_pattern))
-            )
-            .offset(int(skip) if skip else 0)
-            .limit(int(limit) if limit else 100)
-        )
-
-        return result.scalars().all()
