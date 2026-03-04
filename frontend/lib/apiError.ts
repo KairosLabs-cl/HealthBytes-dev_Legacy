@@ -37,6 +37,10 @@ export async function throwIfNotOk(
       message = body.detail.message;
     } else if (typeof body?.message === "string") {
       message = body.message;
+    } else if (typeof body?.error === "string") {
+      message = body.error;
+    } else if (res.status) {
+      message = `Error ${res.status}`;
     }
   } catch {
     // Response body is not JSON, use fallback

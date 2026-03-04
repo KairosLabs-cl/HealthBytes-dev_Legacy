@@ -15,7 +15,10 @@ module.exports = {
     '!**/metro.config.js',
     '!**/tailwind.config.js'
   ],
-  setupFilesAfterEnv: ['@testing-library/jest-native/extend-expect'],
+  setupFilesAfterEnv: [
+    '@testing-library/jest-native/extend-expect',
+    './jest.setup.ts',
+  ],
   testMatch: [
     '**/__tests__/**/*.{ts,tsx}',
     '**/?(*.)+(spec|test).{ts,tsx}'

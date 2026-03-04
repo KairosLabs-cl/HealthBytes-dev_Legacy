@@ -24,7 +24,7 @@ export default function AllProductsScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const { data: products, isLoading, error, refetch } = useQuery<Product[]>({
-    queryKey: ["products", dietaryTags],
+    queryKey: ["products", dietaryTags] as const,
     queryFn: () => listProducts({
       dietary: dietaryTags.length > 0 ? dietaryTags : undefined,
     }),
@@ -111,7 +111,7 @@ export default function AllProductsScreen() {
           showsVerticalScrollIndicator={false}
           initialNumToRender={6}
           windowSize={7}
-          maxToRenderPerBatch={6}
+          maxToRenderPerBatch={12}
           ListEmptyComponent={
             isLoading ? null : (
               <View className="items-center justify-center py-20">

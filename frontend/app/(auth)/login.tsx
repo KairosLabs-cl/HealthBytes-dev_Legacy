@@ -32,7 +32,7 @@ export default function LoginScreen() {
         await setActive({ session: createdSessionId });
 
         const startTime = Date.now();
-        const TIMEOUT_MS = 4000;
+        const TIMEOUT_MS = 8000;
 
         while (Date.now() - startTime < TIMEOUT_MS) {
           try {
@@ -46,7 +46,7 @@ export default function LoginScreen() {
         }
 
         // Si llegamos aquí, el token nunca llegó
-        setError("No se pudo verificar tu sesión. Intenta de nuevo.");
+        setError("No se pudo verificar tu sesión. Por favor intenta de nuevo.");
         setIsLoading(false);
         return;
       } else {

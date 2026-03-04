@@ -74,7 +74,7 @@ describe("listProducts", () => {
       json: () => Promise.resolve({ detail: "Server error" }),
     });
 
-    await expect(listProducts()).rejects.toThrow("Error");
+    await expect(listProducts()).rejects.toThrow("Server error");
   });
 });
 
@@ -98,6 +98,6 @@ describe("fetchProductById", () => {
       json: () => Promise.resolve({ detail: "Not found" }),
     });
 
-    await expect(fetchProductById(999)).rejects.toThrow("Error");
+    await expect(fetchProductById(999)).rejects.toThrow("Not found");
   });
 });

@@ -157,6 +157,16 @@ export const useCart = create<CartState>((set, get) => ({
       return;
     }
 
+    // Validate stock limit
+    if (product.stock !== undefined && product.stock !== null) {
+      const existingItem = previousItems.find((item) => item.product.id === product.id);
+      const currentQty = existingItem ? existingItem.quantity : 0;
+      if (currentQty + 1 > product.stock) {
+        set({ error: "No hay suficiente stock disponible" });
+        return;
+      }
+    }
+
     // Add to adding set
     set((state) => ({
       addingProducts: new Set(state.addingProducts).add(product.id)

@@ -138,6 +138,7 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
               borderTopLeftRadius: 20,
               borderTopRightRadius: 20,
               opacity: isOutOfStock ? 0.4 : 1,
+              backgroundColor: "#f3f4f6",
             }}
             resizeMode="cover"
           />

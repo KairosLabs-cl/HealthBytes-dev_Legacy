@@ -95,6 +95,11 @@ jest.mock('lucide-react-native', () => ({
   CheckCircleIcon: () => null,
   MapPinIcon: () => null,
   PhoneIcon: () => null,
+  Lock: () => null,
+}));
+
+jest.mock('react-native-safe-area-context', () => ({
+  SafeAreaView: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 // Mock Alert.alert — jest.spyOn fails on frozen RN modules; direct assignment works
@@ -127,7 +132,7 @@ const mockGetToken = jest.fn().mockResolvedValue('test-token');
 // --- Setup helpers ---
 
 function setupAuth(isSignedIn = true) {
-  (useAuth as jest.Mock).mockReturnValue({ isSignedIn, getToken: mockGetToken });
+  (useAuth as jest.Mock).mockReturnValue({ isSignedIn, isLoaded: true, getToken: mockGetToken });
 }
 
 function setupStores(overrides?: { addresses?: any[]; defaultAddress?: any }) {
@@ -354,13 +359,10 @@ describe('CheckoutV2Screen', () => {
       });
     });
 
-    it('redirige a login si el usuario no está autenticado', async () => {
+    it('muestra AuthGate si el usuario no está autenticado', () => {
       setupAuth(false);
-      await renderAtStep('summary');
-      fireEvent.press(screen.getByText('Confirmar Orden'));
-      await waitFor(() => {
-        expect(mockPush).toHaveBeenCalledWith('/(auth)/login');
-      });
+      render(<CheckoutV2Screen />);
+      expect(screen.getByText('Inicia sesion para continuar')).toBeTruthy();
     });
   });
 });
