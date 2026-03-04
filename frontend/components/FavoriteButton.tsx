@@ -63,11 +63,11 @@ export default function FavoriteButton({
                 handlePress();
             }}
             style={{
-                padding: 10,
+                padding: 6,
                 borderRadius: 999,
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                minWidth: 44,
-                minHeight: 44,
+                backgroundColor: 'rgba(0, 0, 0, 0.65)',
+                minWidth: 32,
+                minHeight: 32,
                 alignItems: 'center',
                 justifyContent: 'center',
             }}
@@ -78,7 +78,7 @@ export default function FavoriteButton({
             <Animated.View style={animatedStyle}>
                 <Heart
                     size={size}
-                    color={favorited ? "#ef4444" : "#6b7280"}
+                    color={favorited ? "#ef4444" : "#FFFFFF"}
                     fill={favorited ? "#ef4444" : "none"}
                     strokeWidth={2}
                 />

@@ -3,45 +3,67 @@
  * Used by ProductListItem (grid) and HorizontalProductCard (horizontal scroll).
  * Change the design here and it propagates everywhere automatically.
  */
-import { memo, useRef } from "react";
-import { View, Image, Pressable, Platform, GestureResponderEvent, Alert } from "react-native";
-import { Text } from "@/components/ui/text";
-import { Info, WheatOff, Vegan, MilkOff, Gauge, Dumbbell, Heart } from "lucide-react-native";
-import { useRouter } from "expo-router";
-import { useAuth } from "@clerk/clerk-expo";
-import type { Product } from "@/types/product";
-import { normalizeDietaryTag } from "@/types/product";
-import { formatPrice } from "@/lib/formatPrice";
 import FavoriteButton from "@/components/FavoriteButton";
 import StockBadge from "@/components/StockBadge";
-import { useCart } from "@/store/cartStore";
+import { Text } from "@/components/ui/text";
+import { formatPrice } from "@/lib/formatPrice";
 import { useCartAnimation } from "@/store/cartAnimationStore";
+import { useCart } from "@/store/cartStore";
+import type { Product } from "@/types/product";
+import { normalizeDietaryTag } from "@/types/product";
+import { useAuth } from "@clerk/clerk-expo";
+import { useRouter } from "expo-router";
+import {
+  Dumbbell,
+  Gauge,
+  Heart,
+  Info,
+  MilkOff,
+  Package,
+  Vegan,
+  WheatOff,
+} from "lucide-react-native";
+import { memo, useRef, useState } from "react";
+import {
+  Alert,
+  GestureResponderEvent,
+  Image,
+  Platform,
+  Pressable,
+  View,
+} from "react-native";
+
 import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSequence,
   cancelAnimation,
   Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withTiming,
 } from "react-native-reanimated";
 
-const DIETARY_ICONS: Record<string, React.ComponentType<{ size?: number; color?: string }>> = {
-  'sin-gluten':       WheatOff,
-  'vegano':           Vegan,
-  'sin-lactosa':      MilkOff,
-  'bajo-en-azucar':   Gauge,
-  'alto-en-proteina': Dumbbell,
-  'para-diabeticos':  Heart,
+const DIETARY_ICONS: Record<
+  string,
+  React.ComponentType<{ size?: number; color?: string }>
+> = {
+  "sin-gluten": WheatOff,
+  vegano: Vegan,
+  "para-veganos": Vegan,
+  "sin-lactosa": MilkOff,
+  "bajo-en-azucar": Gauge,
+  "alto-en-proteina": Dumbbell,
+  "para-diabeticos": Heart,
 };
 
-const TAG_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  green:   { bg: "#F0FDF4", text: "#15803D", border: "#86EFAC" },
-  blue:    { bg: "#EFF6FF", text: "#1D4ED8", border: "#93C5FD" },
-  orange:  { bg: "#FFF7ED", text: "#C2410C", border: "#FDBA74" },
-  purple:  { bg: "#FAF5FF", text: "#7E22CE", border: "#D8B4FE" },
-  red:     { bg: "#FEF2F2", text: "#B91C1C", border: "#FCA5A5" },
-  emerald: { bg: "#ECFDF5", text: "#047857", border: "#6EE7B7" },
-};
+const TAG_COLORS: Record<string, { bg: string; text: string; border: string }> =
+  {
+    green: { bg: "#F0FDF4", text: "#15803D", border: "#86EFAC" },
+    blue: { bg: "#EFF6FF", text: "#1D4ED8", border: "#93C5FD" },
+    orange: { bg: "#FFF7ED", text: "#C2410C", border: "#FDBA74" },
+    purple: { bg: "#FAF5FF", text: "#7E22CE", border: "#D8B4FE" },
+    red: { bg: "#FEF2F2", text: "#B91C1C", border: "#FCA5A5" },
+    emerald: { bg: "#ECFDF5", text: "#047857", border: "#6EE7B7" },
+  };
 const DEFAULT_TAG = { bg: "#F9FAFB", text: "#4B5563", border: "#D1D5DB" };
 
 export type ProductCardProps = {
@@ -60,6 +82,7 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
   const isOutOfStock = product.stock === 0;
   const cartScale = useSharedValue(1);
   const addBtnRef = useRef<any>(null);
+  const [imgError, setImgError] = useState(false);
 
   const cartAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: cartScale.value }],
@@ -75,7 +98,10 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
         "Necesitas iniciar sesion para agregar productos al carrito.",
         [
           { text: "Cancelar", style: "cancel" },
-          { text: "Iniciar sesion", onPress: () => router.push("/(auth)/login") },
+          {
+            text: "Iniciar sesion",
+            onPress: () => router.push("/(auth)/login"),
+          },
         ]
       );
       return;
@@ -86,9 +112,11 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
       withTiming(1, { duration: 200, easing: Easing.out(Easing.ease) })
     );
     (onAddToCart ?? (() => addProduct(product)))();
-    addBtnRef.current?.measureInWindow((x: number, y: number, w: number, h: number) => {
-      triggerFly(x + w / 2, y + h / 2);
-    });
+    addBtnRef.current?.measureInWindow(
+      (x: number, y: number, w: number, h: number) => {
+        triggerFly(x + w / 2, y + h / 2);
+      }
+    );
   };
 
   const allTags = (product.dietary_tags ?? []).map(normalizeDietaryTag);
@@ -96,9 +124,8 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
     ? product.category.charAt(0).toUpperCase() + product.category.slice(1)
     : null;
 
-  const containerStyle = width === "full"
-    ? { flex: 1 as const }
-    : { width: width as number };
+  const containerStyle =
+    width === "full" ? { flex: 1 as const } : { width: width as number };
 
   return (
     <Pressable
@@ -111,17 +138,20 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
         style={{
           ...containerStyle,
           backgroundColor: "#FFFFFF",
-          borderRadius: 20,
+          borderRadius: 12,
           overflow: "hidden",
           borderWidth: 1,
-          borderColor: "#F3F4F6",
+          borderColor: "rgba(0,0,0,0.07)",
           ...Platform.select<any>({
-            web: { boxShadow: "0 2px 12px rgba(0,0,0,0.07)" },
+            web: {
+              boxShadow:
+                "0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.06)",
+            },
             ios: {
               shadowColor: "#000",
-              shadowOpacity: 0.07,
+              shadowOpacity: 0.1,
               shadowRadius: 12,
-              shadowOffset: { width: 0, height: 4 },
+              shadowOffset: { width: 0, height: 3 },
             },
             android: { elevation: 3 },
             default: {},
@@ -129,46 +159,105 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
         }}
       >
         {/* Image */}
-        <View style={{ position: "relative" }}>
-          <Image
-            source={{ uri: product.image }}
+        <View style={{ padding: 8 }}>
+          <View
             style={{
-              width: "100%",
-              aspectRatio: 1,
-              borderTopLeftRadius: 20,
-              borderTopRightRadius: 20,
-              opacity: isOutOfStock ? 0.4 : 1,
-              backgroundColor: "#f3f4f6",
+              position: "relative",
+              aspectRatio: 4 / 3,
+              borderRadius: 8,
+              overflow: "hidden",
             }}
-            resizeMode="cover"
-          />
-          <StockBadge stock={product.stock} variant="overlay" />
-          <View style={{ position: "absolute", top: 8, right: 8, zIndex: 10 }}>
-            <FavoriteButton productId={Number(product.id)} size={18} />
+          >
+            {!imgError && product.image ? (
+              <Image
+                source={{ uri: product.image }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  opacity: isOutOfStock ? 0.5 : 1,
+                }}
+                resizeMode="cover"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              <View
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: "#F3F4F6",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Package size={32} color="#D1D5DB" strokeWidth={1.5} />
+              </View>
+            )}
+            <StockBadge stock={product.stock} variant="overlay" />
+            <View style={{ position: "absolute", top: 6, right: 6, zIndex: 10 }}>
+              <FavoriteButton productId={Number(product.id)} size={16} />
+            </View>
           </View>
         </View>
 
         {/* Content */}
-        <View style={{ paddingHorizontal: 11, paddingTop: 10, paddingBottom: 12 }}>
+        <View
+          style={{ paddingHorizontal: 10, paddingTop: 4, paddingBottom: 12 }}
+        >
           {/* Category */}
           {categoryLabel && (
-            <Text style={{ fontSize: 10, color: "#6B7280", fontWeight: "500", marginBottom: 4 }} numberOfLines={1}>
+            <Text
+              style={{
+                fontSize: 9,
+                color: "#9CA3AF",
+                fontWeight: "600",
+                letterSpacing: 0.8,
+                marginBottom: 4,
+                textTransform: "uppercase",
+              }}
+              numberOfLines={1}
+            >
               {categoryLabel}
             </Text>
           )}
 
-          {/* Name */}
+          {/* Name — single line with ellipsis */}
           <Text
-            numberOfLines={2}
-            style={{ fontSize: 13, fontWeight: "700", color: "#111827", lineHeight: 18, minHeight: 36, marginBottom: 6 }}
+            numberOfLines={1}
+            style={{
+              fontSize: 13,
+              fontWeight: "700",
+              color: "#111827",
+              marginBottom: 2,
+            }}
           >
             {product.name}
           </Text>
 
-          {/* Dietary tags */}
+          {/* Vendor name */}
+          {product.vendor_name && (
+            <Text
+              numberOfLines={1}
+              style={{
+                fontSize: 11,
+                fontWeight: "400",
+                color: "#6B7280",
+                marginBottom: 8,
+              }}
+            >
+              {product.vendor_name}
+            </Text>
+          )}
+
+          {/* Dietary tags — max 2 visible, +N for rest */}
           {allTags.length > 0 ? (
-            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 3, marginBottom: 7 }}>
-              {allTags.map((tag) => {
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 3,
+                marginBottom: 8,
+              }}>
+              {allTags.slice(0, 2).map((tag) => {
                 const c = TAG_COLORS[tag.color || ""] || DEFAULT_TAG;
                 const TagIcon = DIETARY_ICONS[tag.name] ?? Info;
                 return (
@@ -178,59 +267,106 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
                       flexDirection: "row",
                       alignItems: "center",
                       backgroundColor: c.bg,
-                      borderWidth: 1,
+                      borderWidth: 0.8,
                       borderColor: c.border,
-                      paddingHorizontal: 6,
+                      paddingHorizontal: 5,
                       paddingVertical: 2,
-                      borderRadius: 20,
-                      gap: 3,
+                      borderRadius: 10,
+                      gap: 2,
                     }}
                   >
-                    <TagIcon size={11} color={c.text} />
-                    <Text style={{ fontSize: 11, fontWeight: "600", color: c.text }}>{tag.display_name}</Text>
+                    <TagIcon size={10} color={c.text} />
+                    <Text
+                      style={{ fontSize: 10, fontWeight: "600", color: c.text }}
+                    >
+                      {tag.display_name}
+                    </Text>
                   </View>
                 );
               })}
+              {allTags.length > 2 && (
+                <View
+                  style={{
+                    backgroundColor: "#F3F4F6",
+                    paddingHorizontal: 4,
+                    paddingVertical: 2,
+                    borderRadius: 12,
+                    borderWidth: 0.8,
+                    borderColor: "#E5E7EB",
+                  }}
+                >
+                  <Text
+                    style={{ fontSize: 9, fontWeight: "700", color: "#6B7280" }}
+                  >
+                    +{allTags.length - 2}
+                  </Text>
+                </View>
+              )}
             </View>
           ) : (
-            <View style={{ height: 18, marginBottom: 7 }} />
+            <View style={{ height: 22, marginBottom: 2 }} />
           )}
 
-          {/* Price */}
-          <Text style={{ fontSize: 15, fontWeight: "800", color: "#111827", marginBottom: 6 }}>
-            {formatPrice(product.price)}
-          </Text>
+          {/* Price + Stock row */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 10,
+            }}
+          >
+            <Text style={{ fontSize: 15, fontWeight: "800", color: "#000000" }}>
+              {formatPrice(product.price)}
+            </Text>
+            <StockBadge stock={product.stock} variant="inline" />
+          </View>
 
-          <StockBadge stock={product.stock} variant="inline" />
-
-          {/* Add to cart */}
+          {/* Add to cart — compact button */}
           <Animated.View style={cartAnimatedStyle}>
             <Pressable
               ref={addBtnRef}
               onPress={handleAddToCart}
               disabled={isOutOfStock}
-              accessibilityLabel={isOutOfStock ? `${product.name} sin stock` : `Agregar ${product.name} al carrito`}
+              accessibilityLabel={
+                isOutOfStock
+                  ? `${product.name} sin stock`
+                  : `Agregar ${product.name} al carrito`
+              }
               style={{
                 width: "100%",
-                borderRadius: 999,
-                paddingVertical: 9,
+                paddingVertical: 7,
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: isOutOfStock ? "#E5E7EB" : "#000000",
-                minHeight: 44,
+                backgroundColor: isOutOfStock ? "#E5E7EB" : "#111827",
+                minHeight: 36,
+                borderRadius: 999,
                 ...Platform.select<any>({
-                  web: { boxShadow: isOutOfStock ? "none" : "0px 2px 8px rgba(0,0,0,0.1)" },
-                  default: isOutOfStock ? {} : {
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.12,
-                    shadowRadius: 4,
-                    elevation: 3,
+                  web: {
+                    boxShadow: isOutOfStock
+                      ? "none"
+                      : "0px 2px 6px rgba(0,0,0,0.18)",
                   },
+                  default: isOutOfStock
+                    ? {}
+                    : {
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.18,
+                        shadowRadius: 4,
+                        elevation: 3,
+                      },
                 }),
               }}
             >
-              <Text style={{ fontSize: 11, fontWeight: "700", color: isOutOfStock ? "#9CA3AF" : "#FFFFFF" }}>
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: "700",
+                  color: isOutOfStock ? "#9CA3AF" : "#FFFFFF",
+                  letterSpacing: 0.2,
+                }}
+              >
                 {isOutOfStock ? "Sin stock" : "Agregar al carrito"}
               </Text>
             </Pressable>
