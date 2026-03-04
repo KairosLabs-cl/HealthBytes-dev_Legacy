@@ -193,7 +193,9 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
               </View>
             )}
             <StockBadge stock={product.stock} variant="overlay" />
-            <View style={{ position: "absolute", top: 6, right: 6, zIndex: 10 }}>
+            <View
+              style={{ position: "absolute", top: 6, right: 6, zIndex: 10 }}
+            >
               <FavoriteButton productId={Number(product.id)} size={16} />
             </View>
           </View>
@@ -256,7 +258,8 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
                 alignItems: "center",
                 gap: 3,
                 marginBottom: 8,
-              }}>
+              }}
+            >
               {allTags.slice(0, 2).map((tag) => {
                 const c = TAG_COLORS[tag.color || ""] || DEFAULT_TAG;
                 const TagIcon = DIETARY_ICONS[tag.name] ?? Info;

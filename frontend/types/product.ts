@@ -23,7 +23,7 @@ export type Product = {
 /** Map of known tag names to display info for when API returns plain strings */
 const KNOWN_TAGS: Record<string, { display_name: string; color: string }> = {
   "sin-gluten": { display_name: "Sin gluten", color: "green" },
-  "vegano": { display_name: "Vegano", color: "emerald" },
+  vegano: { display_name: "Vegano", color: "emerald" },
   "sin-lactosa": { display_name: "Sin lactosa", color: "blue" },
   "bajo-en-azucar": { display_name: "Bajo en azúcar", color: "orange" },
   "alto-en-proteina": { display_name: "Alto en proteína", color: "purple" },
