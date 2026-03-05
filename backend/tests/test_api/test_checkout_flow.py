@@ -82,7 +82,7 @@ class TestCheckoutWithAddress:
             data = response.json()
             assert data["address_id"] == user_address.id
             assert data["payment_method"] == "mercado_pago"
-            assert data["status"] == "pending"
+            assert data["status"] == "unpaid"
             assert "address_id" in data
             assert "payment_method" in data
         finally:

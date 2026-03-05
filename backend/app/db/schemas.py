@@ -147,7 +147,7 @@ class Order(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     created_at = Column(TIMESTAMP, nullable=False, server_default=func.now())
-    status = Column(String(50), nullable=False, default="pending")
+    status = Column(String(50), nullable=False, default="unpaid")
     total = Column(Numeric(10, 2), nullable=False, default=0.0)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     address_id = Column(

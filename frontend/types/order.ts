@@ -1,10 +1,10 @@
 // Tipos para órdenes
 export type OrderStatus =
-  | "pending"
-  | "confirmed"
-  | "in_transit"
+  | "unpaid"
+  | "processing"
   | "shipped"
   | "delivered"
+  | "returns"
   | "cancelled";
 
 export type OrderItem = {
@@ -34,28 +34,34 @@ export type OrderResponse = {
 };
 
 export const STATUS_LABELS: Record<OrderStatus, string> = {
-  pending: "No confirmado",
-  confirmed: "Confirmado",
-  in_transit: "En tránsito",
-  shipped: "Despachado",
-  delivered: "Enviado",
+  unpaid: "Sin pagar",
+  processing: "En proceso",
+  shipped: "Enviado",
+  delivered: "Entregado",
+  returns: "Revisión de devolución",
   cancelled: "Cancelado",
 };
 
 const STATUS_ALIASES: Record<string, OrderStatus> = {
-  pending: "pending",
-  confirmed: "confirmed",
-  in_transit: "in_transit",
-  "in transit": "in_transit",
-  intransit: "in_transit",
+  unpaid: "unpaid",
+  pending: "unpaid",
+  new: "unpaid",
+  processing: "processing",
+  confirmed: "processing",
+  in_transit: "processing",
+  "in transit": "processing",
+  intransit: "processing",
+  packed: "processing",
   shipped: "shipped",
   dispatched: "shipped",
-  processing: "in_transit",
-  packed: "in_transit",
   delivered: "delivered",
+  returns: "returns",
+  return: "returns",
+  refund: "returns",
+  review: "returns",
+  dispute: "returns",
   cancelled: "cancelled",
   canceled: "cancelled",
-  new: "pending",
 };
 
 export function normalizeStatus(status?: string | null): OrderStatus {
@@ -64,19 +70,19 @@ export function normalizeStatus(status?: string | null): OrderStatus {
 }
 
 export const STATUS_COLORS: Record<OrderStatus, string> = {
-  pending: "bg-yellow-50 border border-yellow-300",
-  confirmed: "bg-emerald-50 border border-emerald-300",
-  in_transit: "bg-blue-50 border border-blue-300",
+  unpaid: "bg-yellow-50 border border-yellow-300",
+  processing: "bg-blue-50 border border-blue-300",
   shipped: "bg-purple-50 border border-purple-300",
   delivered: "bg-green-50 border border-green-300",
+  returns: "bg-orange-50 border border-orange-300",
   cancelled: "bg-red-50 border border-red-300",
 };
 
 export const STATUS_BADGE_COLORS: Record<OrderStatus, string> = {
-  pending: "bg-yellow-100 text-yellow-800",
-  confirmed: "bg-emerald-100 text-emerald-800",
-  in_transit: "bg-blue-100 text-blue-800",
+  unpaid: "bg-yellow-100 text-yellow-800",
+  processing: "bg-blue-100 text-blue-800",
   shipped: "bg-purple-100 text-purple-800",
   delivered: "bg-green-100 text-green-800",
+  returns: "bg-orange-100 text-orange-800",
   cancelled: "bg-red-100 text-red-800",
 };

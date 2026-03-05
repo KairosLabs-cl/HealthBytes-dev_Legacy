@@ -307,7 +307,7 @@ class MercadoPagoService:
             result = await db.execute(select(Order).where(Order.id == order_id))
             order = result.scalar_one_or_none()
             if order:
-                order.status = "confirmed"
+                order.status = "processing"
 
         elif new_status in (PaymentStatus.FAILED, PaymentStatus.CANCELLED):
             result = await db.execute(

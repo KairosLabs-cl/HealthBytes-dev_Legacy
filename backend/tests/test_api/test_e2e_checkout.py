@@ -131,7 +131,7 @@ class TestE2ECheckoutApproved:
             )
             assert resp.status_code == 201, resp.json()
             order_id = resp.json()["id"]
-            assert resp.json()["status"] == "pending"
+            assert resp.json()["status"] == "unpaid"
 
             mp_pay_id = "mp_pay_e2e_001"
 
@@ -176,9 +176,7 @@ class TestE2ECheckoutApproved:
             # Step 4: Verify order via GET endpoint
             order_resp = client.get(f"{ORDERS_BASE}/{order_id}")
             assert order_resp.status_code == 200
-            assert order_resp.json()["status"] == "confirmed"
-
-            # Step 5: Verify Payment record final state in DB
+            assert order_resp.json()["status"] == "processing"
             payment = _get_payment_from_db(db_session, order_id)
             assert payment.status == PaymentStatus.COMPLETED
             assert payment.provider_payment_id == mp_pay_id
@@ -322,10 +320,10 @@ class TestE2EWebhookIdempotency:
                 # Status still reported as completed (not an error)
                 assert r2.json()["result"]["status"] == "completed"
 
-            # Order still confirmed after duplicate webhook
+            # Order still processing after duplicate webhook
             order_resp = client.get(f"{ORDERS_BASE}/{order_id}")
             assert order_resp.status_code == 200
-            assert order_resp.json()["status"] == "confirmed"
+            assert order_resp.json()["status"] == "processing"
 
             # Payment is still COMPLETED (not reset)
             payment = _get_payment_from_db(db_session, order_id)

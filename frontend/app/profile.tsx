@@ -5,14 +5,14 @@ import { useClerk, useUser } from "@clerk/clerk-expo";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import {
-  CheckCircle2,
+  CreditCard,
   Heart,
   LogOut,
   MapPin,
   MessageSquare,
-  Package,
   PackageOpen,
   Phone,
+  RotateCcw,
   Salad,
   Settings,
   Truck,
@@ -27,29 +27,24 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const orderStatuses = [
   {
-    label: "No confirmado",
-    icon: Package,
-    status: "pending",
+    label: "Sin pagar",
+    icon: CreditCard,
+    status: "unpaid",
   },
   {
-    label: "Confirmado",
+    label: "En proceso",
     icon: PackageOpen,
-    status: "confirmed",
+    status: "processing",
   },
   {
-    label: "En tránsito",
-    icon: Truck,
-    status: "in_transit",
-  },
-  {
-    label: "Despachado",
+    label: "Enviado",
     icon: Truck,
     status: "shipped",
   },
   {
-    label: "Enviado",
-    icon: CheckCircle2,
-    status: "delivered",
+    label: "Devolución",
+    icon: RotateCcw,
+    status: "returns",
   },
 ];
 

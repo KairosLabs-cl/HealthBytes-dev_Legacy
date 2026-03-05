@@ -33,7 +33,7 @@ export default function OrdersScreen() {
     () => {
       if (
         initialParam &&
-        ["pending", "packed", "in_transit", "delivered", "cancelled"].includes(initialParam)
+        ["unpaid", "processing", "shipped", "delivered", "review", "returns", "cancelled"].includes(initialParam)
       ) {
         return initialParam as OrderStatus;
       }
@@ -42,11 +42,11 @@ export default function OrdersScreen() {
   );
 
   const filters = [
-    { id: "pending", label: "No confirmado" },
-    { id: "confirmed", label: "Confirmado" },
-    { id: "in_transit", label: "En tránsito" },
-    { id: "shipped", label: "Despachado" },
-    { id: "delivered", label: "Enviado" },
+    { id: "unpaid",     label: "Sin pagar" },
+    { id: "processing", label: "En proceso" },
+    { id: "shipped",    label: "Enviado" },
+    { id: "delivered",  label: "Entregado" },
+    { id: "returns",    label: "Revisión de devolución" },
   ] as const;
 
   useEffect(() => {

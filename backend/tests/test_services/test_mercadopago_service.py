@@ -273,7 +273,7 @@ async def test_process_webhook_approved(mp_service, mock_db, test_payment):
     result = await mp_service.process_webhook(db=mock_db, payment_id="12345", topic="payment")
 
     assert result["status"] == "completed"
-    assert order_mock.status == "confirmed"
+    assert order_mock.status == "processing"
     assert test_payment.status == PaymentStatus.COMPLETED
 
 
@@ -366,7 +366,7 @@ async def test_refund_payment_success(mp_service, mock_db, test_payment, test_or
     """Test successful refund with stock release and order cancellation"""
     test_payment.status = PaymentStatus.COMPLETED
     test_payment.provider_payment_id = "mp_pay_123"
-    test_order_with_items.status = "confirmed"
+    test_order_with_items.status = "processing"
 
     # First execute returns payment, second returns order (for stock release)
     payment_result = MagicMock(scalar_one_or_none=MagicMock(return_value=test_payment))
