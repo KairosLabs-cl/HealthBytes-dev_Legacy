@@ -45,11 +45,10 @@ async function fetchOrderById(id: number): Promise<Order> {
  * Status timeline configuration
  */
 const STATUS_TIMELINE: { status: OrderStatus; label: string; icon: typeof Package }[] = [
-  { status: "pending", label: "Pendiente", icon: Clock },
-  { status: "confirmed", label: "Confirmado", icon: CheckCircle2 },
-  { status: "packed", label: "Preparando", icon: Package },
-  { status: "in_transit", label: "En tránsito", icon: Truck },
-  { status: "delivered", label: "Entregado", icon: CheckCircle2 },
+  { status: "unpaid",     label: "Sin pagar",   icon: Clock },
+  { status: "processing", label: "En proceso",  icon: Package },
+  { status: "shipped",    label: "Enviado",     icon: Truck },
+  { status: "delivered",  label: "Entregado",   icon: CheckCircle2 },
 ];
 
 /**
