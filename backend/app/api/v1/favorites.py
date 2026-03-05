@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(tags=["favorites"])
 
 
-@router.post("/", response_model=FavoriteResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=FavoriteResponse, status_code=status.HTTP_201_CREATED)
 async def add_favorite(
     favorite_data: FavoriteCreate,
     current_user: User = Depends(get_current_user),
@@ -65,7 +65,7 @@ async def remove_favorite(
         )
 
 
-@router.get("/", response_model=List[FavoriteResponse])
+@router.get("", response_model=List[FavoriteResponse])
 async def get_favorites(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),

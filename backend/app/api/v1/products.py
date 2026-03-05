@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/", response_model=List[ProductResponse])
+@router.get("", response_model=List[ProductResponse])
 async def list_products(
     search: Optional[str] = Query(None, max_length=100, description="Search term"),
     category: Optional[str] = None,
@@ -111,7 +111,7 @@ async def get_product_by_id(id: int, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-@router.post("/", response_model=ProductResponse, status_code=201)
+@router.post("", response_model=ProductResponse, status_code=201)
 async def create_product(
     product_data: ProductCreate,
     db: AsyncSession = Depends(get_db),

@@ -160,7 +160,7 @@ def test_search_products_empty_query(client, db_session):
 @pytest.mark.products
 def test_create_product_unauthorized(client):
     """Test POST /products without auth returns 401/403."""
-    response = client.post("/products/", json={"name": "X", "price": 1.0})
+    response = client.post("/products", json={"name": "X", "price": 1.0})
     assert response.status_code in [401, 403]
 
 
@@ -174,7 +174,7 @@ def test_create_product_as_seller(client, db_session):
     token = create_access_token({"userId": user.id, "role": "seller"})
     headers = {"Authorization": f"Bearer {token}"}
     data = {"name": "New Product", "price": 15.50, "stock": 50}
-    response = client.post("/products/", json=data, headers=headers)
+    response = client.post("/products", json=data, headers=headers)
     assert response.status_code == 201
     assert response.json()["name"] == "New Product"
 
@@ -189,7 +189,7 @@ def test_create_product_as_customer_forbidden(client, db_session):
     token = create_access_token({"userId": user.id, "role": "customer"})
     headers = {"Authorization": f"Bearer {token}"}
     response = client.post(
-        "/products/", json={"name": "X", "price": 1.0}, headers=headers
+        "/products", json={"name": "X", "price": 1.0}, headers=headers
     )
     assert response.status_code == 401
 

@@ -71,7 +71,7 @@ class TestCreateOrder:
                     {"productId": products[0].id, "quantity": 1, "price": 5000.0},
                 ]
             }
-            response = client.post("/orders/", json=order_data)
+            response = client.post("/orders", json=order_data)
             assert response.status_code == 201
             data = response.json()
             assert data["user_id"] == customer_user.id
@@ -84,7 +84,7 @@ class TestCreateOrder:
     def test_create_order_requires_auth(self, client):
         """Test that creating order requires authentication."""
         response = client.post(
-            "/orders/", json={"items": [{"productId": 1, "quantity": 1, "price": 10}]}
+            "/orders", json={"items": [{"productId": 1, "quantity": 1, "price": 10}]}
         )
         assert response.status_code == 401
 
@@ -97,7 +97,7 @@ class TestCreateOrder:
                     {"productId": 99999, "quantity": 1, "price": 100.0},
                 ]
             }
-            response = client.post("/orders/", json=order_data)
+            response = client.post("/orders", json=order_data)
             # May return 404 or 422 depending on validation path
             assert response.status_code in [404, 422]
         finally:
@@ -107,7 +107,7 @@ class TestCreateOrder:
         """Test creating order with no items returns 422."""
         app.dependency_overrides[get_current_user] = lambda: customer_user
         try:
-            response = client.post("/orders/", json={"items": []})
+            response = client.post("/orders", json={"items": []})
             assert response.status_code == 422
         finally:
             app.dependency_overrides.pop(get_current_user, None)

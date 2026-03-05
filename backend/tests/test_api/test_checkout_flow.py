@@ -71,7 +71,7 @@ class TestCheckoutWithAddress:
         app.dependency_overrides[get_current_user] = lambda: checkout_user
         try:
             response = client.post(
-                "/orders/",
+                "/orders",
                 json=_order_payload(
                     checkout_product,
                     addressId=user_address.id,
@@ -95,7 +95,7 @@ class TestCheckoutWithAddress:
         app.dependency_overrides[get_current_user] = lambda: checkout_user
         try:
             response = client.post(
-                "/orders/",
+                "/orders",
                 json=_order_payload(checkout_product, paymentMethod="mercado_pago"),
             )
             assert response.status_code == 201
@@ -112,7 +112,7 @@ class TestCheckoutWithAddress:
         app.dependency_overrides[get_current_user] = lambda: checkout_user
         try:
             response = client.post(
-                "/orders/",
+                "/orders",
                 json=_order_payload(checkout_product),
             )
             assert response.status_code == 201
@@ -141,7 +141,7 @@ class TestCheckoutWithAddress:
         app.dependency_overrides[get_current_user] = lambda: checkout_user
         try:
             response = client.post(
-                "/orders/",
+                "/orders",
                 json=_order_payload(checkout_product, addressId=other_addr.id),
             )
             assert response.status_code == 404
@@ -169,7 +169,7 @@ class TestCheckoutWithAddress:
         app.dependency_overrides[get_current_user] = lambda: checkout_user
         try:
             response = client.post(
-                "/orders/",
+                "/orders",
                 json=_order_payload(checkout_product, addressId=inactive_addr.id),
             )
             assert response.status_code == 404
@@ -183,7 +183,7 @@ class TestCheckoutWithAddress:
         app.dependency_overrides[get_current_user] = lambda: checkout_user
         try:
             response = client.post(
-                "/orders/",
+                "/orders",
                 json=_order_payload(checkout_product, paymentMethod="stripe"),
             )
             assert response.status_code == 422
@@ -197,7 +197,7 @@ class TestCheckoutWithAddress:
         app.dependency_overrides[get_current_user] = lambda: checkout_user
         try:
             response = client.post(
-                "/orders/",
+                "/orders",
                 json=_order_payload(checkout_product, paymentMethod="venti"),
             )
             assert response.status_code == 201
@@ -212,7 +212,7 @@ class TestCheckoutWithAddress:
         app.dependency_overrides[get_current_user] = lambda: checkout_user
         try:
             create_resp = client.post(
-                "/orders/",
+                "/orders",
                 json=_order_payload(
                     checkout_product,
                     addressId=user_address.id,

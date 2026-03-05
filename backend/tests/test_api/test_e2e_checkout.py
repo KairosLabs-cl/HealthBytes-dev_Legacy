@@ -126,7 +126,7 @@ class TestE2ECheckoutApproved:
         try:
             # Step 1: Create order
             resp = client.post(
-                f"{ORDERS_BASE}/",
+                f"{ORDERS_BASE}",
                 json=_order_payload(e2e_product, paymentMethod="mercado_pago"),
             )
             assert resp.status_code == 201, resp.json()
@@ -212,7 +212,7 @@ class TestE2ECheckoutRejected:
 
             # Step 1: Create order
             resp = client.post(
-                f"{ORDERS_BASE}/",
+                f"{ORDERS_BASE}",
                 json=_order_payload(e2e_product, paymentMethod="mercado_pago"),
             )
             assert resp.status_code == 201, resp.json()
@@ -284,7 +284,7 @@ class TestE2EWebhookIdempotency:
         app.dependency_overrides[get_current_user] = lambda: e2e_user
         try:
             resp = client.post(
-                f"{ORDERS_BASE}/",
+                f"{ORDERS_BASE}",
                 json=_order_payload(e2e_product, paymentMethod="mercado_pago"),
             )
             assert resp.status_code == 201

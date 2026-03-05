@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.post("/", response_model=OrderResponse, status_code=201)
+@router.post("", response_model=OrderResponse, status_code=201)
 async def create_order(
     order_data: OrderCreate,
     db: AsyncSession = Depends(get_db),
@@ -127,7 +127,7 @@ async def create_order(
         )
 
 
-@router.get("/", response_model=List[OrderResponse])
+@router.get("", response_model=List[OrderResponse])
 async def list_orders(
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=50, description="Max 50 items per request"),

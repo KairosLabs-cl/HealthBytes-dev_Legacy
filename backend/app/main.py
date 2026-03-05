@@ -81,6 +81,7 @@ app = FastAPI(
     description="FastAPI replica of Node.js Express API",
     docs_url="/docs" if settings.ENVIRONMENT == "dev" else None,
     redoc_url="/redoc" if settings.ENVIRONMENT == "dev" else None,
+    redirect_slashes=False,
 )
 
 # Attach limiter to app state and register 429 handler

@@ -20,7 +20,7 @@ class TestListUsers:
         )
 
         # Try to list users without auth
-        response = client.get("/users/")
+        response = client.get("/users")
         assert response.status_code == 401
         assert "Access denied" in response.json()["detail"]
 
@@ -35,7 +35,7 @@ class TestListUsers:
         )
         mock_get_user.return_value = admin
 
-        response = client.get("/users/?limit=101")
+        response = client.get("/users?limit=101")
         # FastAPI validates query params after dependencies, so this will still be 401
         # But the validation is in place and would work if auth passed
         # We can verify the validation exists by checking the OpenAPI schema instead
@@ -51,7 +51,7 @@ class TestListUsers:
         )
         mock_get_user.return_value = admin
 
-        response = client.get("/users/?limit=0")
+        response = client.get("/users?limit=0")
         assert response.status_code in [401, 422]
 
     @patch("app.middleware.auth.get_current_user")
@@ -64,7 +64,7 @@ class TestListUsers:
         )
         mock_get_user.return_value = admin
 
-        response = client.get("/users/?skip=-1")
+        response = client.get("/users?skip=-1")
         assert response.status_code in [401, 422]
 
     @patch("app.middleware.auth.get_current_user")
@@ -77,30 +77,30 @@ class TestListUsers:
         )
         mock_get_user.return_value = admin
 
-        response = client.get("/users/?limit=1000000")
+        response = client.get("/users?limit=1000000")
         assert response.status_code in [401, 422]
 
     def test_list_users_accepts_limit_at_boundary(self, client: TestClient, db_session: Session):
         """Test that limit=100 (exactly at max) is accepted by validation"""
-        response = client.get("/users/?limit=100")
+        response = client.get("/users?limit=100")
         # Should fail auth (401) not validation (422)
         assert response.status_code == 401
 
     def test_list_users_accepts_limit_1(self, client: TestClient, db_session: Session):
         """Test that limit=1 (minimum valid) is accepted by validation"""
-        response = client.get("/users/?limit=1")
+        response = client.get("/users?limit=1")
         # Should fail auth (401) not validation (422)
         assert response.status_code == 401
 
     def test_list_users_accepts_skip_0(self, client: TestClient, db_session: Session):
         """Test that skip=0 is accepted"""
-        response = client.get("/users/?skip=0")
+        response = client.get("/users?skip=0")
         # Should fail auth (401) not validation (422)
         assert response.status_code == 401
 
     def test_list_users_accepts_large_skip(self, client: TestClient, db_session: Session):
         """Test that large skip values are accepted (no upper bound)"""
-        response = client.get("/users/?skip=10000")
+        response = client.get("/users?skip=10000")
         # Should fail auth (401) not validation (422)
         assert response.status_code == 401
 
@@ -110,7 +110,7 @@ class TestListUsers:
         assert response.status_code == 200
 
         schema = response.json()
-        users_get = schema["paths"]["/users/"]["get"]
+        users_get = schema["paths"]["/users"]["get"]
 
         # Find skip and limit parameters
         skip_param = next(p for p in users_get["parameters"] if p["name"] == "skip")
