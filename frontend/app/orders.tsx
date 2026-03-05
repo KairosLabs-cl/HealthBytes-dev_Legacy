@@ -22,19 +22,20 @@ import { AuthGate } from "@/components/AuthGate";
 
 export default function OrdersScreen() {
   const router = useRouter();
-  const { filter } = useLocalSearchParams<{ filter?: string }>();
+  const { filter, status } = useLocalSearchParams<{ filter?: string; status?: string }>();
   const { getToken, isSignedIn, isLoaded } = useAuth();
   const { orders, isLoading, isLoadingMore, hasMore, error, fetchOrders, loadMoreOrders, clearError } = useOrders();
   const [refreshing, setRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
 
+  const initialParam = filter || status;
   const [selectedFilter, setSelectedFilter] = useState<"all" | OrderStatus>(
     () => {
       if (
-        filter &&
-        ["pending", "packed", "in_transit", "delivered", "cancelled"].includes(filter)
+        initialParam &&
+        ["pending", "packed", "in_transit", "delivered", "cancelled"].includes(initialParam)
       ) {
-        return filter as OrderStatus;
+        return initialParam as OrderStatus;
       }
       return "all";
     }
@@ -46,16 +47,14 @@ export default function OrdersScreen() {
     { id: "delivered", label: "Entregado o por entregar" },
   ] as const;
 
-  const loadOrders = useCallback(async () => {
-    const token = await getToken();
-    if (token) await fetchOrders(token);
-  }, [getToken, fetchOrders]);
-
   useEffect(() => {
-    if (isSignedIn && isLoaded) {
-      loadOrders();
-    }
-  }, [isSignedIn, isLoaded, loadOrders]);
+    if (!isSignedIn || !isLoaded) return;
+    getToken().then((token) => {
+      if (token) fetchOrders(token);
+    });
+    // Only re-run when auth state changes, not on every render cycle
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSignedIn, isLoaded]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
