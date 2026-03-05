@@ -319,8 +319,16 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
               marginBottom: 10,
             }}
           >
-            <Text style={{ fontSize: 15, fontWeight: "800", color: "#000000" }}>
-              {formatPrice(product.price)}
+            <Text
+              style={{
+                fontSize: 17,
+                fontWeight: "800",
+                color: "#111827",
+                letterSpacing: -0.3,
+              }}
+            >
+              <Text style={{ fontSize: 11, fontWeight: "700" }}>$</Text>
+              {formatPrice(product.price).replace("$", "")}
             </Text>
             <StockBadge stock={product.stock} variant="inline" />
           </View>

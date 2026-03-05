@@ -13,7 +13,12 @@ type OrdersState = {
   currentStatus: string | null;
 
   // Methods
-  fetchOrders: (token: string, skip?: number, limit?: number, status?: string) => Promise<void>;
+  fetchOrders: (
+    token: string,
+    skip?: number,
+    limit?: number,
+    status?: string
+  ) => Promise<void>;
   loadMoreOrders: (token: string) => Promise<void>;
   fetchOrderById: (
     orderId: string | number,
@@ -35,7 +40,12 @@ export const useOrders = create<OrdersState>((set, get) => ({
   /**
    * Obtener primera página de órdenes (resetea la lista)
    */
-  fetchOrders: async (token: string, skip = 0, limit = PAGE_SIZE, status?: string) => {
+  fetchOrders: async (
+    token: string,
+    skip = 0,
+    limit = PAGE_SIZE,
+    status?: string
+  ) => {
     set({ isLoading: true, error: null, currentStatus: status ?? null });
     try {
       const orders = await ordersApi.getOrders(token, skip, limit, status);
@@ -63,7 +73,12 @@ export const useOrders = create<OrdersState>((set, get) => ({
 
     set({ isLoadingMore: true, error: null });
     try {
-      const newOrders = await ordersApi.getOrders(token, orders.length, PAGE_SIZE, currentStatus ?? undefined);
+      const newOrders = await ordersApi.getOrders(
+        token,
+        orders.length,
+        PAGE_SIZE,
+        currentStatus ?? undefined
+      );
       set({
         orders: [...orders, ...(newOrders as Order[])],
         hasMore: newOrders.length === PAGE_SIZE,
@@ -87,7 +102,8 @@ export const useOrders = create<OrdersState>((set, get) => ({
     } catch (error) {
       const errorMsg =
         error instanceof Error ? error.message : "Error desconocido";
-      if (__DEV__) console.error(`❌ Error fetching order ${orderId}:`, errorMsg);
+      if (__DEV__)
+        console.error(`❌ Error fetching order ${orderId}:`, errorMsg);
       set({ error: errorMsg });
       return null;
     }

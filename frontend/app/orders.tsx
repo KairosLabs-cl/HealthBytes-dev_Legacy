@@ -1,3 +1,4 @@
+import { AuthGate } from "@/components/AuthGate";
 import { OrderListItem } from "@/components/OrderListItem";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
@@ -17,14 +18,28 @@ import {
   ScrollView,
   View,
 } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import { AuthGate } from "@/components/AuthGate";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 export default function OrdersScreen() {
   const router = useRouter();
-  const { filter, status } = useLocalSearchParams<{ filter?: string; status?: string }>();
+  const { filter, status } = useLocalSearchParams<{
+    filter?: string;
+    status?: string;
+  }>();
   const { getToken, isSignedIn, isLoaded } = useAuth();
-  const { orders, isLoading, isLoadingMore, hasMore, error, fetchOrders, loadMoreOrders, clearError } = useOrders();
+  const {
+    orders,
+    isLoading,
+    isLoadingMore,
+    hasMore,
+    error,
+    fetchOrders,
+    loadMoreOrders,
+    clearError,
+  } = useOrders();
   const [refreshing, setRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
 
@@ -33,7 +48,14 @@ export default function OrdersScreen() {
     () => {
       if (
         initialParam &&
-        ["unpaid", "processing", "shipped", "delivered", "returns", "cancelled"].includes(initialParam)
+        [
+          "unpaid",
+          "processing",
+          "shipped",
+          "delivered",
+          "returns",
+          "cancelled",
+        ].includes(initialParam)
       ) {
         return initialParam as OrderStatus;
       }
@@ -42,12 +64,12 @@ export default function OrdersScreen() {
   );
 
   const filters = [
-    { id: "all",        label: "Todas" },
-    { id: "unpaid",     label: "Sin pagar" },
+    { id: "all", label: "Todas" },
+    { id: "unpaid", label: "Sin pagar" },
     { id: "processing", label: "En proceso" },
-    { id: "shipped",    label: "Enviado" },
-    { id: "delivered",  label: "Entregado" },
-    { id: "returns",    label: "Devolución" },
+    { id: "shipped", label: "Enviado" },
+    { id: "delivered", label: "Entregado" },
+    { id: "returns", label: "Devolución" },
   ] as const;
 
   useEffect(() => {
@@ -100,9 +122,13 @@ export default function OrdersScreen() {
             No hay órdenes todavía
           </Text>
           <Text className="text-center text-gray-600 mb-6">
-            Cuando hagas tu primera compra, aparecerá aquí el historial de todos tus pedidos.
+            Cuando hagas tu primera compra, aparecerá aquí el historial de todos
+            tus pedidos.
           </Text>
-          <Button onPress={() => router.replace("/")} className="bg-black rounded-full">
+          <Button
+            onPress={() => router.replace("/")}
+            className="bg-black rounded-full"
+          >
             <ButtonText className="text-white">Ver productos</ButtonText>
           </Button>
         </View>
@@ -110,7 +136,8 @@ export default function OrdersScreen() {
     );
   }
 
-  const showEmptyFilter = !isLoading && orders.length === 0 && selectedFilter !== "all";
+  const showEmptyFilter =
+    !isLoading && orders.length === 0 && selectedFilter !== "all";
 
   // Defined outside render to avoid remounting the header on every state change
   const listHeader = (
@@ -119,7 +146,9 @@ export default function OrdersScreen() {
       <View className="mb-4">
         <View className="mb-4">
           <Text className="text-2xl font-bold text-black">Mis órdenes</Text>
-          <Text className="text-gray-600 mt-1">Ve el estado de tus compras</Text>
+          <Text className="text-gray-600 mt-1">
+            Ve el estado de tus compras
+          </Text>
         </View>
 
         {/* Filter chips */}
@@ -163,12 +192,22 @@ export default function OrdersScreen() {
       {/* Error */}
       {error && (
         <View className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4 flex-row items-start">
-          <Icon as={AlertCircle} size="md" className="text-red-600 mr-3 mt-0.5" />
+          <Icon
+            as={AlertCircle}
+            size="md"
+            className="text-red-600 mr-3 mt-0.5"
+          />
           <View className="flex-1">
             <Text className="text-red-800 font-semibold mb-1">Error</Text>
             <Text className="text-red-700 text-sm">{error}</Text>
-            <Pressable onPress={clearError} className="mt-2" style={{ minHeight: 44, justifyContent: "center" }}>
-              <Text className="text-red-600 font-semibold text-sm">Descartar</Text>
+            <Pressable
+              onPress={clearError}
+              className="mt-2"
+              style={{ minHeight: 44, justifyContent: "center" }}
+            >
+              <Text className="text-red-600 font-semibold text-sm">
+                Descartar
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -204,64 +243,65 @@ export default function OrdersScreen() {
     </View>
   );
 
-  const listFooter = !isLoading && hasMore ? (
-    <View className="mx-4 mt-4 mb-2">
-      {selectedFilter !== "all" && (
-        <Text className="text-center text-gray-400 text-xs mb-3">
-          Puede haber más órdenes sin cargar
-        </Text>
-      )}
-      <Pressable
-        onPress={async () => {
-          const token = await getToken();
-          if (token) await loadMoreOrders(token);
-        }}
-        disabled={isLoadingMore}
-        className="rounded-full border border-gray-200 items-center justify-center flex-row gap-2 active:bg-gray-50"
-        style={{ minHeight: 48 }}
-      >
-        {isLoadingMore ? (
-          <ActivityIndicator size="small" color="#000" />
-        ) : (
-          <Text className="text-sm font-semibold text-gray-700">
-            Cargar más órdenes
+  const listFooter =
+    !isLoading && hasMore ? (
+      <View className="mx-4 mt-4 mb-2">
+        {selectedFilter !== "all" && (
+          <Text className="text-center text-gray-400 text-xs mb-3">
+            Puede haber más órdenes sin cargar
           </Text>
         )}
-      </Pressable>
-    </View>
-  ) : null;
+        <Pressable
+          onPress={async () => {
+            const token = await getToken();
+            if (token) await loadMoreOrders(token);
+          }}
+          disabled={isLoadingMore}
+          className="rounded-full border border-gray-200 items-center justify-center flex-row gap-2 active:bg-gray-50"
+          style={{ minHeight: 48 }}
+        >
+          {isLoadingMore ? (
+            <ActivityIndicator size="small" color="#000" />
+          ) : (
+            <Text className="text-sm font-semibold text-gray-700">
+              Cargar más órdenes
+            </Text>
+          )}
+        </Pressable>
+      </View>
+    ) : null;
 
   return (
     <AuthGate message="Inicia sesion para ver el historial de tus pedidos.">
-    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
-      <StatusBar style="dark" />
-      <Stack.Screen options={{ title: "Mis órdenes" }} />
+      <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+        <StatusBar style="dark" />
+        <Stack.Screen options={{ title: "Mis órdenes" }} />
 
-      <FlatList
-        className="flex-1 bg-white"
-        data={!isLoading ? filteredOrders : []}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View className="px-4">
-            <OrderListItem
-              order={item}
-              onPress={() => handleOrderPress(item.id)}
+        <FlatList
+          className="flex-1 bg-white"
+          data={!isLoading ? filteredOrders : []}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <View className="px-4">
+              <OrderListItem
+                order={item}
+                onPress={() => handleOrderPress(item.id)}
+              />
+            </View>
+          )}
+          ListHeaderComponent={listHeader}
+          ListFooterComponent={listFooter}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor="#000000"
             />
-          </View>
-        )}
-        ListHeaderComponent={listHeader}
-        ListFooterComponent={listFooter}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor="#000000"
-          />
-        }
-        contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
-        showsVerticalScrollIndicator={false}
-      />
-    </SafeAreaView>
+          }
+          contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
+          showsVerticalScrollIndicator={false}
+        />
+      </SafeAreaView>
     </AuthGate>
   );
 }

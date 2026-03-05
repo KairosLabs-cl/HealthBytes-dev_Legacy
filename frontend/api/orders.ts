@@ -1,5 +1,5 @@
-import { OrderResponse } from "@/types/order";
 import { throwIfNotOk } from "@/lib/apiError";
+import { OrderResponse } from "@/types/order";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -39,7 +39,9 @@ export async function createOrder(
   const orderPayload: CreateOrderPayload = {
     order: {
       ...(addressId && { address_id: addressId }),
-      ...(typeof paymentMethod === "string" && { payment_method: paymentMethod }),
+      ...(typeof paymentMethod === "string" && {
+        payment_method: paymentMethod,
+      }),
     },
     items,
   };
@@ -71,7 +73,10 @@ export async function getOrders(
     throw new Error("No se pudo obtener el token de autenticación.");
   }
 
-  const params = new URLSearchParams({ skip: String(skip), limit: String(limit) });
+  const params = new URLSearchParams({
+    skip: String(skip),
+    limit: String(limit),
+  });
   if (status) params.append("status", status);
 
   const res = await fetch(`${API_URL}/orders?${params}`, {
