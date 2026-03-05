@@ -10,9 +10,10 @@ type OrdersState = {
   isLoadingMore: boolean;
   hasMore: boolean;
   error: string | null;
+  currentStatus: string | null;
 
   // Methods
-  fetchOrders: (token: string, skip?: number, limit?: number) => Promise<void>;
+  fetchOrders: (token: string, skip?: number, limit?: number, status?: string) => Promise<void>;
   loadMoreOrders: (token: string) => Promise<void>;
   fetchOrderById: (
     orderId: string | number,
@@ -29,14 +30,15 @@ export const useOrders = create<OrdersState>((set, get) => ({
   isLoadingMore: false,
   hasMore: false,
   error: null,
+  currentStatus: null,
 
   /**
    * Obtener primera página de órdenes (resetea la lista)
    */
-  fetchOrders: async (token: string, skip = 0, limit = PAGE_SIZE) => {
-    set({ isLoading: true, error: null });
+  fetchOrders: async (token: string, skip = 0, limit = PAGE_SIZE, status?: string) => {
+    set({ isLoading: true, error: null, currentStatus: status ?? null });
     try {
-      const orders = await ordersApi.getOrders(token, skip, limit);
+      const orders = await ordersApi.getOrders(token, skip, limit, status);
       set({
         orders: orders as Order[],
         hasMore: orders.length === PAGE_SIZE,
@@ -56,12 +58,12 @@ export const useOrders = create<OrdersState>((set, get) => ({
    * Cargar más órdenes (agrega a la lista existente)
    */
   loadMoreOrders: async (token: string) => {
-    const { orders, isLoadingMore } = get();
+    const { orders, isLoadingMore, currentStatus } = get();
     if (isLoadingMore) return;
 
     set({ isLoadingMore: true, error: null });
     try {
-      const newOrders = await ordersApi.getOrders(token, orders.length, PAGE_SIZE);
+      const newOrders = await ordersApi.getOrders(token, orders.length, PAGE_SIZE, currentStatus ?? undefined);
       set({
         orders: [...orders, ...(newOrders as Order[])],
         hasMore: newOrders.length === PAGE_SIZE,

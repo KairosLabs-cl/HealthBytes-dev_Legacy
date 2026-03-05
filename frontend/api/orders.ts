@@ -64,13 +64,17 @@ export async function createOrder(
 export async function getOrders(
   token: string,
   skip: number = 0,
-  limit: number = 50
+  limit: number = 50,
+  status?: string
 ): Promise<OrderResponse[]> {
   if (!token) {
     throw new Error("No se pudo obtener el token de autenticación.");
   }
 
-  const res = await fetch(`${API_URL}/orders?skip=${skip}&limit=${limit}`, {
+  const params = new URLSearchParams({ skip: String(skip), limit: String(limit) });
+  if (status) params.append("status", status);
+
+  const res = await fetch(`${API_URL}/orders?${params}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

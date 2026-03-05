@@ -3,12 +3,12 @@ import { Button, ButtonText } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { useOrders } from "@/store/orderStore";
-import { OrderStatus, normalizeStatus } from "@/types/order";
+import { OrderStatus } from "@/types/order";
 import { useAuth } from "@clerk/clerk-expo";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { AlertCircle, Package } from "lucide-react-native";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -33,7 +33,7 @@ export default function OrdersScreen() {
     () => {
       if (
         initialParam &&
-        ["unpaid", "processing", "shipped", "delivered", "review", "returns", "cancelled"].includes(initialParam)
+        ["unpaid", "processing", "shipped", "delivered", "returns", "cancelled"].includes(initialParam)
       ) {
         return initialParam as OrderStatus;
       }
@@ -42,19 +42,21 @@ export default function OrdersScreen() {
   );
 
   const filters = [
+    { id: "all",        label: "Todas" },
     { id: "unpaid",     label: "Sin pagar" },
     { id: "processing", label: "En proceso" },
     { id: "shipped",    label: "Enviado" },
     { id: "delivered",  label: "Entregado" },
-    { id: "returns",    label: "Revisión de devolución" },
+    { id: "returns",    label: "Devolución" },
   ] as const;
 
   useEffect(() => {
     if (!isSignedIn || !isLoaded) return;
+    const status = selectedFilter !== "all" ? selectedFilter : undefined;
     getToken().then((token) => {
-      if (token) fetchOrders(token);
+      if (token) fetchOrders(token, 0, undefined, status);
     });
-    // Only re-run when auth state changes, not on every render cycle
+    // Re-fetch when auth state changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSignedIn, isLoaded]);
 
@@ -62,26 +64,32 @@ export default function OrdersScreen() {
     setRefreshing(true);
     try {
       const token = await getToken();
-      if (token) await fetchOrders(token);
+      const status = selectedFilter !== "all" ? selectedFilter : undefined;
+      if (token) await fetchOrders(token, 0, undefined, status);
     } finally {
       setRefreshing(false);
     }
-  }, [getToken, fetchOrders]);
+  }, [getToken, fetchOrders, selectedFilter]);
 
-  const filteredOrders = useMemo(() => {
-    if (selectedFilter === "all") return orders;
-    return orders.filter((order) => {
-      const normalized = normalizeStatus(order.status as unknown as string);
-      return normalized === selectedFilter;
-    });
-  }, [orders, selectedFilter]);
+  const filteredOrders = orders;
+
+  const handleFilterPress = useCallback(
+    async (filterId: "all" | OrderStatus) => {
+      setSelectedFilter(filterId);
+      const token = await getToken();
+      if (!token) return;
+      const status = filterId !== "all" ? filterId : undefined;
+      fetchOrders(token, 0, undefined, status);
+    },
+    [getToken, fetchOrders]
+  );
 
   const handleOrderPress = useCallback(
     (orderId: string | number) => router.push(`/orders/${orderId}`),
     [router]
   );
 
-  if (!isLoading && orders.length === 0) {
+  if (!isLoading && selectedFilter === "all" && orders.length === 0) {
     return (
       <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
         <StatusBar style="dark" />
@@ -102,8 +110,7 @@ export default function OrdersScreen() {
     );
   }
 
-  const showEmptyFilter =
-    !isLoading && filteredOrders.length === 0 && orders.length > 0;
+  const showEmptyFilter = !isLoading && orders.length === 0 && selectedFilter !== "all";
 
   // Defined outside render to avoid remounting the header on every state change
   const listHeader = (
@@ -125,7 +132,7 @@ export default function OrdersScreen() {
           {filters.map((f) => (
             <Pressable
               key={f.id}
-              onPress={() => setSelectedFilter(f.id as OrderStatus)}
+              onPress={() => handleFilterPress(f.id as OrderStatus)}
               style={{ minHeight: 44, justifyContent: "center" }}
               className={`px-4 rounded-full border ${
                 selectedFilter === f.id
@@ -186,7 +193,7 @@ export default function OrdersScreen() {
             No hay órdenes con este estado
           </Text>
           <Pressable
-            onPress={() => setSelectedFilter("all")}
+            onPress={() => handleFilterPress("all")}
             className="bg-black px-4 rounded-full"
             style={{ minHeight: 44, justifyContent: "center" }}
           >

@@ -131,6 +131,7 @@ async def create_order(
 async def list_orders(
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=50, description="Max 50 items per request"),
+    status_filter: str = Query(None, alias="status", description="Filter orders by status"),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -140,6 +141,7 @@ async def list_orders(
     - Admin: All orders
     - User: Their own orders
     - Seller: Orders with their products (TODO)
+    - status: Optional filter by order status
     """
     try:
         if current_user.role == "admin":
@@ -150,6 +152,10 @@ async def list_orders(
             stmt = select(Order).where(Order.user_id == current_user.id)
         else:
             stmt = select(Order).where(Order.user_id == current_user.id)
+
+        # Optional status filter
+        if status_filter:
+            stmt = stmt.where(Order.status == status_filter)
 
         # Eager load items
         stmt = (
