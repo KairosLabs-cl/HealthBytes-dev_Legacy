@@ -216,7 +216,6 @@ export const useCart = create<CartState>((set, get) => ({
    */
   updateQuantity: async (productId: string | number, newQuantity: number) => {
     const { isAuthenticated, authToken, items, updatingProducts } = get();
-    const previousItems = items; // Snapshot for rollback
 
     // Prevent multiple simultaneous updates of the same product
     if (updatingProducts.has(productId)) {
@@ -267,7 +266,6 @@ export const useCart = create<CartState>((set, get) => ({
    */
   decrementProduct: async (productId: string | number) => {
     const { isAuthenticated, authToken, items, updatingProducts } = get();
-    const previousItems = items; // Snapshot for rollback
 
     const existingItem = items.find(
       (item) => item.product.id === productId
@@ -386,3 +384,11 @@ export const useCart = create<CartState>((set, get) => ({
     }
   },
 }));
+
+/**
+ * Memoized selector for cart item count.
+ * Use this instead of inline `state.items.reduce(...)` to avoid
+ * unnecessary re-renders when unrelated cart state changes.
+ */
+export const selectCartItemCount = (state: CartState) =>
+  state.items.reduce((sum, item) => sum + item.quantity, 0);

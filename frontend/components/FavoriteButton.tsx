@@ -1,6 +1,7 @@
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { useAuth } from "@clerk/clerk-expo";
 import { Heart } from "lucide-react-native";
+import { memo, useCallback } from "react";
 import { Alert, Platform, Pressable } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -14,19 +15,21 @@ interface FavoriteButtonProps {
   size?: number;
 }
 
-export default function FavoriteButton({
+function FavoriteButton({
   productId,
   size = 24,
 }: FavoriteButtonProps) {
   const { getToken } = useAuth();
-  const { isFavorite, toggleFavorite } = useFavoritesStore();
+  // Granular selectors: only re-render when THIS product's favorite status changes
+  const favorited = useFavoritesStore((s) => s.favoriteIds.has(productId));
+  const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
 
-  const handlePress = async () => {
+  const handlePress = useCallback(async () => {
     const token = await getToken();
     if (!token) {
       Alert.alert(
@@ -42,9 +45,7 @@ export default function FavoriteButton({
     );
 
     await toggleFavorite(productId, token);
-  };
-
-  const favorited = isFavorite(productId);
+  }, [getToken, toggleFavorite, productId, scale]);
 
   // For web, we use onClick directly on the element
   const webProps =
@@ -91,3 +92,6 @@ export default function FavoriteButton({
     </Pressable>
   );
 }
+
+export default memo(FavoriteButton);
+

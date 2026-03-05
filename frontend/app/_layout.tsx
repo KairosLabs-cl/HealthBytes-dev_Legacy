@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/toast";
 import "@/global.css";
 import { tokenCache } from "@/lib/cache";
-import { useCart } from "@/store/cartStore";
+import { useCart, selectCartItemCount } from "@/store/cartStore";
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { usePreferencesStore } from "@/store/preferencesStore";
 import { updateDietaryPreferences } from "@/api/preferences";
@@ -59,7 +59,7 @@ if (!publishableKey) {
 }
 
 function RootLayoutNav() {
-  const cartItemsNum = useCart((state) => state.items.reduce((sum, item) => sum + item.quantity, 0));
+  const cartItemsNum = useCart(selectCartItemCount);
   const setAuth = useCart((state) => state.setAuth);
   const mergeAndSync = useCart((state) => state.mergeAndSync);
   const error = useCart((state) => state.error);

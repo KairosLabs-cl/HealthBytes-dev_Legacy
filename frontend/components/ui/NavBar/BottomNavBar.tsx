@@ -1,6 +1,6 @@
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
-import { useCart } from "@/store/cartStore";
+import { useCart, selectCartItemCount } from "@/store/cartStore";
 import { Link, usePathname } from "expo-router";
 import { Home, ShoppingCart, User } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo } from "react";
@@ -188,7 +188,7 @@ TabItem.displayName = "TabItem";
 // --- Main BottomNavBar ---
 function BottomNavBar() {
   const pathname = usePathname();
-  const cartCount = useCart((state) => state.items.reduce((sum, item) => sum + item.quantity, 0));
+  const cartCount = useCart(selectCartItemCount);
   const insets = useSafeAreaInsets();
 
   // Determine visibility based on current route
