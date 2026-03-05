@@ -24,7 +24,7 @@ async def _get_available_stock(db: AsyncSession, product: Product) -> int:
         select(func.coalesce(func.sum(OrderItem.quantity), 0)).where(
             OrderItem.product_id == product.id,
             OrderItem.order_id == Order.id,
-            Order.status.in_(["pending", "confirmed"]),
+            Order.status.in_(["pending", "confirmed", "in_transit"]),
         )
     )
     reserved = result.scalar()

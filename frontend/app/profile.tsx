@@ -27,9 +27,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const orderStatuses = [
   {
-    label: "Preparando",
+    label: "No confirmado",
     icon: Package,
-    status: "packed",
+    status: "pending",
+  },
+  {
+    label: "Confirmado",
+    icon: PackageOpen,
+    status: "confirmed",
   },
   {
     label: "En tránsito",
@@ -37,13 +42,19 @@ const orderStatuses = [
     status: "in_transit",
   },
   {
-    label: "Entregado o por entregar",
+    label: "Despachado",
+    icon: Truck,
+    status: "shipped",
+  },
+  {
+    label: "Enviado",
     icon: CheckCircle2,
     status: "delivered",
   },
 ];
 
 const options = [
+  { label: "Mensajes del vendedor", icon: MessageSquare, href: "/messages" },
   { label: "Preferencias alimentarias", icon: Salad, href: "/dietary-preferences" },
   { label: "Direcciones", icon: MapPin, href: "/addresses" },
   { label: "Lista de deseos", icon: Heart, href: "/wishlist" },
@@ -105,11 +116,16 @@ export default function ProfileScreen() {
           <Text className="text-gray-300 text-xs mb-3">
             Ve el estado de tus compras!
           </Text>
-          <View className="flex-row justify-between">
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ gap: 8, paddingRight: 4 }}
+          >
             {orderStatuses.map((item) => (
               <Pressable
                 key={item.label}
-                className="bg-white rounded-2xl px-3 py-2 items-center justify-center w-[30%]"
+                className="bg-white rounded-2xl px-3 py-2 items-center justify-center"
+                style={{ minWidth: 88 }}
                 onPress={() =>
                   router.push({
                     pathname: "/orders",
@@ -128,16 +144,7 @@ export default function ProfileScreen() {
                 </Text>
               </Pressable>
             ))}
-          </View>
-          <Pressable
-            className="bg-white rounded-2xl px-3 py-2 mt-3 flex-row items-center justify-center"
-            onPress={() => router.push("/messages")}
-          >
-            <Icon as={MessageSquare} color="#1f2937" size="lg" />
-            <Text className="text-[12px] text-black font-semibold ml-2">
-              Mensajes del vendedor
-            </Text>
-          </Pressable>
+          </ScrollView>
         </View>
 
         <View className="mb-3 flex-row items-center">

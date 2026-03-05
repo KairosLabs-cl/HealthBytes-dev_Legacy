@@ -3,7 +3,7 @@ import { Button, ButtonText } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { useOrders } from "@/store/orderStore";
-import { OrderStatus } from "@/types/order";
+import { OrderStatus, normalizeStatus } from "@/types/order";
 import { useAuth } from "@clerk/clerk-expo";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -42,9 +42,11 @@ export default function OrdersScreen() {
   );
 
   const filters = [
-    { id: "pending", label: "Preparando" },
+    { id: "pending", label: "No confirmado" },
+    { id: "confirmed", label: "Confirmado" },
     { id: "in_transit", label: "En tránsito" },
-    { id: "delivered", label: "Entregado o por entregar" },
+    { id: "shipped", label: "Despachado" },
+    { id: "delivered", label: "Enviado" },
   ] as const;
 
   useEffect(() => {
@@ -69,17 +71,8 @@ export default function OrdersScreen() {
   const filteredOrders = useMemo(() => {
     if (selectedFilter === "all") return orders;
     return orders.filter((order) => {
-      const normalizedStatus = order.status.toLowerCase().replace(/_/g, "");
-      const filterStatus = selectedFilter.toLowerCase().replace(/_/g, "");
-      if (
-        selectedFilter === "pending" &&
-        (normalizedStatus === "pending" ||
-          normalizedStatus === "confirmed" ||
-          normalizedStatus === "packed")
-      ) {
-        return true;
-      }
-      return normalizedStatus === filterStatus;
+      const normalized = normalizeStatus(order.status as unknown as string);
+      return normalized === selectedFilter;
     });
   }, [orders, selectedFilter]);
 

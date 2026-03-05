@@ -242,11 +242,11 @@ async def test_update_order_status_valid_transition(db_session, test_user):
     db_session.add(order)
     db_session.commit()
 
-    # Update status
-    result = await update_order_status(mock_db, 1, "processing")
+    # Update status: pending → confirmed (valid transition)
+    result = await update_order_status(mock_db, 1, "confirmed")
 
     assert result is not None
-    assert result.status == "processing"
+    assert result.status == "confirmed"
 
 
 @pytest.mark.asyncio
@@ -254,7 +254,7 @@ async def test_update_order_status_not_found(db_session):
     """Test updating status of non-existent order"""
     mock_db = MockAsyncSession(db_session)
 
-    result = await update_order_status(mock_db, "nonexistent", "processing")
+    result = await update_order_status(mock_db, "nonexistent", "in_transit")
 
     assert result is None
 
