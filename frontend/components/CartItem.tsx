@@ -74,13 +74,13 @@ const CartItem = ({
             disabled={isUpdating || isRemoving}
             className={`w-8 h-8 rounded-full items-center justify-center ${
               isUpdating || isRemoving
-                ? "bg-gray-100 opacity-40"
-                : "bg-gray-100 active:bg-gray-200"
+                ? "bg-gray-300 opacity-40"
+                : "bg-black active:bg-gray-800"
             }`}
           >
             <Minus
               size={16}
-              color={isUpdating || isRemoving ? "#D1D5DB" : "#6B7280"}
+              color={isUpdating || isRemoving ? "#9CA3AF" : "#FFFFFF"}
             />
           </Pressable>
 
@@ -106,14 +106,14 @@ const CartItem = ({
             disabled={isAdding || isUpdating || isRemoving}
             className={`w-8 h-8 rounded-full items-center justify-center ${
               isAdding || isUpdating || isRemoving
-                ? "bg-gray-100 opacity-40"
-                : "bg-gray-100 active:bg-gray-200"
+                ? "bg-gray-300 opacity-40"
+                : "bg-black active:bg-gray-800"
             }`}
           >
             <Plus
               size={16}
               color={
-                isAdding || isUpdating || isRemoving ? "#D1D5DB" : "#6B7280"
+                isAdding || isUpdating || isRemoving ? "#9CA3AF" : "#FFFFFF"
               }
             />
           </Pressable>
