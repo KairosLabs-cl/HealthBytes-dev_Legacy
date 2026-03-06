@@ -32,9 +32,6 @@ alembic>=1.14.0
 # Rate Limiting
 slowapi>=0.1.9
 
-# AWS Lambda adapter
-mangum>=0.20.0
-
 # Observability
 sentry-sdk[fastapi]>=2.0.0
 

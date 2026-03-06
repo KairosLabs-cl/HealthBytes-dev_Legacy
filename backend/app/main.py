@@ -6,7 +6,6 @@ from datetime import datetime, timezone
 import sentry_sdk
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from mangum import Mangum
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from slowapi import _rate_limit_exceeded_handler
@@ -87,6 +86,68 @@ app = FastAPI(
 # Attach limiter to app state and register 429 handler
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+
+@app.middleware("http")
+async def attach_user_for_rate_limiting(request: Request, call_next):
+    """
+    Extract user from token (if present) and attach to request.state for rate limiting.
+
+    This allows the rate limiter to identify users by user_id instead of IP.
+    If token is invalid or missing, request.state.user remains None and rate
+    limiting falls back to IP-based identification.
+
+    IMPORTANT: This middleware MUST run before SlowAPIMiddleware to ensure
+    request.state.user is available when rate limits are checked.
+    """
+    from app.middleware.auth import verify_clerk_token
+    from app.core.security import decode_token
+    from app.db.database import get_db
+    from app.db.schemas import User
+    from sqlalchemy import select
+
+    token = None
+
+    # Extract token from Authorization header
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header[7:]
+
+    if token:
+        try:
+            # Try Clerk token first (if configured)
+            if settings.CLERK_PUBLISHABLE_KEY:
+                clerk_payload = verify_clerk_token(token)
+                if clerk_payload:
+                    clerk_user_id = clerk_payload.get("sub")
+                    if clerk_user_id:
+                        async for db in get_db():
+                            result = await db.execute(
+                                select(User).where(User.clerk_id == clerk_user_id)
+                            )
+                            user = result.scalar_one_or_none()
+                            if user:
+                                request.state.user = user
+                            break
+
+            # Fallback to legacy JWT if Clerk didn't work
+            if not hasattr(request.state, "user"):
+                payload = decode_token(token)
+                user_id = payload.get("user_id")
+                if user_id:
+                    async for db in get_db():
+                        result = await db.execute(select(User).where(User.id == user_id))
+                        user = result.scalar_one_or_none()
+                        if user:
+                            request.state.user = user
+                        break
+        except Exception:
+            # Silently fail - rate limiting will use IP fallback
+            pass
+
+    return await call_next(request)
+
+
 app.add_middleware(SlowAPIMiddleware)
 
 
@@ -311,6 +372,3 @@ if __name__ == "__main__":
         reload=True if settings.ENVIRONMENT == "dev" else False,
     )
 
-
-# For serverless deployment (AWS Lambda) - Equivalent to serverless-http
-handler = Mangum(app)

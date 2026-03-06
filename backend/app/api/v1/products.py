@@ -38,7 +38,8 @@ async def list_products(
         clean_search = search.strip() if search else None
 
         # Always apply all filters together (search + category + dietary + price)
-        return await product_service.list_products(
+        # Uses Redis cache when available; falls back to DB transparently.
+        return await product_service.get_products_cached(
             db,
             search=clean_search or None,
             skip=skip,
