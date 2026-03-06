@@ -64,7 +64,7 @@ class AddressResponse(AddressBase):
     """Schema for address response"""
 
     id: int
-    user_id: str
+    user_id: int
     is_active: bool
     created_at: datetime
     updated_at: Optional[datetime] = None

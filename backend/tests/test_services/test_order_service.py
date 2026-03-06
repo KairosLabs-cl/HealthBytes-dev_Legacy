@@ -70,7 +70,7 @@ async def test_create_order_success(db_session, test_user, test_products):
 
     assert result is not None
     assert result.user_id == 1
-    assert result.status in ["pending", "New"]  # Allow both status values
+    assert result.status in ["unpaid", "New"]  # Allow both status values
     # Price should be 10*2 + 20*1 = 40
     assert result.total == Decimal("40.0")
 
@@ -238,11 +238,11 @@ async def test_update_order_status_valid_transition(db_session, test_user):
     mock_db = MockAsyncSession(db_session)
 
     # Create order
-    order = Order(id=1, user_id=test_user.id, total=50.0, status="pending")
+    order = Order(id=1, user_id=test_user.id, total=50.0, status="unpaid")
     db_session.add(order)
     db_session.commit()
 
-    # Update status
+    # Update status: unpaid → processing (valid transition)
     result = await update_order_status(mock_db, 1, "processing")
 
     assert result is not None
@@ -265,12 +265,12 @@ async def test_update_order_status_invalid_transition(db_session, test_user):
     mock_db = MockAsyncSession(db_session)
 
     # Create order
-    order = Order(id=1, user_id=test_user.id, total=Decimal("50.0"), status="completed")
+    order = Order(id=1, user_id=test_user.id, total=Decimal("50.0"), status="delivered")
     db_session.add(order)
     db_session.commit()
 
-    # Try invalid transition: completed -> pending
+    # Try invalid transition: delivered -> unpaid
     with pytest.raises(ValueError) as exc_info:
-        await update_order_status(mock_db, 1, "pending")
+        await update_order_status(mock_db, 1, "unpaid")
 
     assert "invalid status transition" in str(exc_info.value).lower()

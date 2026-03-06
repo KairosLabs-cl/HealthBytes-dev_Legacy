@@ -49,9 +49,16 @@ Si una decisión técnica complica estos puntos → **debe justificarse o descar
 
 ### Stack Obligatorio
 
-- **UI**: React Native (Expo) + TypeScript
+<!-- DOCSYNC:frontend-stack -->
+- **Framework**: React Native 0.81.5
+- **Tooling**: Expo 54.0.33
+- **Lenguaje**: TypeScript 5.x
+- **Estado**: Zustand 5.0.10
+- **UI**: Gluestack UI
+- **Testing**: Jest — 130/130 tests, 14 suites
+<!-- /DOCSYNC:frontend-stack -->
+
 - **Theming**: Gluestack + Tailwind (NativeWind)
-- **Estado**: Zustand
 - **Navegación**: Expo Router (file-based)
 - **Fetching**: Fetch nativo (no axios sin permiso)
 
@@ -397,6 +404,14 @@ export default function ProductListScreen() {
 ---
 
 ## 🧪 Sobre Testing
+
+<!-- DOCSYNC:test-status -->
+**Suite green | 14 suites | 0 failures**
+
+| Tests | Suites | Estado |
+|-------|--------|--------|
+| 130/130 | 14/14 | ✅ All passing |
+<!-- /DOCSYNC:test-status -->
 
 - Unit: Lógica de hooks (cálculos, transformaciones)
 - Component: Snapshot + interacción básica (press events)

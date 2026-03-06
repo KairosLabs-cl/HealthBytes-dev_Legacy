@@ -172,7 +172,7 @@ async def update_order_status(db: AsyncSession, order_id: int, status: str) -> O
     """
     Update order status.
     """
-    valid_statuses = ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"]
+    valid_statuses = ["unpaid", "processing", "shipped", "delivered", "returns", "cancelled"]
     if status not in valid_statuses:
         raise ValueError(f"Invalid status. Must be one of: {valid_statuses}")
 
@@ -187,11 +187,11 @@ async def update_order_status(db: AsyncSession, order_id: int, status: str) -> O
     # Validate status transition
     current_status = db_order.status
     valid_transitions = {
-        "pending": ["confirmed", "processing", "cancelled"],
-        "confirmed": ["processing", "shipped", "cancelled"],
+        "unpaid": ["processing", "cancelled"],
         "processing": ["shipped", "cancelled"],
-        "shipped": ["delivered"],
-        "delivered": [],
+        "shipped": ["delivered", "cancelled"],
+        "delivered": ["returns"],
+        "returns": ["delivered", "cancelled"],
         "cancelled": [],
     }
 

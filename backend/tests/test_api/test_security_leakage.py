@@ -10,7 +10,7 @@ def test_product_error_leakage(client):
         sensitive_error = "Database Connection Failed: postgres://user:password@localhost:5432/db"
         mock_list.side_effect = Exception(sensitive_error)
 
-        response = client.get("/products/")
+        response = client.get("/products")
 
         assert response.status_code == 500
         assert response.json()["detail"] == "Internal Server Error"
@@ -47,7 +47,7 @@ def test_user_error_leakage(client):
 
     client.app.dependency_overrides[verify_admin] = lambda: {"id": 1, "role": "admin"}
 
-    response = client.get("/users/")
+    response = client.get("/users")
 
     # Clean up overrides
     del client.app.dependency_overrides[get_db]
@@ -79,7 +79,7 @@ def test_order_error_leakage(client):
     mock_user = type("User", (), {"id": 1, "role": "user"})
     client.app.dependency_overrides[get_current_user] = lambda: mock_user
 
-    response = client.get("/orders/")
+    response = client.get("/orders")
 
     del client.app.dependency_overrides[get_db]
     del client.app.dependency_overrides[get_current_user]

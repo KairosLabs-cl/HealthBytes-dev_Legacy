@@ -20,7 +20,7 @@ describe("getCart", () => {
     const result = await getCart(TOKEN);
     const [url, options] = mockFetch.mock.calls[0];
     expect(url).toContain("/cart");
-    expect(options.headers.Authorization).toBe(TOKEN);
+    expect(options.headers.Authorization).toBe(`Bearer ${TOKEN}`);
     expect(result).toEqual(cart);
   });
 
@@ -42,7 +42,7 @@ describe("addToCart", () => {
     const [url, options] = mockFetch.mock.calls[0];
     expect(url).toContain("/cart/items");
     expect(options.method).toBe("POST");
-    expect(options.headers.Authorization).toBe(TOKEN);
+    expect(options.headers.Authorization).toBe(`Bearer ${TOKEN}`);
     const body = JSON.parse(options.body);
     expect(body.product_id).toBe(5);
     expect(body.quantity).toBe(2);

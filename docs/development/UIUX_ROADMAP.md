@@ -1,6 +1,6 @@
 # 🗺️ Roadmap de Mejoras UI/UX - HealthBytes
 
-> **Última actualización**: Febrero 10, 2026 (Post-Quick Wins)  
+> **Última actualización**: Marzo 5, 2026 (Post UI Redesign Sprint)  
 > **Demo Target**: Febrero 15, 2026 (Listo para revisión)  
 > **Basado en**: Análisis profundo UI/UX + screenshots del estado actual
 
@@ -45,6 +45,10 @@ Este roadmap refleja el estado **actual** de la aplicación (Feb 10) y prioriza 
 | ✅ **Quick Win #4: Truncation** | **FUNCIONANDO** | Títulos limitados a 2 líneas |
 | ✅ **Quick Win #5: Empty States** | **FUNCIONANDO** | Recently Viewed empty state amigable |
 | ✅ **Quick Win #6: Nutritional Info** | **FUNCIONANDO** | Backend (JSON) + Frontend (Tabla nutricional) |
+| ✅ **ProductCard Redesign** | **FUNCIONANDO** | aspectRatio 4/3, imagen con margin+borderRadius, jerarquía tipográfica, FavoriteButton negro, botón pill |
+| ✅ **vendor_name end-to-end** | **FUNCIONANDO** | Migración Alembic + modelo + schema API + tipo TS + render en card |
+| ✅ **DietaryFilterBar completo** | **FUNCIONANDO** | 6 chips (era 4), ScrollView horizontal, slugs sincronizados con DB |
+| ✅ **RecentlyViewedBar self-contained** | **FUNCIONANDO** | Lee store internamente, sin props, visible en carrito |
 
 ---
 
@@ -62,6 +66,36 @@ Este roadmap refleja el estado **actual** de la aplicación (Feb 10) y prioriza 
 | 6 | **Nutritional Info** | 🔥 Alto | ✅ **Listo** | Backend |
 
 **Hito alcanzado**: Todas las mejoras visuales críticas para la demo están implementadas y verificadas.
+
+---
+
+## 🔄 En Progreso (Siguiente sprint)
+
+> Pendiente del branch `feat/ui-animation-header-polish` — base del nuevo sistema visual ya está lista en `ProductCard`.
+
+| Feature | Pantalla | Descripción | Prioridad |
+|---------|----------|-------------|-----------|
+| 🔄 **Rediseño pantalla `/products`** | `app/products.tsx` | Aplicar el mismo sistema visual del ProductCard rediseñado: grid layout, sombras, borderRadius 12, imagen con margin + borderRadius 8, jerarquía tipográfica | 🔥 Alta |
+| 🔄 **Sección/mensajes de vendedor** | `app/products.tsx` + `app/product/[id].tsx` | Mostrar `vendor_name` en pantalla de listado y detalle. Considerar filtro por vendor o sección "Productos de [marca]" | 🔥 Alta |
+| 🔄 **Tokens estéticos `/checkout-v2`** | `app/checkout-v2.tsx` | Alinear colores (`#111827`, `#F3F4F6`), tipografía (fontWeight 700/800), espaciado y botones pill `borderRadius 999` con el nuevo sistema visual | ✨ Media |
+
+### Detalle técnico por tarea
+
+#### `/products` — Rediseño visual
+- Verificar que usa `ProductCard` directamente (si no, refactorizar para reutilizarlo)
+- Revisar el layout del grid: `numColumns`, gap entre cards, padding lateral
+- Asegurar que `DietaryFilterBar` está visible y funcional en esta pantalla
+
+#### Mensajes de vendedor
+- En `ProductCard` ya aparece `vendor_name` debajo del nombre ✅
+- En `/product/[id].tsx`: agregar fila "Proveedor: [vendor_name]" en la sección de detalles
+- Evaluar si agregar chip/badge de vendor en el listado de productos
+
+#### `/checkout-v2` — Token estéticos
+- Botones: reemplazar colores hardcoded por `#111827` (primario) y `#F3F4F6` (secundario)
+- Tipografía: unificar `fontWeight` a escala 400/500/700/800
+- Spacing: padding consistente de 16px en secciones, 12px entre elementos
+- Inputs: `borderRadius 12`, border `rgba(0,0,0,0.1)`
 
 ---
 
@@ -190,5 +224,5 @@ Este roadmap refleja el estado **actual** de la aplicación (Feb 10) y prioriza 
 
 ---
 
-> **Última actualización**: Febrero 10, 2026, 17:30 PM  
-> **Próxima revisión**: Post-demo Feb 15
+> **Última actualización**: Marzo 5, 2026 — Sprint UI Redesign (ProductCard, vendor_name, DietaryFilters, CI fixes)  
+> **Próxima revisión**: Al cerrar `/products` rediseño + checkout tokens

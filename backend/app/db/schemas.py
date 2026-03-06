@@ -41,6 +41,7 @@ class Product(Base):
     price = Column(Numeric(10, 2), nullable=False)
     stock = Column(Integer, nullable=False, default=0)
     category = Column(String(100), nullable=True, index=True)
+    vendor_name = Column(String(255), nullable=True)
     nutritional_info = Column(Text, nullable=True)
 
     # Full-text search column
@@ -146,7 +147,7 @@ class Order(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     created_at = Column(TIMESTAMP, nullable=False, server_default=func.now())
-    status = Column(String(50), nullable=False, default="pending")
+    status = Column(String(50), nullable=False, default="unpaid")
     total = Column(Numeric(10, 2), nullable=False, default=0.0)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     address_id = Column(
@@ -157,6 +158,12 @@ class Order(Base):
     items = relationship("OrderItem", back_populates="order")
     shipping_address = relationship("Address")
     user = relationship("User")
+
+    __table_args__ = (
+        Index("idx_order_status", "status"),
+        Index("idx_order_created_at", "created_at"),
+        Index("idx_order_user_created", "user_id", "created_at"),
+    )
 
 
 class OrderItem(Base):
@@ -183,7 +190,9 @@ class CartItem(Base):
     user_id = Column(
         Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    product_id = Column(Integer, ForeignKey("products.id", ondelete="CASCADE"), nullable=False)
+    product_id = Column(
+        Integer, ForeignKey("products.id", ondelete="CASCADE"), nullable=False, index=True
+    )
     quantity = Column(Integer, nullable=False, default=1)
     created_at = Column(TIMESTAMP, nullable=False, server_default=func.now())
     updated_at = Column(TIMESTAMP, nullable=False, server_default=func.now(), onupdate=func.now())

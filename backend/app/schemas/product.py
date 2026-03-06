@@ -1,7 +1,7 @@
 from decimal import Decimal
 from typing import List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, computed_field, field_serializer
 
 
 class DietaryTagResponse(BaseModel):
@@ -21,17 +21,15 @@ class ProductBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=255)
     description: Optional[str] = None
     image: Optional[str] = Field(None, max_length=255)
-    price: float = Field(..., gt=0)
+    price: Decimal = Field(..., gt=0)
     stock: int = Field(0, ge=0)
     category: Optional[str] = Field(None, max_length=100)
+    vendor_name: Optional[str] = Field(None, max_length=255)
 
-    @field_validator("price", mode="before")
-    @classmethod
-    def convert_decimal_to_float(cls, v):
-        """Convert Decimal from database to float"""
-        if isinstance(v, Decimal):
-            return float(v)
-        return v
+    @field_serializer("price")
+    def serialize_price(self, v: Decimal) -> float:
+        """Serialize Decimal as JSON number for frontend compatibility."""
+        return float(v)
 
 
 class ProductCreate(ProductBase):
@@ -46,7 +44,7 @@ class ProductUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=255)
     description: Optional[str] = None
     image: Optional[str] = Field(None, max_length=255)
-    price: Optional[float] = Field(None, gt=0)
+    price: Optional[Decimal] = Field(None, gt=0)
     stock: Optional[int] = Field(None, ge=0)
     # If this fails, use without _ids (old master used bare field name)
     dietary_tag_ids: Optional[List[int]] = None

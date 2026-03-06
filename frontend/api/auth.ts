@@ -1,3 +1,5 @@
+import { throwIfNotOk } from "@/lib/apiError";
+
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 // Helper function to make authenticated API requests using Clerk token
@@ -22,12 +24,7 @@ export async function fetchWithAuth(
     headers,
   });
 
-  const data = await res.json();
+  await throwIfNotOk(res, "API request failed");
 
-  if (!res.ok) {
-    console.error("API Error:", data);
-    throw new Error(data.error || data.message || "API request failed");
-  }
-
-  return data;
+  return res.json();
 }

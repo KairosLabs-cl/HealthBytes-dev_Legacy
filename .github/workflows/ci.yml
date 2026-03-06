@@ -1,8 +1,12 @@
 name: CI
 
+permissions:
+  contents: read
+  pull-requests: read
+
 on:
   push:
-    branches: [master, main]
+    branches: ['**']
     paths-ignore:
       - "docs/**"
       - "**.md"
@@ -31,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          pip install black isort flake8 bandit
+          pip install black==25.1.0 isort flake8 bandit
 
       - name: Black (formatting)
         run: black --check --line-length 100 app/
@@ -76,6 +80,12 @@ jobs:
       - name: Run tests
         run: pytest --tb=short --cov=app --cov-fail-under=80 -q
 
+      - name: Audit Python dependencies
+        run: |
+          pip install safety
+          safety check -r requirements.txt --continue-on-error
+        continue-on-error: true
+
   frontend-lint:
     name: Frontend Lint & Types
     runs-on: ubuntu-latest
@@ -88,7 +98,7 @@ jobs:
 
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 10
 
       - uses: actions/setup-node@v4
         with:
@@ -118,7 +128,7 @@ jobs:
 
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 10
 
       - uses: actions/setup-node@v4
         with:
@@ -131,6 +141,57 @@ jobs:
 
       - name: Run tests
         run: pnpm exec jest --ci --forceExit
+
+  frontend-audit:
+    name: Frontend Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+
+      - name: Audit dependencies
+        working-directory: frontend
+        run: pnpm audit --audit-level=moderate
+        continue-on-error: true
+
+  secret-scan:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for Gitleaks
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  sast:
+    name: SAST (Bandit)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install bandit
+      - run: bandit -r app/ -ll  # Only high/medium severity
 
   docker-build:
     name: Docker Build Test
@@ -145,3 +206,29 @@ jobs:
 
       - name: Build frontend image
         run: docker build -t healthbytes-frontend ./frontend
+
+  # ==========================================================================
+  # PRODUCTION DEPLOYMENT (Manual Approval Gate)
+  # ==========================================================================
+  # The manual approval is configured in GitHub UI, NOT in this file:
+  #   GitHub Settings → Environments → "production" → Required reviewers
+  # Add at least one reviewer there to enforce a manual approval step before
+  # this job runs. Without that configuration, the job will run automatically.
+  # ==========================================================================
+  deploy-production:
+    name: Deploy to Production
+    needs: [backend-test, frontend-test, sast, secret-scan, docker-build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    environment:
+      name: production
+      url: https://api.healthbytes.com
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy placeholder
+        run: |
+          echo "Production deployment approved."
+          echo "Configure EAS Build (mobile) or ECS deploy (backend) here."
+          echo "See docs/architecture/ for deployment strategy."

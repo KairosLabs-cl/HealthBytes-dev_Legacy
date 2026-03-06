@@ -37,8 +37,7 @@ async def create_address(
     - **country**: 2-letter ISO code, default 'CL'
     - **is_default**: Set as default address (unsets others)
     """
-    user_id = str(current_user.id)
-    address = await AddressService.create_address(db, user_id, address_data)
+    address = await AddressService.create_address(db, current_user.id, address_data)
     return address
 
 
@@ -53,8 +52,7 @@ async def get_addresses(
     1. Default address first
     2. Most recently created
     """
-    user_id = str(current_user.id)
-    addresses = await AddressService.get_user_addresses(db, user_id)
+    addresses = await AddressService.get_user_addresses(db, current_user.id)
 
     # Find default address ID
     default_id = next((addr.id for addr in addresses if addr.is_default), None)
@@ -75,8 +73,7 @@ async def get_address(
 
     Must belong to current user
     """
-    user_id = str(current_user.id)
-    address = await AddressService.get_address_by_id(db, address_id, user_id)
+    address = await AddressService.get_address_by_id(db, address_id, current_user.id)
     return address
 
 
@@ -92,8 +89,7 @@ async def update_address(
 
     All fields are optional. Only provided fields will be updated.
     """
-    user_id = str(current_user.id)
-    address = await AddressService.update_address(db, address_id, user_id, address_data)
+    address = await AddressService.update_address(db, address_id, current_user.id, address_data)
     return address
 
 
@@ -110,8 +106,7 @@ async def delete_address(
     - Your only address
     - Your default address (set another as default first)
     """
-    user_id = str(current_user.id)
-    result = await AddressService.delete_address(db, address_id, user_id)
+    result = await AddressService.delete_address(db, address_id, current_user.id)
     return result
 
 
@@ -128,6 +123,5 @@ async def set_default_address(
 
     Automatically unsets other default addresses
     """
-    user_id = str(current_user.id)
-    address = await AddressService.set_default_address(db, address_id, user_id)
+    address = await AddressService.set_default_address(db, address_id, current_user.id)
     return address

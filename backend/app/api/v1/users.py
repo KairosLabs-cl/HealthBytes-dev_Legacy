@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/", response_model=List[UserResponse])
+@router.get("", response_model=List[UserResponse])
 async def list_users(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
@@ -45,6 +45,38 @@ async def list_users(
         ]
     except Exception as e:
         logger.error("Error listing users: %s", type(e).__name__)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+@router.put("/me/dietary-preferences", response_model=UserResponse)
+async def update_my_dietary_preferences(
+    request: DietaryPreferencesUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    PUT /users/me/dietary-preferences
+    Update the authenticated user's dietary preferences.
+
+    Used by the onboarding flow and profile settings.
+    """
+    try:
+        user = await user_service.update_dietary_preferences(
+            db=db, user_id=current_user.id, tags=request.tags
+        )
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        return UserResponse.model_validate(user)
+    except HTTPException:
+        raise
+    except Exception as e:
+        await db.rollback()
+        logger.error(
+            "Error updating dietary preferences for user %s: %s",
+            current_user.id,
+            type(e).__name__,
+        )
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
@@ -134,38 +166,6 @@ async def update_user(
     except Exception as e:
         await db.rollback()
         logger.error("Error updating user %s: %s", id, type(e).__name__)
-        raise HTTPException(status_code=500, detail="Internal Server Error")
-
-
-@router.put("/me/dietary-preferences", response_model=UserResponse)
-async def update_my_dietary_preferences(
-    request: DietaryPreferencesUpdate,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """
-    PUT /users/me/dietary-preferences
-    Update the authenticated user's dietary preferences.
-
-    Used by the onboarding flow and profile settings.
-    """
-    try:
-        user = await user_service.update_dietary_preferences(
-            db=db, user_id=current_user.id, tags=request.tags
-        )
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-
-        return UserResponse.model_validate(user)
-    except HTTPException:
-        raise
-    except Exception as e:
-        await db.rollback()
-        logger.error(
-            "Error updating dietary preferences for user %s: %s",
-            current_user.id,
-            type(e).__name__,
-        )
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 

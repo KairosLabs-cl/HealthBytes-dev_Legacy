@@ -95,6 +95,11 @@ jest.mock('lucide-react-native', () => ({
   CheckCircleIcon: () => null,
   MapPinIcon: () => null,
   PhoneIcon: () => null,
+  Lock: () => null,
+}));
+
+jest.mock('react-native-safe-area-context', () => ({
+  SafeAreaView: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 // Mock Alert.alert — jest.spyOn fails on frozen RN modules; direct assignment works
@@ -127,7 +132,7 @@ const mockGetToken = jest.fn().mockResolvedValue('test-token');
 // --- Setup helpers ---
 
 function setupAuth(isSignedIn = true) {
-  (useAuth as jest.Mock).mockReturnValue({ isSignedIn, getToken: mockGetToken });
+  (useAuth as jest.Mock).mockReturnValue({ isSignedIn, isLoaded: true, getToken: mockGetToken });
 }
 
 function setupStores(overrides?: { addresses?: any[]; defaultAddress?: any }) {
@@ -304,12 +309,14 @@ describe('CheckoutV2Screen', () => {
       });
     });
 
-    it('abre la URL de pago y limpia el carrito', async () => {
+    it('abre la URL de pago (carrito se limpia en success/failure, no aquí)', async () => {
       await renderAtStep('summary');
       fireEvent.press(screen.getByText('Confirmar Orden'));
       await waitFor(() => {
         expect(Linking.openURL).toHaveBeenCalled();
-        expect(mockResetCart).toHaveBeenCalled();
+        // resetCart is intentionally NOT called here: cart is reset by
+        // /payment/success and /payment/failure to avoid losing cart on cancel.
+        expect(mockResetCart).not.toHaveBeenCalled();
       });
     });
 
@@ -352,13 +359,10 @@ describe('CheckoutV2Screen', () => {
       });
     });
 
-    it('redirige a login si el usuario no está autenticado', async () => {
+    it('muestra AuthGate si el usuario no está autenticado', () => {
       setupAuth(false);
-      await renderAtStep('summary');
-      fireEvent.press(screen.getByText('Confirmar Orden'));
-      await waitFor(() => {
-        expect(mockPush).toHaveBeenCalledWith('/(auth)/login');
-      });
+      render(<CheckoutV2Screen />);
+      expect(screen.getByText('Inicia sesion para continuar')).toBeTruthy();
     });
   });
 });

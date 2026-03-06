@@ -32,7 +32,7 @@ export default function PaymentPendingScreen() {
 
       const order = await getOrderById(String(orderId), token);
 
-      if (order.status === "confirmed") {
+      if (order.status === "processing") {
         router.replace({
           pathname: "/payment/success",
           params: { orderId: String(orderId) },
