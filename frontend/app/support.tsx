@@ -1,3 +1,4 @@
+import { AuthGate } from "@/components/AuthGate";
 import { View, ScrollView, Pressable, Linking } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,6 +15,7 @@ export default function SupportScreen() {
   };
 
   return (
+    <AuthGate message="Inicia sesión para contactar soporte.">
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
@@ -104,5 +106,6 @@ export default function SupportScreen() {
         </View>
       </ScrollView>
     </SafeAreaView>
+    </AuthGate>
   );
 }

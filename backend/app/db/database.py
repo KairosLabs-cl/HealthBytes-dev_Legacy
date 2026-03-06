@@ -1,3 +1,6 @@
+import logging
+
+import redis.asyncio as aioredis
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
@@ -39,3 +42,32 @@ async def get_db():
             yield session
         finally:
             await session.close()
+
+
+# Redis client for caching
+_redis_logger = logging.getLogger(__name__)
+_redis_client: "aioredis.Redis | None" = None
+
+
+async def get_redis() -> "aioredis.Redis | None":
+    """
+    Returns a connected Redis client if REDIS_URL is configured.
+    Returns None if Redis is unavailable — callers must handle this gracefully.
+    """
+    global _redis_client
+    if not settings.REDIS_URL:
+        return None
+    if _redis_client is None:
+        try:
+            _redis_client = aioredis.from_url(
+                settings.REDIS_URL,
+                encoding="utf-8",
+                decode_responses=True,
+                socket_connect_timeout=2,
+            )
+            await _redis_client.ping()
+            _redis_logger.info("Redis connected: %s", settings.REDIS_URL)
+        except Exception as exc:
+            _redis_logger.warning("Redis unavailable — cache disabled: %s", exc)
+            _redis_client = None
+    return _redis_client

@@ -64,7 +64,7 @@ export function RecentOrders({
               key={order.id}
               onPress={() => {
                 // Próximamente: navegar a detalle de orden
-                console.log("Order pressed:", order.id);
+                if (__DEV__) console.log("Order pressed:", order.id);
               }}
               className={`${STATUS_COLORS[normalizedStatus]} border border-gray-200 rounded-lg p-3 flex-row items-center justify-between`}
             >

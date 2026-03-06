@@ -15,7 +15,6 @@ import { Address } from "@/types/address";
 import { useAuth } from "@clerk/clerk-expo";
 import { Stack, useRouter } from "expo-router";
 import { MapPinIcon, PhoneIcon } from "lucide-react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -26,6 +25,8 @@ import {
   Text,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { AuthGate } from "@/components/AuthGate";
 
 type CheckoutStep = "address" | "payment" | "summary";
 
@@ -59,10 +60,12 @@ export default function CheckoutV2Screen() {
       }
     };
     loadAddresses();
-  }, [getToken, fetchAddresses]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const subtotal = useMemo(
-    () => items.reduce((acc, item) => acc + item.product.price * item.quantity, 0),
+    () =>
+      items.reduce((acc, item) => acc + item.product.price * item.quantity, 0),
     [items]
   );
 
@@ -71,12 +74,18 @@ export default function CheckoutV2Screen() {
 
   const handleNext = async () => {
     if (currentStep === "address" && !selectedAddress) {
-      Alert.alert("Dirección requerida", "Por favor selecciona una dirección de envío");
+      Alert.alert(
+        "Dirección requerida",
+        "Por favor selecciona una dirección de envío"
+      );
       return;
     }
 
     if (currentStep === "payment" && !selectedPayment) {
-      Alert.alert("Método de pago requerido", "Por favor selecciona un método de pago");
+      Alert.alert(
+        "Método de pago requerido",
+        "Por favor selecciona un método de pago"
+      );
       return;
     }
 
@@ -87,24 +96,27 @@ export default function CheckoutV2Screen() {
       setCurrentStep("summary");
       scrollRef.current?.scrollTo({ y: 0, animated: true });
     } else if (currentStep === "summary") {
+      // Safety net: hard auth check before any payment processing
       if (!isSignedIn) {
-        Alert.alert("Sesión requerida", "Necesitas iniciar sesión para realizar una compra.");
-        router.push("/(auth)/login");
+        Alert.alert(
+          "Sesion requerida",
+          "Debes iniciar sesion antes de confirmar tu compra."
+        );
         return;
       }
 
       let token = await getToken();
 
       if (!token) {
-        for (let attempt = 1; attempt <= 3; attempt++) {
-          await new Promise((resolve) => setTimeout(resolve, 500));
-          token = await getToken();
-          if (token) break;
-        }
+        // Retry token retrieval - Clerk may need to re-authenticate
+        token = await getToken();
       }
 
       if (!token) {
-        Alert.alert("Sesión expirada", "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
+        Alert.alert(
+          "Sesión expirada",
+          "Tu sesión ha expirado. Por favor, inicia sesión nuevamente."
+        );
         router.push("/(auth)/login");
         return;
       }
@@ -137,21 +149,27 @@ export default function CheckoutV2Screen() {
           getToken
         );
 
-        if (__DEV__) console.log("✅ Preference creada:", preference.preference_id);
+        if (__DEV__)
+          console.log("✅ Preference creada:", preference.preference_id);
 
-        const checkoutUrl = preference.sandbox_init_point || preference.init_point;
+        const checkoutUrl =
+          preference.sandbox_init_point || preference.init_point;
         if (__DEV__) console.log("🔗 Redirigiendo a:", checkoutUrl);
 
         const canOpen = await Linking.canOpenURL(checkoutUrl);
         if (canOpen) {
           await Linking.openURL(checkoutUrl);
         } else {
-          Alert.alert("Error", "No se pudo redirigir a Mercado Pago. Por favor, intenta nuevamente.");
+          Alert.alert(
+            "Error",
+            "No se pudo redirigir a Mercado Pago. Por favor, intenta nuevamente."
+          );
           setIsProcessing(false);
           return;
         }
 
-        resetCart();
+        // Cart is reset by payment/success.tsx and payment/failure.tsx on confirmed outcome.
+        // Do NOT reset here — if user cancels MP, they would lose their cart.
         router.replace({
           pathname: "/payment/pending",
           params: {
@@ -184,9 +202,14 @@ export default function CheckoutV2Screen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top', 'bottom']}>
+    <AuthGate message="Inicia sesion para completar tu compra.">
+    <SafeAreaView className="flex-1 bg-white" edges={["top", "bottom"]}>
       <Stack.Screen options={{ headerShown: false }} />
-      <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false} className="flex-1 p-6">
+      <ScrollView
+        ref={scrollRef}
+        showsVerticalScrollIndicator={false}
+        className="flex-1 p-6"
+      >
         {/* Header */}
         <View className="mb-8">
           <Text className="text-3xl font-bold text-black mb-2">Checkout</Text>
@@ -431,7 +454,9 @@ export default function CheckoutV2Screen() {
               <HStack space="md" className="items-center">
                 <ActivityIndicator color="white" />
                 <ButtonText className="text-white font-semibold text-lg">
-                  {currentStep === "summary" ? "Confirmando..." : "Procesando..."}
+                  {currentStep === "summary"
+                    ? "Confirmando..."
+                    : "Procesando..."}
                 </ButtonText>
               </HStack>
             ) : (
@@ -446,6 +471,17 @@ export default function CheckoutV2Screen() {
           </Button>
         </VStack>
       </View>
+      {isProcessing && (
+        <View
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.45)', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
+        >
+          <View className="bg-white rounded-2xl px-8 py-6 items-center">
+            <ActivityIndicator size="large" color="#111827" />
+            <Text className="text-gray-900 font-semibold mt-4 text-base">Confirmando tu orden...</Text>
+          </View>
+        </View>
+      )}
     </SafeAreaView>
+    </AuthGate>
   );
 }

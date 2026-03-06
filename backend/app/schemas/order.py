@@ -1,7 +1,8 @@
 from datetime import datetime
+from decimal import Decimal
 from typing import List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
 
 
 class OrderItemCreate(BaseModel):
@@ -68,7 +69,12 @@ class OrderItemResponse(BaseModel):
     order_id: int
     product_id: int
     quantity: int
-    price: int
+    price: Decimal  # DB stores Numeric(10,2); Decimal avoids float rounding errors
+
+    @field_serializer("price")
+    def serialize_price(self, v: Decimal) -> float:
+        """Serialize Decimal as JSON number for frontend compatibility."""
+        return float(v)
 
     model_config = ConfigDict(from_attributes=True)
 

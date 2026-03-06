@@ -1,3 +1,4 @@
+import { AuthGate } from "@/components/AuthGate";
 import { OrderListItem } from "@/components/OrderListItem";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
@@ -8,7 +9,7 @@ import { useAuth } from "@clerk/clerk-expo";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { AlertCircle, Package } from "lucide-react-native";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -17,95 +18,100 @@ import {
   ScrollView,
   View,
 } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 export default function OrdersScreen() {
   const router = useRouter();
-  const { filter } = useLocalSearchParams<{ filter?: string }>();
+  const { filter, status } = useLocalSearchParams<{
+    filter?: string;
+    status?: string;
+  }>();
   const { getToken, isSignedIn, isLoaded } = useAuth();
-  const { orders, isLoading, isLoadingMore, hasMore, error, fetchOrders, loadMoreOrders, clearError } = useOrders();
+  const {
+    orders,
+    isLoading,
+    isLoadingMore,
+    hasMore,
+    error,
+    fetchOrders,
+    loadMoreOrders,
+    clearError,
+  } = useOrders();
   const [refreshing, setRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
 
+  const initialParam = filter || status;
   const [selectedFilter, setSelectedFilter] = useState<"all" | OrderStatus>(
     () => {
       if (
-        filter &&
-        ["pending", "packed", "in_transit", "delivered", "cancelled"].includes(filter)
+        initialParam &&
+        [
+          "unpaid",
+          "processing",
+          "shipped",
+          "delivered",
+          "returns",
+          "cancelled",
+        ].includes(initialParam)
       ) {
-        return filter as OrderStatus;
+        return initialParam as OrderStatus;
       }
       return "all";
     }
   );
 
   const filters = [
-    { id: "pending", label: "Preparando" },
-    { id: "in_transit", label: "En tránsito" },
-    { id: "delivered", label: "Entregado o por entregar" },
+    { id: "all", label: "Todas" },
+    { id: "unpaid", label: "Sin pagar" },
+    { id: "processing", label: "En proceso" },
+    { id: "shipped", label: "Enviado" },
+    { id: "delivered", label: "Entregado" },
+    { id: "returns", label: "Devolución" },
   ] as const;
 
   useEffect(() => {
-    if (isLoaded && !isSignedIn) {
-      router.replace("/(auth)/login");
-    }
-  }, [isLoaded, isSignedIn, router]);
-
-  const loadOrders = useCallback(async () => {
-    const token = await getToken();
-    if (token) await fetchOrders(token);
-  }, [getToken, fetchOrders]);
-
-  useEffect(() => {
-    if (isSignedIn && isLoaded) {
-      loadOrders();
-    }
-  }, [isSignedIn, isLoaded, loadOrders]);
+    if (!isSignedIn || !isLoaded) return;
+    const status = selectedFilter !== "all" ? selectedFilter : undefined;
+    getToken().then((token) => {
+      if (token) fetchOrders(token, 0, undefined, status);
+    });
+    // Re-fetch when auth state changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSignedIn, isLoaded]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
       const token = await getToken();
-      if (token) await fetchOrders(token);
+      const status = selectedFilter !== "all" ? selectedFilter : undefined;
+      if (token) await fetchOrders(token, 0, undefined, status);
     } finally {
       setRefreshing(false);
     }
-  }, [getToken, fetchOrders]);
+  }, [getToken, fetchOrders, selectedFilter]);
 
-  const filteredOrders = useMemo(() => {
-    if (selectedFilter === "all") return orders;
-    return orders.filter((order) => {
-      const normalizedStatus = order.status.toLowerCase().replace(/_/g, "");
-      const filterStatus = selectedFilter.toLowerCase().replace(/_/g, "");
-      if (
-        selectedFilter === "pending" &&
-        (normalizedStatus === "pending" ||
-          normalizedStatus === "confirmed" ||
-          normalizedStatus === "packed")
-      ) {
-        return true;
-      }
-      return normalizedStatus === filterStatus;
-    });
-  }, [orders, selectedFilter]);
+  const filteredOrders = orders;
+
+  const handleFilterPress = useCallback(
+    async (filterId: "all" | OrderStatus) => {
+      setSelectedFilter(filterId);
+      const token = await getToken();
+      if (!token) return;
+      const status = filterId !== "all" ? filterId : undefined;
+      fetchOrders(token, 0, undefined, status);
+    },
+    [getToken, fetchOrders]
+  );
 
   const handleOrderPress = useCallback(
     (orderId: string | number) => router.push(`/orders/${orderId}`),
     [router]
   );
 
-  if (!isLoaded) {
-    return (
-      <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" />
-        <Text className="mt-4 text-gray-500">Cargando...</Text>
-      </View>
-    );
-  }
-
-  if (!isSignedIn) return null;
-
-  if (!isLoading && orders.length === 0) {
+  if (!isLoading && selectedFilter === "all" && orders.length === 0) {
     return (
       <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
         <StatusBar style="dark" />
@@ -116,9 +122,13 @@ export default function OrdersScreen() {
             No hay órdenes todavía
           </Text>
           <Text className="text-center text-gray-600 mb-6">
-            Cuando hagas tu primera compra, aparecerá aquí el historial de todos tus pedidos.
+            Cuando hagas tu primera compra, aparecerá aquí el historial de todos
+            tus pedidos.
           </Text>
-          <Button onPress={() => router.replace("/")} className="bg-black rounded-full">
+          <Button
+            onPress={() => router.replace("/")}
+            className="bg-black rounded-full"
+          >
             <ButtonText className="text-white">Ver productos</ButtonText>
           </Button>
         </View>
@@ -127,7 +137,7 @@ export default function OrdersScreen() {
   }
 
   const showEmptyFilter =
-    !isLoading && filteredOrders.length === 0 && orders.length > 0;
+    !isLoading && orders.length === 0 && selectedFilter !== "all";
 
   // Defined outside render to avoid remounting the header on every state change
   const listHeader = (
@@ -136,7 +146,9 @@ export default function OrdersScreen() {
       <View className="mb-4">
         <View className="mb-4">
           <Text className="text-2xl font-bold text-black">Mis órdenes</Text>
-          <Text className="text-gray-600 mt-1">Ve el estado de tus compras</Text>
+          <Text className="text-gray-600 mt-1">
+            Ve el estado de tus compras
+          </Text>
         </View>
 
         {/* Filter chips */}
@@ -149,7 +161,7 @@ export default function OrdersScreen() {
           {filters.map((f) => (
             <Pressable
               key={f.id}
-              onPress={() => setSelectedFilter(f.id as OrderStatus)}
+              onPress={() => handleFilterPress(f.id as OrderStatus)}
               style={{ minHeight: 44, justifyContent: "center" }}
               className={`px-4 rounded-full border ${
                 selectedFilter === f.id
@@ -180,12 +192,22 @@ export default function OrdersScreen() {
       {/* Error */}
       {error && (
         <View className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4 flex-row items-start">
-          <Icon as={AlertCircle} size="md" className="text-red-600 mr-3 mt-0.5" />
+          <Icon
+            as={AlertCircle}
+            size="md"
+            className="text-red-600 mr-3 mt-0.5"
+          />
           <View className="flex-1">
             <Text className="text-red-800 font-semibold mb-1">Error</Text>
             <Text className="text-red-700 text-sm">{error}</Text>
-            <Pressable onPress={clearError} className="mt-2" style={{ minHeight: 44, justifyContent: "center" }}>
-              <Text className="text-red-600 font-semibold text-sm">Descartar</Text>
+            <Pressable
+              onPress={clearError}
+              className="mt-2"
+              style={{ minHeight: 44, justifyContent: "center" }}
+            >
+              <Text className="text-red-600 font-semibold text-sm">
+                Descartar
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -210,7 +232,7 @@ export default function OrdersScreen() {
             No hay órdenes con este estado
           </Text>
           <Pressable
-            onPress={() => setSelectedFilter("all")}
+            onPress={() => handleFilterPress("all")}
             className="bg-black px-4 rounded-full"
             style={{ minHeight: 44, justifyContent: "center" }}
           >
@@ -221,62 +243,65 @@ export default function OrdersScreen() {
     </View>
   );
 
-  const listFooter = !isLoading && hasMore ? (
-    <View className="mx-4 mt-4 mb-2">
-      {selectedFilter !== "all" && (
-        <Text className="text-center text-gray-400 text-xs mb-3">
-          Puede haber más órdenes sin cargar
-        </Text>
-      )}
-      <Pressable
-        onPress={async () => {
-          const token = await getToken();
-          if (token) await loadMoreOrders(token);
-        }}
-        disabled={isLoadingMore}
-        className="rounded-full border border-gray-200 items-center justify-center flex-row gap-2 active:bg-gray-50"
-        style={{ minHeight: 48 }}
-      >
-        {isLoadingMore ? (
-          <ActivityIndicator size="small" color="#000" />
-        ) : (
-          <Text className="text-sm font-semibold text-gray-700">
-            Cargar más órdenes
+  const listFooter =
+    !isLoading && hasMore ? (
+      <View className="mx-4 mt-4 mb-2">
+        {selectedFilter !== "all" && (
+          <Text className="text-center text-gray-400 text-xs mb-3">
+            Puede haber más órdenes sin cargar
           </Text>
         )}
-      </Pressable>
-    </View>
-  ) : null;
+        <Pressable
+          onPress={async () => {
+            const token = await getToken();
+            if (token) await loadMoreOrders(token);
+          }}
+          disabled={isLoadingMore}
+          className="rounded-full border border-gray-200 items-center justify-center flex-row gap-2 active:bg-gray-50"
+          style={{ minHeight: 48 }}
+        >
+          {isLoadingMore ? (
+            <ActivityIndicator size="small" color="#000" />
+          ) : (
+            <Text className="text-sm font-semibold text-gray-700">
+              Cargar más órdenes
+            </Text>
+          )}
+        </Pressable>
+      </View>
+    ) : null;
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
-      <StatusBar style="dark" />
-      <Stack.Screen options={{ title: "Mis órdenes" }} />
+    <AuthGate message="Inicia sesion para ver el historial de tus pedidos.">
+      <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+        <StatusBar style="dark" />
+        <Stack.Screen options={{ title: "Mis órdenes" }} />
 
-      <FlatList
-        className="flex-1 bg-white"
-        data={!isLoading ? filteredOrders : []}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View className="px-4">
-            <OrderListItem
-              order={item}
-              onPress={() => handleOrderPress(item.id)}
+        <FlatList
+          className="flex-1 bg-white"
+          data={!isLoading ? filteredOrders : []}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <View className="px-4">
+              <OrderListItem
+                order={item}
+                onPress={() => handleOrderPress(item.id)}
+              />
+            </View>
+          )}
+          ListHeaderComponent={listHeader}
+          ListFooterComponent={listFooter}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor="#000000"
             />
-          </View>
-        )}
-        ListHeaderComponent={listHeader}
-        ListFooterComponent={listFooter}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor="#000000"
-          />
-        }
-        contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
-        showsVerticalScrollIndicator={false}
-      />
-    </SafeAreaView>
+          }
+          contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
+          showsVerticalScrollIndicator={false}
+        />
+      </SafeAreaView>
+    </AuthGate>
   );
 }

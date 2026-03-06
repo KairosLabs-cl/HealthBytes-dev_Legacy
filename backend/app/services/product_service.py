@@ -1,5 +1,6 @@
 """Product service - All product business logic."""
 
+import json
 import logging
 from typing import List, Optional
 
@@ -7,6 +8,8 @@ from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.config import settings
+from app.db.database import get_redis
 from app.db.schemas import DietaryTag, Product
 from app.schemas.product import ProductCreate, ProductUpdate
 
@@ -29,9 +32,12 @@ async def list_products(
     # Eagerly load dietary_tags relationship
     query = select(Product).options(selectinload(Product.dietary_tags))
 
-    # Apply search filter
+    # Apply search filter (name or description)
     if search:
-        query = query.where(Product.name.ilike(f"%{search}%"))
+        search_pattern = f"%{search}%"
+        query = query.where(
+            (Product.name.ilike(search_pattern)) | (Product.description.ilike(search_pattern))
+        )
 
     # Apply category filter
     if category:
@@ -236,3 +242,106 @@ async def search_products(
         )
 
         return result.scalars().all()
+
+
+# Redis cache wrapper for products
+_PRODUCTS_CACHE_KEY = (
+    "products:list:search={search}:skip={skip}:limit={limit}"
+    ":category={category}:tags={tags}:min={min_price}:max={max_price}"
+)
+
+
+def _serialize_product(p: Product) -> dict:
+    """Serialize a Product ORM object to a JSON-safe dict (full fields)."""
+    return {
+        "id": p.id,
+        "name": p.name,
+        "description": p.description,
+        "price": float(p.price),
+        "stock": p.stock if p.stock is not None else 0,
+        "category": p.category,
+        "image": p.image,
+        "vendor_name": p.vendor_name,
+        "nutritional_info": p.nutritional_info,
+        "dietary_tags": [
+            {
+                "id": t.id,
+                "name": t.name,
+                "display_name": t.display_name,
+                "color": t.color,
+            }
+            for t in (p.dietary_tags or [])
+        ],
+    }
+
+
+async def get_products_cached(
+    db: AsyncSession,
+    search: str = None,
+    skip: int = 0,
+    limit: int = 100,
+    category: Optional[str] = None,
+    dietary_tags: Optional[List[str]] = None,
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
+) -> List[Product]:
+    """
+    Wrapper for list_products with Redis cache.
+    Returns ORM objects on cache miss, plain dicts on cache hit (both are
+    accepted by FastAPI's response_model via from_attributes / dict coercion).
+    Gracefully degrades to DB-only if Redis is unavailable.
+    """
+    cache_key = _PRODUCTS_CACHE_KEY.format(
+        search=search or "none",
+        skip=skip,
+        limit=limit,
+        category=category or "none",
+        tags=",".join(sorted(dietary_tags)) if dietary_tags else "none",
+        min_price=min_price if min_price is not None else "none",
+        max_price=max_price if max_price is not None else "none",
+    )
+
+    # Try cache first
+    try:
+        redis = await get_redis()
+        if redis:
+            cached = await redis.get(cache_key)
+            if cached:
+                logger.info("Cache HIT: %s", cache_key)
+                return json.loads(cached)
+    except Exception as exc:
+        logger.warning("Redis cache read failed, falling back to DB: %s", exc)
+
+    # Cache miss — fetch from DB
+    logger.info("Cache MISS: %s", cache_key)
+    results = await list_products(
+        db=db,
+        search=search,
+        skip=skip,
+        limit=limit,
+        category=category,
+        dietary_tags=dietary_tags,
+        min_price=min_price,
+        max_price=max_price,
+    )
+
+    # Write-through cache
+    try:
+        redis = await get_redis()
+        if redis:
+            products_data = [_serialize_product(p) for p in results]
+            await redis.setex(
+                cache_key,
+                settings.REDIS_CACHE_TTL_SECONDS,
+                json.dumps(products_data),
+            )
+            logger.info(
+                "Cached %d products (TTL=%ds): %s",
+                len(results),
+                settings.REDIS_CACHE_TTL_SECONDS,
+                cache_key,
+            )
+    except Exception as exc:
+        logger.warning("Redis cache write failed: %s", exc)
+
+    return results

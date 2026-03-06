@@ -188,17 +188,14 @@ docs/
 │
 ├─ development/                ← 👨‍💻 Guías para desarrolladores
 │  ├─ README.md
-│  ├─ git-workflow.md
-│  ├─ testing-guide.md
-│  └─ code-standards.md
+│  ├─ ESTADO.md                 ← Estado actual del proyecto
+│  ├─ ROADMAP.md                ← Roadmap de desarrollo
+│  ├─ ROADMAP_VISUAL.md         ← Roadmap visual
+│  ├─ TESTING_REPORT.md         ← Reporte de testing
+│  ├─ inspections/              ← Reportes de inspección de código
+│  └─ ...                       ← git-workflow, testing-guide, code-standards
 │
-└─ ai-logs/                    ← 🤖 Sesiones de IA
-   ├─ README.md
-   ├─ latest/                  ← ⭐ Reportes más recientes
-   ├─ status/                  ← Estado del proyecto (ARQUITECTURA, ESTADO, PLAN, RESUMEN)
-   ├─ features/                ← Features documentadas
-   ├─ auth/                    ← Autenticación
-   └─ security/                ← Mejoras de seguridad
+└─ diagramas/                   ← Diagramas de arquitectura
 ```
 
 **Reglas de Documentación (OBLIGATORIAS):**
@@ -208,20 +205,18 @@ docs/
 - ✅ Arquitectura y decisiones → `architecture/`
 - ✅ Features completadas → `features/`
 - ✅ Seguridad → `security/`
-- ✅ Dev guides (testing, git, código) → `development/`
-- ✅ Logs de IA → `ai-logs/{categoria}/`
+- ✅ Dev guides, estado, roadmap → `development/`
 - ❌ NUNCA documentar en raíz de proyecto
 - ❌ NUNCA crear carpetas nuevas sin consultar
 
-#### 2. Archivos Canónicos en `docs/ai-logs/status/`
-Solo pueden existir 4 archivos canónicos (sin otra aprobación):
+#### 2. Archivos Canónicos en `docs/development/`
+Solo pueden existir estos archivos canónicos:
 
 | # | Archivo | Propósito | Cuándo Actualizar |
 |---|---------|-----------|------------------|
-| 1️⃣ | `ARQUITECTURA.md` | Stack, diagramas, capas, decisiones técnicas | Cambios estructurales PRIMERO |
-| 2️⃣ | `ESTADO.md` | Scorecard, tests, features, bloqueadores actuales | Después de arquitectura |
-| 3️⃣ | `PLAN_DE_ACCION.md` | Roadmap, tareas, estimaciones, dependencias | Define "hacia dónde" |
-| 4️⃣ | `RESUMEN_EJECUTIVO.md` | Alto nivel, KPIs, hitos, para stakeholders | Resumen final |
+| 1️⃣ | `ESTADO.md` | Arquitectura, scorecard, tests, features, estado actual | Cambios estructurales PRIMERO |
+| 2️⃣ | `ROADMAP.md` | Roadmap de desarrollo, tareas, estimaciones | Define "hacia dónde" |
+| 3️⃣ | `inspections/` | Reportes de inspección de código | Análisis profundos |
 
 **Orden de actualización ante cambios mayores:**
 ```
@@ -234,25 +229,11 @@ Solo pueden existir 4 archivos canónicos (sin otra aprobación):
 4. RESUMEN_EJECUTIVO.md (comunicar resultado)
 ```
 
-#### 3. Logs Temáticos en `docs/ai-logs/`
-Para documentar sesiones específicas:
-
-```
-ai-logs/
-├─ latest/            ← Reportes más nuevos (acceso rápido)
-├─ status/            ← Estado del proyecto (archivos canónicos)
-├─ features/          ← Feature development docs
-├─ auth/              ← Autenticación & debugging
-└─ security/          ← Security improvements
-```
-
-**Reglas de logs:**
-- ✅ Nombres: `YYYY-MM-DD_descripcion-corta.md`
-- ✅ Incluir decisiones, cambios y resultados
-- ✅ Crear README.md en cada carpeta nueva
-- ✅ Actualizar ai-logs/README.md como índice
-- ❌ No crear archivos sin descripción clara
-- ❌ No dejar logs incompletos o en borrador
+#### 3. Reportes de Inspección
+Para análisis profundos del código, usar `docs/development/inspections/`:
+- ✅ Nombres: `YYYY-MM-DD_nombre-reporte.md`
+- ✅ Incluir hallazgos, métricas y recomendaciones
+- ✅ Actualizar `docs/README.md` si hay nuevos reportes
 
 #### 4. README.md en Cada Carpeta
 **OBLIGATORIO:** Cada carpeta debe tener `README.md` que:
@@ -311,11 +292,7 @@ Al actualizar documentación:
 - Testing strategy
 - Code standards (Python, TypeScript)
 - PR process
-
-**ai-logs/README.md:**
-- Navegación de logs
-- Cómo se genera documentación
-- Links a últimas sesiones
+- Estado del proyecto (links a ESTADO.md, ROADMAP.md)
 
 #### 7. ¿Cuándo Crear Nueva Documentación?
 
@@ -402,29 +379,28 @@ Al actualizar documentación:
 
 **Estructura de documentación:**
 ```
-docs/ai-logs/
-├─ latest/            ← Reportes más nuevos (acceso rápido)
-├─ status/            ← Estado del proyecto (ARQUITECTURA, ESTADO, PLAN, RESUMEN)
-├─ features/          ← Feature development docs
-├─ auth/              ← Autenticación & debugging
-└─ security/          ← Security improvements
+docs/
+├─ setup/            ← Guías de instalación
+├─ architecture/     ← Diseño y decisiones técnicas
+├─ features/         ← Features implementadas
+├─ security/         ← Seguridad
+├─ development/      ← Guías, ESTADO, ROADMAP, inspections
+└─ diagramas/        ← Diagramas
 ```
 
 **Reglas de documentación:**
-- ✅ Nombres: `YYYY-MM-DD_descripcion-corta.md`
+- ✅ Nombres descriptivos
 - ✅ Incluir decisiones, cambios y resultados
-- ✅ Crear README.md en cada carpeta nueva
-- ✅ Actualizar ai-logs/README.md como índice
+- ✅ Actualizar docs/README.md como índice
 - ❌ No crear archivos sin descripción clara
-- ❌ No dejar logs incompletos o en borrador
 
 **Secciones de documentación:**
 - **setup/** - Guías de instalación
 - **architecture/** - Diseño y decisiones
 - **features/** - Features implementadas
 - **security/** - Seguridad
-- **development/** - Guías para desarrolladores
-- **ai-logs/** - Sesiones de IA
+- **development/** - Guías para devs, estado, roadmap
+- ~~**ai-logs/**~~ - ✅ ELIMINADO (2026-03-03)
 
 ### 5. Al Instalar Dependencias
 

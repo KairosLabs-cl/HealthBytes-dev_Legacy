@@ -105,11 +105,16 @@ curl -I http://localhost:3001/
 - [x] Diagnostic endpoints protected (dev-only)
 - [x] Python 3.14.2 enforced in `start.ps1`
 - [x] Configuration externalized in `config.py`
+- [x] CORS hardened (no localhost wildcard)
+- [x] Webhook signature validation mandatory (Mercado Pago)
+- [x] Auth email collision prevention (Clerk)
+- [x] Seller order exposure patched
+- [x] Security scanning in CI/CD (Bandit + Gitleaks)
+- [x] Dependency audits in CI (pip safety + pnpm audit)
 - [ ] WAF (Web Application Firewall) rules - Future
 - [ ] Rate limiting per endpoint - Future
 - [ ] OWASP Top 10 audit - Future
 - [ ] Penetration testing - Future
-- [ ] Security scanning in CI/CD - Future
 
 ---
 
@@ -203,6 +208,6 @@ If you discover a security vulnerability, **please do not open a public issue**.
 
 ---
 
-**Last Updated**: February 3, 2026
-**Security Review**: codex/review-branch-for-security-improvements
-**Status**: ✅ Ready for Merge
+**Last Updated**: March 3, 2026
+**Security Review**: Comprehensive audit (6-agent parallel scan)
+**Status**: ✅ Hardened

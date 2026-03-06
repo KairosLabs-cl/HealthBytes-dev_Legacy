@@ -36,17 +36,20 @@ services:
     restart: unless-stopped
     environment:
       ***REDACTED_DATABASE_URL***
-      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-in-production}
+      JWT_SECRET: ${JWT_SECRET}  # Set in .env file - never hardcode
       CLERK_PUBLISHABLE_KEY: ${CLERK_PUBLISHABLE_KEY}
       ***REDACTED_CLERK_SECRET_KEY***
       ENVIRONMENT: ${ENVIRONMENT:-development}
       LOG_LEVEL: ${LOG_LEVEL:-info}
+      REDIS_URL: redis://redis:6379/0
     ports:
       - "3001:3001"
     volumes:
       - ./backend/app:/app/app
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - healthbytes_network
@@ -95,33 +98,28 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  # Redis Cache (Optional - for future use)
+  # Redis for caching
   redis:
     image: redis:7-alpine
-    container_name: healthbytes-cache
+    container_name: healthbytes-redis
     restart: unless-stopped
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_dev}
     ports:
       - "6379:6379"
-    volumes:
-      - redis_data:/data
     networks:
       - healthbytes_network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 3
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: "5m"
+        max-file: "2"
 
 volumes:
   postgres_data:
-    driver: local
-  redis_data:
     driver: local
 
 networks:

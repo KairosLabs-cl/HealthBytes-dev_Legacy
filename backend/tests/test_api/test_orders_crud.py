@@ -47,7 +47,7 @@ def products(db_session):
 @pytest.fixture
 def order_with_items(db_session, customer_user, products):
     """Create an order with items for the customer user."""
-    order = Order(user_id=customer_user.id, status="pending", total=13000.0)
+    order = Order(user_id=customer_user.id, status="unpaid", total=13000.0)
     db_session.add(order)
     db_session.commit()
     db_session.refresh(order)
@@ -71,11 +71,11 @@ class TestCreateOrder:
                     {"productId": products[0].id, "quantity": 1, "price": 5000.0},
                 ]
             }
-            response = client.post("/orders/", json=order_data)
+            response = client.post("/orders", json=order_data)
             assert response.status_code == 201
             data = response.json()
             assert data["user_id"] == customer_user.id
-            assert data["status"] == "pending"
+            assert data["status"] == "unpaid"
             assert len(data["items"]) == 1
             assert data["items"][0]["product_id"] == products[0].id
         finally:
@@ -84,7 +84,7 @@ class TestCreateOrder:
     def test_create_order_requires_auth(self, client):
         """Test that creating order requires authentication."""
         response = client.post(
-            "/orders/", json={"items": [{"productId": 1, "quantity": 1, "price": 10}]}
+            "/orders", json={"items": [{"productId": 1, "quantity": 1, "price": 10}]}
         )
         assert response.status_code == 401
 
@@ -97,7 +97,7 @@ class TestCreateOrder:
                     {"productId": 99999, "quantity": 1, "price": 100.0},
                 ]
             }
-            response = client.post("/orders/", json=order_data)
+            response = client.post("/orders", json=order_data)
             # May return 404 or 422 depending on validation path
             assert response.status_code in [404, 422]
         finally:
@@ -107,7 +107,7 @@ class TestCreateOrder:
         """Test creating order with no items returns 422."""
         app.dependency_overrides[get_current_user] = lambda: customer_user
         try:
-            response = client.post("/orders/", json={"items": []})
+            response = client.post("/orders", json={"items": []})
             assert response.status_code == 422
         finally:
             app.dependency_overrides.pop(get_current_user, None)
@@ -210,9 +210,9 @@ class TestUpdateOrder:
         """Test admin can update order status."""
         app.dependency_overrides[get_current_user] = lambda: admin_user
         try:
-            response = client.put(f"/orders/{order_with_items.id}", json={"status": "confirmed"})
+            response = client.put(f"/orders/{order_with_items.id}", json={"status": "processing"})
             assert response.status_code == 200
-            assert response.json()["status"] == "confirmed"
+            assert response.json()["status"] == "processing"
         finally:
             app.dependency_overrides.pop(get_current_user, None)
 

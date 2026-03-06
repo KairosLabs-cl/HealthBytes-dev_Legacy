@@ -3,7 +3,7 @@
 import logging
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(tags=["favorites"])
 
 
-@router.post("/", response_model=FavoriteResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=FavoriteResponse, status_code=status.HTTP_201_CREATED)
 async def add_favorite(
     favorite_data: FavoriteCreate,
     current_user: User = Depends(get_current_user),
@@ -65,10 +65,10 @@ async def remove_favorite(
         )
 
 
-@router.get("/", response_model=List[FavoriteResponse])
+@router.get("", response_model=List[FavoriteResponse])
 async def get_favorites(
-    skip: int = 0,
-    limit: int = 100,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=100),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):

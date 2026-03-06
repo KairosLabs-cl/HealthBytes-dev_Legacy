@@ -24,7 +24,7 @@ describe("Order Store", () => {
 
       await useOrders.getState().fetchOrders("token");
 
-      expect(ordersApi.getOrders).toHaveBeenCalledWith("token", 0, 50);
+      expect(ordersApi.getOrders).toHaveBeenCalledWith("token", 0, 50, undefined);
       expect(useOrders.getState().orders).toEqual(orders);
       expect(useOrders.getState().isLoading).toBe(false);
       expect(useOrders.getState().error).toBeNull();
@@ -34,7 +34,7 @@ describe("Order Store", () => {
       (ordersApi.getOrders as jest.Mock).mockResolvedValue([]);
 
       await useOrders.getState().fetchOrders("token", 10, 20);
-      expect(ordersApi.getOrders).toHaveBeenCalledWith("token", 10, 20);
+      expect(ordersApi.getOrders).toHaveBeenCalledWith("token", 10, 20, undefined);
     });
 
     test("sets error on failure", async () => {

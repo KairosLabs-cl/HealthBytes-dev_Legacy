@@ -2,6 +2,8 @@
  * Dietary preferences API client
  */
 
+import { throwIfNotOk } from "@/lib/apiError";
+
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 /**
@@ -20,11 +22,5 @@ export async function updateDietaryPreferences(
     body: JSON.stringify({ tags }),
   });
 
-  if (!res.ok) {
-    const error = await res.json().catch(() => ({}));
-    throw new Error(
-      (error as { detail?: { message?: string } }).detail?.message ||
-        "Error al guardar preferencias dietarias"
-    );
-  }
+  await throwIfNotOk(res, "Error al guardar preferencias dietarias");
 }

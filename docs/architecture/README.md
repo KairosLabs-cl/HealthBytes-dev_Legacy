@@ -140,8 +140,7 @@ HealthBytes-dev/
 │   ├── architecture/          ← Diseño
 │   ├── features/              ← Features
 │   ├── security/              ← Seguridad
-│   ├── development/           ← Dev guides
-│   └── ai-logs/               ← IA logs
+│   └── development/           ← Dev guides, ESTADO, roadmaps
 │
 ├── Tools/                      ← Scripts utilitarios
 │   ├── backend/

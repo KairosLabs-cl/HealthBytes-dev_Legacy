@@ -122,6 +122,18 @@ async def get_current_user(
                 # Auto-create user from verified Clerk payload
                 try:
                     email = clerk_payload.get("email") or clerk_payload.get("primary_email_address")
+
+                    # Check for email collision before creating
+                    if email:
+                        existing_result = await db.execute(select(User).where(User.email == email))
+                        existing_user = existing_result.scalar_one_or_none()
+                        if existing_user:
+                            # Email exists under different Clerk ID — update clerk_id
+                            existing_user.clerk_id = clerk_user_id
+                            await db.commit()
+                            await db.refresh(existing_user)
+                            return existing_user
+
                     new_user = User(
                         clerk_id=clerk_user_id,
                         email=email or f"user_{clerk_user_id[:8]}@example.com",
@@ -132,6 +144,7 @@ async def get_current_user(
                     await db.refresh(new_user)
                     return new_user
                 except Exception:
+                    await db.rollback()
                     logger.warning("Error creating user from Clerk token")
 
     # Fallback: Try legacy JWT token (signature-verified via decode_token)

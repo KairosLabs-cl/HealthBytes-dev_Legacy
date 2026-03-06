@@ -1,4 +1,5 @@
 import { Product } from "@/types/product";
+import { throwIfNotOk } from "@/lib/apiError";
 
 export interface Favorite {
   id: number;
@@ -19,11 +20,7 @@ export async function addFavorite(productId: number, token: string) {
         body: JSON.stringify({ product_id: productId })
     });
 
-    if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.detail || 'Error adding favorite');
-    }
-
+    await throwIfNotOk(res, 'Error adding favorite');
     return res.json();
 }
 
@@ -36,8 +33,7 @@ export async function removeFavorite(productId: number, token: string) {
     });
 
     if (!res.ok && res.status !== 404) {
-        const error = await res.json();
-        throw new Error(error.detail || 'Error removing favorite');
+        await throwIfNotOk(res, 'Error removing favorite');
     }
 }
 
@@ -48,10 +44,7 @@ export async function getUserFavorites(token: string) {
         }
     });
 
-    if (!res.ok) {
-        throw new Error('Error fetching favorites');
-    }
-
+    await throwIfNotOk(res, 'Error fetching favorites');
     return res.json();
 }
 
@@ -62,10 +55,7 @@ export async function checkFavorite(productId: number, token: string) {
         }
     });
 
-    if (!res.ok) {
-        throw new Error('Error checking favorite');
-    }
-
+    await throwIfNotOk(res, 'Error checking favorite');
     return res.json();
 }
 
@@ -76,9 +66,6 @@ export async function getFavoriteIds(token: string): Promise<number[]> {
         }
     });
 
-    if (!res.ok) {
-        throw new Error('Error fetching favorite IDs');
-    }
-
+    await throwIfNotOk(res, 'Error fetching favorite IDs');
     return res.json();
 }

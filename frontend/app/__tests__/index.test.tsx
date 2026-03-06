@@ -87,6 +87,11 @@ jest.mock('@clerk/clerk-expo', () => ({
   useUser: jest.fn(() => ({
     user: { firstName: 'Test', fullName: 'Test User' },
   })),
+  useAuth: jest.fn(() => ({
+    isSignedIn: true,
+    isLoaded: true,
+    getToken: jest.fn().mockResolvedValue('test-token'),
+  })),
 }));
 
 jest.mock('expo-status-bar', () => ({

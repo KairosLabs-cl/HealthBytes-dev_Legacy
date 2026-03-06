@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.post("/", response_model=OrderResponse, status_code=201)
+@router.post("", response_model=OrderResponse, status_code=201)
 async def create_order(
     order_data: OrderCreate,
     db: AsyncSession = Depends(get_db),
@@ -56,7 +56,7 @@ async def create_order(
                 addr_result = await db.execute(
                     select(Address).where(
                         Address.id == order_data.address_id,
-                        Address.user_id == current_user.clerk_id,
+                        Address.user_id == current_user.id,
                         Address.is_active.is_(True),
                     )
                 )
@@ -116,7 +116,7 @@ async def create_order(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("Error creating order: %s: %s", type(e).__name__, type(e).__name__)
+        logger.error("Error creating order: %s: %s", type(e).__name__, str(e))
         await db.rollback()
         error = ErrorResponse.server_error(
             message="An unexpected error occurred while creating the order",
@@ -127,10 +127,11 @@ async def create_order(
         )
 
 
-@router.get("/", response_model=List[OrderResponse])
+@router.get("", response_model=List[OrderResponse])
 async def list_orders(
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=50, description="Max 50 items per request"),
+    status_filter: str = Query(None, alias="status", description="Filter orders by status"),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -140,15 +141,21 @@ async def list_orders(
     - Admin: All orders
     - User: Their own orders
     - Seller: Orders with their products (TODO)
+    - status: Optional filter by order status
     """
     try:
         if current_user.role == "admin":
             stmt = select(Order)
         elif current_user.role == "seller":
-            # TODO: Filter by seller's products
-            stmt = select(Order)
+            # TODO: Filter by seller's products once seller_id is added to Product schema
+            # For now, sellers only see their own orders (same as regular users)
+            stmt = select(Order).where(Order.user_id == current_user.id)
         else:
             stmt = select(Order).where(Order.user_id == current_user.id)
+
+        # Optional status filter
+        if status_filter:
+            stmt = stmt.where(Order.status == status_filter)
 
         # Eager load items
         stmt = (

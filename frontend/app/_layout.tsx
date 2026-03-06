@@ -11,23 +11,43 @@ import {
 } from "@/components/ui/toast";
 import "@/global.css";
 import { tokenCache } from "@/lib/cache";
-import { useCart } from "@/store/cartStore";
+import { useCart, selectCartItemCount } from "@/store/cartStore";
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { usePreferencesStore } from "@/store/preferencesStore";
-import { updateDietaryPreferences } from "@/api/preferences";
 import OnboardingModal from "@/components/OnboardingModal";
 import { ClerkLoaded, ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Link, Stack } from "expo-router";
+import { Link, Stack, useSegments } from "expo-router";
 import { User } from "lucide-react-native";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Pressable } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import * as Sentry from "@sentry/react-native";
+
+// Initialize Sentry if DSN is configured
+const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN;
+if (SENTRY_DSN) {
+  Sentry.init({
+    dsn: SENTRY_DSN,
+    environment: __DEV__ ? "development" : "production",
+    debug: __DEV__,
+    tracesSampleRate: __DEV__ ? 0 : 0.1,
+  });
+}
 
 // Constants removed
 
 // Create a client
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,   // 5 minutes
+      gcTime: 10 * 60 * 1000,     // 10 minutes (formerly cacheTime)
+      retry: 1,
+      retryDelay: (attempt: number) => Math.min(1000 * 2 ** attempt, 30000),
+    },
+  },
+});
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
@@ -38,7 +58,7 @@ if (!publishableKey) {
 }
 
 function RootLayoutNav() {
-  const cartItemsNum = useCart((state) => state.items.reduce((sum, item) => sum + item.quantity, 0));
+  const cartItemsNum = useCart(selectCartItemCount);
   const setAuth = useCart((state) => state.setAuth);
   const mergeAndSync = useCart((state) => state.mergeAndSync);
   const error = useCart((state) => state.error);
@@ -48,33 +68,11 @@ function RootLayoutNav() {
   const { isSignedIn, getToken } = useAuth();
 
   // Onboarding
-  const { hasSeenOnboarding, markOnboardingComplete, setDietaryPreferences } =
+  const { hasCompletedOnboarding, setOnboardingComplete } =
     usePreferencesStore();
-  const [showOnboarding, setShowOnboarding] = useState(false);
 
-  useEffect(() => {
-    if (isSignedIn && !hasSeenOnboarding) {
-      setShowOnboarding(true);
-    }
-  }, [isSignedIn, hasSeenOnboarding]);
-
-  const handleOnboardingComplete = async (tags: string[]) => {
-    setDietaryPreferences(tags);
-    markOnboardingComplete();
-    setShowOnboarding(false);
-    if (tags.length > 0) {
-      const token = await getToken();
-      if (token) {
-        updateDietaryPreferences(tags, token).catch(() => {
-          // fire-and-forget: failure is non-critical
-        });
-      }
-    }
-  };
-
-  const handleOnboardingSkip = () => {
-    markOnboardingComplete();
-    setShowOnboarding(false);
+  const handleOnboardingComplete = () => {
+    setOnboardingComplete();
   };
 
   // Handle cart errors
@@ -125,6 +123,9 @@ function RootLayoutNav() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSignedIn]);
 
+  const segments = useSegments();
+  const hideNavBar = segments[0] === "(auth)";
+
   return (
     <>
       <Stack>
@@ -171,19 +172,18 @@ function RootLayoutNav() {
         />
       </Stack>
 
-      <BottomNavBar />
+      {!hideNavBar && <BottomNavBar />}
       <CartFlyOverlay />
 
       <OnboardingModal
-        visible={showOnboarding}
+        visible={!!(isSignedIn && !hasCompletedOnboarding)}
         onComplete={handleOnboardingComplete}
-        onSkip={handleOnboardingSkip}
       />
     </>
   );
 }
 
-export default function RootLayout() {
+export default Sentry.wrap(function RootLayout() {
   return (
     <SafeAreaProvider>
       <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
@@ -199,4 +199,4 @@ export default function RootLayout() {
       </ClerkProvider>
     </SafeAreaProvider>
   );
-}
+});

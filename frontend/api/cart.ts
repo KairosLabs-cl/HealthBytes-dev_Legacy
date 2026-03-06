@@ -1,3 +1,6 @@
+import { getAuthHeader } from '@/lib/authHeaders';
+import { throwIfNotOk } from '@/lib/apiError';
+
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export interface CartItem {
@@ -31,14 +34,11 @@ export interface CartItemCreate {
 export async function getCart(token: string): Promise<Cart> {
   const res = await fetch(`${API_URL}/cart`, {
     headers: {
-      'Authorization': token,
+      ...getAuthHeader(token),
     },
   });
 
-  if (!res.ok) {
-    throw new Error('Failed to fetch cart');
-  }
-
+  await throwIfNotOk(res, 'Failed to fetch cart');
   return res.json();
 }
 
@@ -53,7 +53,7 @@ export async function addToCart(
   const res = await fetch(`${API_URL}/cart/items`, {
     method: 'POST',
     headers: {
-      'Authorization': token,
+      ...getAuthHeader(token),
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -62,10 +62,7 @@ export async function addToCart(
     }),
   });
 
-  if (!res.ok) {
-    throw new Error('Failed to add item to cart');
-  }
-
+  await throwIfNotOk(res, 'Failed to add item to cart');
   return res.json();
 }
 
@@ -80,16 +77,13 @@ export async function updateCartItem(
   const res = await fetch(`${API_URL}/cart/items/${productId}`, {
     method: 'PUT',
     headers: {
-      'Authorization': token,
+      ...getAuthHeader(token),
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ quantity }),
   });
 
-  if (!res.ok) {
-    throw new Error('Failed to update cart item');
-  }
-
+  await throwIfNotOk(res, 'Failed to update cart item');
   return res.json();
 }
 
@@ -103,13 +97,11 @@ export async function removeFromCart(
   const res = await fetch(`${API_URL}/cart/items/${productId}`, {
     method: 'DELETE',
     headers: {
-      'Authorization': token,
+      ...getAuthHeader(token),
     },
   });
 
-  if (!res.ok) {
-    throw new Error('Failed to remove item from cart');
-  }
+  await throwIfNotOk(res, 'Failed to remove item from cart');
 }
 
 /**
@@ -119,13 +111,11 @@ export async function clearCart(token: string): Promise<void> {
   const res = await fetch(`${API_URL}/cart`, {
     method: 'DELETE',
     headers: {
-      'Authorization': token,
+      ...getAuthHeader(token),
     },
   });
 
-  if (!res.ok) {
-    throw new Error('Failed to clear cart');
-  }
+  await throwIfNotOk(res, 'Failed to clear cart');
 }
 
 /**
@@ -138,15 +128,12 @@ export async function mergeCart(
   const res = await fetch(`${API_URL}/cart/merge`, {
     method: 'POST',
     headers: {
-      'Authorization': token,
+      ...getAuthHeader(token),
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ items: localItems }),
   });
 
-  if (!res.ok) {
-    throw new Error('Failed to merge cart');
-  }
-
+  await throwIfNotOk(res, 'Failed to merge cart');
   return res.json();
 }
