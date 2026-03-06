@@ -36,6 +36,8 @@ def main() -> int:
         (f"{base}/api/v1/cart",         401, "Cart (requires auth → 401)"),
         (f"{base}/api/v1/orders",       401, "Orders (requires auth → 401)"),
         (f"{base}/api/v1/auth/profile", 401, "Profile (requires auth → 401)"),
+        (f"{base}/api/v1/addresses",    401, "Addresses (requires auth → 401)"),
+        (f"{base}/api/v1/favorites",    401, "Favorites (requires auth → 401)"),
     ]
 
     results = [check(url, expected, name) for url, expected, name in tests]
