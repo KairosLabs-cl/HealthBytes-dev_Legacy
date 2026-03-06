@@ -50,21 +50,30 @@ Las personas con condiciones como celiaquía, diabetes o alergias alimentarias e
 
 ### Estado Actual del Proyecto
 
-**Versión:** MVP Listo para Launch
-**Última actualización:** Marzo 4, 2026
+**Versión:** Pre-MVP (70% production-ready)
+**Última actualización:** Marzo 5, 2026
+**Auditoría técnica:** [Ver reporte completo](docs/plans/TECHNICAL_AUDIT_2026-03-05.md)
 
-| Componente         | Estado          | Descripción                                      |
-| ------------------ | --------------- | ------------------------------------------------ |
-| 🎨 Frontend Mobile | ✅ Funcional    | React Native + Expo (126 tests)                   |
-| ⚙️ Backend API   | ✅ Funcional    | FastAPI + SQLAlchemy async (430+ tests)             |
-| 🗄️ Base de Datos | ✅ Funcional    | PostgreSQL con modelos core + índices optimizados |
-| 🔐 Autenticación  | ✅ Implementado | JWT + Clerk (dual auth)                           |
-| 🧪 Tests           | ✅ Estable      | 556 tests passing (430+126), 80%+ coverage        |
-| 🛡️ Security      | ✅ Hardened     | Auditoría completa, CI security scanning          |
-| 🐳 Docker          | ✅ Funcional    | docker-compose con backend + DB + Redis           |
-| 🚀 CI/CD           | ✅ Implementado | GitHub Actions (lint, test, security, deploy)    |
-| 💾 Redis Cache    | ✅ Implementado | Cache de productos con TTL 5min                   |
-| ☁️ AWS Infra      | ✅ Implementado | Scripts ECS/ECR/SSM en infra/                    |
+<!-- DOCSYNC:status-table -->
+| Componente | Estado | Detalle |
+| --- | --- | --- |
+| 🎨 Frontend Mobile | ✅ Funcional | React Native + Expo — 130 tests pasando |
+| ⚙️ Backend API | ✅ Funcional | FastAPI + SQLAlchemy async — 441 tests pasando |
+| 🗄️ Base de Datos | ✅ Funcional | PostgreSQL con modelos core + índices optimizados |
+| 🔐 Autenticación | ✅ Implementado | JWT + Clerk (dual auth), AuthGate en screens protegidos |
+| 🧪 Tests | ✅ Estable | 571 tests (441 backend + 130 frontend) — 39% coverage |
+| 🛡️ Security | ✅ Hardened | Bandit + Gitleaks + pnpm audit en CI |
+| 🐳 Docker | ✅ Funcional | docker-compose con backend + DB |
+| 🚀 CI/CD | ✅ Implementado | GitHub Actions (lint, test, SAST, secret-scan, deploy) |
+| ☁️ AWS Infra | ✅ Scripts listos | ECR, ECS task definition, SSM secrets en `infra/` |
+| 💾 Redis Cache | ✅ | `get_products_cached()` en product_service.py |
+| 📲 OnboardingModal | ✅ | Cableado en `_layout.tsx` |
+| 🧪 E2E Tests | ✅ | 10 tests en `backend/tests/e2e/` |
+| 🔄 Rate Limiting | ✅ | slowapi en endpoints críticos |
+| 📊 Sentry | ✅ | Error tracking en backend |
+| 💳 MercadoPago | ✅ | Payment integration completa |
+| 📧 Email (Resend) | ✅ | Emails de confirmación de órdenes |
+<!-- /DOCSYNC:status-table -->
 
 ### 🛡️ Estado de Seguridad (Febrero 2026)
 
@@ -256,24 +265,28 @@ HealthBytes sigue una arquitectura **monolítica modular** que facilita el desar
 
 ### Frontend
 
-| Tecnología  | Versión | Propósito                       |
+<!-- DOCSYNC:stack-frontend -->
+| Tecnología | Versión | Propósito |
 | ------------ | -------- | -------------------------------- |
-| React Native | Latest   | Framework mobile multiplataforma |
-| TypeScript   | 5.x      | Type safety y mejor DX           |
-| Expo         | Latest   | Tooling y desarrollo             |
-| Zustand      | Latest   | State management ligero          |
-| Gluestack UI | Latest   | Componentes UI consistentes      |
+| React Native | 0.81.5 | Framework mobile multiplataforma |
+| TypeScript | 5.x | Type safety y mejor DX |
+| Expo | 54.0.33 | Tooling y desarrollo |
+| Zustand | 5.0.10 | State management ligero |
+| Gluestack UI | Latest | Componentes UI consistentes |
+<!-- /DOCSYNC:stack-frontend -->
 
 ### Backend
 
-| Tecnología | Versión | Propósito               |
+<!-- DOCSYNC:stack-backend -->
+| Tecnología | Versión | Propósito |
 | ----------- | -------- | ------------------------ |
-| FastAPI     | 0.109+   | Framework web moderno    |
-| Python      | 3.14+    | Lenguaje principal       |
-| SQLAlchemy  | 2.x      | ORM async                |
-| Pydantic    | 2.x      | Validación de datos     |
-| PostgreSQL  | 14+      | Base de datos relacional |
-| pytest      | Latest   | Testing framework        |
+| FastAPI | 0.135.1 | Framework web moderno |
+| Python | 3.14.3 | Lenguaje principal |
+| SQLAlchemy | 2.0.48 | ORM async |
+| Pydantic | 2.12.5 | Validación de datos |
+| PostgreSQL | 14+ | Base de datos relacional |
+| pytest | Latest | Testing framework |
+<!-- /DOCSYNC:stack-backend -->
 
 ### Autenticación & Seguridad
 
@@ -726,13 +739,17 @@ pytest -v
 
 ### Estado Actual de Tests
 
-**Suite green (backend + frontend) | 80%+ coverage | 0 failures**
-
-| Suite    | Tests | Estado       |
+<!-- DOCSYNC:testing-table -->
+| Suite | Tests | Estado |
 | -------- | ----- | ------------ |
-| Backend  | 430+  | ✅ Passing   |
-| Frontend | 126   | ✅ Passing   |
-| **Total**| **556+** | ✅ **All green** |
+| Backend | 441 | ✅ Passing |
+| Frontend | 130/130 (14 suites) | ✅ Passing |
+| E2E | 10 | ✅ Passing |
+| Smoke | 8 checks | ✅ Ready |
+| **Total** | **571** | ✅ **All green** |
+
+> Coverage backend: **39%** — API endpoints: **45** — TODOs pendientes: **1**
+<!-- /DOCSYNC:testing-table -->
 
 Ver más detalles en [tests/README.md](backend/tests/README.md)
 
@@ -1082,6 +1099,8 @@ Al usar HealthBytes, el usuario acepta que:
 
 Hecho con ❤️ por el equipo de HealthBytes
 
-_Última actualización: 4 Marzo 2026_
+<!-- DOCSYNC:last-updated -->
+_Última actualización: 2026-03-05 — generado automáticamente por docsync_
+<!-- /DOCSYNC:last-updated -->
 
 </div>
