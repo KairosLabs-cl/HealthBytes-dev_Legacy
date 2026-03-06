@@ -100,11 +100,12 @@ async def attach_user_for_rate_limiting(request: Request, call_next):
     IMPORTANT: This middleware MUST run before SlowAPIMiddleware to ensure
     request.state.user is available when rate limits are checked.
     """
-    from app.middleware.auth import verify_clerk_token
+    from sqlalchemy import select
+
     from app.core.security import decode_token
     from app.db.database import get_db
     from app.db.schemas import User
-    from sqlalchemy import select
+    from app.middleware.auth import verify_clerk_token
 
     token = None
 
@@ -371,4 +372,3 @@ if __name__ == "__main__":
         port=settings.PORT,  # Configured in config.py
         reload=True if settings.ENVIRONMENT == "dev" else False,
     )
-

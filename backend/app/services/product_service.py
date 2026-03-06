@@ -335,7 +335,12 @@ async def get_products_cached(
                 settings.REDIS_CACHE_TTL_SECONDS,
                 json.dumps(products_data),
             )
-            logger.info("Cached %d products (TTL=%ds): %s", len(results), settings.REDIS_CACHE_TTL_SECONDS, cache_key)
+            logger.info(
+                "Cached %d products (TTL=%ds): %s",
+                len(results),
+                settings.REDIS_CACHE_TTL_SECONDS,
+                cache_key,
+            )
     except Exception as exc:
         logger.warning("Redis cache write failed: %s", exc)
 
