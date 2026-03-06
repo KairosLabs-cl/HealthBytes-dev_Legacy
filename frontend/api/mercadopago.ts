@@ -3,6 +3,8 @@
  * Handles payment preference creation and status checking
  */
 
+import { throwIfNotOk } from "@/lib/apiError";
+
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export interface CreatePreferenceRequest {
@@ -61,24 +63,9 @@ export async function createMercadoPagoPreference(
     }
   );
 
+  await throwIfNotOk(res, "Error creating Mercado Pago preference");
+
   const data = await res.json();
-
-  if (!res.ok) {
-    let errorMsg = `Error ${res.status}`;
-
-    if (typeof data.detail === "string") {
-      errorMsg = data.detail;
-    } else if (typeof data.detail === "object" && data.detail?.message) {
-      errorMsg = data.detail.message;
-    } else if (data.message) {
-      errorMsg = data.message;
-    }
-
-    if (__DEV__) {
-      console.error("Error creating MP preference:", errorMsg);
-    }
-    throw new Error(errorMsg);
-  }
 
   if (__DEV__) {
     console.log("MP preference created:", data.preference_id);
@@ -115,11 +102,9 @@ export async function getMercadoPagoPaymentStatus(
     }
   );
 
-  const data = await res.json();
+  await throwIfNotOk(res, "Failed to get payment status");
 
-  if (!res.ok) {
-    throw new Error(data.detail || `Failed to get payment status`);
-  }
+  const data = await res.json();
 
   if (__DEV__) {
     console.log("Payment status:", data.status);

@@ -1,3 +1,4 @@
+import { AuthGate } from "@/components/AuthGate";
 import { View, ScrollView } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -10,6 +11,7 @@ export default function MessagesScreen() {
   const router = useRouter();
 
   return (
+    <AuthGate message="Inicia sesión para ver tus mensajes.">
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
@@ -85,5 +87,6 @@ export default function MessagesScreen() {
         </View>
       </ScrollView>
     </SafeAreaView>
+    </AuthGate>
   );
 }

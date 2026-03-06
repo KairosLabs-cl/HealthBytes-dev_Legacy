@@ -33,13 +33,13 @@ class Settings(BaseSettings):
     RESEND_API_KEY: Optional[str] = None
     EMAIL_FROM_ADDRESS: str = "HealthBytes <onboarding@resend.dev>"
 
-    # URLs for callbacks
-    BACKEND_URL: str = "http://127.0.0.1:3001"
-    FRONTEND_URL: str = "http://localhost:8081"
+    # URLs for callbacks (required in production — no localhost defaults)
+    BACKEND_URL: Optional[str] = None
+    FRONTEND_URL: Optional[str] = None
 
     # Environment
     ENVIRONMENT: str = "dev"
-    HOST: str = "0.0.0.0"
+    HOST: str = "127.0.0.1"
     PORT: int = 3001
     # Default max request body size for general API requests.
     # 10 MB supports typical e-commerce JSON payloads and small media.
@@ -48,6 +48,13 @@ class Settings(BaseSettings):
     MAX_REQUEST_BODY_SIZE: int = 10 * 1024 * 1024  # 10 MB
     ENABLE_DIAGNOSTIC_ENDPOINTS: bool = False
     DEV_BYPASS_AUTH: bool = False
+
+    # Observability
+    SENTRY_DSN: Optional[str] = None  # Set in production for error tracking
+
+    # Redis (optional — product cache)
+    REDIS_URL: Optional[str] = None
+    REDIS_CACHE_TTL_SECONDS: int = 300  # 5 minutes
 
     @property
     def clerk_jwks_url(self) -> str:
@@ -85,3 +92,24 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+
+def _validate_production_config(s: Settings) -> None:
+    """Raise if critical production secrets are missing when ENVIRONMENT=production."""
+    if getattr(s, "ENVIRONMENT", "development") != "production":
+        return
+    required = {
+        "DATABASE_URL": s.DATABASE_URL if hasattr(s, "DATABASE_URL") else None,
+        "MERCADO_PAGO_WEBHOOK_SECRET": (
+            s.MERCADO_PAGO_WEBHOOK_SECRET if hasattr(s, "MERCADO_PAGO_WEBHOOK_SECRET") else None
+        ),
+        "CLERK_SECRET_KEY": s.CLERK_SECRET_KEY if hasattr(s, "CLERK_SECRET_KEY") else None,
+        "BACKEND_URL": s.BACKEND_URL,
+        "FRONTEND_URL": s.FRONTEND_URL,
+    }
+    missing = [k for k, v in required.items() if not v]
+    if missing:
+        raise RuntimeError(f"Production environment requires these secrets to be set: {missing}")
+
+
+_validate_production_config(settings)

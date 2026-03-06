@@ -1,3 +1,4 @@
+import { AuthGate } from "@/components/AuthGate";
 import React, { useCallback } from 'react';
 import { View, FlatList, Pressable } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
@@ -27,6 +28,7 @@ export default function RecentlyViewedScreen() {
   ), [numColumns]);
 
   return (
+    <AuthGate message="Inicia sesión para ver tus productos visitados.">
     <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
@@ -67,5 +69,6 @@ export default function RecentlyViewedScreen() {
         }
       />
     </SafeAreaView>
+    </AuthGate>
   );
 }

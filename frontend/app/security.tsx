@@ -1,3 +1,4 @@
+import { AuthGate } from "@/components/AuthGate";
 import { View } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -9,6 +10,7 @@ export default function SecurityScreen() {
   const router = useRouter();
 
   return (
+    <AuthGate message="Inicia sesión para gestionar la seguridad de tu cuenta.">
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       <StatusBar style="dark" />
       <Stack.Screen options={{ title: "Seguridad" }} />
@@ -30,5 +32,6 @@ export default function SecurityScreen() {
         </Button>
       </View>
     </SafeAreaView>
+    </AuthGate>
   );
 }

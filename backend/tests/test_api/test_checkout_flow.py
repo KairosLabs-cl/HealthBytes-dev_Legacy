@@ -37,7 +37,7 @@ def checkout_product(db_session):
 def user_address(db_session, checkout_user):
     """Active address belonging to checkout_user."""
     addr = Address(
-        user_id=checkout_user.clerk_id,
+        user_id=checkout_user.id,
         label="Casa",
         street="Av. Providencia",
         street_number="1234",
@@ -71,7 +71,7 @@ class TestCheckoutWithAddress:
         app.dependency_overrides[get_current_user] = lambda: checkout_user
         try:
             response = client.post(
-                "/orders/",
+                "/orders",
                 json=_order_payload(
                     checkout_product,
                     addressId=user_address.id,
@@ -82,7 +82,7 @@ class TestCheckoutWithAddress:
             data = response.json()
             assert data["address_id"] == user_address.id
             assert data["payment_method"] == "mercado_pago"
-            assert data["status"] == "pending"
+            assert data["status"] == "unpaid"
             assert "address_id" in data
             assert "payment_method" in data
         finally:
@@ -95,7 +95,7 @@ class TestCheckoutWithAddress:
         app.dependency_overrides[get_current_user] = lambda: checkout_user
         try:
             response = client.post(
-                "/orders/",
+                "/orders",
                 json=_order_payload(checkout_product, paymentMethod="mercado_pago"),
             )
             assert response.status_code == 201
@@ -112,7 +112,7 @@ class TestCheckoutWithAddress:
         app.dependency_overrides[get_current_user] = lambda: checkout_user
         try:
             response = client.post(
-                "/orders/",
+                "/orders",
                 json=_order_payload(checkout_product),
             )
             assert response.status_code == 201
@@ -125,7 +125,7 @@ class TestCheckoutWithAddress:
     ):
         """Address belonging to another user must return 404."""
         other_addr = Address(
-            user_id="clerk_other_user_999",
+            user_id=9999,  # non-existent user → ownership check must reject
             street="Calle Ajena",
             street_number="99",
             city="Valparaíso",
@@ -141,7 +141,7 @@ class TestCheckoutWithAddress:
         app.dependency_overrides[get_current_user] = lambda: checkout_user
         try:
             response = client.post(
-                "/orders/",
+                "/orders",
                 json=_order_payload(checkout_product, addressId=other_addr.id),
             )
             assert response.status_code == 404
@@ -153,7 +153,7 @@ class TestCheckoutWithAddress:
     ):
         """Inactive address (soft-deleted) must return 404."""
         inactive_addr = Address(
-            user_id=checkout_user.clerk_id,
+            user_id=checkout_user.id,
             street="Calle Inactiva",
             street_number="1",
             city="Santiago",
@@ -169,7 +169,7 @@ class TestCheckoutWithAddress:
         app.dependency_overrides[get_current_user] = lambda: checkout_user
         try:
             response = client.post(
-                "/orders/",
+                "/orders",
                 json=_order_payload(checkout_product, addressId=inactive_addr.id),
             )
             assert response.status_code == 404
@@ -183,7 +183,7 @@ class TestCheckoutWithAddress:
         app.dependency_overrides[get_current_user] = lambda: checkout_user
         try:
             response = client.post(
-                "/orders/",
+                "/orders",
                 json=_order_payload(checkout_product, paymentMethod="stripe"),
             )
             assert response.status_code == 422
@@ -197,7 +197,7 @@ class TestCheckoutWithAddress:
         app.dependency_overrides[get_current_user] = lambda: checkout_user
         try:
             response = client.post(
-                "/orders/",
+                "/orders",
                 json=_order_payload(checkout_product, paymentMethod="venti"),
             )
             assert response.status_code == 201
@@ -212,7 +212,7 @@ class TestCheckoutWithAddress:
         app.dependency_overrides[get_current_user] = lambda: checkout_user
         try:
             create_resp = client.post(
-                "/orders/",
+                "/orders",
                 json=_order_payload(
                     checkout_product,
                     addressId=user_address.id,

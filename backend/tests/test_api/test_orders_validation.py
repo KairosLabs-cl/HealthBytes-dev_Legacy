@@ -50,5 +50,5 @@ async def test_order_uses_database_price_not_client_price(
     }
 
     # Verificar que el endpoint no falla (auth puede ser 401, pero no 500)
-    response = client.post("/orders/", json=order_data)
+    response = client.post("/orders", json=order_data)
     assert response.status_code in [201, 401]

@@ -323,18 +323,9 @@ pytest --cov=app --cov-report=html
 
 ### Estado Actual
 
-✅ **8/8 tests pasando**
+✅ **387 tests pasando | 87% cobertura**
 
-```
-test_auth.py::test_register_user ✅
-test_auth.py::test_login_user ✅
-test_health.py::test_health_check ✅
-test_orders.py::test_get_orders ✅
-test_orders.py::test_create_order ✅
-test_products.py::test_get_products ✅
-test_products.py::test_get_product_by_id ✅
-test_products.py::test_create_product ✅
-```
+Suites cubiertas: API endpoints, services (cart, orders, products, users, payments), security, auth, performance, config.
 
 ### Cobertura
 
@@ -618,16 +609,9 @@ tests/
 
 ### Estado Actual de Tests
 
-✅ **8/8 tests pasando**
+✅ **387 tests pasando | 87% cobertura total**
 
-- ✅ test_register_user - Registro de usuario
-- ✅ test_login_user - Login de usuario
-- ✅ test_health_check - Health check endpoint
-- ✅ test_get_orders - Obtener órdenes
-- ✅ test_create_order - Crear orden
-- ✅ test_get_products - Listar productos
-- ✅ test_get_product_by_id - Obtener producto por ID
-- ✅ test_create_product - Crear producto
+Incluye tests de: auth, products, orders, cart, users, payments (Mercado Pago), addresses, dietary tags, services y performance.
 
 ### 📖 Para Entender los Tests
 
@@ -649,12 +633,13 @@ pytest tests/ --cov=app --cov-html=htmlcov
 
 Abrir: `htmlcov/index.html` en navegador
 
-**Cobertura por módulo:**
+**Cobertura por módulo (actualizado Mar 2026):**
 
-- `app/api/v1/auth.py`: 67% ✅
-- `app/api/v1/products.py`: 41%
-- `app/api/v1/orders.py`: 19%
-- `app/core/security.py`: 71% ✅
+- `app/api/v1/auth.py`: 100% ✅
+- `app/api/v1/products.py`: 84% ✅
+- `app/services/product_service.py`: 97% ✅
+- `app/core/security.py`: 100% ✅
+- **Total**: 87% ✅
 
 ### Agregar Nuevo Test
 

@@ -273,7 +273,7 @@ async def test_process_webhook_approved(mp_service, mock_db, test_payment):
     result = await mp_service.process_webhook(db=mock_db, payment_id="12345", topic="payment")
 
     assert result["status"] == "completed"
-    assert order_mock.status == "confirmed"
+    assert order_mock.status == "processing"
     assert test_payment.status == PaymentStatus.COMPLETED
 
 
@@ -366,7 +366,7 @@ async def test_refund_payment_success(mp_service, mock_db, test_payment, test_or
     """Test successful refund with stock release and order cancellation"""
     test_payment.status = PaymentStatus.COMPLETED
     test_payment.provider_payment_id = "mp_pay_123"
-    test_order_with_items.status = "confirmed"
+    test_order_with_items.status = "processing"
 
     # First execute returns payment, second returns order (for stock release)
     payment_result = MagicMock(scalar_one_or_none=MagicMock(return_value=test_payment))
@@ -451,13 +451,14 @@ def test_validate_x_signature_invalid(mp_service):
 
 
 def test_validate_x_signature_no_secret():
-    """Test signature validation skipped when no secret configured"""
+    """Test signature validation raises error when no secret configured"""
     settings = MagicMock(spec=Settings)
     settings.MERCADO_PAGO_ACCESS_TOKEN = "test"
     settings.MERCADO_PAGO_WEBHOOK_SECRET = None
 
     service = MercadoPagoService(settings)
-    assert service._validate_x_signature("ts=1,v1=abc", "12345") is True
+    with pytest.raises(PaymentError, match="requerido"):
+        service._validate_x_signature("ts=1,v1=abc", "12345")
 
 
 def test_validate_x_signature_malformed(mp_service):

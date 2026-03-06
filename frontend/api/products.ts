@@ -1,3 +1,5 @@
+import { throwIfNotOk } from "@/lib/apiError";
+
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export type ProductFilters = {
@@ -34,27 +36,18 @@ export async function listProducts(filters?: ProductFilters) {
     : `${API_URL}/products`;
 
   const res = await fetch(url);
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error("Error");
-  }
-  return data;
+  await throwIfNotOk(res, "Error fetching products");
+  return res.json();
 }
 
 export async function getFeaturedProduct() {
   const res = await fetch(`${API_URL}/products/featured`);
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error("Error fetching featured product");
-  }
-  return data;
+  await throwIfNotOk(res, "Error fetching featured product");
+  return res.json();
 }
 
 export async function fetchProductById(id: number) {
   const res = await fetch(`${API_URL}/products/${id}`);
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error("Error");
-  }
-  return data;
+  await throwIfNotOk(res, "Error fetching product");
+  return res.json();
 }

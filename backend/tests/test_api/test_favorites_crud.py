@@ -48,7 +48,7 @@ class TestAddFavorite:
         )
         app.dependency_overrides[get_current_user] = lambda: customer_user
         try:
-            response = client.post("/favorites/", json={"product_id": product.id})
+            response = client.post("/favorites", json={"product_id": product.id})
             assert response.status_code == 201
         finally:
             app.dependency_overrides.pop(get_current_user, None)
@@ -59,14 +59,14 @@ class TestAddFavorite:
         mock_svc.add_favorite = AsyncMock(side_effect=ValueError("Already favorited"))
         app.dependency_overrides[get_current_user] = lambda: customer_user
         try:
-            response = client.post("/favorites/", json={"product_id": product.id})
+            response = client.post("/favorites", json={"product_id": product.id})
             assert response.status_code == 409
         finally:
             app.dependency_overrides.pop(get_current_user, None)
 
     def test_add_favorite_requires_auth(self, client):
         """Test adding favorite requires authentication."""
-        response = client.post("/favorites/", json={"product_id": 1})
+        response = client.post("/favorites", json={"product_id": 1})
         assert response.status_code == 401
 
 
@@ -105,7 +105,7 @@ class TestGetFavorites:
         mock_svc.get_user_favorites = AsyncMock(return_value=[])
         app.dependency_overrides[get_current_user] = lambda: customer_user
         try:
-            response = client.get("/favorites/")
+            response = client.get("/favorites")
             assert response.status_code == 200
             assert isinstance(response.json(), list)
         finally:
@@ -113,7 +113,7 @@ class TestGetFavorites:
 
     def test_get_favorites_requires_auth(self, client):
         """Test getting favorites requires auth."""
-        response = client.get("/favorites/")
+        response = client.get("/favorites")
         assert response.status_code == 401
 
 

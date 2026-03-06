@@ -3,7 +3,7 @@
  * Renders above everything in _layout.tsx. ProductCard triggers it via cartAnimationStore.
  */
 import { useEffect } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { ShoppingCart } from 'lucide-react-native';
 import Animated, {
   useSharedValue,
@@ -16,12 +16,11 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCartAnimation } from '@/store/cartAnimationStore';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-
 export default function CartFlyOverlay() {
   const pending = useCartAnimation((s) => s.pending);
   const clear = useCartAnimation((s) => s.clear);
   const insets = useSafeAreaInsets();
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
   const flyX = useSharedValue(0);
   const flyY = useSharedValue(0);
@@ -49,8 +48,8 @@ export default function CartFlyOverlay() {
     clear();
 
     // Cart tab = center of nav pill, mid-height of pill (~60px tall, bottom = max(insets.bottom, 8))
-    const targetX = SCREEN_WIDTH / 2;
-    const targetY = SCREEN_HEIGHT - Math.max(insets.bottom, 8) - 30;
+    const targetX = screenWidth / 2;
+    const targetY = screenHeight - Math.max(insets.bottom, 8) - 30;
 
     flyX.value = startX - 22;
     flyY.value = startY - 22;

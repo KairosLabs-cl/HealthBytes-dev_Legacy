@@ -34,7 +34,7 @@ class TestListUsers:
         app.dependency_overrides[get_current_user] = lambda: admin_user
         app.dependency_overrides[verify_admin] = lambda: admin_user
         try:
-            response = client.get("/users/")
+            response = client.get("/users")
             assert response.status_code == 200
             data = response.json()
             assert isinstance(data, list)
@@ -47,7 +47,7 @@ class TestListUsers:
     def test_list_users_requires_admin(self, client, db_session, customer_user):
         """Test non-admin cannot list users."""
         # No override for verify_admin, so it will check role
-        response = client.get("/users/")
+        response = client.get("/users")
         assert response.status_code == 401
 
 

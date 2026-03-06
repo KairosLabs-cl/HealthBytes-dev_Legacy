@@ -1,4 +1,5 @@
 /// <reference types="nativewind/types" />
+import { AuthGate } from "@/components/AuthGate";
 import { ScrollView, View, Image } from "react-native";
 import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -64,6 +65,7 @@ export default function ProfileSettingsScreen() {
   }
 
   return (
+    <AuthGate message="Inicia sesión para acceder a la configuración.">
     <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       <StatusBar style="dark" />
       <Stack.Screen options={{ title: "Ajustes de Cuenta" }} />
@@ -163,5 +165,6 @@ export default function ProfileSettingsScreen() {
         </View>
       </ScrollView>
     </SafeAreaView>
+    </AuthGate>
   );
 }

@@ -3,7 +3,7 @@ Address Model
 User shipping/billing addresses
 """
 
-from sqlalchemy import Boolean, Column, DateTime, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.sql import func
 
 from app.db.database import Base
@@ -15,7 +15,7 @@ class Address(Base):
     __tablename__ = "addresses"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(String, nullable=False, index=True)  # Clerk user ID
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
 
     # Address fields
     label = Column(String(50), nullable=True)  # e.g., "Home", "Work", "Mom's house"
