@@ -19,17 +19,15 @@ export default function AddressesScreen() {
   const { getToken } = useAuth();
   const scrollRef = useRef<ScrollView>(null);
 
-  // Store state
-  const {
-    addresses,
-    fetchAddresses,
-    createAddress,
-    updateAddress,
-    deleteAddress,
-    isLoading: isStoreLoading,
-    error: storeError,
-    clearError
-  } = useAddress();
+  // Store state (using selectors to prevent unnecessary re-renders)
+  const addresses = useAddress((state) => state.addresses);
+  const fetchAddresses = useAddress((state) => state.fetchAddresses);
+  const createAddress = useAddress((state) => state.createAddress);
+  const updateAddress = useAddress((state) => state.updateAddress);
+  const deleteAddress = useAddress((state) => state.deleteAddress);
+  const isStoreLoading = useAddress((state) => state.isLoading);
+  const storeError = useAddress((state) => state.error);
+  const clearError = useAddress((state) => state.clearError);
 
   // Form state
   const [addressLabel, setAddressLabel] = useState("");

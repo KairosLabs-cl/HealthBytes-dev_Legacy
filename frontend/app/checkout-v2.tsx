@@ -32,8 +32,14 @@ type CheckoutStep = "address" | "payment" | "summary";
 
 export default function CheckoutV2Screen() {
   const router = useRouter();
-  const { items, resetCart } = useCart();
-  const { addresses, defaultAddress, fetchAddresses } = useAddress();
+
+  // Use specific selectors to prevent unnecessary re-renders when other store state changes
+  const items = useCart((state) => state.items);
+  const resetCart = useCart((state) => state.resetCart);
+
+  const addresses = useAddress((state) => state.addresses);
+  const defaultAddress = useAddress((state) => state.defaultAddress);
+  const fetchAddresses = useAddress((state) => state.fetchAddresses);
   const { isSignedIn, getToken } = useAuth();
 
   const [currentStep, setCurrentStep] = useState<CheckoutStep>("address");
