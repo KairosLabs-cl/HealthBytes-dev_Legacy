@@ -2,9 +2,9 @@
 
 # 🏗️ HealthBytes - Arquitectura Técnica
 
-**Fecha**: Marzo 3, 2026
-**Versión**: MVP v2.5.0 - Audit Fixes + CI/CD + Security Hardening
-**Estado**: ✅ 548 tests passing, CI/CD activo, seguridad auditada
+**Fecha**: Marzo 5, 2026
+**Versión**: MVP v3.0.0 - Pre-Production Ready
+**Estado**: ✅ 571 tests passing (441 backend + 130 frontend) | 45 endpoints | 8/8 features implementadas
 
 ---
 
@@ -230,7 +230,7 @@ CREATE TABLE order_items (
 
 ---
 
-## 🔗 Endpoints API (REST)
+## 🔗 Endpoints API (REST) — 45 endpoints
 
 ### Cart Endpoints
 ```
@@ -244,11 +244,16 @@ POST   /api/v1/cart/merge        # Merge local cart with server
 
 ### Product Endpoints
 ```
-GET    /api/v1/products          # List products (paginated)
+GET    /api/v1/products          # List products (paginated, Redis-cached)
 GET    /api/v1/products/:id      # Get product by ID
 POST   /api/v1/products          # Create product (seller only)
 PUT    /api/v1/products/:id      # Update product (seller only)
 DELETE /api/v1/products/:id      # Delete product (seller only)
+GET    /api/v1/products/:id/stock         # Get stock info (public)
+POST   /api/v1/products/check-availability        # Check single item stock
+POST   /api/v1/products/bulk-check-availability   # Check multiple items stock
+PUT    /api/v1/products/:id/stock         # Update stock (admin only)
+POST   /api/v1/products/:id/release-stock # Release stock (admin only)
 ```
 
 ### Order Endpoints
@@ -263,6 +268,33 @@ POST   /api/v1/orders            # Create order from cart
 POST   /api/v1/auth/login        # JWT login
 POST   /api/v1/auth/register     # User registration
 GET    /api/v1/auth/me           # Get current user
+```
+
+### Address Endpoints
+```
+GET    /api/v1/addresses                    # List user addresses
+POST   /api/v1/addresses                    # Create address
+GET    /api/v1/addresses/:id                # Get address by ID
+PUT    /api/v1/addresses/:id                # Update address
+DELETE /api/v1/addresses/:id                # Delete address (soft)
+PATCH  /api/v1/addresses/:id/set-default    # Set as default
+```
+
+### Favorites Endpoints
+```
+GET    /api/v1/favorites              # Get user favorites
+POST   /api/v1/favorites              # Add favorite
+DELETE /api/v1/favorites/:product_id  # Remove favorite
+GET    /api/v1/favorites/check/:id    # Check if favorited
+GET    /api/v1/favorites/ids          # Get all favorited product IDs
+```
+
+### Payment Endpoints (Mercado Pago)
+```
+POST   /api/v1/payments/mercadopago/create-preference  # Create payment preference
+POST   /api/v1/payments/mercadopago/webhook            # Receive MP notifications
+GET    /api/v1/payments/mercadopago/payment/:id        # Get payment status
+POST   /api/v1/payments/mercadopago/refund             # Refund payment (admin)
 ```
 
 ---
@@ -402,10 +434,19 @@ async def test_add_to_cart_new(db_session, product_a):
 - **API**: 80%+ (endpoints)
 - **Models**: 70%+ (data access)
 
+### Test Counts (v3.0.0)
+| Suite | Tests | Notes |
+|---|---|---|
+| Backend (pytest) | **441** | 39% coverage (fast collect-only mode) |
+| Frontend (Jest) | **130** | 14 suites |
+| E2E | **10** | Auth gate (backend) |
+| Smoke | **8 checks** | `/health`, `/products`, `/cart`, `/orders`, `/auth`, `/addresses`, `/favorites`, `/payments` |
+| **Total** | **571** | |
+
 ### Test Types
 - **Unit**: Service functions with mocked DB
 - **Integration**: API endpoints with test DB
-- **E2E**: Frontend flows (planned)
+- **E2E**: Auth gate + critical flows (backend)
 
 ---
 
@@ -417,17 +458,28 @@ Local Development
 ├── Backend: uvicorn (port 3001)
 ├── Frontend: Expo dev server (port 8081)
 ├── Database: PostgreSQL local
+├── Cache: Redis local
 └── Auth: Clerk sandbox
 ```
 
-### Target (Production)
+### Target (Production) — ECS Fargate
 ```
-AWS Infrastructure (Planned)
-├── ECS Fargate: Containerized backend
+AWS Infrastructure
+├── ECS Fargate: Containerized backend (Docker → ECR → ECS)
 ├── RDS PostgreSQL: Managed database
+├── ElastiCache Redis: Product catalog cache (TTL-based)
 ├── S3: Static assets + images
 ├── CloudFront: CDN
-└── API Gateway: Request routing
+└── Clerk Production: OAuth with production keys
+```
+
+### CI/CD Pipeline (GitHub Actions)
+```
+Push to main/master
+  → CI Gate (lint + tests + security)
+  → Build Docker image → push to ECR
+  → Deploy to ECS Fargate (staging / production)
+  → Mobile: EAS build → Google Play (production only)
 ```
 
 ---
@@ -442,8 +494,8 @@ AWS Infrastructure (Planned)
 
 ### API Optimization
 - **Async/Await**: All I/O operations async
-- **Response Caching**: Planned for product catalog
-- **Rate Limiting**: Implemented for auth endpoints
+- **Response Caching**: Redis cache implemented for product catalog (write-through, TTL-based, graceful degradation)
+- **Rate Limiting**: Implemented for auth + payment endpoints (slowapi)
 - **Compression**: Gzip for responses
 
 ### Mobile Optimization
@@ -458,11 +510,12 @@ AWS Infrastructure (Planned)
 
 ### From Current to Production
 1. **Database**: Local PostgreSQL → AWS RDS
-2. **Auth**: Clerk sandbox → Production keys
-3. **Assets**: Local files → S3 + CloudFront
-4. **API**: Local → API Gateway + Lambda
-5. **Monitoring**: Add CloudWatch + X-Ray
-6. **Security**: Add WAF + API keys
+2. **Cache**: Local Redis → AWS ElastiCache
+3. **Auth**: Clerk sandbox → Production keys
+4. **Assets**: Local files → S3 + CloudFront
+5. **API**: Local uvicorn → ECS Fargate (Docker)
+6. **Monitoring**: Add CloudWatch + X-Ray
+7. **Security**: Add WAF + API keys
 
 ### Breaking Changes (None Planned)
 - API contracts stable
@@ -506,7 +559,7 @@ main (production-ready)
 ### Code Quality
 - **Linting**: Black (Python), ESLint (TypeScript)
 - **Type Checking**: mypy (Python), tsc (TypeScript)
-- **Testing**: pytest (Python), Jest (React Native — 126 tests passing, 13 suites ✅)
+- **Testing**: pytest (Python), Jest (React Native — 130 tests passing, 14 suites ✅)
 - **CI/CD**: GitHub Actions (lint, test, security, deploy) ✅
 - **Documentation**: Inline docstrings + READMEs
 
@@ -516,7 +569,7 @@ main (production-ready)
 - Backend Lint (Black, isort, Flake8)
 - Backend Tests (pytest, 80%+ coverage required)
 - Frontend Lint & Types (ESLint, TypeScript)
-- Frontend Tests (Jest, 126 tests)
+- Frontend Tests (Jest, 130 tests)
 - Secret Scanning (Gitleaks)
 - SAST (Bandit)
 - Docker Build Test
@@ -557,16 +610,16 @@ main (production-ready)
 ## 🚨 Known Issues & Technical Debt
 
 ### High Priority
-- **Seller Order Filtering**: Requiere agregar `seller_id` al schema de Product (parche temporal aplicado)
-- **Order Emails**: SendGrid integration pendiente
+- **Order Emails**: SendGrid integration pendiente — email de confirmación de pago no se envía todavía
 
 ### Medium Priority
-- **Performance**: Revisar N+1 restantes (orders ya resuelto)
-- **E2E Tests**: Checkout flow sin tests end-to-end
+- **E2E Tests**: Checkout flow sin tests end-to-end (frontend)
+- **Monitoring**: Sin logging/metrics estructurado en producción (CloudWatch pendiente)
 
 ### Low Priority
-- **Monitoring**: Sin logging/metrics en producción
-- **Multi-vendor**: Arquitectura multi-vendor por definir
+- **Multi-vendor**: Arquitectura multi-vendor por definir (post-MVP)
+- **ESLint 10**: Migración pendiente cuando el ecosystem de plugins libere v2.0
+- **bn.js patch**: Upstream @solana/web3.js sin patch para infinite loop (dev-only impact)
 
 ---
 
