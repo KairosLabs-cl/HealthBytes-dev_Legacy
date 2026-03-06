@@ -14,13 +14,12 @@ import { tokenCache } from "@/lib/cache";
 import { useCart, selectCartItemCount } from "@/store/cartStore";
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { usePreferencesStore } from "@/store/preferencesStore";
-import { updateDietaryPreferences } from "@/api/preferences";
 import OnboardingModal from "@/components/OnboardingModal";
 import { ClerkLoaded, ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Link, Stack, useSegments } from "expo-router";
 import { User } from "lucide-react-native";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Pressable } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Sentry from "@sentry/react-native";
@@ -69,33 +68,11 @@ function RootLayoutNav() {
   const { isSignedIn, getToken } = useAuth();
 
   // Onboarding
-  const { hasSeenOnboarding, markOnboardingComplete, setDietaryPreferences } =
+  const { hasCompletedOnboarding, setOnboardingComplete } =
     usePreferencesStore();
-  const [showOnboarding, setShowOnboarding] = useState(false);
 
-  useEffect(() => {
-    if (isSignedIn && !hasSeenOnboarding) {
-      setShowOnboarding(true);
-    }
-  }, [isSignedIn, hasSeenOnboarding]);
-
-  const handleOnboardingComplete = async (tags: string[]) => {
-    setDietaryPreferences(tags);
-    markOnboardingComplete();
-    setShowOnboarding(false);
-    if (tags.length > 0) {
-      const token = await getToken();
-      if (token) {
-        updateDietaryPreferences(tags, token).catch(() => {
-          // fire-and-forget: failure is non-critical
-        });
-      }
-    }
-  };
-
-  const handleOnboardingSkip = () => {
-    markOnboardingComplete();
-    setShowOnboarding(false);
+  const handleOnboardingComplete = () => {
+    setOnboardingComplete();
   };
 
   // Handle cart errors
@@ -199,9 +176,8 @@ function RootLayoutNav() {
       <CartFlyOverlay />
 
       <OnboardingModal
-        visible={showOnboarding}
+        visible={!!(isSignedIn && !hasCompletedOnboarding)}
         onComplete={handleOnboardingComplete}
-        onSkip={handleOnboardingSkip}
       />
     </>
   );

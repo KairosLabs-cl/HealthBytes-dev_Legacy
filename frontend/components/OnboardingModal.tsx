@@ -2,14 +2,16 @@ import { Modal, Pressable, ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/text";
 import { Button, ButtonText } from "@/components/ui/button";
 import { useState } from "react";
+import { updateDietaryPreferences } from "@/api/preferences";
+import { useAuth } from "@clerk/clerk-expo";
 
 const DIETARY_OPTIONS = [
-  { slug: "sin-gluten", label: "Sin Gluten", emoji: "🌾", description: "Apto para celíacos" },
-  { slug: "vegano", label: "Vegano", emoji: "🌱", description: "Sin productos de origen animal" },
+  { slug: "sin-gluten", label: "Sin Gluten", emoji: "🌾", description: "Apto para celíacos", testID: "tag-celiac" },
+  { slug: "para-diabeticos", label: "Para diabéticos", emoji: "🩺", description: "Bajo índice glucémico", testID: "tag-diabetic" },
+  { slug: "vegano", label: "Vegano", emoji: "🌱", description: "Sin productos de origen animal", testID: "tag-vegan" },
   { slug: "sin-lactosa", label: "Sin Lactosa", emoji: "🥛", description: "Apto para intolerantes" },
   { slug: "bajo-en-azucar", label: "Bajo en azúcar", emoji: "🍬", description: "Reducido en azúcares" },
   { slug: "alto-en-proteina", label: "Alto en proteína", emoji: "💪", description: "Ideal para deportistas" },
-  { slug: "para-diabeticos", label: "Para diabéticos", emoji: "🩺", description: "Bajo índice glucémico" },
   { slug: "sin-nueces", label: "Sin Nueces", emoji: "🥜", description: "Libre de frutos secos" },
   { slug: "sin-mariscos", label: "Sin Mariscos", emoji: "🦐", description: "Sin mariscos ni crustáceos" },
 ] as const;
@@ -18,13 +20,15 @@ const TOTAL_STEPS = 3;
 
 interface OnboardingModalProps {
   visible: boolean;
-  onComplete: (tags: string[]) => void;
-  onSkip: () => void;
+  onComplete: () => void;
 }
 
-export default function OnboardingModal({ visible, onComplete, onSkip }: OnboardingModalProps) {
+export default function OnboardingModal({ visible, onComplete }: OnboardingModalProps) {
   const [step, setStep] = useState(0);
   const [selected, setSelected] = useState<string[]>([]);
+  const { getToken } = useAuth();
+
+  if (!visible) return null;
 
   const toggle = (slug: string) => {
     setSelected((prev) =>
@@ -38,16 +42,24 @@ export default function OnboardingModal({ visible, onComplete, onSkip }: Onboard
     }
   };
 
-  const handleFinish = () => {
-    onComplete(selected);
+  const handleFinish = async () => {
+    if (selected.length > 0) {
+      const token = await getToken();
+      if (token) {
+        updateDietaryPreferences(selected, token).catch(() => {
+          // fire-and-forget: failure is non-critical
+        });
+      }
+    }
     setStep(0);
     setSelected([]);
+    onComplete();
   };
 
   const handleSkip = () => {
     setStep(0);
     setSelected([]);
-    onSkip();
+    onComplete();
   };
 
   return (
@@ -95,6 +107,7 @@ export default function OnboardingModal({ visible, onComplete, onSkip }: Onboard
 
           {step === 2 && (
             <Button
+              testID="submit-btn"
               onPress={handleFinish}
               className="bg-black rounded-full min-h-[52px]"
             >
@@ -105,6 +118,7 @@ export default function OnboardingModal({ visible, onComplete, onSkip }: Onboard
           )}
 
           <Pressable
+            testID="skip-btn"
             onPress={handleSkip}
             className="items-center py-3"
             style={{ minHeight: 44 }}
@@ -160,11 +174,13 @@ function StepPreferences({ selected, toggle }: StepPreferencesProps) {
         contentContainerStyle={{ paddingBottom: 16 }}
       >
         <View className="flex-row flex-wrap gap-3">
-          {DIETARY_OPTIONS.map(({ slug, label, emoji, description }) => {
+          {DIETARY_OPTIONS.map(({ slug, label, emoji, description, ...rest }) => {
             const isActive = selected.includes(slug);
+            const testID = (rest as any).testID as string | undefined;
             return (
               <Pressable
                 key={slug}
+                testID={testID}
                 onPress={() => toggle(slug)}
                 style={{ minHeight: 44, width: "47%" }}
                 className={`rounded-2xl border-2 p-3 ${
