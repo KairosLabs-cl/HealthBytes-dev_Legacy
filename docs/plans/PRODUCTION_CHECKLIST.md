@@ -5,6 +5,36 @@ Firmar con fecha y nombre cuando se verifique cada sección.
 
 ---
 
+## Estado de Auditoría Técnica — 5 Marzo 2026
+
+Auditoría de estado real del proyecto. Verificado contra el código fuente, tests ejecutados localmente.
+
+**Última actualización:** 5 Marzo 2026 — post-fix sprint completado
+
+| Área | Estado | Detalle |
+|------|--------|---------|
+| Backend tests | ✅ 439 passed, 1 skipped | Coverage 87% — 1 performance test flaky (`test_get_user_orders_performance[100]`) |
+| Frontend tests | ✅ 126 passed, 13 suites | Todos en verde con `--forceExit` |
+| CI pnpm version | ✅ Corregido | `deploy.yml:209` actualizado a v10, alineado con `ci.yml` y `package.json` |
+| pytest-cov | ✅ Corregido | `pytest-cov>=4.1.0` en `requirements-dev.txt` |
+| mangum (Lambda) | ✅ Eliminado | Removido de `requirements.txt` y `main.py` |
+| Infra scripts | ✅ Listos | `infra/ecr-setup.sh`, `infra/ecs-task-definition.json`, `infra/secrets-setup.sh` |
+| app.json slug/scheme | ✅ Corregido | `"slug": "healthbytes"`, `"scheme": "healthbytes"` |
+| package.json name | ✅ Corregido | `"name": "healthbytes"` |
+| Typo deploy.yml | ✅ Corregido | `aws-access-key-id` correcto |
+| Redis cache | ✅ Implementado | `get_products_cached()` en `product_service.py` con graceful degradation |
+| OnboardingModal | ✅ Cableado | Conectado al store + `_layout.tsx`, test suite en `components/__tests__/` |
+| E2E tests | ✅ Implementado | 10 tests en `backend/tests/e2e/` (auth gate, checkout flow, email) |
+| Smoke tests extendidos | ✅ Implementado | 8/8 checks incluyendo `/addresses` y `/favorites` |
+
+**Pendientes antes de producción (infra + ops, no código):**
+1. Ejecutar `alembic upgrade head` contra RDS prod
+2. Configurar secrets en AWS SSM con `infra/secrets-setup.sh`
+3. EAS Build preview en device Android real
+4. Flujo E2E manual completo (ver sección 6 del checklist)
+
+---
+
 ## 1. Backend — Variables de Entorno (AWS SSM)
 
 Verificar que todos los parámetros existen en SSM:

@@ -12,19 +12,55 @@
 
 ## Gaps críticos identificados (a corregir antes del deploy)
 
-| Gap | Archivo | Bloqueante |
-|-----|---------|-----------|
-| `"name": "shop"` en package.json | `frontend/package.json:3` | Sí — App Store/Play Store |
-| `slug: "shop"` y `scheme: "safe_ecommerce"` | `frontend/app.json` | Sí — deep links rotos |
-| `app.config.js` extra block comentado | `frontend/app.config.js` | Sí — env vars no inyectadas |
-| Sin perfil iOS en eas.json | `frontend/eas.json` | Sí — no hay path a TestFlight |
-| Typo `aws-access-access-key-id` | `.github/workflows/deploy.yml:94` | Sí — deploy prod falla |
-| pnpm v10 local vs v9 en CI | `ci.yml` + `package.json` | Medio — divergencia de builds |
-| Sin infraestructura IaC | — | Sí — deploy no reproducible |
-| E2E tests no escritos | — | Sí — fixes no verificados |
-| `OnboardingModal` no cableado | `frontend/components/OnboardingModal.tsx` | No — P1 |
-| Redis declarado pero no conectado | `docker-compose.yml` | No — P1 |
-| `PRODUCTION_CHECKLIST.md` ausente | — | No — riesgo operacional |
+| Gap | Archivo | Bloqueante | Estado (5 Mar 2026) |
+|-----|---------|-----------|---------------------|
+| `"name": "shop"` en package.json | `frontend/package.json:3` | Sí — App Store/Play Store | ✅ Corregido |
+| `slug: "shop"` y `scheme: "safe_ecommerce"` | `frontend/app.json` | Sí — deep links rotos | ✅ Corregido |
+| `app.config.js` extra block comentado | `frontend/app.config.js` | Sí — env vars no inyectadas | ✅ Corregido |
+| Sin perfil iOS en eas.json | `frontend/eas.json` | Sí — no hay path a TestFlight | ✅ Corregido |
+| Typo `aws-access-access-key-id` | `.github/workflows/deploy.yml:94` | Sí — deploy prod falla | ✅ Corregido |
+| pnpm v10 local vs v9 en CI | `ci.yml` + `package.json` | Medio — divergencia de builds | ✅ Corregido — `deploy.yml:209` usa v10 |
+| Sin infraestructura IaC | — | Sí — deploy no reproducible | ✅ Scripts en `infra/` (ECR, SSM, task def) |
+| E2E tests no escritos | — | Sí — fixes no verificados | ✅ 10 tests en `backend/tests/e2e/` |
+| `OnboardingModal` no cableado | `frontend/components/OnboardingModal.tsx` | No — P1 | ✅ Cableado a store + `_layout.tsx` |
+| Redis declarado pero no conectado | `docker-compose.yml` | No — P1 | ✅ `get_products_cached()` implementado |
+| `PRODUCTION_CHECKLIST.md` ausente | — | No — riesgo operacional | ✅ Creado y actualizado en `docs/plans/` |
+
+---
+
+## Estado General al 5 Marzo 2026
+
+> Sprint de urgencias completado. Todos los gaps de código están resueltos.
+> Lo que queda es **infra + ops**, no desarrollo.
+
+### Tests
+
+| Suite | Resultado | Notas |
+|-------|-----------|-------|
+| Backend (pytest) | ✅ 439 passed, 1 skipped | Coverage 87% — 1 performance test flaky con 100 órdenes |
+| Frontend (jest) | ✅ 126 passed, 13 suites | Verde con `--forceExit` |
+| E2E backend | ✅ 10 passed | Auth gate, checkout flow, email flow |
+| Smoke tests | ✅ 8 checks | Health, docs, products, cart, orders, profile, addresses, favorites |
+
+### Pendientes para producción (solo infra + ops)
+
+| Tarea | Tipo | Semana estimada |
+|-------|------|-----------------|
+| Ejecutar `alembic upgrade head` en RDS prod | Ops | Semana 1 deploy |
+| Configurar secrets en AWS SSM con `infra/secrets-setup.sh` | Ops | Semana 1 deploy |
+| EAS Build preview — Android APK en device real | Build | Semana 2 |
+| Flujo E2E manual completo (sección 6 del checklist) | QA | Semana 2 |
+| Deploy a staging + smoke tests | Deploy | Semana 2 |
+| PRODUCTION_CHECKLIST firmado | Sign-off | Semana 3 |
+| Deploy a producción | Deploy | Semana 3 |
+
+### Semanas de trabajo estimadas restantes
+
+```
+Semana 10–14 Mar 2026  → Infra AWS: SSM secrets, ECS cluster staging, primer deploy staging
+Semana 17–21 Mar 2026  → EAS Build preview + device testing + flujo E2E manual
+Semana 24–28 Mar 2026  → PRODUCTION_CHECKLIST firmado + deploy a producción
+```
 
 ---
 
