@@ -10,7 +10,7 @@ import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
 import { formatPrice } from "@/lib/formatPrice";
 import { useAddress } from "@/store/addressStore";
-import { useCart } from "@/store/cartStore";
+import { useCart, selectCartSubtotal } from "@/store/cartStore";
 import { Address } from "@/types/address";
 import { useAuth } from "@clerk/clerk-expo";
 import { Stack, useRouter } from "expo-router";
@@ -33,6 +33,7 @@ type CheckoutStep = "address" | "payment" | "summary";
 export default function CheckoutV2Screen() {
   const router = useRouter();
   const { items, resetCart } = useCart();
+  const subtotal = useCart(selectCartSubtotal);
   const { addresses, defaultAddress, fetchAddresses } = useAddress();
   const { isSignedIn, getToken } = useAuth();
 
@@ -62,12 +63,6 @@ export default function CheckoutV2Screen() {
     loadAddresses();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const subtotal = useMemo(
-    () =>
-      items.reduce((acc, item) => acc + item.product.price * item.quantity, 0),
-    [items]
-  );
 
   const shipping = 0;
   const total = subtotal + shipping;
