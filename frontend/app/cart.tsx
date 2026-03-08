@@ -3,7 +3,7 @@ import CartItem from "@/components/CartItem";
 import RecentlyViewedBar from "@/components/RecentlyViewedBar";
 import { Text } from "@/components/ui/text";
 import { formatPrice } from "@/lib/formatPrice";
-import { useCart } from "@/store/cartStore";
+import { useCart, selectCartItemCount, selectCartSubtotal } from "@/store/cartStore";
 import { CartItem as CartItemType } from "@/types/cart";
 import { Stack, useRouter } from "expo-router";
 import { ShoppingBag } from "lucide-react-native";
@@ -67,16 +67,12 @@ CartFooter.displayName = "CartFooter";
 
 export default function CartScreen() {
   const items = useCart((state) => state.items);
+  const itemCount = useCart(selectCartItemCount);
+  const subtotal = useCart(selectCartSubtotal);
   const addProduct = useCart((state) => state.addProduct);
   const decrementProduct = useCart((state) => state.decrementProduct);
   const removeProduct = useCart((state) => state.removeProduct);
   const router = useRouter();
-
-  const subtotal = useMemo(
-    () =>
-      items.reduce((acc, item) => acc + item.product.price * item.quantity, 0),
-    [items]
-  );
 
   const onCheckout = useCallback(() => {
     router.push("/checkout-v2");
@@ -136,7 +132,7 @@ export default function CartScreen() {
               ListFooterComponent={() => (
                 <View className="mt-2 pb-16">
                   <CartFooter
-                    itemCount={items.length}
+                    itemCount={itemCount}
                     subtotal={subtotal}
                     onCheckout={onCheckout}
                   />

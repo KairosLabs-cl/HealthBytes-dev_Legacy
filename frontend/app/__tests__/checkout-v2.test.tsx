@@ -28,6 +28,7 @@ jest.mock('@clerk/clerk-expo', () => ({
 
 jest.mock('@/store/cartStore', () => ({
   useCart: jest.fn(),
+  selectCartSubtotal: jest.fn(),
 }));
 
 jest.mock('@/store/addressStore', () => ({
@@ -136,9 +137,15 @@ function setupAuth(isSignedIn = true) {
 }
 
 function setupStores(overrides?: { addresses?: any[]; defaultAddress?: any }) {
-  (useCart as unknown as jest.Mock).mockReturnValue({
-    items: mockCartItems,
-    resetCart: mockResetCart,
+  const { selectCartSubtotal } = require('@/store/cartStore');
+  (selectCartSubtotal as jest.Mock).mockImplementation((state) => state.items.reduce((acc: number, item: any) => acc + item.product.price * item.quantity, 0));
+
+  (useCart as unknown as jest.Mock).mockImplementation((selector) => {
+    if (selector === selectCartSubtotal) return 3800;
+    return {
+      items: mockCartItems,
+      resetCart: mockResetCart,
+    };
   });
   (useAddress as unknown as jest.Mock).mockReturnValue({
     addresses: overrides?.addresses ?? [mockAddress],
