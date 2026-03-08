@@ -392,3 +392,10 @@ export const useCart = create<CartState>((set, get) => ({
  */
 export const selectCartItemCount = (state: CartState) =>
   state.items.reduce((sum, item) => sum + item.quantity, 0);
+
+/**
+ * Memoized selector for cart subtotal.
+ * Use this instead of calculating inline to avoid unnecessary re-renders.
+ */
+export const selectCartSubtotal = (state: CartState) =>
+  state.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);

@@ -6,7 +6,7 @@ import StockBadge from "@/components/StockBadge";
 import { Image } from "@/components/ui/image";
 import { Text } from "@/components/ui/text";
 import { formatPrice } from "@/lib/formatPrice";
-import { useCart } from "@/store/cartStore";
+import { useCart, selectCartItemCount } from "@/store/cartStore";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 import { useAuth } from "@clerk/clerk-expo";
 import { useQuery } from "@tanstack/react-query";
@@ -100,6 +100,7 @@ export default function ProductDetailsScreen() {
   const addProduct = useCart((state) => state.addProduct);
   const decrementProduct = useCart((state) => state.decrementProduct);
   const cartItems = useCart((state) => state.items);
+  const cartItemCount = useCart(selectCartItemCount);
   const ctaScale = useSharedValue(1);
 
   const ctaAnimatedStyle = useAnimatedStyle(() => ({
@@ -375,10 +376,10 @@ export default function ProductDetailsScreen() {
         >
           <View>
             <ShoppingCart size={24} color="white" />
-            {cartItems.length > 0 && (
+            {cartItemCount > 0 && (
               <View className="absolute -top-2 -right-2 bg-red-500 rounded-full min-w-[18px] h-[18px] px-1 items-center justify-center">
                 <Text className="text-white text-[10px] font-bold">
-                  {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
+                  {cartItemCount}
                 </Text>
               </View>
             )}

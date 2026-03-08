@@ -6,6 +6,8 @@ import { useCart } from '@/store/cartStore';
 // Mocks
 jest.mock('@/store/cartStore', () => ({
   useCart: jest.fn(),
+  selectCartItemCount: jest.fn(),
+  selectCartSubtotal: jest.fn(),
 }));
 
 jest.mock('expo-router', () => ({
@@ -32,14 +34,21 @@ describe('CartScreen', () => {
   });
 
   it('renders empty state when cart is empty', () => {
+    const { selectCartItemCount, selectCartSubtotal } = require('@/store/cartStore');
+    (selectCartItemCount as jest.Mock).mockImplementation(() => 0);
+    (selectCartSubtotal as jest.Mock).mockImplementation(() => 0);
+
     (useCart as unknown as jest.Mock).mockImplementation((selector) => {
+      const { selectCartItemCount, selectCartSubtotal } = require('@/store/cartStore');
+      if (selector === selectCartItemCount) return 0;
+      if (selector === selectCartSubtotal) return 0;
       const state = {
         items: [],
         addProduct: jest.fn(),
         decrementProduct: jest.fn(),
         removeProduct: jest.fn(),
       };
-      return selector(state);
+      return typeof selector === 'function' ? selector(state) : state;
     });
 
     render(<CartScreen />);
@@ -53,14 +62,21 @@ describe('CartScreen', () => {
       { product: { id: 2, name: 'Prod 2', price: 20 }, quantity: 1 },
     ];
 
+    const { selectCartItemCount, selectCartSubtotal } = require('@/store/cartStore');
+    (selectCartItemCount as jest.Mock).mockImplementation((state) => state.items.reduce((acc: number, item: any) => acc + item.quantity, 0));
+    (selectCartSubtotal as jest.Mock).mockImplementation((state) => state.items.reduce((acc: number, item: any) => acc + item.product.price * item.quantity, 0));
+
     (useCart as unknown as jest.Mock).mockImplementation((selector) => {
+      if (selector === selectCartItemCount) return 3;
+      if (selector === selectCartSubtotal) return 40;
+
       const state = {
         items: mockItems,
         addProduct: jest.fn(),
         decrementProduct: jest.fn(),
         removeProduct: jest.fn(),
       };
-      return selector(state);
+      return typeof selector === 'function' ? selector(state) : state;
     });
 
     render(<CartScreen />);
