@@ -115,6 +115,14 @@ async def get_user_by_id(
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
+# Allowlist of fields a regular user can modify on their own profile.
+# Admins get an extended set. Any field NOT in the allowlist is silently
+# dropped — defense-in-depth against future schema additions accidentally
+# exposing privileged fields.
+ALLOWED_USER_FIELDS = {"name", "address", "password", "dietary_preferences"}
+ALLOWED_ADMIN_FIELDS = ALLOWED_USER_FIELDS | {"email", "role"}
+
+
 @router.put("/{id}", response_model=UserResponse)
 async def update_user(
     id: int,
@@ -127,8 +135,10 @@ async def update_user(
     Update user profile (Admin or Own Profile)
     """
     try:
+        is_admin = current_user.role == "admin"
+
         # Check permissions: Admin or Own Profile
-        if current_user.role != "admin" and current_user.id != id:
+        if not is_admin and current_user.id != id:
             raise HTTPException(status_code=403, detail="Not authorized to update this profile")
 
         result = await db.execute(select(User).where(User.id == id))
@@ -137,12 +147,10 @@ async def update_user(
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
 
-        # Update fields
+        # Update fields — apply allowlist to prevent mass assignment
         update_data = user_data.model_dump(exclude_unset=True)
-
-        # Prevent privilege escalation: non-admins cannot change roles
-        if current_user.role != "admin" and "role" in update_data:
-            update_data.pop("role")
+        allowed = ALLOWED_ADMIN_FIELDS if is_admin else ALLOWED_USER_FIELDS
+        update_data = {k: v for k, v in update_data.items() if k in allowed}
 
         # Hash password if provided
         if "password" in update_data and update_data["password"]:
