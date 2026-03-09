@@ -20,14 +20,23 @@ class UserLogin(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    """Schema for user update - Replica of updateUserSchema"""
+    """Schema for user profile update — only user-safe fields.
 
-    email: Optional[EmailStr] = None
+    Sensitive fields (role, email, is_active) are NOT exposed here
+    to prevent mass-assignment privilege escalation.
+    """
+
     password: Optional[str] = Field(None, min_length=1)
     name: Optional[str] = Field(None, max_length=255)
     address: Optional[str] = None
-    role: Optional[str] = None
     dietary_preferences: Optional[List[str]] = None
+
+
+class AdminUserUpdate(UserUpdate):
+    """Extended update schema for admins — includes privileged fields."""
+
+    email: Optional[EmailStr] = None
+    role: Optional[str] = None
 
 
 class DietaryPreferencesUpdate(BaseModel):
