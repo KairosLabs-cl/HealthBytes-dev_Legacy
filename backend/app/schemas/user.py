@@ -7,7 +7,7 @@ class UserCreate(BaseModel):
     """Schema for user registration - Replica of createUserSchema"""
 
     email: EmailStr
-    password: str = Field(..., min_length=1)
+    password: str = Field(..., min_length=1, max_length=128)
     name: Optional[str] = Field(None, max_length=255)
     address: Optional[str] = None
 
@@ -26,7 +26,7 @@ class UserUpdate(BaseModel):
     to prevent mass-assignment privilege escalation.
     """
 
-    password: Optional[str] = Field(None, min_length=1)
+    password: Optional[str] = Field(None, min_length=1, max_length=128)
     name: Optional[str] = Field(None, max_length=255)
     address: Optional[str] = None
     dietary_preferences: Optional[List[str]] = None
