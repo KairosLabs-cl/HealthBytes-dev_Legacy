@@ -136,15 +136,21 @@ function setupAuth(isSignedIn = true) {
 }
 
 function setupStores(overrides?: { addresses?: any[]; defaultAddress?: any }) {
-  (useCart as unknown as jest.Mock).mockReturnValue({
-    items: mockCartItems,
-    resetCart: mockResetCart,
+  (useCart as unknown as jest.Mock).mockImplementation((selector) => {
+    const mockStore = {
+      items: mockCartItems,
+      resetCart: mockResetCart,
+    };
+    return selector ? selector(mockStore) : mockStore;
   });
-  (useAddress as unknown as jest.Mock).mockReturnValue({
-    addresses: overrides?.addresses ?? [mockAddress],
-    defaultAddress:
-      overrides?.defaultAddress !== undefined ? overrides.defaultAddress : mockAddress,
-    fetchAddresses: jest.fn().mockResolvedValue(undefined),
+  (useAddress as unknown as jest.Mock).mockImplementation((selector) => {
+    const mockStore = {
+      addresses: overrides?.addresses ?? [mockAddress],
+      defaultAddress:
+        overrides?.defaultAddress !== undefined ? overrides.defaultAddress : mockAddress,
+      fetchAddresses: jest.fn().mockResolvedValue(undefined),
+    };
+    return selector ? selector(mockStore) : mockStore;
   });
 }
 
