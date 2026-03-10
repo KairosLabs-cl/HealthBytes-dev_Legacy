@@ -10,11 +10,23 @@ type Props = {
   lightText?: boolean;
 };
 
-export default function SectionHeader({ icon = Star, title, lightText = false }: Props) {
+export default function SectionHeader({
+  icon = Star,
+  title,
+  lightText = false,
+}: Props) {
   return (
     <View className="flex-row items-center mb-2 px-3">
-      <Icon as={icon} size="md" className={lightText ? "text-white" : "text-black"} />
-      <Text className={`text-lg font-bold ml-2 ${lightText ? "text-white" : "text-black"}`}>{title}</Text>
+      <Icon
+        as={icon}
+        size="md"
+        className={lightText ? "text-white" : "text-black"}
+      />
+      <Text
+        className={`text-lg font-bold ml-2 ${lightText ? "text-white" : "text-black"}`}
+      >
+        {title}
+      </Text>
     </View>
   );
 }

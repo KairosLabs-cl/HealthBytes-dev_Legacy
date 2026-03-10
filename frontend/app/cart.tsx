@@ -3,7 +3,11 @@ import CartItem from "@/components/CartItem";
 import RecentlyViewedBar from "@/components/RecentlyViewedBar";
 import { Text } from "@/components/ui/text";
 import { formatPrice } from "@/lib/formatPrice";
-import { useCart, selectCartItemCount, selectCartSubtotal } from "@/store/cartStore";
+import {
+  useCart,
+  selectCartItemCount,
+  selectCartSubtotal,
+} from "@/store/cartStore";
 import { CartItem as CartItemType } from "@/types/cart";
 import { Stack, useRouter } from "expo-router";
 import { ShoppingBag } from "lucide-react-native";

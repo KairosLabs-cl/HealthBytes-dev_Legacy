@@ -67,7 +67,7 @@ export default function CheckoutV2Screen() {
       }
     };
     loadAddresses();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const shipping = 0;
@@ -204,285 +204,301 @@ export default function CheckoutV2Screen() {
 
   return (
     <AuthGate message="Inicia sesion para completar tu compra.">
-    <SafeAreaView className="flex-1 bg-white" edges={["top", "bottom"]}>
-      <Stack.Screen options={{ headerShown: false }} />
-      <ScrollView
-        ref={scrollRef}
-        showsVerticalScrollIndicator={false}
-        className="flex-1 p-6"
-      >
-        {/* Header */}
-        <View className="mb-8">
-          <Text className="text-3xl font-bold text-black mb-2">Checkout</Text>
-          <Text className="text-gray-500">
-            Paso a paso hacia tu compra segura
-          </Text>
-        </View>
+      <SafeAreaView className="flex-1 bg-surface-warm" edges={["top", "bottom"]}>
+        <Stack.Screen options={{ headerShown: false }} />
+        <ScrollView
+          ref={scrollRef}
+          showsVerticalScrollIndicator={false}
+          className="flex-1 p-6"
+        >
+          {/* Header */}
+          <View className="mb-8">
+            <Text className="text-3xl font-bold text-ink mb-2">Checkout</Text>
+            <Text className="text-gray-500">
+              Paso a paso hacia tu compra segura
+            </Text>
+          </View>
 
-        {/* Step Indicator */}
-        <StepIndicator
-          currentStep={
-            currentStep === "address" ? 1 : currentStep === "payment" ? 2 : 3
-          }
-          totalSteps={3}
-          steps={["Dirección", "Pago", "Resumen"]}
-        />
+          {/* Step Indicator */}
+          <StepIndicator
+            currentStep={
+              currentStep === "address" ? 1 : currentStep === "payment" ? 2 : 3
+            }
+            totalSteps={3}
+            steps={["Dirección", "Pago", "Resumen"]}
+          />
 
-        {/* Content */}
-        <View className="mb-8">
-          {/* Step 1: Address Selection */}
-          {currentStep === "address" && (
-            <VStack space="lg">
-              <View>
-                <HStack className="items-center mb-3">
-                  <MapPinIcon size={24} color="#000" />
-                  <Text className="text-xl font-bold text-black ml-2">
-                    ¿A dónde lo llevamos?
+          {/* Content */}
+          <View className="mb-8">
+            {/* Step 1: Address Selection */}
+            {currentStep === "address" && (
+              <VStack space="lg">
+                <View>
+                  <HStack className="items-center mb-3">
+                    <MapPinIcon size={24} color="#2D2926" />
+                    <Text className="text-xl font-bold text-ink ml-2">
+                      ¿A dónde lo llevamos?
+                    </Text>
+                  </HStack>
+                  <Text className="text-gray-500 text-sm">
+                    Selecciona una dirección o añade una nueva
                   </Text>
-                </HStack>
-                <Text className="text-gray-500 text-sm">
-                  Selecciona una dirección o añade una nueva
-                </Text>
-              </View>
+                </View>
 
-              {addresses.length > 0 ? (
-                <VStack space="md">
-                  {addresses.map((address) => (
-                    <Pressable
-                      key={address.id}
-                      onPress={() => setSelectedAddress(address)}
-                      className={`p-4 rounded-2xl border-2 ${
-                        selectedAddress?.id === address.id
-                          ? "border-blue-600 bg-blue-50"
-                          : "border-gray-200 bg-white"
-                      }`}
-                    >
-                      <HStack className="items-start justify-between">
-                        <View className="flex-1">
-                          <Text className="font-bold text-black mb-1">
-                            {address.street}
-                          </Text>
-                          <Text className="text-sm text-gray-600 mb-1">
-                            {address.city}, {address.region}
-                          </Text>
-                          <Text className="text-xs text-gray-500">
-                            CP: {address.postal_code}
-                          </Text>
-                          {address.street_number && (
-                            <Text className="text-xs text-gray-500 mt-1">
-                              {address.street_number}
+                {addresses.length > 0 ? (
+                  <VStack space="md">
+                    {addresses.map((address) => (
+                      <Pressable
+                        key={address.id}
+                        onPress={() => setSelectedAddress(address)}
+                        style={{ minHeight: 64 }}
+                        className={`p-4 rounded-2xl border ${
+                          selectedAddress?.id === address.id
+                            ? "border-brand-green bg-[#F0FDF4]"
+                            : "border-border-subtle bg-surface-card shadow-soft-lift"
+                        }`}
+                      >
+                        <HStack className="items-start justify-between">
+                          <View className="flex-1">
+                            <Text className="font-bold text-ink mb-1">
+                              {address.street}
                             </Text>
-                          )}
-                        </View>
+                            <Text className="text-sm text-gray-600 mb-1">
+                              {address.city}, {address.region}
+                            </Text>
+                            <Text className="text-xs text-gray-500">
+                              CP: {address.postal_code}
+                            </Text>
+                            {address.street_number && (
+                              <Text className="text-xs text-gray-500 mt-1">
+                                {address.street_number}
+                              </Text>
+                            )}
+                          </View>
 
-                        {/* Checkbox */}
-                        <View
-                          className={`w-6 h-6 rounded-full border-2 items-center justify-center ml-3 ${
-                            selectedAddress?.id === address.id
-                              ? "border-blue-600 bg-blue-600"
-                              : "border-gray-300"
-                          }`}
-                        >
-                          {selectedAddress?.id === address.id && (
-                            <View className="w-3 h-3 rounded-full bg-white" />
-                          )}
-                        </View>
-                      </HStack>
-                    </Pressable>
-                  ))}
-                </VStack>
-              ) : (
-                <View className="p-6 bg-gray-50 rounded-2xl items-center">
-                  <Text className="text-gray-600 text-center mb-4">
-                    No tienes direcciones guardadas aún
-                  </Text>
+                          {/* Checkbox */}
+                          <View
+                            className={`w-6 h-6 rounded-full border items-center justify-center ml-3 ${
+                              selectedAddress?.id === address.id
+                                ? "border-brand-green bg-brand-green"
+                                : "border-border-subtle"
+                            }`}
+                          >
+                            {selectedAddress?.id === address.id && (
+                              <View className="w-3 h-3 rounded-full bg-white" />
+                            )}
+                          </View>
+                        </HStack>
+                      </Pressable>
+                    ))}
+                  </VStack>
+                ) : (
+                  <View className="p-6 bg-surface-card border border-border-subtle rounded-2xl items-center shadow-soft-lift">
+                    <Text className="text-gray-600 text-center mb-4">
+                      No tienes direcciones guardadas aún
+                    </Text>
+                    <Button
+                      size="sm"
+                      className="bg-brand-green"
+                      style={{ minHeight: 48 }}
+                      onPress={() => router.push("/addresses")}
+                    >
+                      <ButtonText>+ Añadir Dirección</ButtonText>
+                    </Button>
+                  </View>
+                )}
+
+                {addresses.length > 0 && (
                   <Button
                     size="sm"
-                    className="bg-blue-600"
+                    variant="outline"
+                    className="border-brand-green"
+                    style={{ minHeight: 48 }}
                     onPress={() => router.push("/addresses")}
                   >
-                    <ButtonText>+ Añadir Dirección</ButtonText>
+                    <ButtonText className="text-brand-green">
+                      + Añadir otra dirección
+                    </ButtonText>
                   </Button>
-                </View>
-              )}
+                )}
+              </VStack>
+            )}
 
-              {addresses.length > 0 && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="border-blue-600"
-                  onPress={() => router.push("/addresses")}
-                >
-                  <ButtonText className="text-blue-600">
-                    + Añadir otra dirección
-                  </ButtonText>
-                </Button>
-              )}
-            </VStack>
-          )}
-
-          {/* Step 2: Payment Method */}
-          {currentStep === "payment" && (
-            <View>
-              <PaymentMethodSelector
-                selected={selectedPayment}
-                onSelect={setSelectedPayment}
-              />
-            </View>
-          )}
-
-          {/* Step 3: Order Summary */}
-          {currentStep === "summary" && (
-            <VStack space="lg">
-              {/* Address Summary */}
-              {selectedAddress && (
-                <View className="p-4 bg-blue-50 rounded-2xl border border-blue-200">
-                  <HStack className="items-start">
-                    <MapPinIcon size={20} color="#0066cc" />
-                    <View className="flex-1 ml-3">
-                      <Text className="font-bold text-black text-sm mb-1">
-                        Dirección de Envío
-                      </Text>
-                      <Text className="text-sm text-gray-700">
-                        {selectedAddress.street}
-                      </Text>
-                      <Text className="text-sm text-gray-700">
-                        {selectedAddress.city}, {selectedAddress.region}{" "}
-                        {selectedAddress.postal_code}
-                      </Text>
-                      {selectedAddress.phone && (
-                        <HStack className="items-center mt-2">
-                          <PhoneIcon size={14} color="#666" />
-                          <Text className="text-xs text-gray-600 ml-1">
-                            {selectedAddress.phone}
-                          </Text>
-                        </HStack>
-                      )}
-                    </View>
-                  </HStack>
-                </View>
-              )}
-
-              {/* Payment Method Summary */}
-              <View className="p-4 bg-purple-50 rounded-2xl border border-purple-200">
-                <Text className="font-bold text-black text-sm mb-2">
-                  Método de Pago
-                </Text>
-                <Text className="text-sm text-gray-700">
-                  {selectedPayment === "venti"
-                    ? "💳 Venti - Transferencia Bancaria"
-                    : "🏦 Mercado Pago - Billetera Digital"}
-                </Text>
-              </View>
-
-              {/* Items List */}
+            {/* Step 2: Payment Method */}
+            {currentStep === "payment" && (
               <View>
-                <Text className="font-bold text-black mb-3">Productos</Text>
-                <VStack space="md">
-                  {items.map((item) => (
-                    <View
-                      key={item.product.id}
-                      className="flex-row justify-between items-center p-3 bg-gray-50 rounded-lg"
-                    >
-                      <View className="flex-1">
-                        <Text className="font-semibold text-black text-sm">
-                          {item.product.name}
+                <PaymentMethodSelector
+                  selected={selectedPayment}
+                  onSelect={setSelectedPayment}
+                />
+              </View>
+            )}
+
+            {/* Step 3: Order Summary */}
+            {currentStep === "summary" && (
+              <VStack space="lg">
+                {/* Address Summary */}
+                {selectedAddress && (
+                  <View className="p-4 bg-surface-card rounded-2xl border border-border-subtle shadow-soft-lift">
+                    <HStack className="items-start">
+                      <MapPinIcon size={20} color="#2D2926" />
+                      <View className="flex-1 ml-3">
+                        <Text className="font-bold text-ink text-sm mb-1">
+                          Dirección de Envío
                         </Text>
-                        <Text className="text-xs text-gray-500">
-                          x{item.quantity} @ {formatPrice(item.product.price)}
+                        <Text className="text-sm text-gray-700">
+                          {selectedAddress.street}
+                        </Text>
+                        <Text className="text-sm text-gray-700">
+                          {selectedAddress.city}, {selectedAddress.region}{" "}
+                          {selectedAddress.postal_code}
+                        </Text>
+                        {selectedAddress.phone && (
+                          <HStack className="items-center mt-2">
+                            <PhoneIcon size={14} color="#666" />
+                            <Text className="text-xs text-gray-600 ml-1">
+                              {selectedAddress.phone}
+                            </Text>
+                          </HStack>
+                        )}
+                      </View>
+                    </HStack>
+                  </View>
+                )}
+
+                {/* Payment Method Summary */}
+                <View className="p-4 bg-surface-card rounded-2xl border border-border-subtle shadow-soft-lift">
+                  <Text className="font-bold text-ink text-sm mb-2">
+                    Método de Pago
+                  </Text>
+                  <Text className="text-sm text-gray-700">
+                    {selectedPayment === "venti"
+                      ? "💳 Venti - Transferencia Bancaria"
+                      : "🏦 Mercado Pago - Billetera Digital"}
+                  </Text>
+                </View>
+
+                {/* Items List */}
+                <View>
+                  <Text className="font-bold text-ink mb-3">Productos</Text>
+                  <VStack space="md">
+                    {items.map((item) => (
+                      <View
+                        key={item.product.id}
+                        className="flex-row justify-between items-center p-3 bg-surface-card border border-border-subtle shadow-soft-lift rounded-lg"
+                      >
+                        <View className="flex-1">
+                          <Text className="font-semibold text-ink text-sm">
+                            {item.product.name}
+                          </Text>
+                          <Text className="text-xs text-gray-500">
+                            x{item.quantity} @ {formatPrice(item.product.price)}
+                          </Text>
+                        </View>
+                        <Text className="font-bold text-ink">
+                          {formatPrice(item.product.price * item.quantity)}
                         </Text>
                       </View>
-                      <Text className="font-bold text-black">
-                        {formatPrice(item.product.price * item.quantity)}
-                      </Text>
-                    </View>
-                  ))}
-                </VStack>
-              </View>
+                    ))}
+                  </VStack>
+                </View>
 
-              {/* Pricing Summary */}
-              <View className="p-4 bg-gray-50 rounded-2xl border border-gray-200">
-                <HStack className="justify-between mb-2">
-                  <Text className="text-gray-600">Subtotal</Text>
-                  <Text className="font-medium text-black">
-                    {formatPrice(subtotal)}
-                  </Text>
-                </HStack>
+                {/* Pricing Summary */}
+                <View className="p-4 bg-surface-card rounded-2xl border border-border-subtle shadow-soft-lift">
+                  <HStack className="justify-between mb-2">
+                    <Text className="text-gray-600">Subtotal</Text>
+                    <Text className="font-medium text-ink">
+                      {formatPrice(subtotal)}
+                    </Text>
+                  </HStack>
 
-                <HStack className="justify-between mb-3">
-                  <Text className="text-gray-600">Envío</Text>
-                  <Text className="font-medium text-green-600">Gratis</Text>
-                </HStack>
+                  <HStack className="justify-between mb-3">
+                    <Text className="text-gray-600">Envío</Text>
+                    <Text className="font-medium text-brand-green">Gratis</Text>
+                  </HStack>
 
-                <View className="h-[1px] bg-gray-200 my-3" />
+                  <View className="h-[1px] bg-border-subtle my-3" />
 
-                <HStack className="justify-between items-end">
-                  <Text className="text-lg font-bold text-black">Total</Text>
-                  <Text className="text-2xl font-bold text-blue-600">
-                    {formatPrice(total)}
-                  </Text>
-                </HStack>
-              </View>
-            </VStack>
-          )}
-        </View>
-      </ScrollView>
+                  <HStack className="justify-between items-end">
+                    <Text className="text-lg font-bold text-ink">Total</Text>
+                    <Text className="text-2xl font-bold text-ink">
+                      {formatPrice(total)}
+                    </Text>
+                  </HStack>
+                </View>
+              </VStack>
+            )}
+          </View>
+        </ScrollView>
 
-      {/* Bottom Action Buttons */}
-      <View className="p-6 bg-white border-t border-gray-100">
-        <VStack space="md">
-          {(currentStep === "payment" || currentStep === "summary") && (
+        {/* Bottom Action Buttons */}
+        <View className="p-6 bg-surface-card border-t border-border-subtle">
+          <VStack space="md">
+            {(currentStep === "payment" || currentStep === "summary") && (
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-border-subtle"
+                style={{ minHeight: 48 }}
+                onPress={handleBack}
+                disabled={isProcessing}
+              >
+                <ButtonText className="text-ink font-semibold">
+                  Atrás
+                </ButtonText>
+              </Button>
+            )}
+
             <Button
               size="lg"
-              variant="outline"
-              className="border-gray-300"
-              onPress={handleBack}
+              className="bg-ink h-16 rounded-full shadow-soft-lift"
+              onPress={handleNext}
               disabled={isProcessing}
             >
-              <ButtonText className="text-gray-700 font-semibold">
-                Atrás
-              </ButtonText>
-            </Button>
-          )}
-
-          <Button
-            size="lg"
-            className="bg-black h-16 rounded-full shadow-xl"
-            onPress={handleNext}
-            disabled={isProcessing}
-          >
-            {isProcessing ? (
-              <HStack space="md" className="items-center">
-                <ActivityIndicator color="white" />
-                <ButtonText className="text-white font-semibold text-lg">
-                  {currentStep === "summary"
-                    ? "Confirmando..."
-                    : "Procesando..."}
+              {isProcessing ? (
+                <HStack space="md" className="items-center">
+                  <ActivityIndicator color="white" />
+                  <ButtonText className="text-white font-semibold text-lg">
+                    {currentStep === "summary"
+                      ? "Confirmando..."
+                      : "Procesando..."}
+                  </ButtonText>
+                </HStack>
+              ) : (
+                <ButtonText className="text-white font-bold text-lg">
+                  {currentStep === "address"
+                    ? "Continuar"
+                    : currentStep === "payment"
+                      ? "Revisar Orden"
+                      : "Confirmar Orden"}
                 </ButtonText>
-              </HStack>
-            ) : (
-              <ButtonText className="text-white font-bold text-lg">
-                {currentStep === "address"
-                  ? "Continuar"
-                  : currentStep === "payment"
-                    ? "Revisar Orden"
-                    : "Confirmar Orden"}
-              </ButtonText>
-            )}
-          </Button>
-        </VStack>
-      </View>
-      {isProcessing && (
-        <View
-          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.45)', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
-        >
-          <View className="bg-white rounded-2xl px-8 py-6 items-center">
-            <ActivityIndicator size="large" color="#111827" />
-            <Text className="text-gray-900 font-semibold mt-4 text-base">Confirmando tu orden...</Text>
-          </View>
+              )}
+            </Button>
+          </VStack>
         </View>
-      )}
-    </SafeAreaView>
+        {isProcessing && (
+          <View
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0,0,0,0.45)",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 50,
+            }}
+          >
+            <View className="bg-white rounded-2xl px-8 py-6 items-center">
+              <ActivityIndicator size="large" color="#111827" />
+              <Text className="text-gray-900 font-semibold mt-4 text-base">
+                Confirmando tu orden...
+              </Text>
+            </View>
+          </View>
+        )}
+      </SafeAreaView>
     </AuthGate>
   );
 }

@@ -44,11 +44,15 @@ async function fetchOrderById(id: number): Promise<Order> {
 /**
  * Status timeline configuration
  */
-const STATUS_TIMELINE: { status: OrderStatus; label: string; icon: typeof Package }[] = [
-  { status: "unpaid",     label: "Sin pagar",   icon: Clock },
-  { status: "processing", label: "En proceso",  icon: Package },
-  { status: "shipped",    label: "Enviado",     icon: Truck },
-  { status: "delivered",  label: "Entregado",   icon: CheckCircle2 },
+const STATUS_TIMELINE: {
+  status: OrderStatus;
+  label: string;
+  icon: typeof Package;
+}[] = [
+  { status: "unpaid", label: "Sin pagar", icon: Clock },
+  { status: "processing", label: "En proceso", icon: Package },
+  { status: "shipped", label: "Enviado", icon: Truck },
+  { status: "delivered", label: "Entregado", icon: CheckCircle2 },
 ];
 
 /**
@@ -111,7 +115,10 @@ function OrderDetailScreenContent() {
           <View className="bg-white mx-4 mt-4 rounded-2xl p-4">
             <View className="h-4 w-28 bg-gray-200 rounded mb-4 animate-pulse" />
             {[1, 2, 3].map((i) => (
-              <View key={i} className="flex-row items-center py-3 border-b border-gray-100">
+              <View
+                key={i}
+                className="flex-row items-center py-3 border-b border-gray-100"
+              >
                 <View className="w-12 h-12 bg-gray-200 rounded-lg animate-pulse mr-3" />
                 <View className="flex-1">
                   <View className="h-4 w-32 bg-gray-200 rounded mb-2 animate-pulse" />
@@ -150,7 +157,9 @@ function OrderDetailScreenContent() {
         <Stack.Screen options={{ headerShown: false }} />
         <View className="flex-1 items-center justify-center p-6">
           <XCircle size={48} color="#EF4444" />
-          <Text className="mt-4 text-lg text-gray-700">Orden no encontrada</Text>
+          <Text className="mt-4 text-lg text-gray-700">
+            Orden no encontrada
+          </Text>
           <Pressable
             onPress={() => router.back()}
             className="mt-6 bg-gray-900 rounded-full px-6 py-3"
@@ -188,7 +197,9 @@ function OrderDetailScreenContent() {
         <Text className="flex-1 text-lg font-semibold text-gray-900 ml-2">
           Orden #{order.id}
         </Text>
-        <View className={`px-3 py-1 rounded-full ${STATUS_BADGE_COLORS[normalizedStatus]}`}>
+        <View
+          className={`px-3 py-1 rounded-full ${STATUS_BADGE_COLORS[normalizedStatus]}`}
+        >
           <Text className="text-xs font-medium">
             {STATUS_LABELS[normalizedStatus]}
           </Text>
@@ -222,7 +233,10 @@ function OrderDetailScreenContent() {
                 const StepIcon = step.icon;
 
                 return (
-                  <View key={step.status} className="flex-row items-center mb-6 last:mb-0">
+                  <View
+                    key={step.status}
+                    className="flex-row items-center mb-6 last:mb-0"
+                  >
                     {/* Circle indicator */}
                     <View
                       className={`absolute left-0 w-6 h-6 rounded-full items-center justify-center z-10 ${
@@ -322,9 +336,7 @@ function OrderDetailScreenContent() {
         {/* Reorder Button */}
         {normalizedStatus === "delivered" && (
           <View className="px-4 mt-6">
-            <Pressable
-              className="bg-green-600 rounded-2xl py-4 flex-row items-center justify-center active:bg-green-700"
-            >
+            <Pressable className="bg-green-600 rounded-2xl py-4 flex-row items-center justify-center active:bg-green-700">
               <RefreshCcw size={20} color="white" />
               <Text className="text-white font-semibold ml-2">
                 Volver a pedir

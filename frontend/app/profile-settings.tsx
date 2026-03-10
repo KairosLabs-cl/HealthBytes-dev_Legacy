@@ -66,105 +66,120 @@ export default function ProfileSettingsScreen() {
 
   return (
     <AuthGate message="Inicia sesión para acceder a la configuración.">
-    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
-      <StatusBar style="dark" />
-      <Stack.Screen options={{ title: "Ajustes de Cuenta" }} />
+      <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+        <StatusBar style="dark" />
+        <Stack.Screen options={{ title: "Ajustes de Cuenta" }} />
 
-      <ScrollView
-        className="flex-1 px-6 pt-6"
-        contentContainerStyle={{ paddingBottom: 140 }}
-        showsVerticalScrollIndicator={false}
-      >
-        <View className="mb-8">
-          <View className="flex-row items-center gap-2 mb-2">
-            <Icon as={User} size="lg" color="#000000" />
-            <Text className="text-2xl font-bold text-black">Mi Perfil</Text>
-          </View>
-          <Text className="text-gray-600 text-sm mb-6">
-            Actualiza tu nombre, email y foto de perfil.
-          </Text>
-
-          {/* Foto de perfil */}
-          <View className="bg-gray-100 rounded-2xl p-4 mb-6 flex-row items-center">
-            <Image
-              source={{ uri: user?.imageUrl || "https://via.placeholder.com/80" }}
-              className="w-16 h-16 rounded-full mr-4"
-            />
-            <View className="flex-1">
-              <Text className="text-base text-black font-semibold">{displayName}</Text>
-              <Text className="text-xs text-gray-500 mt-1">Foto de perfil</Text>
+        <ScrollView
+          className="flex-1 px-6 pt-6"
+          contentContainerStyle={{ paddingBottom: 140 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <View className="mb-8">
+            <View className="flex-row items-center gap-2 mb-2">
+              <Icon as={User} size="lg" color="#000000" />
+              <Text className="text-2xl font-bold text-black">Mi Perfil</Text>
             </View>
+            <Text className="text-gray-600 text-sm mb-6">
+              Actualiza tu nombre, email y foto de perfil.
+            </Text>
+
+            {/* Foto de perfil */}
+            <View className="bg-gray-100 rounded-2xl p-4 mb-6 flex-row items-center">
+              <Image
+                source={{
+                  uri: user?.imageUrl || "https://via.placeholder.com/80",
+                }}
+                className="w-16 h-16 rounded-full mr-4"
+              />
+              <View className="flex-1">
+                <Text className="text-base text-black font-semibold">
+                  {displayName}
+                </Text>
+                <Text className="text-xs text-gray-500 mt-1">
+                  Foto de perfil
+                </Text>
+              </View>
+              <Button
+                size="sm"
+                className="bg-black rounded-full"
+                onPress={() =>
+                  setError(
+                    "Para cambiar la foto necesitamos habilitar selección de imágenes."
+                  )
+                }
+              >
+                <ButtonText className="text-white text-xs">Cambiar</ButtonText>
+              </Button>
+            </View>
+
+            {/* Email (solo lectura) */}
+            <View className="bg-gray-50 rounded-2xl p-4 mb-6">
+              <Text className="text-sm text-gray-500 mb-2">Email</Text>
+              <Text className="text-base text-black font-semibold">
+                {primaryEmail}
+              </Text>
+              <Text className="text-xs text-gray-500 mt-2">
+                Tu email no puede ser modificado aquí. Contáctate con soporte si
+                necesitas cambiar tu email.
+              </Text>
+            </View>
+
+            {/* Nombre */}
+            <View className="mb-4">
+              <Text className="text-sm font-semibold text-gray-800 mb-2">
+                Nombre
+              </Text>
+              <Input className="bg-white border-gray-200">
+                <InputField
+                  value={firstName}
+                  onChangeText={setFirstName}
+                  placeholder="Tu nombre"
+                  placeholderTextColor="#9CA3AF"
+                  className="text-black"
+                />
+              </Input>
+            </View>
+
+            {/* Apellido */}
+            <View className="mb-6">
+              <Text className="text-sm font-semibold text-gray-800 mb-2">
+                Apellido
+              </Text>
+              <Input className="bg-white border-gray-200">
+                <InputField
+                  value={lastName}
+                  onChangeText={setLastName}
+                  placeholder="Tu apellido"
+                  placeholderTextColor="#9CA3AF"
+                  className="text-black"
+                />
+              </Input>
+            </View>
+
+            {error && (
+              <View className="bg-red-50 border border-red-300 rounded-lg p-3 mb-4">
+                <Text className="text-red-700 text-sm">{error}</Text>
+              </View>
+            )}
+            {success && (
+              <View className="bg-green-50 border border-green-300 rounded-lg p-3 mb-4">
+                <Text className="text-green-700 text-sm">{success}</Text>
+              </View>
+            )}
+
             <Button
-              size="sm"
-              className="bg-black rounded-full"
-              onPress={() =>
-                setError("Para cambiar la foto necesitamos habilitar selección de imágenes.")
-              }
+              onPress={handleSaveProfile}
+              className="bg-black rounded-full min-h-[52px] flex-row items-center justify-center"
+              disabled={!isLoaded || isSaving}
             >
-              <ButtonText className="text-white text-xs">Cambiar</ButtonText>
+              <ButtonText className="text-white font-semibold text-base text-center leading-5">
+                {isSaving ? "Guardando..." : "Guardar Cambios"}
+              </ButtonText>
             </Button>
           </View>
-
-          {/* Email (solo lectura) */}
-          <View className="bg-gray-50 rounded-2xl p-4 mb-6">
-            <Text className="text-sm text-gray-500 mb-2">Email</Text>
-            <Text className="text-base text-black font-semibold">{primaryEmail}</Text>
-            <Text className="text-xs text-gray-500 mt-2">
-              Tu email no puede ser modificado aquí. Contáctate con soporte si necesitas cambiar tu email.
-            </Text>
-          </View>
-
-          {/* Nombre */}
-          <View className="mb-4">
-            <Text className="text-sm font-semibold text-gray-800 mb-2">Nombre</Text>
-            <Input className="bg-white border-gray-200">
-              <InputField
-                value={firstName}
-                onChangeText={setFirstName}
-                placeholder="Tu nombre"
-                placeholderTextColor="#9CA3AF"
-                className="text-black"
-              />
-            </Input>
-          </View>
-
-          {/* Apellido */}
-          <View className="mb-6">
-            <Text className="text-sm font-semibold text-gray-800 mb-2">Apellido</Text>
-            <Input className="bg-white border-gray-200">
-              <InputField
-                value={lastName}
-                onChangeText={setLastName}
-                placeholder="Tu apellido"
-                placeholderTextColor="#9CA3AF"
-                className="text-black"
-              />
-            </Input>
-          </View>
-
-          {error && (
-            <View className="bg-red-50 border border-red-300 rounded-lg p-3 mb-4">
-              <Text className="text-red-700 text-sm">{error}</Text>
-            </View>
-          )}
-          {success && (
-            <View className="bg-green-50 border border-green-300 rounded-lg p-3 mb-4">
-              <Text className="text-green-700 text-sm">{success}</Text>
-            </View>
-          )}
-
-          <Button
-            onPress={handleSaveProfile}
-            className="bg-black rounded-full min-h-[52px] flex-row items-center justify-center"
-            disabled={!isLoaded || isSaving}
-          >
-            <ButtonText className="text-white font-semibold text-base text-center leading-5">
-              {isSaving ? "Guardando..." : "Guardar Cambios"}
-            </ButtonText>
-          </Button>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      </SafeAreaView>
     </AuthGate>
   );
 }

@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 type CartAnimationStore = {
   pending: { x: number; y: number } | null;

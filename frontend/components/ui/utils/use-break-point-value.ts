@@ -1,13 +1,13 @@
-import { Dimensions, useWindowDimensions } from 'react-native';
-import { useEffect, useState } from 'react';
+import { Dimensions, useWindowDimensions } from "react-native";
+import { useEffect, useState } from "react";
 
-import resolveConfig from 'tailwindcss/resolveConfig';
-import * as tailwindConfig from '@/tailwind.config';
+import resolveConfig from "tailwindcss/resolveConfig";
+import * as tailwindConfig from "@/tailwind.config";
 
 const TailwindTheme = resolveConfig(tailwindConfig as any);
 const screenSize = TailwindTheme.theme.screens;
 
-type breakpoints = keyof typeof screenSize | 'default';
+type breakpoints = keyof typeof screenSize | "default";
 
 type MediaQueriesBreakpoints = {
   key: breakpoints;
@@ -23,8 +23,8 @@ const resolveScreenWidth: Record<breakpoints, number> = {
 };
 
 Object.entries(screenSize).forEach(([key, value]) => {
-  if (typeof value === 'string') {
-    resolveScreenWidth[key] = parseInt(value.replace('px', ''), 10);
+  if (typeof value === "string") {
+    resolveScreenWidth[key] = parseInt(value.replace("px", ""), 10);
   }
 });
 
@@ -32,12 +32,12 @@ export const getBreakPointValue = (
   values: BreakPointValue,
   width: number
 ): unknown => {
-  if (typeof values !== 'object') return values;
+  if (typeof values !== "object") return values;
 
   let finalBreakPointResolvedValue: unknown;
   const mediaQueriesBreakpoints: Array<MediaQueriesBreakpoints> = [
     {
-      key: 'default',
+      key: "default",
       breakpoint: 0,
       isValid: true,
     },
@@ -84,20 +84,20 @@ export function useBreakpointValue(values: BreakPointValue): unknown {
   );
 
   useEffect(() => {
-    if (typeof values === 'object') {
+    if (typeof values === "object") {
       const finalBreakPointResolvedValue = getBreakPointValue(values, width);
       setCurrentBreakPointValue(finalBreakPointResolvedValue);
     }
   }, [values, width]);
 
-  if (typeof values !== 'object') return values;
+  if (typeof values !== "object") return values;
 
   return currentBreakPointValue;
 }
 
 export function isValidBreakpoint(
   breakPointWidth: number,
-  width: number = Dimensions.get('window')?.width || 0
+  width: number = Dimensions.get("window")?.width || 0
 ) {
   const windowWidth = width;
 
