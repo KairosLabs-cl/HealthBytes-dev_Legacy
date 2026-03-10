@@ -1,0 +1,3 @@
+## 2026-03-10 - Optimize Strict AND Dietary Tag Filtering
+**Learning:** Using chained `EXISTS` subqueries via multiple `.any()` calls for "Strict AND" association filtering (e.g. `product.dietary_tags.any(DietaryTag.name == tag)`) generates extremely inefficient SQL queries (`WHERE EXISTS (...) AND EXISTS (...)`). This N+1 query generation pattern per tag slows down database execution considerably, especially as the number of tags grows.
+**Action:** Replace looped `any()` expressions with a single unified subquery utilizing an `IN` clause, grouped by the main entity ID, and validated via a `HAVING count(...) = N` clause. This enforces the Strict AND logic in a single pass over the association table.

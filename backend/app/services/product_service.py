@@ -43,11 +43,24 @@ async def list_products(
     if category:
         query = query.where(Product.category == category)
 
-    # Apply dietary tags filter using ANY operator on the relationship
-    # This generates an EXISTS clause for the many-to-many relationship
+    # Apply dietary tags filter enforcing Strict AND logic
+    # To avoid generating N separate EXISTS subqueries, we build a single
+    # subquery using GROUP BY and HAVING COUNT to ensure all tags are present.
     if dietary_tags:
-        for tag in dietary_tags:
-            query = query.where(Product.dietary_tags.any(DietaryTag.name == tag))
+        # Deduplicate tags to ensure count matching works correctly if user sends duplicates
+        unique_tags = list(set(dietary_tags))
+        tag_count = len(unique_tags)
+
+        # Subquery: find product IDs that have exactly all the requested tags
+        subq = (
+            select(Product.id)
+            .join(Product.dietary_tags)
+            .where(DietaryTag.name.in_(unique_tags))
+            .group_by(Product.id)
+            .having(func.count(DietaryTag.id) == tag_count)
+        ).scalar_subquery()
+
+        query = query.where(Product.id.in_(subq))
 
     # Apply price range filters
     if min_price is not None:
