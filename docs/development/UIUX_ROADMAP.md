@@ -49,6 +49,9 @@ Este roadmap refleja el estado **actual** de la aplicación (Feb 10) y prioriza 
 | ✅ **vendor_name end-to-end** | **FUNCIONANDO** | Migración Alembic + modelo + schema API + tipo TS + render en card |
 | ✅ **DietaryFilterBar completo** | **FUNCIONANDO** | 6 chips (era 4), ScrollView horizontal, slugs sincronizados con DB |
 | ✅ **RecentlyViewedBar self-contained** | **FUNCIONANDO** | Lee store internamente, sin props, visible en carrito |
+| ✅ **System.md & Color World** | **FUNCIONANDO** | Identidad visual definida, semántica de colores y depth strategy |
+| ✅ **Checkout v2 Redesign** | **FUNCIONANDO** | Fitts Law (48px targets), Semántica visual, Custom Keyboards |
+| ✅ **Products Redesign** | **FUNCIONANDO** | Unificación con ProductCard core component, Layout grid adaptativo |
 
 ---
 
@@ -75,33 +78,26 @@ Este roadmap refleja el estado **actual** de la aplicación (Feb 10) y prioriza 
 
 | Feature | Pantalla | Descripción | Prioridad |
 |---------|----------|-------------|-----------|
-| 🔄 **Definición System.md y Color World** | Toda la App | Cimentar si la app es "Clínico/Preciso" u "Orgánico/Cálido". Documentar estrategia de elevación única (Shadows vs Borders) | 🔥 Alta |
-| 🔄 **Rediseño pantalla `/products`** | `app/products.tsx` | Aplicar el mismo sistema visual del ProductCard rediseñado: grid layout, sombras, borderRadius 12, imagen con margin + borderRadius 8, jerarquía tipográfica | 🔥 Alta |
 | 🔄 **Sección/mensajes de vendedor** | `app/products.tsx` + `app/product/[id].tsx` | Mostrar `vendor_name` en pantalla de listado y detalle. Considerar filtro por vendor o sección "Productos de [marca]" | 🔥 Alta |
-| 🔄 **Tokens estéticos `/checkout-v2`** | `app/checkout-v2.tsx` | Escapar de grises predeterminados. Inyectar tintes sutiles del Color World défini. Inputs y botones deben cumplir con *Touch Target > 44px* | ✨ Media |
+| ✅ **Onboarding Dietary Restrictions** | Nuevo Modal/Screen | Primer uso: "¿Qué restricciones tienes?". Guardar en state/backend y pre-filtrar catálogo. Es el Signature Visual de la app. | ✅ Completado |
+| 🔄 **Address CRUD & Checkout API** | Backend + Frontend | Conectar la UI de direcciones del checkout-v2 con el backend de Addresses | 🔥 Alta |
 
 ### Detalle técnico por tarea
-
-#### Definición System.md y Color World
-- **Objetivo**: Evitar interfaces genéricas y templates por defecto.
-- Definir base unit de espaciamiento, tipografía y paleta semántica.
-- Decidir la profundidad estricta ("Subtle shadows").
-
-#### `/products` — Rediseño visual
-- Verificar que usa `ProductCard` directamente (si no, refactorizar para reutilizarlo)
-- Revisar el layout del grid: `numColumns`, gap entre cards, padding lateral
-- Asegurar que `DietaryFilterBar` está visible y funcional en esta pantalla
 
 #### Mensajes de vendedor
 - En `ProductCard` ya aparece `vendor_name` debajo del nombre ✅
 - En `/product/[id].tsx`: agregar fila "Proveedor: [vendor_name]" en la sección de detalles
 - Evaluar si agregar chip/badge de vendor en el listado de productos
 
-#### `/checkout-v2` — Token estéticos
-- Botones: colores basados en el Color World semántico. Altura mínima: `48px` para móviles.
-- Tipografía: unificar `fontWeight` a escala 400/500/700/800
-- Spacing: padding consistente de 16px en secciones, 12px entre elementos
-- Inputs: `borderRadius 12`, border sutil, altura mínima accesible para touch.
+#### Onboarding Dietary Restrictions
+- ✅ Construido un flujo inmersivo con `react-native-reanimated` (Full Screen Modal).
+- ✅ Mapeadas selecciones al backend y visualización instantánea (Zustand `useProductFilters`).
+- ✅ Color World implementado (Fondo off-white, contrastes verde oscuro).
+
+#### Address CRUD & Checkout API
+- Crear modelo en Backend (SQLAlchemy) + Endpoints.
+- Mapear peticiones desde el frontend a `/addresses`.
+- Integrar la validación y UX final en el Checkout.
 
 ---
 
@@ -127,10 +123,9 @@ Este roadmap refleja el estado **actual** de la aplicación (Feb 10) y prioriza 
   - Integraciones de pago seguras
 
 #### Frontend Prioritario
-- [ ] **Onboarding Dietary Restrictions (Signature Visual)** (2-3 días)
-  - First-time user: "¿Qué restricciones tienes?"
-  - Implementado como el elemento distintivo de la app. Altamente interactivo.
-  - Guardar en authStore → pre-filtrar productos
+- ✅ **Onboarding Dietary Restrictions (Signature Visual)** (Completado)
+  - Full screen modal con React Native Reanimated
+  - Guardado asíncrono y precarga síncrona visual en Home
 - [ ] **Checkout con Address Selection** (3 días)
   - Depende de Backend Addresses
   - UI: Diseñada aplicando MFRI (Mobile Feasibility Risk Index) y asegurando *Touch Targets*.
