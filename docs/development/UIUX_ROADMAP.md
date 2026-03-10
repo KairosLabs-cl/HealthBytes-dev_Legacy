@@ -75,11 +75,17 @@ Este roadmap refleja el estado **actual** de la aplicación (Feb 10) y prioriza 
 
 | Feature | Pantalla | Descripción | Prioridad |
 |---------|----------|-------------|-----------|
+| 🔄 **Definición System.md y Color World** | Toda la App | Cimentar si la app es "Clínico/Preciso" u "Orgánico/Cálido". Documentar estrategia de elevación única (Shadows vs Borders) | 🔥 Alta |
 | 🔄 **Rediseño pantalla `/products`** | `app/products.tsx` | Aplicar el mismo sistema visual del ProductCard rediseñado: grid layout, sombras, borderRadius 12, imagen con margin + borderRadius 8, jerarquía tipográfica | 🔥 Alta |
 | 🔄 **Sección/mensajes de vendedor** | `app/products.tsx` + `app/product/[id].tsx` | Mostrar `vendor_name` en pantalla de listado y detalle. Considerar filtro por vendor o sección "Productos de [marca]" | 🔥 Alta |
-| 🔄 **Tokens estéticos `/checkout-v2`** | `app/checkout-v2.tsx` | Alinear colores (`#111827`, `#F3F4F6`), tipografía (fontWeight 700/800), espaciado y botones pill `borderRadius 999` con el nuevo sistema visual | ✨ Media |
+| 🔄 **Tokens estéticos `/checkout-v2`** | `app/checkout-v2.tsx` | Escapar de grises predeterminados. Inyectar tintes sutiles del Color World défini. Inputs y botones deben cumplir con *Touch Target > 44px* | ✨ Media |
 
 ### Detalle técnico por tarea
+
+#### Definición System.md y Color World
+- **Objetivo**: Evitar interfaces genéricas y templates por defecto.
+- Definir base unit de espaciamiento, tipografía y paleta semántica.
+- Decidir la profundidad estricta ("Subtle shadows").
 
 #### `/products` — Rediseño visual
 - Verificar que usa `ProductCard` directamente (si no, refactorizar para reutilizarlo)
@@ -92,10 +98,10 @@ Este roadmap refleja el estado **actual** de la aplicación (Feb 10) y prioriza 
 - Evaluar si agregar chip/badge de vendor en el listado de productos
 
 #### `/checkout-v2` — Token estéticos
-- Botones: reemplazar colores hardcoded por `#111827` (primario) y `#F3F4F6` (secundario)
+- Botones: colores basados en el Color World semántico. Altura mínima: `48px` para móviles.
 - Tipografía: unificar `fontWeight` a escala 400/500/700/800
 - Spacing: padding consistente de 16px en secciones, 12px entre elementos
-- Inputs: `borderRadius 12`, border `rgba(0,0,0,0.1)`
+- Inputs: `borderRadius 12`, border sutil, altura mínima accesible para touch.
 
 ---
 
@@ -111,80 +117,65 @@ Este roadmap refleja el estado **actual** de la aplicación (Feb 10) y prioriza 
 
 ## 📅 Roadmap Post-Demo (Fases 2-4)
 
-### 🚀 Fase 2: Features Core (Semanas 1-4 post-demo)
+### 🚀 Fase 2: Features Core + Accesibilidad Móvil (Semanas 1-5 post-demo)
 
 #### Backend Prioritario
 - [ ] **Backend Addresses CRUD** (4-5 días)
   - Modelo: Address con user_id, street, city, region, postal_code, is_default
   - Endpoints: GET, POST, PUT, DELETE /addresses
 - [ ] **Backend Payment Methods (Venti + Mercado Pago)** (1.5 semanas)
-  - Integración Venti payment gateway
-  - Integración Mercado Pago (Chile)
-  - Webhook para order confirmation
-- [ ] **Notificaciones Push (solo órdenes)** (1.5 semanas)
-  - Expo notifications
-  - Backend: orden status change → push notification
+  - Integraciones de pago seguras
 
 #### Frontend Prioritario
-- [ ] **Onboarding Dietary Restrictions** (2-3 días)
+- [ ] **Onboarding Dietary Restrictions (Signature Visual)** (2-3 días)
   - First-time user: "¿Qué restricciones tienes?"
+  - Implementado como el elemento distintivo de la app. Altamente interactivo.
   - Guardar en authStore → pre-filtrar productos
 - [ ] **Checkout con Address Selection** (3 días)
   - Depende de Backend Addresses
-  - UI: Address cards + "Agregar nueva"
+  - UI: Diseñada aplicando MFRI (Mobile Feasibility Risk Index) y asegurando *Touch Targets*.
+- [ ] **Auditoría Básica A11y & Touch Targets** (3 días)
+  - Promovido: Asegurar botones de 44x44px min.
+  - Screen reader labels iniciales. Contrast ratio check.
 - [ ] **Product Alternatives/Suggestions** (1 semana)
-  - "Productos similares" en ProductDetail
-  - Backend: simple category + dietary_tags match
+  - "Productos similares" en ProductDetail (Backend matching temporal)
 
-**Total Fase 2**: ~4-5 semanas
+**Total Fase 2**: ~5 semanas
 
 ---
 
-### 🎨 Fase 3: Polish UX/UI (Semanas 5-7 post-demo)
+### 🎨 Fase 3: Polish UX/UI & Mobile Realities (Semanas 6-8 post-demo)
 
+#### Estabilidad Móvil y Performance Percibida
+- [ ] **Modo Offline Resiliente** (1 semana)
+  - Promovido: Cache browsed products y cart (`AsyncStorage`).
+  - Implementar componente `OfflineBanner` global no intrusivo y elegante.
+- [ ] **Lazy Loading Optimizado (Progressive Image)** (3-4 días)
+  - Blur placeholders y transiciones fluidas de imágenes basadas en el estado real (online vs offline).
 - [ ] **Dark Mode** (3-4 días)
-  - Gluestack UI theming
-  - Toggle en Profile settings
-- [ ] **Micro-interactions mejoradas** (3 días)
-  - Hover states consistentes
-  - Press animations (scale 0.95)
-- [ ] **Deep Linking** (4 días)
-  - Compartir productos vía link
-  - Open app desde notification
-- [ ] **Filter Persistence** (1 día) ⚡ Podría ser Quick Win también
-  - Guardar productFiltersStore en AsyncStorage
-  - Zustand persist middleware
+  - Basado en el `Color World` (no solo gris oscuro, sino colores intencionales).
 
-**Total Fase 3**: ~2 semanas
+#### Micro-interacciones
+- [ ] **Micro-interactions mejoradas** (3 días)
+  - Hover states (web), Press animations consistentes con la Ley de Fitts.
+- [ ] **Deep Linking** (4 días)
+- [ ] **Filter Persistence** (1 día)
+
+**Total Fase 3**: ~3 semanas
 
 ---
 
-### 🔮 Fase 4: Advanced + Performance (Semanas 8-12 post-demo)
+### 🔮 Fase 4: Advanced Features (Semanas 9+ post-demo)
 
-#### Accesibilidad (PROMOVIDO de Fase 4 original)
-- [ ] **A11y Audit + Fixes** (1 semana)
-  - WCAG 2.1 AA compliance
-  - Screen reader labels
-  - Contrast ratio validation (Tool: Lighthouse)
-  - Touch target sizes (mínimo 44x44)
+#### Accesibilidad Avanzada
+- [ ] **Screen Readers Total Support** (A11y completo)
 
-#### Performance
-- [ ] **Lazy Loading optimizado** (3 días)
-  - React Native Image progressive loading
-  - Blur placeholder mientras carga
-- [ ] **Modo Offline básico** (1 semana)
-  - Cache browsed products (AsyncStorage)
-  - Offline banner cuando no hay conexión
-
-#### Features Avanzadas (Evaluar ROI primero)
+#### Features Avanzadas (Evaluar ROI)
+- [ ] **Notificaciones Push (solo órdenes)**
+  - Evaluar permisos y fatiga del usuario en setup.
 - [ ] **Sistema de Reviews** (2 semanas)
-  - Empezar con ratings ⭐ simples
-  - Luego agregar comments
 - [ ] **Cupones y Promociones** (1 semana)
-  - Solo si hay marketing strategy
-- [ ] **Wishlist Lists** (1 semana)
-  - Escalar de boolean favorites a listas múltiples
-  - Evaluar engagement actual primero
+- [ ] **Wishlist Lists Múltiples** (1 semana)
 
 ---
 
