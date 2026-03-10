@@ -178,22 +178,28 @@ async def merge_cart_items(
     - If product exists on server: use local quantity (current session takes priority)
     - If product is new: add to server cart
     """
+    if not local_items:
+        return await get_cart(user_id, db)
+
+    # Pre-fetch all referenced products to avoid N+1 queries
+    product_ids = [item.product_id for item in local_items]
+    product_result = await db.execute(select(Product).where(Product.id.in_(product_ids)))
+    products_by_id = {product.id: product for product in product_result.scalars().all()}
+
+    # Pre-fetch existing cart items for this user to avoid N+1 queries
+    cart_items_result = await db.execute(
+        select(CartItem).where(CartItem.user_id == user_id, CartItem.product_id.in_(product_ids))
+    )
+    cart_items_by_product_id = {item.product_id: item for item in cart_items_result.scalars().all()}
+
     for item in local_items:
-        # Check if product exists
-        product_result = await db.execute(select(Product).where(Product.id == item.product_id))
-        product = product_result.scalar_one_or_none()
+        product = products_by_id.get(item.product_id)
 
         if not product:
             # Skip invalid products from local cart
             continue
 
-        # Check if item already in server cart
-        result = await db.execute(
-            select(CartItem).where(
-                CartItem.user_id == user_id, CartItem.product_id == item.product_id
-            )
-        )
-        existing_item = result.scalar_one_or_none()
+        existing_item = cart_items_by_product_id.get(item.product_id)
 
         if existing_item:
             # Use local quantity (user's current session takes priority over old server data)
