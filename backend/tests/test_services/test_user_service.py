@@ -2,7 +2,7 @@
 
 import pytest
 from app.db.schemas import User
-from app.schemas.user import UserCreate, UserUpdate
+from app.schemas.user import AdminUserUpdate, UserCreate, UserUpdate
 from app.services.auth_service import register_user
 from app.services.user_service import delete_user, get_user, update_user
 from sqlalchemy import select
@@ -48,7 +48,7 @@ async def test_update_user_success(db_session):
     db_session.refresh(user)
 
     # Update user
-    update_data = UserUpdate(email="updated@example.com")
+    update_data = AdminUserUpdate(email="updated@example.com")
 
     result = await update_user(mock_db, user.id, update_data)
 
@@ -62,7 +62,7 @@ async def test_update_user_not_found(db_session):
     """Test updating a non-existent user"""
     mock_db = MockAsyncSession(db_session)
 
-    update_data = UserUpdate(email="new@example.com")
+    update_data = AdminUserUpdate(email="new@example.com")
 
     result = await update_user(mock_db, "nonexistent_user", update_data)
 
@@ -81,7 +81,7 @@ async def test_update_user_partial(db_session):
     db_session.refresh(user)
 
     # Update only role
-    update_data = UserUpdate(role="seller")
+    update_data = AdminUserUpdate(role="seller")
 
     result = await update_user(mock_db, user.id, update_data)
 
@@ -102,7 +102,7 @@ async def test_update_user_all_fields(db_session):
     db_session.refresh(user)
 
     # Update all fields
-    update_data = UserUpdate(email="new@example.com", role="admin")
+    update_data = AdminUserUpdate(email="new@example.com", role="admin")
 
     result = await update_user(mock_db, user.id, update_data)
 
