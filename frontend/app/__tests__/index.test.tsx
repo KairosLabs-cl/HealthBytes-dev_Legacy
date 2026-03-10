@@ -1,74 +1,77 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react-native';
-import HomeScreen from '../index';
-import { useQuery } from '@tanstack/react-query';
-import { useRecentlyViewed } from '@/store/recentlyViewedStore';
+import React from "react";
+import { render, screen } from "@testing-library/react-native";
+import HomeScreen from "../index";
+import { useQuery } from "@tanstack/react-query";
+import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 
 // Mocks
-jest.mock('@tanstack/react-query', () => ({
+jest.mock("@tanstack/react-query", () => ({
   useQuery: jest.fn(),
 }));
 
-jest.mock('@/store/recentlyViewedStore', () => ({
+jest.mock("@/store/recentlyViewedStore", () => ({
   useRecentlyViewed: jest.fn(),
 }));
 
-jest.mock('@/api/products', () => ({
+jest.mock("@/api/products", () => ({
   listProducts: jest.fn(),
 }));
 
 // Mock child components
-jest.mock('@/components/Header', () => {
-  const React = require('react');
-  const { View } = require('react-native');
-  const Component = (props: any) => React.createElement(View, { ...props, testID: 'header' });
-  Component.displayName = 'Header';
+jest.mock("@/components/Header", () => {
+  const React = require("react");
+  const { View } = require("react-native");
+  const Component = (props: any) =>
+    React.createElement(View, { ...props, testID: "header" });
+  Component.displayName = "Header";
   return { Header: Component };
 });
 
-jest.mock('@/components/ui/text', () => {
-  const React = require('react');
-  const { Text } = require('react-native');
+jest.mock("@/components/ui/text", () => {
+  const React = require("react");
+  const { Text } = require("react-native");
   return {
-    Text: (props: any) => React.createElement(Text, props, props.children)
+    Text: (props: any) => React.createElement(Text, props, props.children),
   };
 });
 
-jest.mock('@/components/ProductListItem', () => {
-  const React = require('react');
-  const { View } = require('react-native');
-  const Component = (props: any) => React.createElement(View, { ...props, testID: 'product-list-item' });
-  Component.displayName = 'ProductListItem';
+jest.mock("@/components/ProductListItem", () => {
+  const React = require("react");
+  const { View } = require("react-native");
+  const Component = (props: any) =>
+    React.createElement(View, { ...props, testID: "product-list-item" });
+  Component.displayName = "ProductListItem";
   return Component;
 });
 
-jest.mock('@/components/FavoritesBar', () => {
-  const React = require('react');
-  const { View } = require('react-native');
-  const Component = (props: any) => React.createElement(View, props, 'FavoritesBar');
-  Component.displayName = 'FavoritesBar';
+jest.mock("@/components/FavoritesBar", () => {
+  const React = require("react");
+  const { View } = require("react-native");
+  const Component = (props: any) =>
+    React.createElement(View, props, "FavoritesBar");
+  Component.displayName = "FavoritesBar";
   return Component;
 });
 
-jest.mock('@/components/RecentlyViewedBar', () => {
-  const React = require('react');
-  const { View } = require('react-native');
-  const Component = (props: any) => React.createElement(View, props, 'RecentlyViewedBar');
-  Component.displayName = 'RecentlyViewedBar';
+jest.mock("@/components/RecentlyViewedBar", () => {
+  const React = require("react");
+  const { View } = require("react-native");
+  const Component = (props: any) =>
+    React.createElement(View, props, "RecentlyViewedBar");
+  Component.displayName = "RecentlyViewedBar";
   return Component;
 });
 
-
-
-jest.mock('@/components/SectionHeader', () => {
-  const React = require('react');
-  const { View } = require('react-native');
-  const Component = (props: any) => React.createElement(View, props, 'SectionHeader');
-  Component.displayName = 'SectionHeader';
+jest.mock("@/components/SectionHeader", () => {
+  const React = require("react");
+  const { View } = require("react-native");
+  const Component = (props: any) =>
+    React.createElement(View, props, "SectionHeader");
+  Component.displayName = "SectionHeader";
   return Component;
 });
 
-jest.mock('@/store/productFiltersStore', () => ({
+jest.mock("@/store/productFiltersStore", () => ({
   useProductFilters: jest.fn(() => ({
     dietaryTags: [],
     toggleDietaryTag: jest.fn(),
@@ -77,29 +80,29 @@ jest.mock('@/store/productFiltersStore', () => ({
   })),
 }));
 
-jest.mock('@/store/preferencesStore', () => ({
+jest.mock("@/store/preferencesStore", () => ({
   usePreferencesStore: jest.fn(() => ({
     dietaryPreferences: [],
   })),
 }));
 
-jest.mock('@clerk/clerk-expo', () => ({
+jest.mock("@clerk/clerk-expo", () => ({
   useUser: jest.fn(() => ({
-    user: { firstName: 'Test', fullName: 'Test User' },
+    user: { firstName: "Test", fullName: "Test User" },
   })),
   useAuth: jest.fn(() => ({
     isSignedIn: true,
     isLoaded: true,
-    getToken: jest.fn().mockResolvedValue('test-token'),
+    getToken: jest.fn().mockResolvedValue("test-token"),
   })),
 }));
 
-jest.mock('expo-status-bar', () => ({
+jest.mock("expo-status-bar", () => ({
   StatusBar: () => null,
 }));
 
-jest.mock('react-native-reanimated', () => {
-  const { View } = require('react-native');
+jest.mock("react-native-reanimated", () => {
+  const { View } = require("react-native");
   return {
     __esModule: true,
     default: {
@@ -113,32 +116,32 @@ jest.mock('react-native-reanimated', () => {
   };
 });
 
-jest.mock('@/components/HomeSkeleton', () => () => null);
+jest.mock("@/components/HomeSkeleton", () => () => null);
 
-jest.mock('expo-router', () => ({
+jest.mock("expo-router", () => ({
   Stack: { Screen: () => null },
   useRouter: () => ({ push: jest.fn(), replace: jest.fn(), back: jest.fn() }),
   useLocalSearchParams: () => ({}),
 }));
 
-jest.mock('react-native-safe-area-context', () => ({
+jest.mock("react-native-safe-area-context", () => ({
   SafeAreaView: ({ children }: any) => children,
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
 
-jest.mock('@/components/ui/utils/use-break-point-value', () => ({
+jest.mock("@/components/ui/utils/use-break-point-value", () => ({
   useBreakpointValue: () => 2,
 }));
 
-describe('HomeScreen Structural Test', () => {
+describe("HomeScreen Structural Test", () => {
   beforeEach(() => {
     (useRecentlyViewed as unknown as jest.Mock).mockReturnValue({ items: [] });
   });
 
-  it('renders a list of products', async () => {
+  it("renders a list of products", async () => {
     const mockData = [
-      { id: 1, name: 'Product 1', image: 'url1' },
-      { id: 2, name: 'Product 2', image: 'url2' },
+      { id: 1, name: "Product 1", image: "url1" },
+      { id: 2, name: "Product 2", image: "url2" },
     ];
 
     (useQuery as jest.Mock).mockReturnValue({
@@ -151,9 +154,9 @@ describe('HomeScreen Structural Test', () => {
     render(<HomeScreen />);
 
     // Check if products are rendered
-    expect(await screen.findAllByTestId('product-list-item')).toHaveLength(2);
+    expect(await screen.findAllByTestId("product-list-item")).toHaveLength(2);
 
     // Check if Header is rendered
-    expect(screen.getByTestId('header')).toBeTruthy();
+    expect(screen.getByTestId("header")).toBeTruthy();
   });
 });

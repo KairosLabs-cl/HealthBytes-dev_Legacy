@@ -30,7 +30,11 @@ export async function fetchAddresses(
     if (__DEV__) {
       console.warn("fetchAddresses: rate limited (429), returning empty list");
     }
-    return { addresses: [], total: 0, default_address_id: null } as AddressListResponse;
+    return {
+      addresses: [],
+      total: 0,
+      default_address_id: null,
+    } as AddressListResponse;
   }
 
   await throwIfNotOk(res, "Error fetching addresses");

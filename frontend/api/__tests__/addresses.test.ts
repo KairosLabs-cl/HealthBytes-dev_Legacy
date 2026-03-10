@@ -1,4 +1,11 @@
-import { fetchAddresses, fetchAddressById, createAddress, updateAddress, deleteAddress, setDefaultAddress } from "../addresses";
+import {
+  fetchAddresses,
+  fetchAddressById,
+  createAddress,
+  updateAddress,
+  deleteAddress,
+  setDefaultAddress,
+} from "../addresses";
 
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
@@ -35,8 +42,7 @@ describe("fetchAddresses", () => {
   test("throws on error with detail message", async () => {
     mockFetch.mockResolvedValue({
       ok: false,
-      json: () =>
-        Promise.resolve({ detail: { message: "Not authenticated" } }),
+      json: () => Promise.resolve({ detail: { message: "Not authenticated" } }),
     });
 
     await expect(fetchAddresses(TOKEN)).rejects.toThrow("Not authenticated");

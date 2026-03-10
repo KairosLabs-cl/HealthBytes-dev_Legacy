@@ -49,22 +49,21 @@ describe("createOrder", () => {
       json: () => Promise.resolve({ detail: "Stock insuficiente" }),
     });
 
-    await expect(
-      createOrder(items, 1, "venti", mockGetToken)
-    ).rejects.toThrow("Stock insuficiente");
+    await expect(createOrder(items, 1, "venti", mockGetToken)).rejects.toThrow(
+      "Stock insuficiente"
+    );
   });
 
   test("extracts error message from detail object", async () => {
     mockFetch.mockResolvedValue({
       ok: false,
       status: 422,
-      json: () =>
-        Promise.resolve({ detail: { message: "Validation failed" } }),
+      json: () => Promise.resolve({ detail: { message: "Validation failed" } }),
     });
 
-    await expect(
-      createOrder(items, 1, "venti", mockGetToken)
-    ).rejects.toThrow("Validation failed");
+    await expect(createOrder(items, 1, "venti", mockGetToken)).rejects.toThrow(
+      "Validation failed"
+    );
   });
 
   test("extracts error from message field", async () => {
@@ -74,9 +73,9 @@ describe("createOrder", () => {
       json: () => Promise.resolve({ message: "Internal error" }),
     });
 
-    await expect(
-      createOrder(items, 1, "venti", mockGetToken)
-    ).rejects.toThrow("Internal error");
+    await expect(createOrder(items, 1, "venti", mockGetToken)).rejects.toThrow(
+      "Internal error"
+    );
   });
 
   test("extracts error from error field", async () => {
@@ -86,9 +85,9 @@ describe("createOrder", () => {
       json: () => Promise.resolve({ error: "Something went wrong" }),
     });
 
-    await expect(
-      createOrder(items, 1, "venti", mockGetToken)
-    ).rejects.toThrow("Something went wrong");
+    await expect(createOrder(items, 1, "venti", mockGetToken)).rejects.toThrow(
+      "Something went wrong"
+    );
   });
 
   test("falls back to status code error", async () => {
@@ -98,9 +97,9 @@ describe("createOrder", () => {
       json: () => Promise.resolve({}),
     });
 
-    await expect(
-      createOrder(items, 1, "venti", mockGetToken)
-    ).rejects.toThrow("Error 503");
+    await expect(createOrder(items, 1, "venti", mockGetToken)).rejects.toThrow(
+      "Error 503"
+    );
   });
 });
 
@@ -130,9 +129,7 @@ describe("getOrders", () => {
   });
 
   test("throws when no token", async () => {
-    await expect(getOrders("")).rejects.toThrow(
-      "No se pudo obtener el token"
-    );
+    await expect(getOrders("")).rejects.toThrow("No se pudo obtener el token");
   });
 
   test("throws on API error with detail", async () => {
