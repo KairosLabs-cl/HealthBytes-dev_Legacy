@@ -78,7 +78,7 @@ Este roadmap refleja el estado **actual** de la aplicación (Feb 10) y prioriza 
 
 | Feature | Pantalla | Descripción | Prioridad |
 |---------|----------|-------------|-----------|
-| 🔄 **Sección/mensajes de vendedor** | `app/products.tsx` + `app/product/[id].tsx` | Mostrar `vendor_name` en pantalla de listado y detalle. Considerar filtro por vendor o sección "Productos de [marca]" | 🔥 Alta |
+| ✅ **Sección/mensajes de vendedor** | `app/products.tsx` + `app/product/[id].tsx` | Mostrar `vendor_name` en pantalla de listado y detalle. Considerar filtro por vendor o sección "Productos de [marca]" | ✅ Completado |
 | ✅ **Onboarding Dietary Restrictions** | Nuevo Modal/Screen | Primer uso: "¿Qué restricciones tienes?". Guardar en state/backend y pre-filtrar catálogo. Es el Signature Visual de la app. | ✅ Completado |
 | 🔄 **Address CRUD & Checkout API** | Backend + Frontend | Conectar la UI de direcciones del checkout-v2 con el backend de Addresses | 🔥 Alta |
 
@@ -86,8 +86,8 @@ Este roadmap refleja el estado **actual** de la aplicación (Feb 10) y prioriza 
 
 #### Mensajes de vendedor
 - En `ProductCard` ya aparece `vendor_name` debajo del nombre ✅
-- En `/product/[id].tsx`: agregar fila "Proveedor: [vendor_name]" en la sección de detalles
-- Evaluar si agregar chip/badge de vendor en el listado de productos
+- En `/product/[id].tsx`: banner "Vendedor: [vendor_name]" y logo en detalle del producto ✅
+- Layout "Más de [marca]": carrusel de recomendación extra en detalles y link a `/search` ✅
 
 #### Onboarding Dietary Restrictions
 - ✅ Construido un flujo inmersivo con `react-native-reanimated` (Full Screen Modal).
