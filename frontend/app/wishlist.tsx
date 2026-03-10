@@ -10,7 +10,9 @@ import { useQuery } from "@tanstack/react-query";
 import { HeartOff, RefreshCw } from "lucide-react-native";
 import WishlistTableRow from "@/components/WishlistTableRow";
 import { Header } from "@/components/Header";
-import ProductCardSkeleton, { useShimmerStyle } from "@/components/ProductCardSkeleton";
+import ProductCardSkeleton, {
+  useShimmerStyle,
+} from "@/components/ProductCardSkeleton";
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { Product } from "@/types/product";
 import { Favorite, getUserFavorites } from "@/api/favorites";
@@ -20,7 +22,12 @@ export default function WishlistScreen() {
   const { isLoaded, isSignedIn, getToken } = useAuth();
   const shimmerStyle = useShimmerStyle();
 
-  const { data: favorites, isLoading, error, refetch } = useQuery<Favorite[]>({
+  const {
+    data: favorites,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery<Favorite[]>({
     queryKey: ["favorites"],
     queryFn: async () => {
       const token = await getToken();
@@ -33,7 +40,7 @@ export default function WishlistScreen() {
 
   const reactiveFavorites = useMemo(() => {
     if (!favorites) return [];
-    return favorites.filter(fav => favoriteIds.has(Number(fav.product?.id)));
+    return favorites.filter((fav) => favoriteIds.has(Number(fav.product?.id)));
   }, [favorites, favoriteIds]);
 
   const renderItem = useCallback(({ item }: { item: Favorite }) => {
@@ -41,28 +48,37 @@ export default function WishlistScreen() {
     return <WishlistTableRow product={item.product as Product} />;
   }, []);
 
-  const listHeader = useMemo(() => (
-    <Header userName="Usuario" showBackButton={true} />
-  ), []);
+  const listHeader = useMemo(
+    () => <Header userName="Usuario" showBackButton={true} />,
+    []
+  );
 
-  const renderEmpty = useMemo(() => (
-    <View className="flex-1 items-center justify-center p-8 mt-10">
-      <View className="bg-gray-100 p-6 rounded-full mb-6">
-        <HeartOff size={48} color="#9CA3AF" />
+  const renderEmpty = useMemo(
+    () => (
+      <View className="flex-1 items-center justify-center p-8 mt-10">
+        <View className="bg-gray-100 p-6 rounded-full mb-6">
+          <HeartOff size={48} color="#9CA3AF" />
+        </View>
+        <Text className="text-xl font-bold text-gray-900 mb-2">
+          Lista vacía
+        </Text>
+        <Text className="text-center text-gray-500 mb-6">
+          Aún no tienes productos en tu lista de deseos. Explora y guarda tus
+          favoritos.
+        </Text>
+        <Pressable
+          onPress={() => router.push("/")}
+          className="bg-black px-6 py-3 rounded-full active:opacity-80"
+          style={{ minHeight: 44 }}
+        >
+          <Text className="text-white font-bold text-base">
+            Explorar productos
+          </Text>
+        </Pressable>
       </View>
-      <Text className="text-xl font-bold text-gray-900 mb-2">Lista vacía</Text>
-      <Text className="text-center text-gray-500 mb-6">
-        Aún no tienes productos en tu lista de deseos. Explora y guarda tus favoritos.
-      </Text>
-      <Pressable
-        onPress={() => router.push("/")}
-        className="bg-black px-6 py-3 rounded-full active:opacity-80"
-        style={{ minHeight: 44 }}
-      >
-        <Text className="text-white font-bold text-base">Explorar productos</Text>
-      </Pressable>
-    </View>
-  ), [router]);
+    ),
+    [router]
+  );
 
   if (!isLoaded || isLoading) {
     return (
@@ -77,8 +93,6 @@ export default function WishlistScreen() {
       </SafeAreaView>
     );
   }
-
-
 
   if (error) {
     return (
@@ -104,24 +118,24 @@ export default function WishlistScreen() {
 
   return (
     <AuthGate message="Inicia sesión para ver tu lista de deseos.">
-    <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
-      <StatusBar style="dark" />
-      <Stack.Screen options={{ headerShown: false }} />
+      <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
+        <StatusBar style="dark" />
+        <Stack.Screen options={{ headerShown: false }} />
 
-      <FlatList
-        className="flex-1 bg-gray-50"
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 120, paddingTop: 8 }}
-        ListHeaderComponent={listHeader}
-        data={reactiveFavorites}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderItem}
-        ListEmptyComponent={renderEmpty}
-        initialNumToRender={8}
-        windowSize={7}
-        maxToRenderPerBatch={6}
-      />
-    </SafeAreaView>
+        <FlatList
+          className="flex-1 bg-gray-50"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 120, paddingTop: 8 }}
+          ListHeaderComponent={listHeader}
+          data={reactiveFavorites}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
+          ListEmptyComponent={renderEmpty}
+          initialNumToRender={8}
+          windowSize={7}
+          maxToRenderPerBatch={6}
+        />
+      </SafeAreaView>
     </AuthGate>
   );
 }

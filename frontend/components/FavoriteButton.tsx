@@ -15,10 +15,7 @@ interface FavoriteButtonProps {
   size?: number;
 }
 
-function FavoriteButton({
-  productId,
-  size = 24,
-}: FavoriteButtonProps) {
+function FavoriteButton({ productId, size = 24 }: FavoriteButtonProps) {
   const { getToken } = useAuth();
   // Granular selectors: only re-render when THIS product's favorite status changes
   const favorited = useFavoritesStore((s) => s.favoriteIds.has(productId));
@@ -94,4 +91,3 @@ function FavoriteButton({
 }
 
 export default memo(FavoriteButton);
-

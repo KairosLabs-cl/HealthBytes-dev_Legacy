@@ -1,16 +1,16 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react-native';
-import CartScreen from '../cart';
-import { useCart } from '@/store/cartStore';
+import React from "react";
+import { render, screen } from "@testing-library/react-native";
+import CartScreen from "../cart";
+import { useCart } from "@/store/cartStore";
 
 // Mocks
-jest.mock('@/store/cartStore', () => ({
+jest.mock("@/store/cartStore", () => ({
   useCart: jest.fn(),
   selectCartItemCount: jest.fn(),
   selectCartSubtotal: jest.fn(),
 }));
 
-jest.mock('expo-router', () => ({
+jest.mock("expo-router", () => ({
   useRouter: () => ({
     push: jest.fn(),
   }),
@@ -19,27 +19,33 @@ jest.mock('expo-router', () => ({
   },
 }));
 
-jest.mock('@/lib/formatPrice', () => ({
+jest.mock("@/lib/formatPrice", () => ({
   formatPrice: (price: number) => `$${price}`,
 }));
 
-jest.mock('@/components/CartItem', () => {
-  const { View } = require('react-native');
+jest.mock("@/components/CartItem", () => {
+  const { View } = require("react-native");
   return (props: any) => <View testID="cart-item" {...props} />;
 });
 
-describe('CartScreen', () => {
+describe("CartScreen", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders empty state when cart is empty', () => {
-    const { selectCartItemCount, selectCartSubtotal } = require('@/store/cartStore');
+  it("renders empty state when cart is empty", () => {
+    const {
+      selectCartItemCount,
+      selectCartSubtotal,
+    } = require("@/store/cartStore");
     (selectCartItemCount as jest.Mock).mockImplementation(() => 0);
     (selectCartSubtotal as jest.Mock).mockImplementation(() => 0);
 
     (useCart as unknown as jest.Mock).mockImplementation((selector) => {
-      const { selectCartItemCount, selectCartSubtotal } = require('@/store/cartStore');
+      const {
+        selectCartItemCount,
+        selectCartSubtotal,
+      } = require("@/store/cartStore");
       if (selector === selectCartItemCount) return 0;
       if (selector === selectCartSubtotal) return 0;
       const state = {
@@ -48,23 +54,33 @@ describe('CartScreen', () => {
         decrementProduct: jest.fn(),
         removeProduct: jest.fn(),
       };
-      return typeof selector === 'function' ? selector(state) : state;
+      return typeof selector === "function" ? selector(state) : state;
     });
 
     render(<CartScreen />);
 
-    expect(screen.getByText('Tu carrito está vacío')).toBeTruthy();
+    expect(screen.getByText("Tu carrito está vacío")).toBeTruthy();
   });
 
-  it('renders cart items and footer when items exist', () => {
+  it("renders cart items and footer when items exist", () => {
     const mockItems = [
-      { product: { id: 1, name: 'Prod 1', price: 10 }, quantity: 2 },
-      { product: { id: 2, name: 'Prod 2', price: 20 }, quantity: 1 },
+      { product: { id: 1, name: "Prod 1", price: 10 }, quantity: 2 },
+      { product: { id: 2, name: "Prod 2", price: 20 }, quantity: 1 },
     ];
 
-    const { selectCartItemCount, selectCartSubtotal } = require('@/store/cartStore');
-    (selectCartItemCount as jest.Mock).mockImplementation((state) => state.items.reduce((acc: number, item: any) => acc + item.quantity, 0));
-    (selectCartSubtotal as jest.Mock).mockImplementation((state) => state.items.reduce((acc: number, item: any) => acc + item.product.price * item.quantity, 0));
+    const {
+      selectCartItemCount,
+      selectCartSubtotal,
+    } = require("@/store/cartStore");
+    (selectCartItemCount as jest.Mock).mockImplementation((state) =>
+      state.items.reduce((acc: number, item: any) => acc + item.quantity, 0)
+    );
+    (selectCartSubtotal as jest.Mock).mockImplementation((state) =>
+      state.items.reduce(
+        (acc: number, item: any) => acc + item.product.price * item.quantity,
+        0
+      )
+    );
 
     (useCart as unknown as jest.Mock).mockImplementation((selector) => {
       if (selector === selectCartItemCount) return 3;
@@ -76,16 +92,16 @@ describe('CartScreen', () => {
         decrementProduct: jest.fn(),
         removeProduct: jest.fn(),
       };
-      return typeof selector === 'function' ? selector(state) : state;
+      return typeof selector === "function" ? selector(state) : state;
     });
 
     render(<CartScreen />);
 
     // Check items rendered
-    expect(screen.getAllByTestId('cart-item')).toHaveLength(2);
+    expect(screen.getAllByTestId("cart-item")).toHaveLength(2);
 
     // Check footer rendered (checks for text in footer)
-    expect(screen.getByText('Resumen de compra')).toBeTruthy();
-    expect(screen.getByText('Total')).toBeTruthy();
+    expect(screen.getByText("Resumen de compra")).toBeTruthy();
+    expect(screen.getByText("Total")).toBeTruthy();
   });
 });

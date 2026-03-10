@@ -41,8 +41,8 @@ if (SENTRY_DSN) {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,   // 5 minutes
-      gcTime: 10 * 60 * 1000,     // 10 minutes (formerly cacheTime)
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
       retry: 1,
       retryDelay: (attempt: number) => Math.min(1000 * 2 ** attempt, 30000),
     },

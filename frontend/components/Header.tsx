@@ -9,9 +9,14 @@ type HeaderProps = {
   onSearchChange?: (searchTerm: string) => void;
   initialSearchTerm?: string;
   showBackButton?: boolean;
-}
+};
 
-export function Header({ userName, onSearchChange, initialSearchTerm = "", showBackButton = false }: HeaderProps) {
+export function Header({
+  userName,
+  onSearchChange,
+  initialSearchTerm = "",
+  showBackButton = false,
+}: HeaderProps) {
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const router = useRouter();
 
@@ -32,7 +37,7 @@ export function Header({ userName, onSearchChange, initialSearchTerm = "", showB
       router.push(`/search?q=${encodeURIComponent(text.trim())}`);
     } else {
       // If search is cleared and submitted, go back home
-      router.push('/');
+      router.push("/");
     }
   };
 
@@ -41,28 +46,26 @@ export function Header({ userName, onSearchChange, initialSearchTerm = "", showB
     if (onSearchChange) {
       onSearchChange("");
     }
-    // For a smoother UX, clear should probably not force navigate unless submitted, 
+    // For a smoother UX, clear should probably not force navigate unless submitted,
     // but user requested "Que vuelva al home al limpiar".
     // We can interpret this as "when X is pressed" or "when submitted empty".
     // Let's make X clear text, and if on search page possibly navigate?
     // Actually simplicity: Clear text -> Focus -> Wait for user.
     // BUT user said: "Que vuelva al home al limpiar". Let's do that for the X button.
-    router.push('/');
+    router.push("/");
   };
 
   return (
     <View className="px-4 pt-6 pb-4 bg-white">
       {showBackButton ? (
         <View className="flex-row items-center mb-1">
-          <Pressable onPress={() => router.push('/')} className="mr-2 p-1">
+          <Pressable onPress={() => router.push("/")} className="mr-2 p-1">
             <ArrowLeft size={24} color="#000" />
           </Pressable>
           <Text className="text-lg font-bold">Volver</Text>
         </View>
       ) : (
-        <Text className="text-lg font-bold">
-          👋 Hola, {userName}!
-        </Text>
+        <Text className="text-lg font-bold">👋 Hola, {userName}!</Text>
       )}
 
       <View className="flex-row items-center mt-3 rounded-full border border-gray-300 px-3 py-2 bg-gray-50">

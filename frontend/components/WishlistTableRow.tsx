@@ -80,13 +80,26 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
         <Pressable onPress={() => router.push(`/product/${product.id}`)}>
           <Text
             numberOfLines={2}
-            style={{ fontSize: 13, fontWeight: "700", color: "#111827", marginBottom: 4, lineHeight: 18 }}
+            style={{
+              fontSize: 13,
+              fontWeight: "700",
+              color: "#111827",
+              marginBottom: 4,
+              lineHeight: 18,
+            }}
           >
             {product.name}
           </Text>
         </Pressable>
 
-        <Text style={{ fontSize: 16, fontWeight: "800", color: "#111827", marginBottom: 8 }}>
+        <Text
+          style={{
+            fontSize: 16,
+            fontWeight: "800",
+            color: "#111827",
+            marginBottom: 8,
+          }}
+        >
           {formatPrice(product.price)}
         </Text>
 
@@ -101,7 +114,13 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
             marginBottom: 8,
           }}
         >
-          <Text style={{ fontSize: 10, fontWeight: "600", color: isOutOfStock ? "#DC2626" : "#059669" }}>
+          <Text
+            style={{
+              fontSize: 10,
+              fontWeight: "600",
+              color: isOutOfStock ? "#DC2626" : "#059669",
+            }}
+          >
             {isOutOfStock ? "Agotado" : "Disponible"}
           </Text>
         </View>
@@ -121,7 +140,14 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
           }}
         >
           <ShoppingCart size={12} color={isOutOfStock ? "#9CA3AF" : "white"} />
-          <Text style={{ fontSize: 11, fontWeight: "700", color: isOutOfStock ? "#9CA3AF" : "white", marginLeft: 5 }}>
+          <Text
+            style={{
+              fontSize: 11,
+              fontWeight: "700",
+              color: isOutOfStock ? "#9CA3AF" : "white",
+              marginLeft: 5,
+            }}
+          >
             Agregar al carrito
           </Text>
         </Pressable>

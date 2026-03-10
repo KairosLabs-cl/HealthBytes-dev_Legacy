@@ -1,4 +1,11 @@
-import { getCart, addToCart, updateCartItem, removeFromCart, clearCart, mergeCart } from "../cart";
+import {
+  getCart,
+  addToCart,
+  updateCartItem,
+  removeFromCart,
+  clearCart,
+  mergeCart,
+} from "../cart";
 
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
