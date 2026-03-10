@@ -10,7 +10,7 @@ import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
 import { formatPrice } from "@/lib/formatPrice";
 import { useAddress } from "@/store/addressStore";
-import { useCart } from "@/store/cartStore";
+import { useCart, selectCartSubtotal } from "@/store/cartStore";
 import { Address } from "@/types/address";
 import { useAuth } from "@clerk/clerk-expo";
 import { Stack, useRouter } from "expo-router";
@@ -36,6 +36,7 @@ export default function CheckoutV2Screen() {
   // Use specific selectors to prevent unnecessary re-renders when other store state changes
   const items = useCart((state) => state.items);
   const resetCart = useCart((state) => state.resetCart);
+  const subtotal = useCart(selectCartSubtotal);
 
   const addresses = useAddress((state) => state.addresses);
   const defaultAddress = useAddress((state) => state.defaultAddress);
@@ -68,12 +69,6 @@ export default function CheckoutV2Screen() {
     loadAddresses();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const subtotal = useMemo(
-    () =>
-      items.reduce((acc, item) => acc + item.product.price * item.quantity, 0),
-    [items]
-  );
 
   const shipping = 0;
   const total = subtotal + shipping;
