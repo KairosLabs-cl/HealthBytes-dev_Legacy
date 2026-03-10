@@ -25,11 +25,11 @@ Este archivo define reglas, patrones y principios que debes seguir cuando genere
 
 <!-- DOCSYNC:backend-stack -->
 - **Framework**: FastAPI 0.135.1
-- **Lenguaje**: Python 3.14.3
+- **Lenguaje**: Python 3.13.1
 - **ORM**: SQLAlchemy 2.0.48 (async)
 - **Validación**: Pydantic v2.12.5
 - **Base de Datos**: PostgreSQL 14+
-- **Testing**: pytest — 441 tests, 39% coverage
+- **Testing**: pytest — 442 tests, 41% coverage
 - **Autenticación**: JWT (HS256)
 <!-- /DOCSYNC:backend-stack -->
 
@@ -417,7 +417,7 @@ Antes de generar código, verifica:
 ## 🧪 Testing
 
 <!-- DOCSYNC:test-status -->
-**Suite green | 39% coverage | 0 failures**
+**Suite green | 41% coverage | 0 failures**
 
 | Suite | Tests | Estado |
 |-------|-------|--------|
@@ -426,7 +426,7 @@ Antes de generar código, verifica:
 | `test_middleware/` | ~30 | ✅ Todos pasan |
 | `test_schemas/` | ~20 | ✅ Todos pasan |
 | `e2e/` | 10 | ✅ Todos pasan |
-| **Total** | **441** | ✅ |
+| **Total** | **442** | ✅ |
 
 Coverage mínimo CI: **80%**
 <!-- /DOCSYNC:test-status -->
