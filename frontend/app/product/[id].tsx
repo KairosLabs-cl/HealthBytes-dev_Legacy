@@ -1,6 +1,7 @@
-import { fetchProductById } from "@/api/products";
+import { fetchProductById, listProducts } from "@/api/products";
 import { DietaryBadgeList } from "@/components/DietaryBadge";
 import FavoriteButton from "@/components/FavoriteButton";
+import ProductCard from "@/components/ProductCard";
 import { useShimmerStyle } from "@/components/ProductCardSkeleton";
 import StockBadge from "@/components/StockBadge";
 import { Image } from "@/components/ui/image";
@@ -13,13 +14,15 @@ import { useQuery } from "@tanstack/react-query";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import {
   ArrowLeft,
+  ChevronRight,
   Minus,
   Plus,
   RefreshCw,
   ShoppingCart,
+  Store,
 } from "lucide-react-native";
 import { useEffect, useMemo, useRef } from "react";
-import { Alert, Dimensions, Pressable, ScrollView, View } from "react-native";
+import { Alert, Dimensions, Pressable, ScrollView, View, FlatList } from "react-native";
 import Animated, {
   cancelAnimation,
   Easing,
@@ -232,6 +235,17 @@ export default function ProductDetailsScreen() {
     queryFn: () => fetchProductById(Number(id)),
   });
 
+  const { data: vendorProducts } = useQuery({
+    queryKey: ["products", "vendor", product?.vendor_name],
+    queryFn: () => listProducts({ search: product?.vendor_name }),
+    enabled: !!product?.vendor_name,
+  });
+
+  // Filter out the current product from the vendor products list
+  const otherVendorProducts = useMemo(() => {
+    return vendorProducts?.filter((p: any) => p.id.toString() !== id) || [];
+  }, [vendorProducts, id]);
+
   const currentInCart = useMemo(
     () => cartItems.find((i) => i.product.id === product?.id)?.quantity || 0,
     [cartItems, product?.id]
@@ -413,11 +427,22 @@ export default function ProductDetailsScreen() {
 
           <Animated.View
             entering={FadeInUp.delay(160).duration(400)}
-            className="mt-3"
+            className="mt-3 mb-4"
           >
-            <Text className="text-3xl font-extrabold text-gray-900 leading-tight mb-4">
+            <Text className="text-3xl font-extrabold text-gray-900 leading-tight mb-2">
               {product.name}
             </Text>
+            {product.vendor_name && (
+              <Pressable
+                onPress={() => router.push(`/search?q=${encodeURIComponent(product.vendor_name!)}`)}
+                className="flex-row items-center py-1 active:opacity-70"
+              >
+                <Store size={14} color="#166534" style={{ marginRight: 6 }} />
+                <Text className="text-green-800 font-semibold text-sm">
+                  Vendedor: <Text className="underline">{product.vendor_name}</Text>
+                </Text>
+              </Pressable>
+            )}
           </Animated.View>
 
           {/* Price + Stock — clear visual hierarchy */}
@@ -524,6 +549,36 @@ export default function ProductDetailsScreen() {
                 return null;
               }
             })()}
+
+          {/* Vendor Carousel */}
+          {product.vendor_name && otherVendorProducts.length > 0 && (
+            <Animated.View entering={FadeInUp.delay(500).duration(400)} className="mt-8 mb-4">
+              <View className="flex-row items-center justify-between mb-4">
+                <Text className="text-lg font-extrabold text-gray-900">
+                  Más de {product.vendor_name}
+                </Text>
+                <Pressable
+                  onPress={() => router.push(`/search?q=${encodeURIComponent(product.vendor_name!)}`)}
+                  className="flex-row items-center bg-gray-50 px-3 py-1.5 rounded-full active:bg-gray-100"
+                >
+                  <Text className="text-sm font-bold text-gray-700 mr-1">Ver tienda</Text>
+                  <ChevronRight size={14} color="#374151" />
+                </Pressable>
+              </View>
+              <View className="-mx-5">
+                <FlatList
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}
+                  data={otherVendorProducts.slice(0, 5)}
+                  keyExtractor={(item) => item.id.toString()}
+                  renderItem={({ item }) => (
+                    <ProductCard product={item} width={160} />
+                  )}
+                />
+              </View>
+            </Animated.View>
+          )}
         </View>
       </ScrollView>
 
