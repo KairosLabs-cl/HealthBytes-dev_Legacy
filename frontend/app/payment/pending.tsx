@@ -1,4 +1,5 @@
 import { getOrderById } from "@/api/orders";
+import { AuthGate } from "@/components/AuthGate";
 import { Button, ButtonText } from "@/components/ui/button";
 import { VStack } from "@/components/ui/vstack";
 import { useAuth } from "@clerk/clerk-expo";
@@ -78,6 +79,7 @@ export default function PaymentPendingScreen() {
   }, [checkOrderStatus, maxRetriesReached]);
 
   return (
+    <AuthGate message="Inicia sesion para ver el estado de tu pago.">
     <View className="flex-1 bg-white justify-center items-center p-6">
       <View className="bg-yellow-100 p-6 rounded-full mb-6">
         <ClockIcon size={64} color="#eab308" />
@@ -149,5 +151,6 @@ export default function PaymentPendingScreen() {
         </Button>
       </VStack>
     </View>
+    </AuthGate>
   );
 }
