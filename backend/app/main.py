@@ -165,6 +165,7 @@ async def add_security_headers(request: Request, call_next):
     # Prevent MIME sniffing and clickjacking across clients
     response.headers.setdefault("X-Content-Type-Options", "nosniff")
     response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault("X-XSS-Protection", "1; mode=block")
     # Reduce referrer leakage for privacy
     response.headers.setdefault("Referrer-Policy", "no-referrer")
     # Disable sensitive browser features by default
