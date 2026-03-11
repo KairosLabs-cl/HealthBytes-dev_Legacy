@@ -10,10 +10,45 @@ from sqlalchemy.orm import selectinload
 
 from app.config import settings
 from app.db.database import get_redis
-from app.db.schemas import DietaryTag, Product
+from app.db.schemas import Product
 from app.schemas.product import ProductCreate, ProductUpdate
 
 logger = logging.getLogger(__name__)
+
+
+def _apply_product_filters(
+    query,
+    category: Optional[str] = None,
+    dietary_tags: Optional[List[str]] = None,
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
+):
+    """
+    Applies common filters (category, dietary tags, price) to a Product query.
+    Used for both standard listings and full-text search results to ensure consistency.
+    """
+    if category:
+        query = query.where(Product.category == category)
+
+    if dietary_tags:
+        from app.db.schemas import DietaryTag, product_dietary_tags
+
+        unique_tags = list(set(dietary_tags))
+        subq = (
+            select(product_dietary_tags.c.product_id)
+            .join(DietaryTag, DietaryTag.id == product_dietary_tags.c.dietary_tag_id)
+            .where(DietaryTag.name.in_(unique_tags))
+            .group_by(product_dietary_tags.c.product_id)
+            .having(func.count(DietaryTag.id) == len(unique_tags))
+        )
+        query = query.where(Product.id.in_(subq))
+
+    if min_price is not None:
+        query = query.where(Product.price >= min_price)
+    if max_price is not None:
+        query = query.where(Product.price <= max_price)
+
+    return query
 
 
 async def list_products(
@@ -39,21 +74,14 @@ async def list_products(
             (Product.name.ilike(search_pattern)) | (Product.description.ilike(search_pattern))
         )
 
-    # Apply category filter
-    if category:
-        query = query.where(Product.category == category)
-
-    # Apply dietary tags filter using ANY operator on the relationship
-    # This generates an EXISTS clause for the many-to-many relationship
-    if dietary_tags:
-        for tag in dietary_tags:
-            query = query.where(Product.dietary_tags.any(DietaryTag.name == tag))
-
-    # Apply price range filters
-    if min_price is not None:
-        query = query.where(Product.price >= min_price)
-    if max_price is not None:
-        query = query.where(Product.price <= max_price)
+    # Apply common filters
+    query = _apply_product_filters(
+        query,
+        category=category,
+        dietary_tags=dietary_tags,
+        min_price=min_price,
+        max_price=max_price,
+    )
 
     # Ensure skip and limit are Python integers
     skip = int(skip) if skip is not None else 0
@@ -182,7 +210,14 @@ async def delete_product(db: AsyncSession, product_id: int) -> Optional[Product]
 
 
 async def search_products(
-    db: AsyncSession, search_query: str, skip: int = 0, limit: int = 100
+    db: AsyncSession,
+    search_query: str,
+    skip: int = 0,
+    limit: int = 100,
+    category: Optional[str] = None,
+    dietary_tags: Optional[List[str]] = None,
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
 ) -> List[Product]:
     """
     Search products using PostgreSQL Full-Text Search (FTS).
@@ -205,7 +240,15 @@ async def search_products(
 
     # If query is empty, return all products
     if not clean_query:
-        return await list_products(db, skip=skip, limit=limit)
+        return await list_products(
+            db,
+            skip=skip,
+            limit=limit,
+            category=category,
+            dietary_tags=dietary_tags,
+            min_price=min_price,
+            max_price=max_price,
+        )
 
     try:
         # Create tsquery using plainto_tsquery (safe from SQL injection)
@@ -214,11 +257,20 @@ async def search_products(
 
         # Execute FTS query with ranking
         # ts_rank_cd = weighted ranking (CD = cover dense)
-        result = await db.execute(
+        base_query = (
             select(Product)
             .options(selectinload(Product.dietary_tags))
             .where(Product.search_vector.op("@@")(tsquery))
-            .order_by(desc(func.ts_rank_cd(Product.search_vector, tsquery)))
+        )
+        base_query = _apply_product_filters(
+            base_query,
+            category=category,
+            dietary_tags=dietary_tags,
+            min_price=min_price,
+            max_price=max_price,
+        )
+        result = await db.execute(
+            base_query.order_by(desc(func.ts_rank_cd(Product.search_vector, tsquery)))
             .offset(int(skip) if skip else 0)
             .limit(int(limit) if limit else 100)
         )
@@ -231,14 +283,22 @@ async def search_products(
 
         # Fallback: simple LIKE search in name and description
         search_pattern = f"%{clean_query}%"
-        result = await db.execute(
+        base_query = (
             select(Product)
             .options(selectinload(Product.dietary_tags))
             .where(
                 (Product.name.ilike(search_pattern)) | (Product.description.ilike(search_pattern))
             )
-            .offset(int(skip) if skip else 0)
-            .limit(int(limit) if limit else 100)
+        )
+        base_query = _apply_product_filters(
+            base_query,
+            category=category,
+            dietary_tags=dietary_tags,
+            min_price=min_price,
+            max_price=max_price,
+        )
+        result = await db.execute(
+            base_query.offset(int(skip) if skip else 0).limit(int(limit) if limit else 100)
         )
 
         return result.scalars().all()
