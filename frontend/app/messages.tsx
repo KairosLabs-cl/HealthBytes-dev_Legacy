@@ -4,7 +4,7 @@ import { Stack, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Text } from "@/components/ui/text";
-import { Header } from "@/components/Header";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { MessageSquare, Inbox, Bell } from "lucide-react-native";
 
 export default function MessagesScreen() {
@@ -12,11 +12,11 @@ export default function MessagesScreen() {
 
   return (
     <AuthGate message="Inicia sesión para ver tus mensajes.">
-      <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+      <View className="flex-1 bg-white">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
 
-        <Header userName="Usuario" showBackButton={true} />
+        <ScreenHeader title="Mensajes" icon={MessageSquare} showBackButton={true} />
 
         <ScrollView
           className="flex-1"
@@ -91,7 +91,7 @@ export default function MessagesScreen() {
             </View>
           </View>
         </ScrollView>
-      </SafeAreaView>
+      </View>
     </AuthGate>
   );
 }

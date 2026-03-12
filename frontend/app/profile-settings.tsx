@@ -11,6 +11,7 @@ import { Input, InputField } from "@/components/ui/input";
 import { useUser } from "@clerk/clerk-expo";
 import { useEffect, useMemo, useState } from "react";
 import { User } from "lucide-react-native";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 
 export default function ProfileSettingsScreen() {
   const { user, isLoaded } = useUser();
@@ -66,9 +67,10 @@ export default function ProfileSettingsScreen() {
 
   return (
     <AuthGate message="Inicia sesión para acceder a la configuración.">
-      <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+      <View className="flex-1 bg-white">
         <StatusBar style="dark" />
-        <Stack.Screen options={{ title: "Ajustes de Cuenta" }} />
+        <Stack.Screen options={{ headerShown: false }} />
+        <ScreenHeader title="Ajustes de Cuenta" icon={User} showBackButton={true} />
 
         <ScrollView
           className="flex-1 px-6 pt-6"
@@ -76,10 +78,6 @@ export default function ProfileSettingsScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="mb-8">
-            <View className="flex-row items-center gap-2 mb-2">
-              <Icon as={User} size="lg" color="#000000" />
-              <Text className="text-2xl font-bold text-black">Mi Perfil</Text>
-            </View>
             <Text className="text-gray-600 text-sm mb-6">
               Actualiza tu nombre, email y foto de perfil.
             </Text>
@@ -179,7 +177,7 @@ export default function ProfileSettingsScreen() {
             </Button>
           </View>
         </ScrollView>
-      </SafeAreaView>
+      </View>
     </AuthGate>
   );
 }

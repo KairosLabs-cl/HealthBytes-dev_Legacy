@@ -7,9 +7,9 @@ import { Text } from "@/components/ui/text";
 import { useCallback, useMemo } from "react";
 import { useAuth } from "@clerk/clerk-expo";
 import { useQuery } from "@tanstack/react-query";
-import { HeartOff, RefreshCw } from "lucide-react-native";
+import { Heart, HeartOff, RefreshCw } from "lucide-react-native";
 import WishlistTableRow from "@/components/WishlistTableRow";
-import { Header } from "@/components/Header";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import ProductCardSkeleton, {
   useShimmerStyle,
 } from "@/components/ProductCardSkeleton";
@@ -49,7 +49,13 @@ export default function WishlistScreen() {
   }, []);
 
   const listHeader = useMemo(
-    () => <Header userName="Usuario" showBackButton={true} />,
+    () => (
+      <ScreenHeader
+        title="Lista de deseos"
+        icon={Heart}
+        showBackButton={true}
+      />
+    ),
     []
   );
 
@@ -82,23 +88,31 @@ export default function WishlistScreen() {
 
   if (!isLoaded || isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
+      <View className="flex-1 bg-gray-50">
         <Stack.Screen options={{ headerShown: false }} />
-        <Header userName="Usuario" showBackButton={true} />
+        <ScreenHeader
+          title="Lista de deseos"
+          icon={Heart}
+          showBackButton={true}
+        />
         <View className="px-4 mt-4 gap-3">
           <ProductCardSkeleton shimmerStyle={shimmerStyle} />
           <ProductCardSkeleton shimmerStyle={shimmerStyle} />
           <ProductCardSkeleton shimmerStyle={shimmerStyle} />
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   if (error) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
+      <View className="flex-1 bg-gray-50">
         <Stack.Screen options={{ headerShown: false }} />
-        <Header userName="Usuario" showBackButton={true} />
+        <ScreenHeader
+          title="Lista de deseos"
+          icon={Heart}
+          showBackButton={true}
+        />
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-red-500 text-base mb-4">
             Error cargando tu lista de deseos
@@ -112,13 +126,13 @@ export default function WishlistScreen() {
             <Text className="text-white font-bold">Reintentar</Text>
           </Pressable>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
     <AuthGate message="Inicia sesión para ver tu lista de deseos.">
-      <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
+      <View className="flex-1 bg-gray-50">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
 
@@ -135,7 +149,7 @@ export default function WishlistScreen() {
           windowSize={7}
           maxToRenderPerBatch={6}
         />
-      </SafeAreaView>
+      </View>
     </AuthGate>
   );
 }

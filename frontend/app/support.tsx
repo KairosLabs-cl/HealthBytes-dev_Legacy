@@ -4,7 +4,7 @@ import { Stack, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Text } from "@/components/ui/text";
-import { Header } from "@/components/Header";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import {
   Mail,
   MessageCircle,
@@ -21,11 +21,11 @@ export default function SupportScreen() {
 
   return (
     <AuthGate message="Inicia sesión para contactar soporte.">
-      <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+      <View className="flex-1 bg-white">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
 
-        <Header userName="Usuario" showBackButton={true} />
+        <ScreenHeader title="Centro de Ayuda" icon={HelpCircle} showBackButton={true} />
 
         <ScrollView
           className="flex-1"
@@ -122,7 +122,7 @@ export default function SupportScreen() {
             </View>
           </View>
         </ScrollView>
-      </SafeAreaView>
+      </View>
     </AuthGate>
   );
 }
