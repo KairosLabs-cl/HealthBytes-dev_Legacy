@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { Salad } from "lucide-react-native";
 import { usePreferencesStore } from "@/store/preferencesStore";
 import { updateDietaryPreferences } from "@/api/preferences";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 
 const DIETARY_OPTIONS = [
   { slug: "sin-gluten", label: "Sin Gluten", emoji: "🌾" },
@@ -65,21 +66,16 @@ export default function DietaryPreferencesScreen() {
 
   return (
     <AuthGate message="Inicia sesión para configurar tus preferencias dietéticas.">
-      <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+      <View className="flex-1 bg-white">
         <StatusBar style="dark" />
-        <Stack.Screen options={{ title: "Preferencias alimentarias" }} />
+        <Stack.Screen options={{ headerShown: false }} />
+        <ScreenHeader title="Preferencias alimentarias" icon={Salad} showBackButton={true} />
 
         <ScrollView
           className="flex-1 px-6 pt-6"
           contentContainerStyle={{ paddingBottom: 140 }}
           showsVerticalScrollIndicator={false}
         >
-          <View className="flex-row items-center gap-2 mb-2">
-            <Icon as={Salad} size="lg" color="#000000" />
-            <Text className="text-2xl font-bold text-black">
-              Restricciones dietarias
-            </Text>
-          </View>
           <Text className="text-gray-600 text-sm mb-6">
             Selecciona tus restricciones para filtrar automáticamente los
             productos.
@@ -133,7 +129,7 @@ export default function DietaryPreferencesScreen() {
             </ButtonText>
           </Button>
         </ScrollView>
-      </SafeAreaView>
+      </View>
     </AuthGate>
   );
 }

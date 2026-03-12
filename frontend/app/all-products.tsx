@@ -9,9 +9,9 @@ import { useQuery } from "@tanstack/react-query";
 import { listProducts } from "@/api/products";
 import ProductCard from "@/components/ProductCard";
 import DietaryFilterBar from "@/components/DietaryFilterBar";
-import { Header } from "@/components/Header";
 import { RefreshCw, Package } from "lucide-react-native";
 import { useProductFilters, DietaryTag } from "@/store/productFiltersStore";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { useUser } from "@clerk/clerk-expo";
 import { Product } from "@/types/product";
 
@@ -92,11 +92,11 @@ export default function AllProductsScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
+    <View className="flex-1 bg-gray-50">
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
 
-      <Header userName={userName} showBackButton={true} />
+      <ScreenHeader title="Todos los productos" icon={Package} showBackButton={true} />
 
       {error ? (
         <View className="flex-1 items-center justify-center px-6">
@@ -151,6 +151,6 @@ export default function AllProductsScreen() {
           }
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 }

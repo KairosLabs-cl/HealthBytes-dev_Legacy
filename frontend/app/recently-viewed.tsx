@@ -8,8 +8,8 @@ import { Text } from "@/components/ui/text";
 import { useBreakpointValue } from "@/components/ui/utils/use-break-point-value";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 import ProductListItem from "@/components/ProductListItem";
-import { Header } from "@/components/Header";
 import { Clock } from "lucide-react-native";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 
 export default function RecentlyViewedScreen() {
   const history = useRecentlyViewed((state) => state.items);
@@ -36,23 +36,13 @@ export default function RecentlyViewedScreen() {
 
   return (
     <AuthGate message="Inicia sesión para ver tus productos visitados.">
-      <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+      <View className="flex-1 bg-white">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
 
-        <Header userName="Usuario" showBackButton={true} />
+        <ScreenHeader title="Recién Vistos" icon={Clock} showBackButton={true} />
 
         <View style={{ paddingHorizontal: 16, paddingVertical: 8 }}>
-          <Text
-            style={{
-              fontSize: 24,
-              fontWeight: "800",
-              color: "#111827",
-              marginBottom: 4,
-            }}
-          >
-            Recién Vistos
-          </Text>
           <Text style={{ fontSize: 14, color: "#6B7280", marginBottom: 16 }}>
             Tu historial de navegación reciente.
           </Text>
@@ -82,7 +72,7 @@ export default function RecentlyViewedScreen() {
             </View>
           }
         />
-      </SafeAreaView>
+      </View>
     </AuthGate>
   );
 }

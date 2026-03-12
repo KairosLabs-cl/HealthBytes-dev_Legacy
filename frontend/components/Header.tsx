@@ -9,6 +9,7 @@ type HeaderProps = {
   onSearchChange?: (searchTerm: string) => void;
   initialSearchTerm?: string;
   showBackButton?: boolean;
+  isLoggedIn?: boolean;
 };
 
 export function Header({
@@ -16,6 +17,7 @@ export function Header({
   onSearchChange,
   initialSearchTerm = "",
   showBackButton = false,
+  isLoggedIn = false,
 }: HeaderProps) {
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const router = useRouter();
@@ -65,7 +67,9 @@ export function Header({
           <Text className="text-lg font-bold">Volver</Text>
         </View>
       ) : (
-        <Text className="text-lg font-bold">👋 Hola, {userName}!</Text>
+        isLoggedIn && (
+          <Text className="text-lg font-bold">👋 Hola, {userName}!</Text>
+        )
       )}
 
       <View className="flex-row items-center mt-3 rounded-full border border-gray-300 px-3 py-2 bg-gray-50">

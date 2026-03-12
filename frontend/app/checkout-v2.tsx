@@ -16,16 +16,10 @@ import { useAuth } from "@clerk/clerk-expo";
 import { Stack, useRouter } from "expo-router";
 import { MapPinIcon, PhoneIcon } from "lucide-react-native";
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  Linking,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
+import { View, ScrollView, Pressable, Linking, ActivityIndicator, Alert, Text } from "react-native";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { CreditCard } from "lucide-react-native";
 import { AuthGate } from "@/components/AuthGate";
 
 type CheckoutStep = "address" | "payment" | "summary";
@@ -204,20 +198,17 @@ export default function CheckoutV2Screen() {
 
   return (
     <AuthGate message="Inicia sesion para completar tu compra.">
-      <SafeAreaView className="flex-1 bg-surface-warm" edges={["top", "bottom"]}>
+      <View className="flex-1 bg-surface-warm">
+        <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
+        <ScreenHeader title="Checkout" icon={CreditCard} showBackButton={true} />
+
         <ScrollView
           ref={scrollRef}
           showsVerticalScrollIndicator={false}
           className="flex-1 p-6"
         >
-          {/* Header */}
-          <View className="mb-8">
-            <Text className="text-3xl font-bold text-ink mb-2">Checkout</Text>
-            <Text className="text-gray-500">
-              Paso a paso hacia tu compra segura
-            </Text>
-          </View>
+          {/* Step Indicator */}
 
           {/* Step Indicator */}
           <StepIndicator
@@ -498,7 +489,7 @@ export default function CheckoutV2Screen() {
             </View>
           </View>
         )}
-      </SafeAreaView>
+      </View>
     </AuthGate>
   );
 }

@@ -12,7 +12,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Product } from "@/types/product";
 import { useCallback, useMemo } from "react";
-import { RefreshCw } from "lucide-react-native";
+import { RefreshCw, Search as SearchIcon } from "lucide-react-native";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 
 const keyExtractor = (item: Product) => item.id.toString();
 
@@ -94,63 +95,63 @@ export default function SearchScreen() {
   );
 
   if (isLoading) {
-    return (
-      <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
-        <Stack.Screen options={{ headerShown: false }} />
-        <Header
-          userName={userName}
-          initialSearchTerm={searchTerm}
-          showBackButton={true}
-        />
-        <View className="px-3 mt-4">
-          <View className="flex-row gap-2 mb-2">
-            <ProductCardSkeleton />
-            <ProductCardSkeleton />
-          </View>
-          <View className="flex-row gap-2">
-            <ProductCardSkeleton />
-            <ProductCardSkeleton />
-          </View>
+    <View className="flex-1 bg-gray-50">
+      <Stack.Screen options={{ headerShown: false }} />
+      <ScreenHeader title="Búsqueda" icon={SearchIcon} showBackButton={true} />
+      <Header
+        userName={userName}
+        initialSearchTerm={searchTerm}
+        showBackButton={false}
+      />
+      <View className="px-3 mt-4">
+        <View className="flex-row gap-2 mb-2">
+          <ProductCardSkeleton />
+          <ProductCardSkeleton />
         </View>
-      </SafeAreaView>
-    );
+        <View className="flex-row gap-2">
+          <ProductCardSkeleton />
+          <ProductCardSkeleton />
+        </View>
+      </View>
+    </View>
   }
 
   if (error) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
-        <Stack.Screen options={{ headerShown: false }} />
-        <Header
-          userName={userName}
-          initialSearchTerm={searchTerm}
-          showBackButton={true}
-        />
-        <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-red-500 text-base mb-4">
-            Error cargando resultados
-          </Text>
-          <Pressable
-            onPress={() => refetch()}
-            className="flex-row items-center gap-2 bg-black px-6 py-3 rounded-full mb-3"
-            style={{ minHeight: 44 }}
-          >
-            <RefreshCw size={18} color="white" />
-            <Text className="text-white font-bold">Reintentar</Text>
-          </Pressable>
-          <Pressable
-            onPress={() => router.push("/")}
-            className="px-6 py-3 rounded-full"
-            style={{ minHeight: 44 }}
-          >
-            <Text className="text-gray-600 font-bold">Volver al inicio</Text>
-          </Pressable>
-        </View>
-      </SafeAreaView>
+    <View className="flex-1 bg-gray-50">
+      <Stack.Screen options={{ headerShown: false }} />
+      <ScreenHeader title="Búsqueda" icon={SearchIcon} showBackButton={true} />
+      <Header
+        userName={userName}
+        initialSearchTerm={searchTerm}
+        showBackButton={false}
+      />
+      <View className="flex-1 items-center justify-center px-6">
+        <Text className="text-red-500 text-base mb-4">
+          Error cargando resultados
+        </Text>
+        <Pressable
+          onPress={() => refetch()}
+          className="flex-row items-center gap-2 bg-black px-6 py-3 rounded-full mb-3"
+          style={{ minHeight: 44 }}
+        >
+          <RefreshCw size={18} color="white" />
+          <Text className="text-white font-bold">Reintentar</Text>
+        </Pressable>
+        <Pressable
+          onPress={() => router.push("/")}
+          className="px-6 py-3 rounded-full"
+          style={{ minHeight: 44 }}
+        >
+          <Text className="text-gray-600 font-bold">Volver al inicio</Text>
+        </Pressable>
+      </View>
+    </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
+    <View className="flex-1 bg-gray-50">
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
 
@@ -170,6 +171,6 @@ export default function SearchScreen() {
         windowSize={7}
         maxToRenderPerBatch={6}
       />
-    </SafeAreaView>
+    </View>
   );
 }

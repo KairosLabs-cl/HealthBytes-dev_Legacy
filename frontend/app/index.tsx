@@ -168,7 +168,7 @@ const HomeListHeader = React.memo(
     onSeeAllFavorites,
   }: HomeListHeaderProps) => (
     <>
-      <Header userName={userName} />
+      <Header userName={userName} isLoggedIn={!!userName && userName !== "Usuario"} />
       <GuestBanner />
       <DietaryFilterBar
         dietaryTags={dietaryTags}
