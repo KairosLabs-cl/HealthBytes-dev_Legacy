@@ -18,6 +18,7 @@ import {
   ScrollView,
   View,
 } from "react-native";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -113,9 +114,10 @@ export default function OrdersScreen() {
 
   if (!isLoading && selectedFilter === "all" && orders.length === 0) {
     return (
-      <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+      <View className="flex-1 bg-white">
         <StatusBar style="dark" />
-        <Stack.Screen options={{ title: "Mis órdenes" }} />
+        <Stack.Screen options={{ headerShown: false }} />
+        <ScreenHeader title="Mis órdenes" icon={Package} showBackButton={true} />
         <View className="flex-1 items-center justify-center px-6">
           <Icon as={Package} size="xl" className="text-gray-300 mb-4" />
           <Text className="text-xl font-semibold text-black mb-2">
@@ -132,7 +134,7 @@ export default function OrdersScreen() {
             <ButtonText className="text-white">Ver productos</ButtonText>
           </Button>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -142,16 +144,7 @@ export default function OrdersScreen() {
   // Defined outside render to avoid remounting the header on every state change
   const listHeader = (
     <View className="px-4 pt-4">
-      {/* Header */}
-      <View className="mb-4">
-        <View className="mb-4">
-          <Text className="text-2xl font-bold text-black">Mis órdenes</Text>
-          <Text className="text-gray-600 mt-1">
-            Ve el estado de tus compras
-          </Text>
-        </View>
-
-        {/* Filter chips */}
+      {/* Filter chips */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -179,7 +172,6 @@ export default function OrdersScreen() {
             </Pressable>
           ))}
         </ScrollView>
-      </View>
 
       {/* Result count */}
       <View className="mb-4">
@@ -273,9 +265,10 @@ export default function OrdersScreen() {
 
   return (
     <AuthGate message="Inicia sesion para ver el historial de tus pedidos.">
-      <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+      <View className="flex-1 bg-white">
         <StatusBar style="dark" />
-        <Stack.Screen options={{ title: "Mis órdenes" }} />
+        <Stack.Screen options={{ headerShown: false }} />
+        <ScreenHeader title="Mis órdenes" icon={Package} showBackButton={true} />
 
         <FlatList
           className="flex-1 bg-white"
@@ -301,7 +294,7 @@ export default function OrdersScreen() {
           contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
           showsVerticalScrollIndicator={false}
         />
-      </SafeAreaView>
+      </View>
     </AuthGate>
   );
 }

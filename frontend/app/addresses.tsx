@@ -21,7 +21,7 @@ import {
   Pencil,
   X,
 } from "lucide-react-native";
-import { Header } from "@/components/Header";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { useAddress } from "@/store/addressStore";
 import Animated, { FadeInUp, FadeIn, Layout } from "react-native-reanimated";
 
@@ -225,11 +225,11 @@ export default function AddressesScreen() {
 
   return (
     <AuthGate message="Inicia sesión para gestionar tus direcciones.">
-      <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+      <View className="flex-1 bg-white">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
 
-        <Header userName={user?.firstName || "Usuario"} showBackButton={true} />
+        <ScreenHeader title="Mis Direcciones" icon={MapPin} showBackButton={true} />
 
         <ScrollView
           ref={scrollRef}
@@ -510,7 +510,7 @@ export default function AddressesScreen() {
             </View>
           </View>
         </ScrollView>
-      </SafeAreaView>
+      </View>
     </AuthGate>
   );
 }

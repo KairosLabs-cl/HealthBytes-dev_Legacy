@@ -9,6 +9,7 @@ import { Text } from "@/components/ui/text";
 import { formatPrice } from "@/lib/formatPrice";
 import { useCart, selectCartItemCount } from "@/store/cartStore";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
+import { StatusBar } from "expo-status-bar";
 import { useAuth } from "@clerk/clerk-expo";
 import { useQuery } from "@tanstack/react-query";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -16,6 +17,7 @@ import {
   ArrowLeft,
   ChevronRight,
   Minus,
+  Package,
   Plus,
   RefreshCw,
   ShoppingCart,
@@ -34,6 +36,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from "react-native-reanimated";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -354,16 +357,9 @@ export default function ProductDetailsScreen() {
 
   return (
     <View className="flex-1 bg-white">
+      <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
-
-      {/* Floating Back Button */}
-      <Pressable
-        onPress={handleBack}
-        className="absolute left-5 z-50 bg-white/90 p-3 rounded-full shadow-lg border border-gray-100"
-        style={{ top: insets.top + 8, elevation: 5 }}
-      >
-        <ArrowLeft size={24} color="black" />
-      </Pressable>
+      <ScreenHeader title="Producto" icon={Package} showBackButton={true} />
 
       {/* Floating Cart Button — nav bar style, fly-to-cart target */}
       <Animated.View
