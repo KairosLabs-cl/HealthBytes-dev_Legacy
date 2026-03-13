@@ -311,15 +311,28 @@ async def build_order_email_data(
     if not user or not user.email:
         return None
 
+    # Batch load missing products to avoid N+1 queries
+    missing_product_ids = [
+        item.product_id
+        for item in order.items
+        if not (hasattr(item, "product") and item.product)
+    ]
+
+    products_map = {}
+    if missing_product_ids:
+        result = await db.execute(select(Product).where(Product.id.in_(missing_product_ids)))
+        fetched_products = result.scalars().all()
+        products_map = {p.id: p for p in fetched_products}
+
     items = []
     for item in order.items:
-        # Use eager-loaded product if available
+        # Use eager-loaded product if available, else use batched products_map
         if hasattr(item, "product") and item.product:
             product_name = item.product.name
         else:
-            result = await db.execute(select(Product).where(Product.id == item.product_id))
-            product = result.scalar_one_or_none()
+            product = products_map.get(item.product_id)
             product_name = product.name if product else f"Producto #{item.product_id}"
+
         items.append(
             OrderItemData(
                 product_name=product_name,
