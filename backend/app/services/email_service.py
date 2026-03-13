@@ -313,9 +313,7 @@ async def build_order_email_data(
 
     # Batch load missing products to avoid N+1 queries
     missing_product_ids = [
-        item.product_id
-        for item in order.items
-        if not (hasattr(item, "product") and item.product)
+        item.product_id for item in order.items if not (hasattr(item, "product") and item.product)
     ]
 
     products_map = {}
