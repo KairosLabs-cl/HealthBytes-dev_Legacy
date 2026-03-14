@@ -311,15 +311,31 @@ async def build_order_email_data(
     if not user or not user.email:
         return None
 
+    # ⚡ Bolt Optimization: Batch fetch missing products to prevent N+1 queries
+    missing_product_ids = {
+        item.product_id for item in order.items
+        if not (hasattr(item, "product") and item.product)
+    }
+
+    products_map = {}
+    if missing_product_ids:
+        # Fetch all missing products in a single query
+        result = await db.execute(
+            select(Product).where(Product.id.in_(list(missing_product_ids)))
+        )
+        fetched_products = result.scalars().all()
+        # Create an O(1) lookup map
+        products_map = {p.id: p for p in fetched_products}
+
     items = []
     for item in order.items:
-        # Use eager-loaded product if available
         if hasattr(item, "product") and item.product:
             product_name = item.product.name
         else:
-            result = await db.execute(select(Product).where(Product.id == item.product_id))
-            product = result.scalar_one_or_none()
+            # O(1) lookup instead of O(N) database queries
+            product = products_map.get(item.product_id)
             product_name = product.name if product else f"Producto #{item.product_id}"
+
         items.append(
             OrderItemData(
                 product_name=product_name,
