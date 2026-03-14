@@ -313,16 +313,13 @@ async def build_order_email_data(
 
     # ⚡ Bolt Optimization: Batch fetch missing products to prevent N+1 queries
     missing_product_ids = {
-        item.product_id for item in order.items
-        if not (hasattr(item, "product") and item.product)
+        item.product_id for item in order.items if not (hasattr(item, "product") and item.product)
     }
 
     products_map = {}
     if missing_product_ids:
         # Fetch all missing products in a single query
-        result = await db.execute(
-            select(Product).where(Product.id.in_(list(missing_product_ids)))
-        )
+        result = await db.execute(select(Product).where(Product.id.in_(list(missing_product_ids))))
         fetched_products = result.scalars().all()
         # Create an O(1) lookup map
         products_map = {p.id: p for p in fetched_products}
