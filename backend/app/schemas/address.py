@@ -57,7 +57,6 @@ class AddressUpdate(BaseModel):
     recipient_name: Optional[str] = Field(None, max_length=100)
     phone: Optional[str] = Field(None, max_length=20)
     is_default: Optional[bool] = None
-    is_active: Optional[bool] = None
 
 
 class AddressResponse(AddressBase):
