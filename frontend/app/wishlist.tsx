@@ -29,7 +29,7 @@ export default function WishlistScreen() {
     enabled: isSignedIn,
   });
 
-  const { favoriteIds } = useFavoritesStore();
+  const favoriteIds = useFavoritesStore((state) => state.favoriteIds);
 
   const reactiveFavorites = useMemo(() => {
     if (!favorites) return [];

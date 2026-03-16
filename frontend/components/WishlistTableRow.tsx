@@ -18,7 +18,7 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
   const router = useRouter();
   const addProduct = useCart((state) => state.addProduct);
   const { getToken } = useAuth();
-  const { toggleFavorite } = useFavoritesStore();
+  const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
   const isOutOfStock = (product.stock ?? 1) === 0;
 
   const handleRemove = async () => {
