@@ -1,5 +1,6 @@
 import React from "react";
 import { Pressable, Text, View } from "react-native";
+import * as Sentry from "@sentry/react-native";
 
 interface Props {
   children: React.ReactNode;
@@ -22,8 +23,9 @@ export class ErrorBoundary extends React.Component<Props, State> {
       console.error("[ErrorBoundary] Error no manejado:", error.message);
       console.error("[ErrorBoundary] Stack:", info.componentStack);
     }
-    // TODO: integrar Sentry en producción
-    // Sentry.captureException(error, { extra: info });
+    Sentry.captureException(error, {
+      extra: { componentStack: info.componentStack },
+    });
   }
 
   reset = (): void => {
