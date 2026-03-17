@@ -16,9 +16,11 @@ import {
   Salad,
   Settings,
   Truck,
+  User as UserIcon,
 } from "lucide-react-native";
 import { Image, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 
 const orderStatuses = [
   {
@@ -68,9 +70,10 @@ export default function ProfileScreen() {
 
   return (
     <AuthGate message="Inicia sesion para ver tu perfil.">
-      <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+      <View className="flex-1 bg-white">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
+        <ScreenHeader title="Perfil" icon={UserIcon} />
 
         <ScrollView
           className="flex-1 bg-white px-4"
@@ -183,7 +186,7 @@ export default function ProfileScreen() {
             </Text>
           </View>
         </ScrollView>
-      </SafeAreaView>
+      </View>
     </AuthGate>
   );
 }

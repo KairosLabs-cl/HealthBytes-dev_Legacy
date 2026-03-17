@@ -42,8 +42,8 @@ export function PaymentMethodSelector({
     <VStack space="md">
       <View>
         <HStack className="items-center mb-2">
-          <CreditCardIcon size={24} color="#000" />
-          <Text className="text-xl font-bold text-black ml-2">
+          <CreditCardIcon size={24} color="#2D2926" />
+          <Text className="text-xl font-bold text-ink ml-2">
             Método de Pago
           </Text>
         </HStack>
@@ -57,12 +57,13 @@ export function PaymentMethodSelector({
           <Pressable
             key={method.id}
             onPress={() => !method.disabled && onSelect(method.id)}
-            className={`p-4 rounded-2xl border-2 ${
+            style={{ minHeight: 64 }}
+            className={`p-4 rounded-2xl border ${
               method.disabled
-                ? "border-gray-100 bg-gray-50 opacity-60"
+                ? "border-border-subtle bg-surface-warm opacity-60"
                 : selected === method.id
-                  ? "border-blue-600 bg-blue-50"
-                  : "border-gray-200 bg-white"
+                  ? "border-brand-green bg-[#F0FDF4]"
+                  : "border-border-subtle bg-surface-card shadow-soft-lift"
             }`}
           >
             <HStack className="items-center justify-between">
@@ -70,11 +71,11 @@ export function PaymentMethodSelector({
                 <Text className="text-3xl mr-3">{method.icon}</Text>
                 <View className="flex-1">
                   <HStack className="items-center">
-                    <Text className="text-lg font-bold text-black">
+                    <Text className="text-lg font-bold text-ink">
                       {method.label}
                     </Text>
                     {method.disabled && method.disabledLabel && (
-                      <View className="ml-2 px-2 py-0.5 bg-gray-200 rounded-full">
+                      <View className="ml-2 px-2 py-0.5 bg-surface-warm border border-border-subtle rounded-full">
                         <Text className="text-xs text-gray-500">
                           {method.disabledLabel}
                         </Text>
@@ -90,10 +91,10 @@ export function PaymentMethodSelector({
               {/* Radio button - hidden for disabled methods */}
               {!method.disabled && (
                 <View
-                  className={`w-6 h-6 rounded-full border-2 items-center justify-center ${
+                  className={`w-6 h-6 rounded-full border items-center justify-center ${
                     selected === method.id
-                      ? "border-blue-600 bg-blue-600"
-                      : "border-gray-300"
+                      ? "border-brand-green bg-brand-green"
+                      : "border-border-subtle bg-surface-card"
                   }`}
                 >
                   {selected === method.id && (

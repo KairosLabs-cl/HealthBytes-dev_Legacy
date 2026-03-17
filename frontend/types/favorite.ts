@@ -2,27 +2,27 @@
 import type { DietaryTag } from "./product";
 
 export type Favorite = {
-    id: number;
-    user_id: number;
-    product_id: number;
-    created_at: string;
-    product?: {
-        id: string | number;
-        name: string;
-        price: number;
-        image?: string;
-        description?: string;
-        stock?: number;
-        category?: string;
-        dietary_tags?: (DietaryTag | string)[];
-    };
+  id: number;
+  user_id: number;
+  product_id: number;
+  created_at: string;
+  product?: {
+    id: string | number;
+    name: string;
+    price: number;
+    image?: string;
+    description?: string;
+    stock?: number;
+    category?: string;
+    dietary_tags?: (DietaryTag | string)[];
+  };
 };
 
 export type FavoriteCreate = {
-    product_id: number;
+  product_id: number;
 };
 
 export type FavoriteCheckResponse = {
-    is_favorite: boolean;
-    favorite_id: number | null;
+  is_favorite: boolean;
+  favorite_id: number | null;
 };

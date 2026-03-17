@@ -3,8 +3,13 @@ import CartItem from "@/components/CartItem";
 import RecentlyViewedBar from "@/components/RecentlyViewedBar";
 import { Text } from "@/components/ui/text";
 import { formatPrice } from "@/lib/formatPrice";
-import { useCart, selectCartItemCount, selectCartSubtotal } from "@/store/cartStore";
+import {
+  useCart,
+  selectCartItemCount,
+  selectCartSubtotal,
+} from "@/store/cartStore";
 import { CartItem as CartItemType } from "@/types/cart";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { Stack, useRouter } from "expo-router";
 import { ShoppingBag } from "lucide-react-native";
 import React, { useCallback, useMemo } from "react";
@@ -95,6 +100,7 @@ export default function CartScreen() {
       {items.length === 0 ? (
         <>
           <Stack.Screen options={{ headerShown: false }} />
+          <ScreenHeader title="Carrito de compras" icon={ShoppingBag} />
           <View className="flex-1 items-center justify-center bg-white px-6">
             <View className="w-20 h-20 rounded-full bg-gradient-to-br from-gray-50 to-gray-100 items-center justify-center mb-6">
               <ShoppingBag size={40} color="#9CA3AF" strokeWidth={1.5} />
@@ -119,6 +125,7 @@ export default function CartScreen() {
       ) : (
         <>
           <Stack.Screen options={{ headerShown: false }} />
+          <ScreenHeader title="Carrito de compras" icon={ShoppingBag} />
           <View className="flex-1 bg-white">
             <FlatList
               data={items}

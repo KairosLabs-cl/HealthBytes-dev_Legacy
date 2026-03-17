@@ -1,5 +1,5 @@
-import { getAuthHeader } from '@/lib/authHeaders';
-import { throwIfNotOk } from '@/lib/apiError';
+import { getAuthHeader } from "@/lib/authHeaders";
+import { throwIfNotOk } from "@/lib/apiError";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -38,7 +38,7 @@ export async function getCart(token: string): Promise<Cart> {
     },
   });
 
-  await throwIfNotOk(res, 'Failed to fetch cart');
+  await throwIfNotOk(res, "Failed to fetch cart");
   return res.json();
 }
 
@@ -51,10 +51,10 @@ export async function addToCart(
   quantity: number = 1
 ): Promise<CartItem> {
   const res = await fetch(`${API_URL}/cart/items`, {
-    method: 'POST',
+    method: "POST",
     headers: {
       ...getAuthHeader(token),
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       product_id: productId,
@@ -62,7 +62,7 @@ export async function addToCart(
     }),
   });
 
-  await throwIfNotOk(res, 'Failed to add item to cart');
+  await throwIfNotOk(res, "Failed to add item to cart");
   return res.json();
 }
 
@@ -75,15 +75,15 @@ export async function updateCartItem(
   quantity: number
 ): Promise<CartItem> {
   const res = await fetch(`${API_URL}/cart/items/${productId}`, {
-    method: 'PUT',
+    method: "PUT",
     headers: {
       ...getAuthHeader(token),
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ quantity }),
   });
 
-  await throwIfNotOk(res, 'Failed to update cart item');
+  await throwIfNotOk(res, "Failed to update cart item");
   return res.json();
 }
 
@@ -95,13 +95,13 @@ export async function removeFromCart(
   productId: number
 ): Promise<void> {
   const res = await fetch(`${API_URL}/cart/items/${productId}`, {
-    method: 'DELETE',
+    method: "DELETE",
     headers: {
       ...getAuthHeader(token),
     },
   });
 
-  await throwIfNotOk(res, 'Failed to remove item from cart');
+  await throwIfNotOk(res, "Failed to remove item from cart");
 }
 
 /**
@@ -109,13 +109,13 @@ export async function removeFromCart(
  */
 export async function clearCart(token: string): Promise<void> {
   const res = await fetch(`${API_URL}/cart`, {
-    method: 'DELETE',
+    method: "DELETE",
     headers: {
       ...getAuthHeader(token),
     },
   });
 
-  await throwIfNotOk(res, 'Failed to clear cart');
+  await throwIfNotOk(res, "Failed to clear cart");
 }
 
 /**
@@ -126,14 +126,14 @@ export async function mergeCart(
   localItems: CartItemCreate[]
 ): Promise<Cart> {
   const res = await fetch(`${API_URL}/cart/merge`, {
-    method: 'POST',
+    method: "POST",
     headers: {
       ...getAuthHeader(token),
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ items: localItems }),
   });
 
-  await throwIfNotOk(res, 'Failed to merge cart');
+  await throwIfNotOk(res, "Failed to merge cart");
   return res.json();
 }

@@ -5,16 +5,16 @@ Firmar con fecha y nombre cuando se verifique cada sección.
 
 ---
 
-## Estado de Auditoría Técnica — 5 Marzo 2026
+## Estado de Auditoría Técnica — 17 Marzo 2026
 
 Auditoría de estado real del proyecto. Verificado contra el código fuente, tests ejecutados localmente.
 
-**Última actualización:** 5 Marzo 2026 — post-fix sprint completado
+**Última actualización:** 17 Marzo 2026 — auditoría completa post-sprint
+
+### Auditoría 5 Marzo (baseline)
 
 | Área | Estado | Detalle |
 |------|--------|---------|
-| Backend tests | ✅ 439 passed, 1 skipped | Coverage 87% — 1 performance test flaky (`test_get_user_orders_performance[100]`) |
-| Frontend tests | ✅ 126 passed, 13 suites | Todos en verde con `--forceExit` |
 | CI pnpm version | ✅ Corregido | `deploy.yml:209` actualizado a v10, alineado con `ci.yml` y `package.json` |
 | pytest-cov | ✅ Corregido | `pytest-cov>=4.1.0` en `requirements-dev.txt` |
 | mangum (Lambda) | ✅ Eliminado | Removido de `requirements.txt` y `main.py` |
@@ -26,6 +26,49 @@ Auditoría de estado real del proyecto. Verificado contra el código fuente, tes
 | OnboardingModal | ✅ Cableado | Conectado al store + `_layout.tsx`, test suite en `components/__tests__/` |
 | E2E tests | ✅ Implementado | 10 tests en `backend/tests/e2e/` (auth gate, checkout flow, email) |
 | Smoke tests extendidos | ✅ Implementado | 8/8 checks incluyendo `/addresses` y `/favorites` |
+
+### Auditoría 11 Marzo (actualización)
+
+| Área | Estado | Detalle |
+|------|--------|---------|
+| Backend tests | ✅ 442 passed, 1 skipped | Coverage 87% — Python 3.14.3 |
+| Frontend tests | ✅ 130 passed, 14 suites | Todos en verde |
+| checkout-v2 infinite loop | ✅ Verificado | Ya corregido — `useEffect` con `[]` deps en `checkout-v2.tsx:71` |
+| AuthGate payment screens | ✅ Corregido | `payment/pending`, `payment/success`, `payment/failure` ahora protegidos con `<AuthGate>` |
+| ORM/DB index drift | ✅ Corregido | `product_dietary_tags` — Index declarations en `schemas.py` sincronizados con SQL migrations |
+| MVP progress | ✅ ~90% | 8/8 features implementadas, UI polish sprint completo |
+
+### Advertencias no-bloqueantes (low priority)
+
+| Advertencia | Detalle | Acción sugerida |
+|-------------|---------|-----------------|
+| `datetime.utcnow()` deprecation | Python 3.12+ depreca `utcnow()` — aparece en tests y fixtures | Migrar a `datetime.now(UTC)` en próximo sprint |
+| `HTTP_422_UNPROCESSABLE_ENTITY` deprecation | Starlette depreca esta constante | Cambiar a `status.HTTP_422_UNPROCESSABLE_ENTITY` de FastAPI o usar int `422` |
+| `asyncio.iscoroutinefunction` deprecation | Python 3.14 lo marca como deprecated | Usar `inspect.iscoroutinefunction` en su lugar |
+
+### Auditoría 17 Marzo (actualización)
+
+| Área | Estado | Detalle |
+|------|--------|---------|
+| Frontend tests | ✅ 130 passed, 14 suites | Todos en verde — sin regresiones |
+| `checkout-v2.tsx` sandbox URL | ✅ Corregido | `sandbox_init_point` ahora solo se usa en `__DEV__`; producción usa `init_point` |
+| `checkout-v2.tsx` unused import | ✅ Corregido | Import `useMemo` eliminado (no se usaba) |
+| `createOrder` return type | ✅ Corregido | `api/orders.ts` ahora retorna `Promise<OrderResponse>` en vez de `Promise<any>` |
+| `ErrorBoundary` Sentry | ✅ Corregido | `componentDidCatch` ahora reporta a Sentry con `captureException` (antes solo tenía TODO) |
+| Componentes huérfanos | ✅ Eliminados | `SectionHeader`, `ProductListRow`, `RecentOrders`, `AddressCard` — nunca importados, eliminados |
+| Archivos temporales | ✅ Eliminados | `checkout_fail.txt`, `test_output.txt` eliminados del directorio frontend |
+| Interactive Order Detail | ✅ Implementado | `OrderItemRow` con navegación a producto, `useOrderProductDetails` hook, FlatList |
+| `ScreenHeader` rightElement | ✅ Implementado | Prop `rightElement` agregado al componente unificado |
+| Auth consistency `orders/[id]` | ✅ Corregido | Migrado de `credentials: "include"` inline a `getOrderById` con Bearer token |
+| Zustand granular selectors | ✅ Mergeado | PR #106 integrado — selectores granulares en `index.tsx`, `all-products.tsx`, `dietary-preferences.tsx` |
+
+### Advertencia CRÍTICA — Secretos en historial git
+
+| Severidad | Detalle | Acción requerida |
+|-----------|---------|-----------------|
+| 🔴 CRÍTICA | Secretos previamente commiteados en historial git: Supabase DB URL, Clerk secret key, MercadoPago token, Resend API key | **1)** Rotar TODOS los secretos afectados **2)** Ejecutar `git filter-repo` o BFG para limpiar historial **3)** Force push a remoto |
+
+**IMPORTANTE:** Los secretos ya no están en archivos del HEAD, pero siguen accesibles en el historial de git. Esto debe resolverse ANTES de cualquier deploy a producción.
 
 **Pendientes antes de producción (infra + ops, no código):**
 1. Ejecutar `alembic upgrade head` contra RDS prod
@@ -125,7 +168,7 @@ cd frontend && pnpm audit --prod
 - [ ] `pnpm audit --prod` — sin vulnerabilidades, o con justificación documentada para cada excepción
 - [ ] CI job `secret-scan` (Gitleaks) verde en el último commit
 - [ ] CORS en backend: solo los dominios de producción están en la allowlist (no `*`)
-- [ ] `mangum` en `requirements.txt` auditado: si no se usa Lambda, eliminar para reducir attack surface
+- [x] `mangum` en `requirements.txt` auditado: eliminado — no se usa Lambda (resuelto 5 Mar)
 
 ---
 
@@ -142,9 +185,10 @@ Usar una cuenta real (no de prueba) y una tarjeta de prueba oficial de Mercado P
 - [ ] Navegar a checkout — confirmar que **no hay bucle infinito** en la pantalla de addresses
 - [ ] Confirmar que usuario autenticado llega a checkout sin bloqueo de AuthGate
 - [ ] Completar el pago con tarjeta de prueba de Mercado Pago
+- [ ] Verificar que las pantallas de resultado de pago (pending/success/failure) muestran AuthGate si no hay sesión
 - [ ] Verificar email de confirmación recibido en la bandeja real (no spam)
 - [ ] Ver la orden con estado correcto en la pantalla de órdenes de la app
-- [ ] Probar el flujo como usuario NO autenticado: verificar que cart/checkout/orders muestran el gate de login
+- [ ] Probar el flujo como usuario NO autenticado: verificar que cart/checkout/orders/payment-results muestran el gate de login
 
 ---
 

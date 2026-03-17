@@ -1,7 +1,7 @@
 import { View, TextInput, Pressable } from "react-native";
 import { Text } from "./ui/text";
 import { Search, ArrowLeft, X } from "lucide-react-native";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 
 type HeaderProps = {
@@ -9,11 +9,32 @@ type HeaderProps = {
   onSearchChange?: (searchTerm: string) => void;
   initialSearchTerm?: string;
   showBackButton?: boolean;
-}
+  isLoggedIn?: boolean;
+};
 
-export function Header({ userName, onSearchChange, initialSearchTerm = "", showBackButton = false }: HeaderProps) {
+export function Header({
+  userName,
+  onSearchChange,
+  initialSearchTerm = "",
+  showBackButton = false,
+  isLoggedIn = false,
+}: HeaderProps) {
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const router = useRouter();
+
+  const [greeting, setGreeting] = useState<string>("");
+
+  useEffect(() => {
+    const templates = [
+      "👋 Hola, {name}!",
+      "✨ ¡Qué lindo volverte a ver, {name}!",
+      "🎉 ¡Volviste, {name}!",
+      "🙌 ¡Bienvenido de nuevo, {name}!",
+      "🥗 ¿Listo para comer sano, {name}?",
+      "💚 ¡Hola de nuevo, {name}!",
+    ];
+    setGreeting(templates[Math.floor(Math.random() * templates.length)]);
+  }, []);
 
   // Sync internal state if prop changes (e.g. navigation back/forward)
   useEffect(() => {
@@ -32,7 +53,7 @@ export function Header({ userName, onSearchChange, initialSearchTerm = "", showB
       router.push(`/search?q=${encodeURIComponent(text.trim())}`);
     } else {
       // If search is cleared and submitted, go back home
-      router.push('/');
+      router.push("/");
     }
   };
 
@@ -41,28 +62,30 @@ export function Header({ userName, onSearchChange, initialSearchTerm = "", showB
     if (onSearchChange) {
       onSearchChange("");
     }
-    // For a smoother UX, clear should probably not force navigate unless submitted, 
+    // For a smoother UX, clear should probably not force navigate unless submitted,
     // but user requested "Que vuelva al home al limpiar".
     // We can interpret this as "when X is pressed" or "when submitted empty".
     // Let's make X clear text, and if on search page possibly navigate?
     // Actually simplicity: Clear text -> Focus -> Wait for user.
     // BUT user said: "Que vuelva al home al limpiar". Let's do that for the X button.
-    router.push('/');
+    router.push("/");
   };
 
   return (
     <View className="px-4 pt-6 pb-4 bg-white">
       {showBackButton ? (
         <View className="flex-row items-center mb-1">
-          <Pressable onPress={() => router.push('/')} className="mr-2 p-1">
+          <Pressable onPress={() => router.push("/")} className="mr-2 p-1">
             <ArrowLeft size={24} color="#000" />
           </Pressable>
           <Text className="text-lg font-bold">Volver</Text>
         </View>
       ) : (
-        <Text className="text-lg font-bold">
-          👋 Hola, {userName}!
-        </Text>
+        isLoggedIn && greeting && (
+          <Text className="text-lg font-bold">
+            {greeting.replace("{name}", userName)}
+          </Text>
+        )
       )}
 
       <View className="flex-row items-center mt-3 rounded-full border border-gray-300 px-3 py-2 bg-gray-50">

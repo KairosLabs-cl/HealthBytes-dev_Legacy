@@ -5,7 +5,7 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL;
 export type ProductFilters = {
   search?: string;
   category?: string;
-  dietary?: string[];  // Array de etiquetas como ["vegano", "sin-gluten"]
+  dietary?: string[]; // Array de etiquetas como ["vegano", "sin-gluten"]
   minPrice?: number;
   maxPrice?: number;
 };
@@ -16,19 +16,19 @@ export async function listProducts(filters?: ProductFilters) {
   const params = new URLSearchParams();
 
   if (filters?.search) {
-    params.append('search', filters.search);
+    params.append("search", filters.search);
   }
   if (filters?.category) {
-    params.append('category', filters.category);
+    params.append("category", filters.category);
   }
   if (filters?.dietary && filters.dietary.length > 0) {
-    params.append('dietary', filters.dietary.join(','));
+    params.append("dietary", filters.dietary.join(","));
   }
   if (filters?.minPrice !== undefined) {
-    params.append('min_price', filters.minPrice.toString());
+    params.append("min_price", filters.minPrice.toString());
   }
   if (filters?.maxPrice !== undefined) {
-    params.append('max_price', filters.maxPrice.toString());
+    params.append("max_price", filters.maxPrice.toString());
   }
 
   const url = params.toString()

@@ -7,27 +7,36 @@ import { Text } from "@/components/ui/text";
 import { useBreakpointValue } from "@/components/ui/utils/use-break-point-value";
 import { useQuery } from "@tanstack/react-query";
 import { listProducts } from "@/api/products";
-import ProductListItem from "@/components/ProductListItem";
+import ProductCard from "@/components/ProductCard";
 import DietaryFilterBar from "@/components/DietaryFilterBar";
-import { Header } from "@/components/Header";
 import { RefreshCw, Package } from "lucide-react-native";
 import { useProductFilters, DietaryTag } from "@/store/productFiltersStore";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { useUser } from "@clerk/clerk-expo";
 import { Product } from "@/types/product";
 
 const keyExtractor = (item: Product) => item.id.toString();
 
 export default function AllProductsScreen() {
-  const { dietaryTags, toggleDietaryTag, clearFilters } = useProductFilters();
+  // ⚡ Bolt: Granular selectors to prevent re-renders when other filter state changes
+  const dietaryTags = useProductFilters((state) => state.dietaryTags);
+  const toggleDietaryTag = useProductFilters((state) => state.toggleDietaryTag);
+  const clearFilters = useProductFilters((state) => state.clearFilters);
   const { user } = useUser();
   const userName = user?.firstName || user?.fullName || "Usuario";
   const [refreshing, setRefreshing] = useState(false);
 
-  const { data: products, isLoading, error, refetch } = useQuery<Product[]>({
+  const {
+    data: products,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery<Product[]>({
     queryKey: ["products", dietaryTags] as const,
-    queryFn: () => listProducts({
-      dietary: dietaryTags.length > 0 ? dietaryTags : undefined,
-    }),
+    queryFn: () =>
+      listProducts({
+        dietary: dietaryTags.length > 0 ? dietaryTags : undefined,
+      }),
     placeholderData: (prev) => prev,
   });
 
@@ -45,8 +54,12 @@ export default function AllProductsScreen() {
 
   const renderItem = useCallback(
     ({ item }: { item: Product }) => (
-      <View style={{ width: numColumns === 2 ? "50%" : numColumns === 3 ? "33.33%" : "25%" }}>
-        <ProductListItem product={item} />
+      <View
+        style={{
+          width: numColumns === 2 ? "50%" : numColumns === 3 ? "33.33%" : "25%",
+        }}
+      >
+        <ProductCard product={item} width="full" />
       </View>
     ),
     [numColumns]
@@ -61,14 +74,18 @@ export default function AllProductsScreen() {
         />
         <View className="px-4 flex-row items-center justify-between mt-4 mb-2">
           <Text className="text-lg font-bold text-gray-900">
-            {dietaryTags.length > 0 ? "Productos filtrados" : "Todo el catalogo"}
+            {dietaryTags.length > 0
+              ? "Productos filtrados"
+              : "Todo el catalogo"}
           </Text>
           {dietaryTags.length > 0 && (
             <Pressable
               onPress={clearFilters}
               style={{ minHeight: 44, justifyContent: "center" }}
             >
-              <Text className="text-sm font-semibold text-green-600">Limpiar</Text>
+              <Text className="text-sm font-semibold text-green-600">
+                Limpiar
+              </Text>
             </Pressable>
           )}
         </View>
@@ -78,15 +95,17 @@ export default function AllProductsScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
+    <View className="flex-1 bg-gray-50">
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
 
-      <Header userName={userName} showBackButton={true} />
+      <ScreenHeader title="Todos los productos" icon={Package} showBackButton={true} />
 
       {error ? (
         <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-red-500 mb-4">No se pudieron cargar los productos.</Text>
+          <Text className="text-red-500 mb-4">
+            No se pudieron cargar los productos.
+          </Text>
           <Pressable
             onPress={() => refetch()}
             className="flex-row items-center gap-2 bg-black px-6 py-3 rounded-full"
@@ -135,6 +154,6 @@ export default function AllProductsScreen() {
           }
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 }
