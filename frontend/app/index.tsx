@@ -213,11 +213,15 @@ HomeListHeader.displayName = "HomeListHeader";
 // ─── HomeScreen ───────────────────────────────────────────────────────────────
 
 export default function HomeScreen() {
-  const { dietaryTags, toggleDietaryTag, setDietaryTags, clearFilters } =
-    useProductFilters();
+  // ⚡ Bolt: Use granular selectors for Zustand stores to prevent unnecessary full-screen re-renders
+  // when unrelated state changes. This is critical for performance, especially with FlatLists.
+  const dietaryTags = useProductFilters((state) => state.dietaryTags);
+  const toggleDietaryTag = useProductFilters((state) => state.toggleDietaryTag);
+  const setDietaryTags = useProductFilters((state) => state.setDietaryTags);
+  const clearFilters = useProductFilters((state) => state.clearFilters);
   const { user } = useUser();
-  const { dietaryPreferences } = usePreferencesStore();
-  const { favoriteIds } = useFavoritesStore();
+  const dietaryPreferences = usePreferencesStore((state) => state.dietaryPreferences);
+  const favoriteIds = useFavoritesStore((state) => state.favoriteIds);
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
 

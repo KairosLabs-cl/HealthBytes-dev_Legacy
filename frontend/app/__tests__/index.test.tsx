@@ -68,19 +68,39 @@ jest.mock('@/components/SectionHeader', () => {
   return Component;
 });
 
+const mockProductFiltersStore = {
+  dietaryTags: [],
+  toggleDietaryTag: jest.fn(),
+  setDietaryTags: jest.fn(),
+  clearFilters: jest.fn(),
+};
+
 jest.mock('@/store/productFiltersStore', () => ({
-  useProductFilters: jest.fn(() => ({
-    dietaryTags: [],
-    toggleDietaryTag: jest.fn(),
-    setDietaryTags: jest.fn(),
-    clearFilters: jest.fn(),
-  })),
+  useProductFilters: jest.fn().mockImplementation((selector) =>
+    typeof selector === 'function' ? selector(mockProductFiltersStore) : mockProductFiltersStore
+  ),
 }));
 
+const mockPreferencesStore = {
+  dietaryPreferences: [],
+};
+
 jest.mock('@/store/preferencesStore', () => ({
-  usePreferencesStore: jest.fn(() => ({
-    dietaryPreferences: [],
-  })),
+  usePreferencesStore: jest.fn().mockImplementation((selector) =>
+    typeof selector === 'function' ? selector(mockPreferencesStore) : mockPreferencesStore
+  ),
+}));
+
+const mockFavoritesStore = {
+  favoriteIds: new Set(),
+  loadFavorites: jest.fn(),
+  clearFavorites: jest.fn(),
+};
+
+jest.mock('@/store/favoritesStore', () => ({
+  useFavoritesStore: jest.fn().mockImplementation((selector) =>
+    typeof selector === 'function' ? selector(mockFavoritesStore) : mockFavoritesStore
+  ),
 }));
 
 jest.mock('@clerk/clerk-expo', () => ({
