@@ -18,7 +18,8 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
   const router = useRouter();
   const addProduct = useCart((state) => state.addProduct);
   const { getToken } = useAuth();
-  const { toggleFavorite } = useFavoritesStore();
+  // ⚡ Bolt: Granular selector to prevent re-renders on row components when favoriteIds or isLoading changes
+  const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite);
   const isOutOfStock = (product.stock ?? 1) === 0;
 
   const handleRemove = async () => {
