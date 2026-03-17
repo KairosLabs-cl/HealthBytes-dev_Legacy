@@ -38,3 +38,7 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# macOS resources
+._*
+.DS_Store
