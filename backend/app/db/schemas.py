@@ -77,6 +77,8 @@ if product_dietary_tags is None:
             ForeignKey("dietary_tags.id", ondelete="CASCADE"),
             primary_key=True,
         ),
+        Index("idx_pdt_product", "product_id"),
+        Index("idx_pdt_tag", "dietary_tag_id"),
     )
 
 

@@ -1,4 +1,7 @@
-import { createMercadoPagoPreference, getMercadoPagoPaymentStatus } from "../mercadopago";
+import {
+  createMercadoPagoPreference,
+  getMercadoPagoPaymentStatus,
+} from "../mercadopago";
 
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
@@ -35,9 +38,9 @@ describe("createMercadoPagoPreference", () => {
 
   test("throws when no token", async () => {
     const noToken = jest.fn().mockResolvedValue(null);
-    await expect(
-      createMercadoPagoPreference(request, noToken)
-    ).rejects.toThrow("No authentication token available");
+    await expect(createMercadoPagoPreference(request, noToken)).rejects.toThrow(
+      "No authentication token available"
+    );
   });
 
   test("extracts error from detail string", async () => {
@@ -56,8 +59,7 @@ describe("createMercadoPagoPreference", () => {
     mockFetch.mockResolvedValue({
       ok: false,
       status: 422,
-      json: () =>
-        Promise.resolve({ detail: { message: "Invalid order" } }),
+      json: () => Promise.resolve({ detail: { message: "Invalid order" } }),
     });
 
     await expect(
@@ -94,9 +96,9 @@ describe("getMercadoPagoPaymentStatus", () => {
 
   test("throws when no token", async () => {
     const noToken = jest.fn().mockResolvedValue(null);
-    await expect(
-      getMercadoPagoPaymentStatus("123", noToken)
-    ).rejects.toThrow("No authentication token available");
+    await expect(getMercadoPagoPaymentStatus("123", noToken)).rejects.toThrow(
+      "No authentication token available"
+    );
   });
 
   test("throws on error with detail", async () => {

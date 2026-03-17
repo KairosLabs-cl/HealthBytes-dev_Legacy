@@ -68,9 +68,9 @@ describe("Address Store", () => {
         new Error("Network error")
       );
 
-      await expect(
-        useAddress.getState().fetchAddresses(TOKEN)
-      ).rejects.toThrow("Network error");
+      await expect(useAddress.getState().fetchAddresses(TOKEN)).rejects.toThrow(
+        "Network error"
+      );
       expect(useAddress.getState().error).toBe("Network error");
       expect(useAddress.getState().isLoading).toBe(false);
     });
@@ -94,9 +94,7 @@ describe("Address Store", () => {
       const firstAddr = mockAddress({ id: 1 });
       (addressApi.createAddress as jest.Mock).mockResolvedValue(firstAddr);
 
-      await useAddress
-        .getState()
-        .createAddress({} as any, TOKEN);
+      await useAddress.getState().createAddress({} as any, TOKEN);
 
       expect(useAddress.getState().defaultAddress).toEqual(firstAddr);
     });
@@ -111,9 +109,7 @@ describe("Address Store", () => {
       const secondAddr = mockAddress({ id: 2 });
       (addressApi.createAddress as jest.Mock).mockResolvedValue(secondAddr);
 
-      await useAddress
-        .getState()
-        .createAddress({} as any, TOKEN);
+      await useAddress.getState().createAddress({} as any, TOKEN);
 
       expect(useAddress.getState().defaultAddress).toEqual(existingDefault);
       expect(useAddress.getState().addresses).toHaveLength(2);

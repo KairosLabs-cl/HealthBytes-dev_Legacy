@@ -1,35 +1,31 @@
 module.exports = {
   root: true,
   extends: [
-    'expo',
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:react-native/all',
-    'plugin:security/recommended'
+    "expo",
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react-native/all",
+    "plugin:security/recommended",
   ],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
     },
-    ecmaVersion: 'latest',
-    sourceType: 'module',
+    ecmaVersion: "latest",
+    sourceType: "module",
   },
-  plugins: [
-    'react',
-    'react-native',
-    'security'
-  ],
+  plugins: ["react", "react-native", "security"],
   env: {
     "react-native/react-native": true,
   },
   settings: {
     react: {
-      version: 'detect',
+      version: "detect",
     },
   },
   rules: {
     // Console warnings (permitir console.warn y console.error)
-    'no-console': ['warn', { allow: ['warn', 'error'] }],
+    "no-console": ["warn", { allow: ["warn", "error"] }],
 
     // React
     "react/prop-types": "off", // Usamos TypeScript
@@ -42,13 +38,16 @@ module.exports = {
     "react-native/sort-styles": "off",
 
     // TypeScript
-    '@typescript-eslint/no-explicit-any': 'error', // Prohibir 'any'
-    '@typescript-eslint/no-unused-vars': ['warn', {
-      argsIgnorePattern: '^_',
-      varsIgnorePattern: '^_'
-    }],
+    "@typescript-eslint/no-explicit-any": "error", // Prohibir 'any'
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+      },
+    ],
 
     // Security
-    "security/detect-object-injection": "off" // Muchos falsos positivos
-  }
+    "security/detect-object-injection": "off", // Muchos falsos positivos
+  },
 };

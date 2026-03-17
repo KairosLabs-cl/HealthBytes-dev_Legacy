@@ -2,7 +2,9 @@ import React from "react";
 import { View } from "react-native";
 import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import ProductCardSkeleton, { useShimmerStyle } from "@/components/ProductCardSkeleton";
+import ProductCardSkeleton, {
+  useShimmerStyle,
+} from "@/components/ProductCardSkeleton";
 
 /**
  * HomeSkeleton - Full Home screen skeleton layout

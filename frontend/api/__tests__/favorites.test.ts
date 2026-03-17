@@ -1,4 +1,10 @@
-import { addFavorite, removeFavorite, getUserFavorites, checkFavorite, getFavoriteIds } from "../favorites";
+import {
+  addFavorite,
+  removeFavorite,
+  getUserFavorites,
+  checkFavorite,
+  getFavoriteIds,
+} from "../favorites";
 
 const mockFetch = jest.fn();
 global.fetch = mockFetch;

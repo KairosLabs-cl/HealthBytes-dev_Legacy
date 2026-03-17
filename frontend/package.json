@@ -89,7 +89,8 @@
       "bs58": "^6.0.0",
       "minimatch": "^10.2.3",
       "glob": "^11.0.0",
-      "babel-plugin-module-resolver>glob": "^8"
+      "babel-plugin-module-resolver>glob": "^8",
+      "tar": ">=7.5.10"
     },
     "ignoredBuiltDependencies": [
       "@clerk/shared",
