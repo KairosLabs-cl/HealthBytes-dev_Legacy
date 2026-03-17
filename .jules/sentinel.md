@@ -6,3 +6,8 @@
 **Prevention:**
 1. Never expose sensitive or internal state fields (e.g., `is_active`, `id`, `user_id`) in input validation schemas (like `*Update` schemas).
 2. Implement defense-in-depth in service logic by explicitly dropping known protected fields before updating model attributes via `setattr`.
+
+## 2026-03-16 - Prevent User Enumeration via OAuth User 500 Errors
+**Vulnerability:** The login endpoint assumed that if a user exists, their password string is not `None`. However, users created via OAuth (e.g., Clerk) have a `None` password. When attempting to log in with an OAuth email and an arbitrary password, the backend threw an `AttributeError` during password hashing (trying to encode `None`). This resulted in a 500 Server Error, bypassing the `verify_password_mock` timing attack protection and leaking the fact that the user exists (user enumeration).
+**Learning:** In authentication flows supporting both local passwords and OAuth, the password field in the database may legitimately be `None`. Failing to explicitly check for `not user.password` alongside `not user` can break cryptographic library calls that expect a string, leading to unhandled exceptions that bypass standard security flow paths.
+**Prevention:** Always validate that a `password` property exists and is a valid string before passing it to cryptographic functions like `bcrypt.checkpw()`. Treat a user with no password identically to a user that does not exist in the authentication logic to prevent distinct error states.
