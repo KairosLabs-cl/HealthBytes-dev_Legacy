@@ -15,7 +15,7 @@ import { Address } from "@/types/address";
 import { useAuth } from "@clerk/clerk-expo";
 import { Stack, useRouter } from "expo-router";
 import { MapPinIcon, PhoneIcon } from "lucide-react-native";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { View, ScrollView, Pressable, Linking, ActivityIndicator, Alert, Text } from "react-native";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
@@ -147,8 +147,9 @@ export default function CheckoutV2Screen() {
         if (__DEV__)
           console.log("✅ Preference creada:", preference.preference_id);
 
-        const checkoutUrl =
-          preference.sandbox_init_point || preference.init_point;
+        const checkoutUrl = __DEV__
+          ? preference.sandbox_init_point || preference.init_point
+          : preference.init_point;
         if (__DEV__) console.log("🔗 Redirigiendo a:", checkoutUrl);
 
         const canOpen = await Linking.canOpenURL(checkoutUrl);
@@ -208,8 +209,6 @@ export default function CheckoutV2Screen() {
           showsVerticalScrollIndicator={false}
           className="flex-1 p-6"
         >
-          {/* Step Indicator */}
-
           {/* Step Indicator */}
           <StepIndicator
             currentStep={
