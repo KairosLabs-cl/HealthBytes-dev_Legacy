@@ -1,0 +1,4 @@
+## 2026-03-17 - Mass Assignment Vulnerability in AddressUpdate Schema
+**Vulnerability:** The `is_active` field was exposed in the `AddressUpdate` Pydantic schema used for updating user addresses. This allowed a malicious user to modify the soft-delete status of an address via a mass-assignment attack, potentially reactivating deleted addresses or accidentally deleting active ones.
+**Learning:** In Pydantic update schemas, all fields exposed can potentially be modified by the end user via tools like `model_dump(exclude_unset=True)`. Sensitive internal state fields like `is_active`, `role`, or `user_id` should never be included in these update schemas unless explicitly intended to be user-mutable.
+**Prevention:** Always omit internal or administrative fields (like `is_active`, `role`, `id`) from user-facing update schemas. Explicitly construct allowlists or strip protected fields from payloads before applying updates as defense-in-depth against mass assignment.
