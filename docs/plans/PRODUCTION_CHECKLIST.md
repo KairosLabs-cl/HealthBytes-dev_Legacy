@@ -5,11 +5,11 @@ Firmar con fecha y nombre cuando se verifique cada sección.
 
 ---
 
-## Estado de Auditoría Técnica — 11 Marzo 2026
+## Estado de Auditoría Técnica — 17 Marzo 2026
 
 Auditoría de estado real del proyecto. Verificado contra el código fuente, tests ejecutados localmente.
 
-**Última actualización:** 11 Marzo 2026 — auditoría completa post-sprint
+**Última actualización:** 17 Marzo 2026 — auditoría completa post-sprint
 
 ### Auditoría 5 Marzo (baseline)
 
@@ -45,6 +45,30 @@ Auditoría de estado real del proyecto. Verificado contra el código fuente, tes
 | `datetime.utcnow()` deprecation | Python 3.12+ depreca `utcnow()` — aparece en tests y fixtures | Migrar a `datetime.now(UTC)` en próximo sprint |
 | `HTTP_422_UNPROCESSABLE_ENTITY` deprecation | Starlette depreca esta constante | Cambiar a `status.HTTP_422_UNPROCESSABLE_ENTITY` de FastAPI o usar int `422` |
 | `asyncio.iscoroutinefunction` deprecation | Python 3.14 lo marca como deprecated | Usar `inspect.iscoroutinefunction` en su lugar |
+
+### Auditoría 17 Marzo (actualización)
+
+| Área | Estado | Detalle |
+|------|--------|---------|
+| Frontend tests | ✅ 130 passed, 14 suites | Todos en verde — sin regresiones |
+| `checkout-v2.tsx` sandbox URL | ✅ Corregido | `sandbox_init_point` ahora solo se usa en `__DEV__`; producción usa `init_point` |
+| `checkout-v2.tsx` unused import | ✅ Corregido | Import `useMemo` eliminado (no se usaba) |
+| `createOrder` return type | ✅ Corregido | `api/orders.ts` ahora retorna `Promise<OrderResponse>` en vez de `Promise<any>` |
+| `ErrorBoundary` Sentry | ✅ Corregido | `componentDidCatch` ahora reporta a Sentry con `captureException` (antes solo tenía TODO) |
+| Componentes huérfanos | ✅ Eliminados | `SectionHeader`, `ProductListRow`, `RecentOrders`, `AddressCard` — nunca importados, eliminados |
+| Archivos temporales | ✅ Eliminados | `checkout_fail.txt`, `test_output.txt` eliminados del directorio frontend |
+| Interactive Order Detail | ✅ Implementado | `OrderItemRow` con navegación a producto, `useOrderProductDetails` hook, FlatList |
+| `ScreenHeader` rightElement | ✅ Implementado | Prop `rightElement` agregado al componente unificado |
+| Auth consistency `orders/[id]` | ✅ Corregido | Migrado de `credentials: "include"` inline a `getOrderById` con Bearer token |
+| Zustand granular selectors | ✅ Mergeado | PR #106 integrado — selectores granulares en `index.tsx`, `all-products.tsx`, `dietary-preferences.tsx` |
+
+### Advertencia CRÍTICA — Secretos en historial git
+
+| Severidad | Detalle | Acción requerida |
+|-----------|---------|-----------------|
+| 🔴 CRÍTICA | Secretos previamente commiteados en historial git: Supabase DB URL, Clerk secret key, MercadoPago token, Resend API key | **1)** Rotar TODOS los secretos afectados **2)** Ejecutar `git filter-repo` o BFG para limpiar historial **3)** Force push a remoto |
+
+**IMPORTANTE:** Los secretos ya no están en archivos del HEAD, pero siguen accesibles en el historial de git. Esto debe resolverse ANTES de cualquier deploy a producción.
 
 **Pendientes antes de producción (infra + ops, no código):**
 1. Ejecutar `alembic upgrade head` contra RDS prod
