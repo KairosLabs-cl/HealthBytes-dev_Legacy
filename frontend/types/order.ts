@@ -13,6 +13,9 @@ export type OrderItem = {
   product_id: string | number;
   quantity: number;
   price: number;
+  // Optional enriched fields (client-side populated)
+  product_name?: string;
+  product_image?: string;
 };
 
 export type Order = {
