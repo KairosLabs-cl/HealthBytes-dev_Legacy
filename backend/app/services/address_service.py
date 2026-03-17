@@ -113,7 +113,12 @@ class AddressService:
 
         # Update fields (only non-None values)
         update_data = address_data.model_dump(exclude_unset=True)
-        for field, value in update_data.items():
+
+        # Defense in depth: explicitly drop protected fields to prevent mass assignment
+        protected_fields = {"id", "user_id", "is_active", "created_at", "updated_at"}
+        safe_update_data = {k: v for k, v in update_data.items() if k not in protected_fields}
+
+        for field, value in safe_update_data.items():
             setattr(address, field, value)
 
         await db.commit()
