@@ -18,7 +18,10 @@ import { Product } from "@/types/product";
 const keyExtractor = (item: Product) => item.id.toString();
 
 export default function AllProductsScreen() {
-  const { dietaryTags, toggleDietaryTag, clearFilters } = useProductFilters();
+  // ⚡ Bolt: Granular selectors to prevent re-renders when other filter state changes
+  const dietaryTags = useProductFilters((state) => state.dietaryTags);
+  const toggleDietaryTag = useProductFilters((state) => state.toggleDietaryTag);
+  const clearFilters = useProductFilters((state) => state.clearFilters);
   const { user } = useUser();
   const userName = user?.firstName || user?.fullName || "Usuario";
   const [refreshing, setRefreshing] = useState(false);
