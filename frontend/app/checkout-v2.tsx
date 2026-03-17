@@ -137,7 +137,7 @@ export default function CheckoutV2Screen() {
         if (__DEV__) console.log("💳 Creando preference de Mercado Pago...");
         const preference = await createMercadoPagoPreference(
           {
-            order_id: orderId,
+            order_id: Number(orderId),
             description: `HealthBytes Order #${orderId}`,
             payer_email: undefined,
           },
