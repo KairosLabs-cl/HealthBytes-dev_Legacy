@@ -1,5 +1,8 @@
 # General
 .DS_Store
+**/.DS_Store
+._*
+**/._*
 dist/
 build/
 *.log
