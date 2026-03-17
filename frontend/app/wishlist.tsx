@@ -36,6 +36,7 @@ export default function WishlistScreen() {
     enabled: isSignedIn,
   });
 
+  // Granular selector for favoriteIds to avoid re-renders on other store updates
   const favoriteIds = useFavoritesStore((state) => state.favoriteIds);
 
   const reactiveFavorites = useMemo(() => {

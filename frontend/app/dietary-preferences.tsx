@@ -27,7 +27,9 @@ const DIETARY_OPTIONS = [
 
 export default function DietaryPreferencesScreen() {
   const { getToken } = useAuth();
-  const { dietaryPreferences, setDietaryPreferences } = usePreferencesStore();
+  // ⚡ Bolt: Use granular selectors to avoid re-renders when other preferences change
+  const dietaryPreferences = usePreferencesStore((state) => state.dietaryPreferences);
+  const setDietaryPreferences = usePreferencesStore((state) => state.setDietaryPreferences);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
