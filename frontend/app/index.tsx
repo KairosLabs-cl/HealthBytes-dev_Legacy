@@ -217,7 +217,7 @@ export default function HomeScreen() {
     useProductFilters();
   const { user } = useUser();
   const { dietaryPreferences } = usePreferencesStore();
-  const { favoriteIds } = useFavoritesStore();
+  const favoriteIds = useFavoritesStore((state) => state.favoriteIds);
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
 
