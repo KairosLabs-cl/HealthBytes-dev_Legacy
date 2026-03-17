@@ -15,6 +15,7 @@ PyJWT[crypto]>=2.10.1
 # Database (SQLAlchemy 2.0+ optimizado para Python 3.14)
 sqlalchemy>=2.0.46
 psycopg[binary]>=3.3.2
+greenlet>=3.1.1
 
 # HTTP & Networking
 httpx>=0.28.1

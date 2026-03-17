@@ -41,7 +41,9 @@ export default function LoginScreen() {
               router.replace("/");
               return;
             }
-          } catch { /* continuar */ }
+          } catch {
+            /* continuar */
+          }
           await new Promise((r) => setTimeout(r, 150));
         }
 
@@ -80,7 +82,8 @@ export default function LoginScreen() {
           Inicia sesión
         </Text>
         <Text className="text-base text-gray-500 mb-10">
-          Ingresa a tu cuenta de HealthBytes. Si no tienes una, se crea automáticamente.
+          Ingresa a tu cuenta de HealthBytes. Si no tienes una, se crea
+          automáticamente.
         </Text>
 
         {error && (
@@ -100,7 +103,9 @@ export default function LoginScreen() {
           ) : (
             <>
               <Text className="text-lg font-bold text-gray-600 mr-3">G</Text>
-              <Text className="text-base font-semibold text-gray-900">Continuar con Google</Text>
+              <Text className="text-base font-semibold text-gray-900">
+                Continuar con Google
+              </Text>
             </>
           )}
         </Pressable>

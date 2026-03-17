@@ -1,0 +1,8 @@
+d97b772d0b6735e7767291afd5be2e5e20679dcb:frontend/setup-env.sh:generic-api-key:12
+15ebefd66d8879d9dd7e296e889cc51c6bb01ce1:.github/workflows/ci.yml:generic-api-key:69
+15ebefd66d8879d9dd7e296e889cc51c6bb01ce1:docs/ai-logs/TASK1_ADDRESS_CRUD_COMPLETE.md:curl-auth-header:113
+15ebefd66d8879d9dd7e296e889cc51c6bb01ce1:docs/ai-logs/TASK1_ADDRESS_CRUD_COMPLETE.md:curl-auth-header:133
+3f3b0572870888edefbeddbf966de738a178b9e8:frontend/setup-env.ps1:generic-api-key:81
+46dddbbaba9750c5822c8204f845c7bc3394dda3:frontend/setup-env.ps1:generic-api-key:81
+3502a60464a6a91b5347288207273c59a0d248c9:backend/tests/conftest.py:generic-api-key:125
+c478476ac2773706be680b139baa36af525604df:Frontend/shop/.env:generic-api-key:9

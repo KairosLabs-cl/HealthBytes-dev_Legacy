@@ -1,6 +1,7 @@
-import { fetchProductById } from "@/api/products";
+import { fetchProductById, listProducts } from "@/api/products";
 import { DietaryBadgeList } from "@/components/DietaryBadge";
 import FavoriteButton from "@/components/FavoriteButton";
+import ProductCard from "@/components/ProductCard";
 import { useShimmerStyle } from "@/components/ProductCardSkeleton";
 import StockBadge from "@/components/StockBadge";
 import { Image } from "@/components/ui/image";
@@ -8,18 +9,22 @@ import { Text } from "@/components/ui/text";
 import { formatPrice } from "@/lib/formatPrice";
 import { useCart, selectCartItemCount } from "@/store/cartStore";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
+import { StatusBar } from "expo-status-bar";
 import { useAuth } from "@clerk/clerk-expo";
 import { useQuery } from "@tanstack/react-query";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import {
   ArrowLeft,
+  ChevronRight,
   Minus,
+  Package,
   Plus,
   RefreshCw,
   ShoppingCart,
+  Store,
 } from "lucide-react-native";
 import { useEffect, useMemo, useRef } from "react";
-import { Alert, Dimensions, Pressable, ScrollView, View } from "react-native";
+import { Alert, Dimensions, Pressable, ScrollView, View, FlatList } from "react-native";
 import Animated, {
   cancelAnimation,
   Easing,
@@ -31,6 +36,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from "react-native-reanimated";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -232,6 +238,17 @@ export default function ProductDetailsScreen() {
     queryFn: () => fetchProductById(Number(id)),
   });
 
+  const { data: vendorProducts } = useQuery({
+    queryKey: ["products", "vendor", product?.vendor_name],
+    queryFn: () => listProducts({ search: product?.vendor_name }),
+    enabled: !!product?.vendor_name,
+  });
+
+  // Filter out the current product from the vendor products list
+  const otherVendorProducts = useMemo(() => {
+    return vendorProducts?.filter((p: any) => p.id.toString() !== id) || [];
+  }, [vendorProducts, id]);
+
   const currentInCart = useMemo(
     () => cartItems.find((i) => i.product.id === product?.id)?.quantity || 0,
     [cartItems, product?.id]
@@ -340,16 +357,9 @@ export default function ProductDetailsScreen() {
 
   return (
     <View className="flex-1 bg-white">
+      <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
-
-      {/* Floating Back Button */}
-      <Pressable
-        onPress={handleBack}
-        className="absolute left-5 z-50 bg-white/90 p-3 rounded-full shadow-lg border border-gray-100"
-        style={{ top: insets.top + 8, elevation: 5 }}
-      >
-        <ArrowLeft size={24} color="black" />
-      </Pressable>
+      <ScreenHeader title="Producto" icon={Package} showBackButton={true} />
 
       {/* Floating Cart Button — nav bar style, fly-to-cart target */}
       <Animated.View
@@ -413,11 +423,22 @@ export default function ProductDetailsScreen() {
 
           <Animated.View
             entering={FadeInUp.delay(160).duration(400)}
-            className="mt-3"
+            className="mt-3 mb-4"
           >
-            <Text className="text-3xl font-extrabold text-gray-900 leading-tight mb-4">
+            <Text className="text-3xl font-extrabold text-gray-900 leading-tight mb-2">
               {product.name}
             </Text>
+            {product.vendor_name && (
+              <Pressable
+                onPress={() => router.push(`/search?q=${encodeURIComponent(product.vendor_name!)}`)}
+                className="flex-row items-center py-1 active:opacity-70"
+              >
+                <Store size={14} color="#166534" style={{ marginRight: 6 }} />
+                <Text className="text-green-800 font-semibold text-sm">
+                  Vendedor: <Text className="underline">{product.vendor_name}</Text>
+                </Text>
+              </Pressable>
+            )}
           </Animated.View>
 
           {/* Price + Stock — clear visual hierarchy */}
@@ -524,6 +545,36 @@ export default function ProductDetailsScreen() {
                 return null;
               }
             })()}
+
+          {/* Vendor Carousel */}
+          {product.vendor_name && otherVendorProducts.length > 0 && (
+            <Animated.View entering={FadeInUp.delay(500).duration(400)} className="mt-8 mb-4">
+              <View className="flex-row items-center justify-between mb-4">
+                <Text className="text-lg font-extrabold text-gray-900">
+                  Más de {product.vendor_name}
+                </Text>
+                <Pressable
+                  onPress={() => router.push(`/search?q=${encodeURIComponent(product.vendor_name!)}`)}
+                  className="flex-row items-center bg-gray-50 px-3 py-1.5 rounded-full active:bg-gray-100"
+                >
+                  <Text className="text-sm font-bold text-gray-700 mr-1">Ver tienda</Text>
+                  <ChevronRight size={14} color="#374151" />
+                </Pressable>
+              </View>
+              <View className="-mx-5">
+                <FlatList
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}
+                  data={otherVendorProducts.slice(0, 5)}
+                  keyExtractor={(item) => item.id.toString()}
+                  renderItem={({ item }) => (
+                    <ProductCard product={item} width={160} />
+                  )}
+                />
+              </View>
+            </Animated.View>
+          )}
         </View>
       </ScrollView>
 

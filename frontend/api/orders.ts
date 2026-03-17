@@ -57,7 +57,7 @@ export async function createOrder(
 
   await throwIfNotOk(res, "Error creando la orden");
 
-  return res.json();
+  return res.json() as Promise<OrderResponse>;
 }
 
 /**

@@ -1,3 +1,4 @@
+import { AuthGate } from "@/components/AuthGate";
 import { Button, ButtonText } from "@/components/ui/button";
 import { VStack } from "@/components/ui/vstack";
 import { useCart } from "@/store/cartStore";
@@ -24,6 +25,7 @@ export default function PaymentSuccessScreen() {
   }, [router, resetCart]);
 
   return (
+    <AuthGate message="Inicia sesion para ver el resultado de tu pago.">
     <View className="flex-1 bg-white justify-center items-center p-6">
       <View className="bg-green-100 p-6 rounded-full mb-6">
         <CheckCircleIcon size={64} color="#16a34a" />
@@ -85,5 +87,6 @@ export default function PaymentSuccessScreen() {
         </Button>
       </VStack>
     </View>
+    </AuthGate>
   );
 }
