@@ -1,7 +1,7 @@
 import { View, TextInput, Pressable } from "react-native";
 import { Text } from "./ui/text";
 import { Search, ArrowLeft, X } from "lucide-react-native";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 
 type HeaderProps = {
@@ -21,6 +21,20 @@ export function Header({
 }: HeaderProps) {
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const router = useRouter();
+
+  const [greeting, setGreeting] = useState<string>("");
+
+  useEffect(() => {
+    const templates = [
+      "👋 Hola, {name}!",
+      "✨ ¡Qué lindo volverte a ver, {name}!",
+      "🎉 ¡Volviste, {name}!",
+      "🙌 ¡Bienvenido de nuevo, {name}!",
+      "🥗 ¿Listo para comer sano, {name}?",
+      "💚 ¡Hola de nuevo, {name}!",
+    ];
+    setGreeting(templates[Math.floor(Math.random() * templates.length)]);
+  }, []);
 
   // Sync internal state if prop changes (e.g. navigation back/forward)
   useEffect(() => {
@@ -67,8 +81,10 @@ export function Header({
           <Text className="text-lg font-bold">Volver</Text>
         </View>
       ) : (
-        isLoggedIn && (
-          <Text className="text-lg font-bold">👋 Hola, {userName}!</Text>
+        isLoggedIn && greeting && (
+          <Text className="text-lg font-bold">
+            {greeting.replace("{name}", userName)}
+          </Text>
         )
       )}
 
