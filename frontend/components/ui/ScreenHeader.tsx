@@ -10,9 +10,10 @@ interface ScreenHeaderProps {
   title: string;
   icon?: any;
   showBackButton?: boolean;
+  rightElement?: React.ReactNode;
 }
 
-export function ScreenHeader({ title, icon, showBackButton = false }: ScreenHeaderProps) {
+export function ScreenHeader({ title, icon, showBackButton = false, rightElement }: ScreenHeaderProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
@@ -40,6 +41,8 @@ export function ScreenHeader({ title, icon, showBackButton = false }: ScreenHead
         <Text className="text-2xl font-black text-black tracking-tight flex-1">
           {title}
         </Text>
+
+        {rightElement}
       </View>
     </View>
   );
