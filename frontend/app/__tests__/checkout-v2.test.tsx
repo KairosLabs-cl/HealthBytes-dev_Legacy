@@ -105,10 +105,13 @@ jest.mock("lucide-react-native", () => ({
   MapPinIcon: () => null,
   PhoneIcon: () => null,
   Lock: () => null,
+  ArrowLeft: () => null,
 }));
 
 jest.mock("react-native-safe-area-context", () => ({
   SafeAreaView: ({ children }: { children: React.ReactNode }) => children,
+  useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+  useSafeAreaFrame: () => ({ x: 0, y: 0, width: 390, height: 844 }),
 }));
 
 // Mock Alert.alert — jest.spyOn fails on frozen RN modules; direct assignment works
