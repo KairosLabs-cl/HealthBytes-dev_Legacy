@@ -16,6 +16,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 
 from app.db.database import Base
+from app.db.models.address import Address
 
 
 # Custom type that works with both PostgreSQL and SQLite
