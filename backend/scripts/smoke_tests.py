@@ -4,6 +4,7 @@ Post-deploy smoke tests for HealthBytes backend.
 Validates critical endpoints return expected status codes.
 Usage: python scripts/smoke_tests.py [base_url]
 """
+
 import sys
 import urllib.request
 import urllib.error
@@ -30,14 +31,14 @@ def main() -> int:
     print(f"Smoke testing: {base}\n")
 
     tests = [
-        (f"{base}/health",              200, "Health check"),
-        (f"{base}/docs",                200, "Swagger UI"),
-        (f"{base}/api/v1/products",     200, "Products list (public)"),
-        (f"{base}/api/v1/cart",         401, "Cart (requires auth → 401)"),
-        (f"{base}/api/v1/orders",       401, "Orders (requires auth → 401)"),
+        (f"{base}/health", 200, "Health check"),
+        (f"{base}/docs", 200, "Swagger UI"),
+        (f"{base}/api/v1/products", 200, "Products list (public)"),
+        (f"{base}/api/v1/cart", 401, "Cart (requires auth → 401)"),
+        (f"{base}/api/v1/orders", 401, "Orders (requires auth → 401)"),
         (f"{base}/api/v1/auth/profile", 401, "Profile (requires auth → 401)"),
-        (f"{base}/api/v1/addresses",    401, "Addresses (requires auth → 401)"),
-        (f"{base}/api/v1/favorites",    401, "Favorites (requires auth → 401)"),
+        (f"{base}/api/v1/addresses", 401, "Addresses (requires auth → 401)"),
+        (f"{base}/api/v1/favorites", 401, "Favorites (requires auth → 401)"),
     ]
 
     results = [check(url, expected, name) for url, expected, name in tests]

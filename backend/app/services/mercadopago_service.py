@@ -316,21 +316,19 @@ class MercadoPagoService:
             order = result.scalar_one_or_none()
             if order and order.status != "cancelled":
                 order.status = "cancelled"
-                # Release reserved stock for each item
-                for item in order.items:
-                    try:
-                        await StockService.release_stock(
-                            db=db,
-                            product_id=item.product_id,
-                            quantity=item.quantity,
-                            reason=f"Payment {new_status.value} for order {order_id}",
-                        )
-                    except Exception:
-                        logger.exception(
-                            "Failed to release stock for product %s (order %s)",
-                            item.product_id,
-                            order_id,
-                        )
+                # Release reserved stock for all items
+                try:
+                    items_to_release = [(item.product_id, item.quantity) for item in order.items]
+                    await StockService.release_stock_batch(
+                        db=db,
+                        items=items_to_release,
+                        reason=f"Payment {new_status.value} for order {order_id}",
+                    )
+                except Exception:
+                    logger.exception(
+                        "Failed to release stock for order %s",
+                        order_id,
+                    )
 
         await db.commit()
 
@@ -519,20 +517,20 @@ class MercadoPagoService:
                     order = order_result.scalar_one_or_none()
                     if order and order.status != "cancelled":
                         order.status = "cancelled"
-                        for item in order.items:
-                            try:
-                                await StockService.release_stock(
-                                    db=db,
-                                    product_id=item.product_id,
-                                    quantity=item.quantity,
-                                    reason=f"Refund for order {payment.order_id}",
-                                )
-                            except Exception:
-                                logger.exception(
-                                    "Failed to release stock for product %s (refund order %s)",
-                                    item.product_id,
-                                    payment.order_id,
-                                )
+                        try:
+                            items_to_release = [
+                                (item.product_id, item.quantity) for item in order.items
+                            ]
+                            await StockService.release_stock_batch(
+                                db=db,
+                                items=items_to_release,
+                                reason=f"Refund for order {payment.order_id}",
+                            )
+                        except Exception:
+                            logger.exception(
+                                "Failed to release stock for refund order %s",
+                                payment.order_id,
+                            )
 
                 await db.commit()
 

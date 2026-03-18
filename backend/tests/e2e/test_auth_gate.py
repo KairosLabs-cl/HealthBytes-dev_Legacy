@@ -20,10 +20,10 @@ from sqlalchemy.pool import StaticPool
 from app.main import app
 from app.db.database import Base, get_db
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture(scope="module")
 def _sqlite_engine():
@@ -50,6 +50,7 @@ def _override_db(_sqlite_engine):
 
     async def get_db_override():
         from tests.conftest import MockAsyncSession
+
         session = SessionLocal()
         mock = MockAsyncSession(session)
         try:
@@ -71,6 +72,7 @@ def anyio_backend():
 # Helper
 # ---------------------------------------------------------------------------
 
+
 async def _get(path: str) -> httpx.Response:
     """Issue an unauthenticated GET request through the full ASGI stack."""
     async with httpx.AsyncClient(
@@ -82,6 +84,7 @@ async def _get(path: str) -> httpx.Response:
 # ---------------------------------------------------------------------------
 # Tests — protected endpoints must reject unauthenticated requests
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.anyio
 async def test_cart_requires_auth():
@@ -127,6 +130,7 @@ async def test_favorites_requires_auth():
 # ---------------------------------------------------------------------------
 # Tests — public endpoints must be accessible without a token
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.anyio
 async def test_products_is_public():

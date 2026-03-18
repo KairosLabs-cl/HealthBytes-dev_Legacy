@@ -127,9 +127,7 @@ def test_register_exception_logging(client, caplog):
 @pytest.mark.auth
 def test_login_exception_logging(client, caplog):
     """Test that unexpected exceptions during login are logged, not printed."""
-    with patch(
-        "app.api.v1.auth.verify_password_mock", side_effect=RuntimeError("boom")
-    ):
+    with patch("app.api.v1.auth.verify_password_mock", side_effect=RuntimeError("boom")):
         with caplog.at_level(logging.ERROR, logger="app.api.v1.auth"):
             response = client.post(
                 "/auth/login",
