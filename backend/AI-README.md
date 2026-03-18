@@ -25,7 +25,7 @@ Este archivo define reglas, patrones y principios que debes seguir cuando genere
 
 <!-- DOCSYNC:backend-stack -->
 - **Framework**: FastAPI 0.135.1
-- **Lenguaje**: Python 3.13.1
+- **Lenguaje**: Python 3.12.13
 - **ORM**: SQLAlchemy 2.0.48 (async)
 - **Validación**: Pydantic v2.12.5
 - **Base de Datos**: PostgreSQL 14+
