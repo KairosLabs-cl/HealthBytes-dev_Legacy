@@ -6,7 +6,7 @@
 <!-- DOCSYNC:changelog-body -->
 ## [2026-03-18] — Snapshot automático
 
-> Generado por `docsync.py` | 1 commits en los últimos 7 días
+> Generado por `docsync.py` | 1 commit en los últimos 7 días
 > Tests totales: **572** | Coverage backend: **41%** | Endpoints API: **45**
 
 ### Chore
@@ -16,7 +16,7 @@
 
 ## [2026-03-08] — Snapshot automático
 
-> Generado por `docsync.py` | 1 commits en los últimos 7 días
+> Generado por `docsync.py` | 1 commit en los últimos 7 días
 > Tests totales: **572** | Coverage backend: **41%** | Endpoints API: **45**
 
 ### Sin cambios convencionales registrados en este período
