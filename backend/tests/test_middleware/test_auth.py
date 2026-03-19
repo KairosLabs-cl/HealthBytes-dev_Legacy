@@ -8,7 +8,6 @@ import pytest
 from app.core.security import create_access_token
 from tests.conftest import create_test_user
 
-
 # ---------------------------------------------------------------------------
 # verify_clerk_token
 # ---------------------------------------------------------------------------
@@ -72,9 +71,7 @@ def test_verify_clerk_token_no_jwks_client_warns_once(caplog):
             auth_mod.verify_clerk_token("token1")
             auth_mod.verify_clerk_token("token2")
 
-    warning_count = sum(
-        1 for r in caplog.records if "JWKS client not available" in r.message
-    )
+    warning_count = sum(1 for r in caplog.records if "JWKS client not available" in r.message)
     assert warning_count == 1
 
 
@@ -204,9 +201,7 @@ def test_get_current_user_clerk_token_existing_user(client, db_session):
         mock_settings.ENVIRONMENT = "production"
         mock_settings.DEV_BYPASS_AUTH = False
         mock_settings.CLERK_PUBLISHABLE_KEY = "pk_test_fake"
-        with patch(
-            "app.middleware.auth.verify_clerk_token", return_value=clerk_payload
-        ):
+        with patch("app.middleware.auth.verify_clerk_token", return_value=clerk_payload):
             response = client.get(
                 "/products",
                 headers={"Authorization": "Bearer fake-clerk-token"},
@@ -226,9 +221,7 @@ def test_get_current_user_clerk_token_auto_creates_user(client, db_session):
         mock_settings.ENVIRONMENT = "production"
         mock_settings.DEV_BYPASS_AUTH = False
         mock_settings.CLERK_PUBLISHABLE_KEY = "pk_test_fake"
-        with patch(
-            "app.middleware.auth.verify_clerk_token", return_value=clerk_payload
-        ):
+        with patch("app.middleware.auth.verify_clerk_token", return_value=clerk_payload):
             with patch("app.middleware.auth.decode_token", return_value=None):
                 # Hit an endpoint that requires auth — e.g. GET /cart
                 response = client.get(
@@ -243,9 +236,7 @@ def test_get_current_user_clerk_token_auto_creates_user(client, db_session):
     from app.db.schemas import User
     from sqlalchemy import select
 
-    result = db_session.execute(
-        select(User).where(User.clerk_id == "clerk_new_user_456")
-    )
+    result = db_session.execute(select(User).where(User.clerk_id == "clerk_new_user_456"))
     created_user = result.scalar_one_or_none()
     assert created_user is not None
     assert created_user.email == "new_clerk@example.com"
@@ -255,9 +246,7 @@ def test_get_current_user_clerk_token_auto_creates_user(client, db_session):
 @pytest.mark.auth
 def test_get_current_user_clerk_fails_falls_back_to_jwt(client, db_session):
     """When Clerk verification returns None, falls back to legacy JWT."""
-    user = create_test_user(
-        db_session, email="jwt_fallback@example.com", role="customer"
-    )
+    user = create_test_user(db_session, email="jwt_fallback@example.com", role="customer")
     token = create_access_token({"userId": user.id})
 
     with patch("app.middleware.auth.settings") as mock_settings:
@@ -310,9 +299,7 @@ def test_get_current_user_invalid_token_returns_401(client):
 @pytest.mark.auth
 def test_get_current_user_raw_authorization_header(client, db_session):
     """Token extracted from raw Authorization header (no HTTPBearer)."""
-    user = create_test_user(
-        db_session, email="raw_header@example.com", role="customer"
-    )
+    user = create_test_user(db_session, email="raw_header@example.com", role="customer")
 
     with patch("app.middleware.auth.settings") as mock_settings:
         mock_settings.ENVIRONMENT = "production"
@@ -355,9 +342,7 @@ def test_verify_seller_rejects_non_seller(client, db_session):
     """verify_seller raises 401 for a customer user."""
     from app.middleware.auth import get_current_user
 
-    user = create_test_user(
-        db_session, email="not_seller@example.com", role="customer"
-    )
+    user = create_test_user(db_session, email="not_seller@example.com", role="customer")
     client.app.dependency_overrides[get_current_user] = lambda: user
 
     # Find a seller-protected endpoint — POST /products
@@ -376,9 +361,7 @@ def test_verify_admin_rejects_non_admin(client, db_session):
     """verify_admin raises 401 for a customer user."""
     from app.middleware.auth import get_current_user
 
-    user = create_test_user(
-        db_session, email="not_admin@example.com", role="customer"
-    )
+    user = create_test_user(db_session, email="not_admin@example.com", role="customer")
     client.app.dependency_overrides[get_current_user] = lambda: user
 
     # Admin endpoint — e.g. GET /admin/users or similar; try /users
@@ -398,9 +381,7 @@ def test_verify_admin_rejects_non_admin(client, db_session):
 @pytest.mark.auth
 def test_dev_bypass_auth_returns_first_user(client, db_session):
     """DEV_BYPASS_AUTH=True in dev returns the first user without a token."""
-    user = create_test_user(
-        db_session, email="devbypass@example.com", role="customer"
-    )
+    user = create_test_user(db_session, email="devbypass@example.com", role="customer")
 
     with patch("app.middleware.auth.settings") as mock_settings:
         mock_settings.ENVIRONMENT = "dev"
@@ -441,9 +422,7 @@ def test_clerk_auto_create_user_exception_falls_through(client, db_session):
         mock_settings.ENVIRONMENT = "production"
         mock_settings.DEV_BYPASS_AUTH = False
         mock_settings.CLERK_PUBLISHABLE_KEY = "pk_test_fake"
-        with patch(
-            "app.middleware.auth.verify_clerk_token", return_value=clerk_payload
-        ):
+        with patch("app.middleware.auth.verify_clerk_token", return_value=clerk_payload):
             # Make db.add raise to simulate auto-create failure
             with patch("app.middleware.auth.decode_token", return_value=None):
                 response = client.get(
