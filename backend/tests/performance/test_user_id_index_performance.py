@@ -244,9 +244,7 @@ async def test_get_user_orders_scalability(db_session, benchmark_product):
         db_session.commit()
 
         # Create orders for this fresh user
-        await create_orders_for_user(
-            db_session, fresh_user.id, benchmark_product.id, order_count
-        )
+        await create_orders_for_user(db_session, fresh_user.id, benchmark_product.id, order_count)
 
         # Measure query time
         mock_db = MockAsyncSession(db_session)
