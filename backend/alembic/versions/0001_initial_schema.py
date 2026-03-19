@@ -46,7 +46,10 @@ def upgrade() -> None:
     op.create_index(op.f("ix_products_name"), "products", ["name"], unique=False)
     op.create_index(op.f("ix_products_category"), "products", ["category"], unique=False)
     op.create_index(
-        "idx_product_search", "products", ["search_vector"], unique=False,
+        "idx_product_search",
+        "products",
+        ["search_vector"],
+        unique=False,
         postgresql_using="gin",
     )
 
@@ -159,20 +162,16 @@ def upgrade() -> None:
     op.create_table(
         "orders",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column(
-            "created_at", sa.TIMESTAMP(), server_default=sa.text("now()"), nullable=False
-        ),
+        sa.Column("created_at", sa.TIMESTAMP(), server_default=sa.text("now()"), nullable=False),
         sa.Column("status", sa.String(length=50), nullable=False, server_default="pending"),
-        sa.Column(
-            "total", sa.Numeric(precision=10, scale=2), nullable=False, server_default="0"
-        ),
+        sa.Column("total", sa.Numeric(precision=10, scale=2), nullable=False, server_default="0"),
         sa.Column("user_id", sa.Integer(), nullable=False),
         sa.Column("address_id", sa.Integer(), nullable=True),
-        sa.Column("payment_method", sa.String(length=50), nullable=True, server_default="mercado_pago"),
-        sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
-        sa.ForeignKeyConstraint(
-            ["address_id"], ["addresses.id"], ondelete="SET NULL"
+        sa.Column(
+            "payment_method", sa.String(length=50), nullable=True, server_default="mercado_pago"
         ),
+        sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
+        sa.ForeignKeyConstraint(["address_id"], ["addresses.id"], ondelete="SET NULL"),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_orders_id"), "orders", ["id"], unique=False)
@@ -197,9 +196,7 @@ def upgrade() -> None:
     )
     op.create_index(op.f("ix_order_items_id"), "order_items", ["id"], unique=False)
     op.create_index(op.f("ix_order_items_order_id"), "order_items", ["order_id"], unique=False)
-    op.create_index(
-        op.f("ix_order_items_product_id"), "order_items", ["product_id"], unique=False
-    )
+    op.create_index(op.f("ix_order_items_product_id"), "order_items", ["product_id"], unique=False)
 
     # ------------------------------------------------------------------
     # 9. cart_items
@@ -210,12 +207,8 @@ def upgrade() -> None:
         sa.Column("user_id", sa.Integer(), nullable=False),
         sa.Column("product_id", sa.Integer(), nullable=False),
         sa.Column("quantity", sa.Integer(), nullable=False, server_default="1"),
-        sa.Column(
-            "created_at", sa.TIMESTAMP(), server_default=sa.text("now()"), nullable=False
-        ),
-        sa.Column(
-            "updated_at", sa.TIMESTAMP(), server_default=sa.text("now()"), nullable=False
-        ),
+        sa.Column("created_at", sa.TIMESTAMP(), server_default=sa.text("now()"), nullable=False),
+        sa.Column("updated_at", sa.TIMESTAMP(), server_default=sa.text("now()"), nullable=False),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["product_id"], ["products.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
@@ -230,8 +223,14 @@ def upgrade() -> None:
     # Create enum types for PostgreSQL; SQLite ignores these
     paymentcurrency = sa.Enum("CLP", "USD", name="paymentcurrency", create_type=False)
     paymentstatus = sa.Enum(
-        "PENDING", "PROCESSING", "COMPLETED", "FAILED", "REFUNDED", "CANCELLED",
-        name="paymentstatus", create_type=False,
+        "PENDING",
+        "PROCESSING",
+        "COMPLETED",
+        "FAILED",
+        "REFUNDED",
+        "CANCELLED",
+        name="paymentstatus",
+        create_type=False,
     )
     paymentprovider = sa.Enum("MERCADO_PAGO", name="paymentprovider", create_type=False)
 
