@@ -1100,7 +1100,7 @@ Al usar HealthBytes, el usuario acepta que:
 Hecho con ❤️ por el equipo de HealthBytes
 
 <!-- DOCSYNC:last-updated -->
-_Última actualización: 2026-03-08 — generado automáticamente por docsync_
+_Última actualización: 2026-03-20 — generado automáticamente por docsync_
 <!-- /DOCSYNC:last-updated -->
 
 </div>
