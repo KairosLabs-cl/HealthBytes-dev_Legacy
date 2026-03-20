@@ -9,7 +9,7 @@ import { ActivityIndicator, Text, View } from "react-native";
 
 export default function PaymentSuccessScreen() {
   const router = useRouter();
-  const { resetCart } = useCart();
+  const resetCart = useCart((state) => state.resetCart);
   const { orderId } = useLocalSearchParams();
   const [isRedirecting, setIsRedirecting] = useState(false);
 

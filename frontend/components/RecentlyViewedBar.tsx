@@ -9,7 +9,7 @@ import { FlatList, Pressable, View } from "react-native";
 const cardKeyExtractor = (item: Product) => String(item.id);
 
 export default function RecentlyViewedBar() {
-  const { items } = useRecentlyViewed();
+  const items = useRecentlyViewed((state) => state.items);
   const router = useRouter();
 
   const onSeeAll = useCallback(() => router.push("/recently-viewed"), [router]);

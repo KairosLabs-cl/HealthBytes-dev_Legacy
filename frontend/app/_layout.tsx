@@ -68,8 +68,8 @@ function RootLayoutNav() {
   const { isSignedIn, getToken } = useAuth();
 
   // Onboarding
-  const { hasCompletedOnboarding, setOnboardingComplete } =
-    usePreferencesStore();
+  const hasCompletedOnboarding = usePreferencesStore((state) => state.hasCompletedOnboarding);
+  const setOnboardingComplete = usePreferencesStore((state) => state.setOnboardingComplete);
 
   const handleOnboardingComplete = () => {
     setOnboardingComplete();
