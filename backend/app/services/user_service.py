@@ -44,7 +44,12 @@ async def update_user(db: AsyncSession, user_id: str, user_in: UserUpdate) -> Op
 
     # Update only provided fields
     update_data = user_in.model_dump(exclude_unset=True)
-    for field, value in update_data.items():
+
+    # Defense in depth: explicitly drop protected fields to prevent mass assignment
+    protected_fields = {"id", "clerk_id"}
+    safe_update_data = {k: v for k, v in update_data.items() if k not in protected_fields}
+
+    for field, value in safe_update_data.items():
         setattr(db_user, field, value)
 
     await db.commit()
