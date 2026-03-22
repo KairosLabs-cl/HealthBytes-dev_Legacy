@@ -136,24 +136,36 @@ export default function OnboardingModal({
         </View>
 
         <View className="flex-1 px-6">
-          {step === 0 && <StepWelcome key="step0" onNext={handleNext} />}
-          {step === 1 && <StepPreferences key="step1" selected={selected} toggle={toggle} onNext={handleNext} />}
-          {step === 2 && <StepConfirmation key="step2" selectedCount={selected.length} onFinish={handleFinish} />}
+          {step === 0 && <StepWelcome key="step0" />}
+          {step === 1 && <StepPreferences key="step1" selected={selected} toggle={toggle} />}
+          {step === 2 && <StepConfirmation key="step2" selectedCount={selected.length} />}
         </View>
 
-        {/* Skip button at the very bottom, globally available across steps if needed, but mainly for step 0 and 1 */}
-        {step < 2 && (
-          <Pressable
-            testID="skip-btn"
-            onPress={handleSkip}
-            className="items-center pb-12 pt-4"
-            style={{ minHeight: 48 }}
-          >
-            <Text className="text-gray-500 text-sm font-medium">
-              Saltar por ahora
-            </Text>
-          </Pressable>
-        )}
+        {/* Fixed Bottom Actions */}
+        <View className="px-6 pb-12 pt-4 bg-[#FCFAF8]">
+          <PrimaryButton 
+            testID={step === 2 ? "submit-btn" : undefined}
+            onPress={step === 2 ? handleFinish : handleNext} 
+            label={
+              step === 0 ? "Siguiente" : 
+              step === 1 ? (selected.length > 0 ? `Continuar (${selected.length})` : "Continuar") :
+              "Explorar catálogo"
+            } 
+          />
+
+          {step < 2 && (
+            <Pressable
+              testID="skip-btn"
+              onPress={handleSkip}
+              className="items-center mt-4"
+              style={{ minHeight: 48, justifyContent: "center" }}
+            >
+              <Text className="text-gray-500 text-sm font-medium">
+                Saltar por ahora
+              </Text>
+            </Pressable>
+          )}
+        </View>
       </View>
     </Modal>
   );
@@ -177,13 +189,27 @@ function PrimaryButton({ onPress, label, testID }: { onPress: () => void; label:
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       onPress={onPress}
-      className="mt-6"
+      style={{ width: "100%", marginTop: 8 }}
     >
       <Animated.View
-        style={[animatedStyle, { minHeight: 60 }]}
-        className="bg-[#2D2926] rounded-full items-center justify-center w-full shadow-sm"
+        style={[
+          animatedStyle, 
+          { 
+            minHeight: 60, 
+            width: "100%", 
+            backgroundColor: "#2D2926", 
+            borderRadius: 9999, 
+            alignItems: "center", 
+            justifyContent: "center",
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.1,
+            shadowRadius: 2,
+            elevation: 2
+          }
+        ]}
       >
-        <Text className="text-white font-bold text-lg">
+        <Text style={{ color: "white", fontWeight: "bold", fontSize: 18 }}>
           {label}
         </Text>
       </Animated.View>
@@ -194,14 +220,14 @@ function PrimaryButton({ onPress, label, testID }: { onPress: () => void; label:
 
 /* ---------- Step 1: Welcome ---------- */
 
-function StepWelcome({ onNext }: { onNext: () => void }) {
+function StepWelcome() {
   return (
     <Animated.View
       entering={FadeIn.duration(400)}
       exiting={SlideOutLeft.duration(300)}
-      className="flex-1 justify-center items-center"
+      className="flex-1 justify-center items-center pb-8"
     >
-      <View className="items-center mb-8">
+      <View className="items-center mb-4">
         <Text className="text-[80px] mb-6">🥗</Text>
         <Text className="text-4xl font-extrabold text-[#2D2926] text-center mb-4 leading-tight">
           Bienvenido a HealthBytes
@@ -209,10 +235,6 @@ function StepWelcome({ onNext }: { onNext: () => void }) {
         <Text className="text-lg text-[#2D2926] opacity-70 text-center leading-relaxed px-2">
           Encontra productos saludables adaptados a tus necesidades alimentarias. Filtramos por vos para que compres con tranquilidad.
         </Text>
-      </View>
-
-      <View className="w-full mt-8">
-        <PrimaryButton onPress={onNext} label="Comenzar" />
       </View>
     </Animated.View>
   );
@@ -223,7 +245,6 @@ function StepWelcome({ onNext }: { onNext: () => void }) {
 interface StepPreferencesProps {
   selected: string[];
   toggle: (slug: string) => void;
-  onNext: () => void;
 }
 
 function DietaryTagCard({
@@ -253,21 +274,28 @@ function DietaryTagCard({
       style={{ width: "47%", minHeight: 120, marginBottom: 12 }}
     >
       <Animated.View
-        style={[animatedStyle, { flex: 1, elevation: isActive ? 2 : 0 }]}
-        className={`rounded-3xl border-[2px] p-4 justify-between transition-colors duration-200 ${
-          isActive
-            ? "bg-[#FFFFFF] border-[#2E5C3A]"
-            : "bg-transparent border-[#EAE5E0]"
-        }`}
+        style={[
+          animatedStyle, 
+          { 
+            flex: 1, 
+            elevation: isActive ? 2 : 0,
+            borderRadius: 24,
+            borderWidth: 2,
+            padding: 16,
+            justifyContent: "space-between",
+            backgroundColor: isActive ? "#FFFFFF" : "transparent",
+            borderColor: isActive ? "#2E5C3A" : "#EAE5E0"
+          }
+        ]}
       >
-        <View className="items-start">
-          <Text className="text-4xl mb-3">{item.emoji}</Text>
+        <View style={{ alignItems: "flex-start" }}>
+          <Text style={{ fontSize: 36, marginBottom: 12 }}>{item.emoji}</Text>
         </View>
         <View>
-          <Text className={`text-base font-bold ${isActive ? "text-[#2D2926]" : "text-[#2D2926] opacity-80"}`}>
+          <Text style={{ fontSize: 16, fontWeight: "bold", color: isActive ? "#2D2926" : "rgba(45, 41, 38, 0.8)" }}>
             {item.label}
           </Text>
-          <Text className={`text-xs mt-1 ${isActive ? "text-[#2E5C3A] font-medium" : "text-[#2D2926] opacity-50"}`}>
+          <Text style={{ fontSize: 12, marginTop: 4, fontWeight: isActive ? "500" : "normal", color: isActive ? "#2E5C3A" : "rgba(45, 41, 38, 0.5)" }}>
             {item.description}
           </Text>
         </View>
@@ -277,12 +305,12 @@ function DietaryTagCard({
 }
 
 
-function StepPreferences({ selected, toggle, onNext }: StepPreferencesProps) {
+function StepPreferences({ selected, toggle }: StepPreferencesProps) {
   return (
     <Animated.View
       entering={SlideInRight.duration(400)}
       exiting={SlideOutLeft.duration(300)}
-      className="flex-1"
+      className="flex-1 pt-4"
     >
       <View className="my-6">
         <Text className="text-3xl font-extrabold text-[#2D2926] text-center mb-2">
@@ -308,13 +336,6 @@ function StepPreferences({ selected, toggle, onNext }: StepPreferencesProps) {
           ))}
         </View>
       </ScrollView>
-
-      <View className="w-full pb-4 pt-2">
-        <PrimaryButton
-          onPress={onNext}
-          label={selected.length > 0 ? `Continuar (${selected.length})` : "Continuar"}
-        />
-      </View>
     </Animated.View>
   );
 }
@@ -323,10 +344,9 @@ function StepPreferences({ selected, toggle, onNext }: StepPreferencesProps) {
 
 interface StepConfirmationProps {
   selectedCount: number;
-  onFinish: () => void;
 }
 
-function StepConfirmation({ selectedCount, onFinish }: StepConfirmationProps) {
+function StepConfirmation({ selectedCount }: StepConfirmationProps) {
   return (
     <Animated.View
       entering={SlideInRight.duration(400)}
@@ -345,10 +365,6 @@ function StepConfirmation({ selectedCount, onFinish }: StepConfirmationProps) {
               }. Te mostraremos productos aptos garantizados.`
             : "Podés configurar tus restricciones en cualquier momento desde tu perfil."}
         </Text>
-      </View>
-
-      <View className="w-full mt-4">
-        <PrimaryButton testID="submit-btn" onPress={onFinish} label="Explorar catálogo" />
       </View>
     </Animated.View>
   );
