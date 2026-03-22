@@ -188,9 +188,7 @@ def test_create_product_as_customer_forbidden(client, db_session):
     user = create_test_user(db_session, email="customer@test.com", role="customer")
     token = create_access_token({"userId": user.id, "role": "customer"})
     headers = {"Authorization": f"Bearer {token}"}
-    response = client.post(
-        "/products", json={"name": "X", "price": 1.0}, headers=headers
-    )
+    response = client.post("/products", json={"name": "X", "price": 1.0}, headers=headers)
     assert response.status_code == 401
 
 
@@ -207,9 +205,7 @@ def test_update_product_as_seller(client, db_session):
     product = _create_product(db_session, name="OldName")
     token = create_access_token({"userId": user.id, "role": "seller"})
     headers = {"Authorization": f"Bearer {token}"}
-    response = client.put(
-        f"/products/{product.id}", json={"name": "NewName"}, headers=headers
-    )
+    response = client.put(f"/products/{product.id}", json={"name": "NewName"}, headers=headers)
     assert response.status_code == 200
     assert response.json()["name"] == "NewName"
 
