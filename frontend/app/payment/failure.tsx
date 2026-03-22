@@ -9,7 +9,8 @@ import { Text, View } from "react-native";
 
 export default function PaymentFailureScreen() {
   const router = useRouter();
-  const { resetCart } = useCart();
+  // ⚡ Bolt: Use granular selectors for Zustand stores to prevent unnecessary full-screen re-renders
+  const resetCart = useCart((state) => state.resetCart);
   const { orderId } = useLocalSearchParams();
 
   useEffect(() => {
