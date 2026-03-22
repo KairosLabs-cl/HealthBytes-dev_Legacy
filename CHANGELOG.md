@@ -4,9 +4,19 @@
 > Para revisión humana antes de cada release, editar esta sección si es necesario.
 
 <!-- DOCSYNC:changelog-body -->
+## [2026-03-18] — Snapshot automático
+
+> Generado por `docsync.py` | 1 commit en los últimos 7 días
+> Tests totales: **572** | Coverage backend: **41%** | Endpoints API: **45**
+
+### Chore
+  - chore: ignore macOS resource forks and sync env
+
+---
+
 ## [2026-03-08] — Snapshot automático
 
-> Generado por `docsync.py` | 1 commits en los últimos 7 días
+> Generado por `docsync.py` | 1 commit en los últimos 7 días
 > Tests totales: **572** | Coverage backend: **41%** | Endpoints API: **45**
 
 ### Sin cambios convencionales registrados en este período
