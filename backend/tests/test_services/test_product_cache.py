@@ -8,7 +8,6 @@ from app.db.schemas import Product
 from app.services.product_service import _serialize_product, get_products_cached
 from tests.conftest import MockAsyncSession
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

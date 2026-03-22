@@ -1,6 +1,7 @@
 """
 E2E test — Email service: graceful degradation when ***REDACTED_RESEND_KEY***
 """
+
 import pytest
 from unittest.mock import patch, AsyncMock
 
@@ -17,6 +18,7 @@ async def test_send_email_does_not_raise_when_api_key_missing(monkeypatch):
     monkeypatch.setattr("app.config.settings.FRONTEND_URL", "https://test.com")
     from app.config import settings
     from app.services.email_service import EmailService
+
     service = EmailService(settings)
     result = await service.send_email(
         to="test@example.com",
@@ -36,6 +38,7 @@ async def test_send_email_calls_resend_when_key_present(monkeypatch):
         mock_send.return_value = {"id": "email_123"}
         from app.config import settings
         from app.services.email_service import EmailService
+
         service = EmailService(settings)
         result = await service.send_email(
             to="customer@example.com",

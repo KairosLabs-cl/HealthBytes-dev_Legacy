@@ -298,14 +298,14 @@ async def test_process_webhook_rejected(mp_service, mock_db, test_payment, test_
     )
 
     with patch(
-        "app.services.mercadopago_service.StockService.release_stock", new_callable=AsyncMock
+        "app.services.mercadopago_service.StockService.release_stock_batch", new_callable=AsyncMock
     ) as mock_release:
         result = await mp_service.process_webhook(db=mock_db, payment_id="12345", topic="payment")
 
         assert result["status"] == "failed"
         assert test_order_with_items.status == "cancelled"
         assert test_payment.status == PaymentStatus.FAILED
-        assert mock_release.call_count == len(test_order_with_items.items)
+        assert mock_release.call_count == 1
 
 
 @pytest.mark.asyncio
@@ -378,7 +378,7 @@ async def test_refund_payment_success(mp_service, mock_db, test_payment, test_or
     with (
         patch("httpx.AsyncClient") as mock_client,
         patch(
-            "app.services.mercadopago_service.StockService.release_stock", new_callable=AsyncMock
+            "app.services.mercadopago_service.StockService.release_stock_batch", new_callable=AsyncMock
         ) as mock_release,
     ):
         mock_resp = MagicMock()
@@ -393,7 +393,7 @@ async def test_refund_payment_success(mp_service, mock_db, test_payment, test_or
         assert result["refund_id"] == "refund_456"
         assert test_payment.status == PaymentStatus.REFUNDED
         assert test_order_with_items.status == "cancelled"
-        assert mock_release.call_count == len(test_order_with_items.items)
+        assert mock_release.call_count == 1
 
 
 # --- _validate_x_signature tests ---
