@@ -9,7 +9,8 @@ import { ActivityIndicator, Text, View } from "react-native";
 
 export default function PaymentSuccessScreen() {
   const router = useRouter();
-  const { resetCart } = useCart();
+  // ⚡ Bolt: Use granular selectors for Zustand stores to prevent unnecessary full-screen re-renders
+  const resetCart = useCart((state) => state.resetCart);
   const { orderId } = useLocalSearchParams();
   const [isRedirecting, setIsRedirecting] = useState(false);
 
