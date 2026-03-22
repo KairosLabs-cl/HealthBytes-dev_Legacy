@@ -31,16 +31,17 @@ export default function OrdersScreen() {
     status?: string;
   }>();
   const { getToken, isSignedIn, isLoaded } = useAuth();
-  const {
-    orders,
-    isLoading,
-    isLoadingMore,
-    hasMore,
-    error,
-    fetchOrders,
-    loadMoreOrders,
-    clearError,
-  } = useOrders();
+
+  // ⚡ Bolt: Use granular selectors for Zustand stores to prevent unnecessary full-screen re-renders
+  const orders = useOrders((s) => s.orders);
+  const isLoading = useOrders((s) => s.isLoading);
+  const isLoadingMore = useOrders((s) => s.isLoadingMore);
+  const hasMore = useOrders((s) => s.hasMore);
+  const error = useOrders((s) => s.error);
+  const fetchOrders = useOrders((s) => s.fetchOrders);
+  const loadMoreOrders = useOrders((s) => s.loadMoreOrders);
+  const clearError = useOrders((s) => s.clearError);
+
   const [refreshing, setRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
 
