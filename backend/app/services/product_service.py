@@ -179,7 +179,12 @@ async def update_product(
 
     # Update only provided fields
     update_data = product_in.model_dump(exclude_unset=True)
-    for field, value in update_data.items():
+
+    # Defense in depth: explicitly drop protected fields to prevent mass assignment
+    protected_fields = {"id", "search_vector"}
+    safe_update_data = {k: v for k, v in update_data.items() if k not in protected_fields}
+
+    for field, value in safe_update_data.items():
         setattr(db_product, field, value)
 
     await db.commit()
