@@ -2,6 +2,9 @@
 
 **Este documento establece límites y reglas estrictas para cualquier asistente de IA trabajando en este proyecto.**
 
+## 🤖 COMPORTAMIENTO INICIAL DEL ASISTENTE (OBLIGATORIO)
+Al iniciar CUALQUIER chat nuevo (sea en VSCode, Cursor, Open Code, u otro), **debes revisar automáticamente** el directorio `.ai/skills/` y cargar las habilidades ("skills"), reglas o flujos de trabajo aplicables para tu tarea actual. **NO** comiences a planificar ni a codificar sin antes consultar las herramientas en dicha carpeta.
+
 ---
 
 ## 🚫 PROHIBICIONES ABSOLUTAS
