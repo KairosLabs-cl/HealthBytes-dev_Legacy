@@ -4,6 +4,7 @@ import { Button, ButtonText } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { useOrders } from "@/store/orderStore";
+import { useShallow } from "zustand/react/shallow";
 import { OrderStatus } from "@/types/order";
 import { useAuth } from "@clerk/clerk-expo";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -33,14 +34,27 @@ export default function OrdersScreen() {
   const { getToken, isSignedIn, isLoaded } = useAuth();
 
   // ⚡ Bolt: Use granular selectors for Zustand stores to prevent unnecessary full-screen re-renders
-  const orders = useOrders((s) => s.orders);
-  const isLoading = useOrders((s) => s.isLoading);
-  const isLoadingMore = useOrders((s) => s.isLoadingMore);
-  const hasMore = useOrders((s) => s.hasMore);
-  const error = useOrders((s) => s.error);
-  const fetchOrders = useOrders((s) => s.fetchOrders);
-  const loadMoreOrders = useOrders((s) => s.loadMoreOrders);
-  const clearError = useOrders((s) => s.clearError);
+  const {
+    orders,
+    isLoading,
+    isLoadingMore,
+    hasMore,
+    error,
+    fetchOrders,
+    loadMoreOrders,
+    clearError,
+  } = useOrders(
+    useShallow((s) => ({
+      orders: s.orders,
+      isLoading: s.isLoading,
+      isLoadingMore: s.isLoadingMore,
+      hasMore: s.hasMore,
+      error: s.error,
+      fetchOrders: s.fetchOrders,
+      loadMoreOrders: s.loadMoreOrders,
+      clearError: s.clearError,
+    }))
+  );
 
   const [refreshing, setRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
