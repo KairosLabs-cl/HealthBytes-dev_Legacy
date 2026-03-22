@@ -200,13 +200,12 @@ async def update_order_status(db: AsyncSession, order_id: int, status: str) -> O
 
     # Release stock when order is cancelled
     if status == "cancelled" and current_status != "cancelled":
-        for item in db_order.items:
-            await StockService.release_stock(
-                db=db,
-                product_id=item.product_id,
-                quantity=item.quantity,
-                reason=f"Order {order_id} cancelled",
-            )
+        items_to_release = [(item.product_id, item.quantity) for item in db_order.items]
+        await StockService.release_stock_batch(
+            db=db,
+            items=items_to_release,
+            reason=f"Order {order_id} cancelled",
+        )
 
     db_order.status = status
 

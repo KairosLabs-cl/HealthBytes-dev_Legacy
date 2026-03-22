@@ -2,12 +2,17 @@ import pytest
 from app.main import app
 from tests.conftest import create_test_user
 
+
 @pytest.fixture
 def customer_user(db_session):
-    return create_test_user(db_session, email="customer@test.com", role="customer", name="Customer User")
+    return create_test_user(
+        db_session, email="customer@test.com", role="customer", name="Customer User"
+    )
+
 
 def test_privilege_escalation_via_user_update(client, customer_user, db_session):
     from app.middleware.auth import get_current_user
+
     app.dependency_overrides[get_current_user] = lambda: customer_user
 
     try:
