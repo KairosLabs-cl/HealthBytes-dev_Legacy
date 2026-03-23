@@ -5,7 +5,8 @@ import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
 import Constants from 'expo-constants';
-import { API_URL } from './config';
+
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 // Configura cómo se comportan las notificaciones en primer plano
 Notifications.setNotificationHandler({
@@ -13,6 +14,8 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 
@@ -21,8 +24,8 @@ export function usePushNotifications() {
   const { getToken, isSignedIn } = useAuth();
   const [expoPushToken, setExpoPushToken] = useState<string | undefined>();
   const [notification, setNotification] = useState<Notifications.Notification | undefined>();
-  const notificationListener = useRef<Notifications.EventSubscription>();
-  const responseListener = useRef<Notifications.EventSubscription>();
+  const notificationListener = useRef<Notifications.Subscription | undefined>(undefined);
+  const responseListener = useRef<Notifications.Subscription | undefined>(undefined);
 
   async function registerForPushNotificationsAsync() {
     let token;
@@ -87,13 +90,13 @@ export function usePushNotifications() {
     }
 
     // 2. Escuchar notificaciones entrantes cuando la app está en primer plano
-    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+    notificationListener.current = Notifications.addNotificationReceivedListener((notification: Notifications.Notification) => {
       setNotification(notification);
     });
 
     // 3. Manejar interacciones del usuario con las notificaciones (ej. Deep linking)
-    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
-      const data = response.notification.request.content.data;
+    responseListener.current = Notifications.addNotificationResponseReceivedListener((response: Notifications.NotificationResponse) => {
+      const data = response.notification.request.content.data as { url?: string };
       // Si el payload contiene una url via el backend...
       if (data?.url) {
         // Asume esquema de la app (ej: healthbytes://orders/1) -> /orders/1
@@ -105,10 +108,10 @@ export function usePushNotifications() {
 
     return () => {
       if (notificationListener.current) {
-        Notifications.removeNotificationSubscription(notificationListener.current);
+        notificationListener.current.remove();
       }
       if (responseListener.current) {
-        Notifications.removeNotificationSubscription(responseListener.current);
+        responseListener.current.remove();
       }
     };
   }, [isSignedIn]);

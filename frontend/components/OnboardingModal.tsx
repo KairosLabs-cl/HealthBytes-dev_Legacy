@@ -147,7 +147,7 @@ export default function OnboardingModal({
             testID={step === 2 ? "submit-btn" : undefined}
             onPress={step === 2 ? handleFinish : handleNext} 
             label={
-              step === 0 ? "Siguiente" : 
+              step === 0 ? "Comenzar" :
               step === 1 ? (selected.length > 0 ? `Continuar (${selected.length})` : "Continuar") :
               "Explorar catálogo"
             } 
