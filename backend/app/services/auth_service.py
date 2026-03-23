@@ -5,7 +5,7 @@ from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security import get_password_hash, verify_password
+from app.core.security import get_password_hash, verify_password, verify_password_mock
 from app.db.schemas import User
 from app.schemas.user import UserCreate
 
@@ -58,7 +58,10 @@ async def login_user(db: AsyncSession, email: str, password: str) -> Optional[Us
     result = await db.execute(select(User).where(User.email == email))
     user = result.scalar_one_or_none()
 
-    if not user:
+    if not user or not user.password:
+        # Prevent timing attacks by simulating password verification
+        # to prevent user enumeration.
+        verify_password_mock(password)
         return None
 
     # Verify password
