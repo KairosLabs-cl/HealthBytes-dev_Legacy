@@ -1,0 +1,21 @@
+1. Read `.jules/bolt.md` to see what performance issues exist in the app.
+2. Note that `state.addingProducts`, `state.updatingProducts`, and `state.removingProducts` in `cartStore.ts` are Sets.
+3. In `frontend/components/CartItem.tsx`, the component currently fetches the entire Set:
+```tsx
+  const addingProducts = useCart((state) => state.addingProducts);
+  const updatingProducts = useCart((state) => state.updatingProducts);
+  const removingProducts = useCart((state) => state.removingProducts);
+
+  const isAdding = addingProducts.has(item.product.id);
+  const isUpdating = updatingProducts.has(item.product.id);
+  const isRemoving = removingProducts.has(item.product.id);
+```
+4. This means whenever ANY item is added/updated/removed, `useCart` returns a NEW Set reference from `cartStore`, causing EVERY `CartItem` in the `FlatList` to re-render.
+5. Fix `frontend/components/CartItem.tsx` to use primitive booleans (specific item checks) from Zustand selectors, preventing unnecessary re-renders of the entire cart list:
+```tsx
+  const isAdding = useCart((state) => state.addingProducts.has(item.product.id));
+  const isUpdating = useCart((state) => state.updatingProducts.has(item.product.id));
+  const isRemoving = useCart((state) => state.removingProducts.has(item.product.id));
+```
+6. Add an entry to `.jules/bolt.md` about the optimization.
+7. Run the tests.
