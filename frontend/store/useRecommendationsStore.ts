@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { Product } from '@/types/product';
-import { API_URL } from '@/api/addresses'; // Re-use an existing file since api/config doesn't exist. We can also just use process.env
+
 
 interface RecommendationsState {
   recommendedProducts: Product[];
