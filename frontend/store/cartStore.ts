@@ -435,3 +435,19 @@ export const selectCartSubtotal = (state: CartState) =>
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
+
+/**
+ * Optimization: Granular selectors for item status.
+ * Returning an entire Set from a selector causes all components subscribed to it
+ * to re-render whenever the Set reference changes (e.g., when any item is added/removed).
+ * Using these specific boolean selectors ensures a component only re-renders
+ * when the status of its specific productId changes.
+ */
+export const selectIsAddingProduct = (productId: string | number) => (state: CartState) =>
+  state.addingProducts.has(productId);
+
+export const selectIsUpdatingProduct = (productId: string | number) => (state: CartState) =>
+  state.updatingProducts.has(productId);
+
+export const selectIsRemovingProduct = (productId: string | number) => (state: CartState) =>
+  state.removingProducts.has(productId);

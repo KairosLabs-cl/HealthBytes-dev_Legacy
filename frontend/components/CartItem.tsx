@@ -1,6 +1,6 @@
 import { Text } from "@/components/ui/text";
 import { formatPrice } from "@/lib/formatPrice";
-import { useCart } from "@/store/cartStore";
+import { useCart, selectIsAddingProduct, selectIsUpdatingProduct, selectIsRemovingProduct } from "@/store/cartStore";
 import { CartItem as CartItemType, Product } from "@/types/cart";
 import { Minus, Plus, Trash2 } from "lucide-react-native";
 import React, { memo, useCallback, useState } from "react";
@@ -19,13 +19,9 @@ const CartItem = ({
   onDecrement,
   onRemove,
 }: CartItemProps) => {
-  const addingProducts = useCart((state) => state.addingProducts);
-  const updatingProducts = useCart((state) => state.updatingProducts);
-  const removingProducts = useCart((state) => state.removingProducts);
-
-  const isAdding = addingProducts.has(item.product.id);
-  const isUpdating = updatingProducts.has(item.product.id);
-  const isRemoving = removingProducts.has(item.product.id);
+  const isAdding = useCart(selectIsAddingProduct(item.product.id));
+  const isUpdating = useCart(selectIsUpdatingProduct(item.product.id));
+  const isRemoving = useCart(selectIsRemovingProduct(item.product.id));
 
   const [quantityText, setQuantityText] = useState(item.quantity.toString());
 
