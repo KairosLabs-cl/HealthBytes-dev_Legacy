@@ -5,7 +5,7 @@ import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
 import Constants from 'expo-constants';
-const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+import { API_URL } from './config';
 
 // Configura cómo se comportan las notificaciones en primer plano
 Notifications.setNotificationHandler({
@@ -13,8 +13,6 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
   }),
 });
 
@@ -23,8 +21,8 @@ export function usePushNotifications() {
   const { getToken, isSignedIn } = useAuth();
   const [expoPushToken, setExpoPushToken] = useState<string | undefined>();
   const [notification, setNotification] = useState<Notifications.Notification | undefined>();
-  const notificationListener = useRef<Notifications.EventSubscription | null>(null);
-  const responseListener = useRef<Notifications.EventSubscription | null>(null);
+  const notificationListener = useRef<Notifications.EventSubscription>();
+  const responseListener = useRef<Notifications.EventSubscription>();
 
   async function registerForPushNotificationsAsync() {
     let token;
@@ -89,15 +87,15 @@ export function usePushNotifications() {
     }
 
     // 2. Escuchar notificaciones entrantes cuando la app está en primer plano
-    notificationListener.current = Notifications.addNotificationReceivedListener((notification: Notifications.Notification) => {
+    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
       setNotification(notification);
     });
 
     // 3. Manejar interacciones del usuario con las notificaciones (ej. Deep linking)
-    responseListener.current = Notifications.addNotificationResponseReceivedListener((response: Notifications.NotificationResponse) => {
+    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
       const data = response.notification.request.content.data;
       // Si el payload contiene una url via el backend...
-      if (data?.url && typeof data.url === 'string') {
+      if (data?.url) {
         // Asume esquema de la app (ej: healthbytes://orders/1) -> /orders/1
         const path = data.url.replace(/^healthbytes:\/\//, '/');
         // Redirige
@@ -107,10 +105,10 @@ export function usePushNotifications() {
 
     return () => {
       if (notificationListener.current) {
-        notificationListener.current.remove();
+        Notifications.removeNotificationSubscription(notificationListener.current);
       }
       if (responseListener.current) {
-        responseListener.current.remove();
+        Notifications.removeNotificationSubscription(responseListener.current);
       }
     };
   }, [isSignedIn]);

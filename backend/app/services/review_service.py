@@ -9,9 +9,11 @@ from app.schemas.review import ReviewCreate
 
 logger = logging.getLogger(__name__)
 
-
 async def create_review(
-    db: AsyncSession, user_id: str, product_id: int, review_in: ReviewCreate
+    db: AsyncSession,
+    user_id: str,
+    product_id: int,
+    review_in: ReviewCreate
 ) -> Optional[Review]:
     """Create a new review for a product."""
     # Check if product exists
@@ -23,7 +25,9 @@ async def create_review(
 
     # Check if user already reviewed this product
     existing_result = await db.execute(
-        select(Review).where(Review.user_id == user_id).where(Review.product_id == product_id)
+        select(Review)
+        .where(Review.user_id == user_id)
+        .where(Review.product_id == product_id)
     )
     if existing_result.scalar_one_or_none():
         raise ValueError("User has already reviewed this product")
@@ -32,7 +36,10 @@ async def create_review(
     # TODO: Implementar validación desde order_service cruzando OrderItems y userId
 
     db_review = Review(
-        user_id=user_id, product_id=product_id, rating=review_in.rating, comment=review_in.comment
+        user_id=user_id,
+        product_id=product_id,
+        rating=review_in.rating,
+        comment=review_in.comment
     )
 
     db.add(db_review)
@@ -41,9 +48,11 @@ async def create_review(
 
     return db_review
 
-
 async def get_product_reviews(
-    db: AsyncSession, product_id: int, skip: int = 0, limit: int = 20
+    db: AsyncSession,
+    product_id: int,
+    skip: int = 0,
+    limit: int = 20
 ) -> List[Review]:
     """Get all reviews for a specific product."""
     result = await db.execute(
