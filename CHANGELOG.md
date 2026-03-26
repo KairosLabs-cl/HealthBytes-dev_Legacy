@@ -4,6 +4,16 @@
 > Para revisión humana antes de cada release, editar esta sección si es necesario.
 
 <!-- DOCSYNC:changelog-body -->
+## [2026-03-26] — Snapshot automático
+
+> Generado por `docsync.py` | 1 commits en los últimos 7 días
+> Tests totales: **572** | Coverage backend: **39%** | Endpoints API: **45**
+
+### Features
+  - feat: Implement product review functionality and add push notification support.
+
+---
+
 ## [2026-03-18] — Snapshot automático
 
 > Generado por `docsync.py` | 1 commit en los últimos 7 días
