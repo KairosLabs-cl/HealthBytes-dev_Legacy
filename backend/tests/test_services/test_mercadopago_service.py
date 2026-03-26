@@ -378,7 +378,8 @@ async def test_refund_payment_success(mp_service, mock_db, test_payment, test_or
     with (
         patch("httpx.AsyncClient") as mock_client,
         patch(
-            "app.services.mercadopago_service.StockService.release_stock_batch", new_callable=AsyncMock
+            "app.services.mercadopago_service.StockService.release_stock_batch",
+            new_callable=AsyncMock,
         ) as mock_release,
     ):
         mock_resp = MagicMock()
