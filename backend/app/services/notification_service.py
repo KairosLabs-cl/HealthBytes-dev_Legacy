@@ -33,7 +33,7 @@ class NotificationService:
 
             data_payload = {"orderId": order_id, "status": new_status, "url": deep_link_url}
 
-            response = PushClient().publish(
+            PushClient().publish(
                 PushMessage(
                     to=expo_token,
                     title="Actualización de tu orden 📦",
