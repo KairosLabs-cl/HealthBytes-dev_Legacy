@@ -1,3 +1,7 @@
+## 2024-03-26 - Prevent unnecessary re-renders in CartItem by using specific selectors
+**Learning:** Returning an entire Set from a Zustand selector (e.g., `useCart(state => state.updatingProducts)`) triggers a component re-render every time the Set's reference changes, even if the change does not affect the specific item the component cares about. This was happening in `CartItem.tsx` for `addingProducts`, `updatingProducts`, and `removingProducts`.
+**Action:** Always use highly specific selectors that return primitive values, such as the boolean result of a `.has()` check for a specific item (e.g., `useCart(state => state.updatingProducts.has(item.product.id))`), rather than returning the entire collection.
+
 ## 2024-03-11 - Optimize multiple dietary tags filtering with a unified IN subquery
 **Learning:** Using chained `.any()` calls in SQLAlchemy generates multiple `EXISTS` subqueries, which creates an inefficient N+1 clauses problem for relational division.
 **Action:** Replace multiple `EXISTS` queries with a single, highly-optimized subquery using an `IN` clause, grouped by the main entity ID, and validated via `HAVING count(...) = N`. Always ensure the target tags list is deduplicated first to prevent logical bugs.
