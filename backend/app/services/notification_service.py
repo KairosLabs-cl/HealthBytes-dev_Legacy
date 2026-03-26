@@ -1,4 +1,5 @@
 import logging
+
 from exponent_server_sdk import (
     DeviceNotRegisteredError,
     PushClient,

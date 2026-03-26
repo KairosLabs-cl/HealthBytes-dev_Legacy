@@ -1,10 +1,11 @@
 import logging
 from typing import List, Optional
-from sqlalchemy import select, desc
+
+from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.db.schemas import Review, Product
+from app.db.schemas import Product, Review
 from app.schemas.review import ReviewCreate
 
 logger = logging.getLogger(__name__)
