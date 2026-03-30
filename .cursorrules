@@ -3,7 +3,7 @@
 **Este documento establece límites y reglas estrictas para cualquier asistente de IA trabajando en este proyecto.**
 
 ## 🤖 COMPORTAMIENTO INICIAL DEL ASISTENTE (OBLIGATORIO)
-Al iniciar CUALQUIER chat nuevo (sea en VSCode, Cursor, Open Code, u otro), **debes revisar automáticamente** el directorio `.ai/skills/` y cargar las habilidades ("skills"), reglas o flujos de trabajo aplicables para tu tarea actual. **NO** comiences a planificar ni a codificar sin antes consultar las herramientas en dicha carpeta.
+Al iniciar CUALQUIER chat nuevo (sea en VSCode, Cursor, Open Code, u otro), **debes revisar automáticamente** el directorio `.ai/skills/` y cargar las habilidades ("skills"), reglas o flujos de trabajo aplicables para tu tarea actual. **NO** comenzes a planificar ni a codificar sin antes consultar las herramientas en dicha carpeta.
 
 ---
 
@@ -310,23 +310,6 @@ Al actualizar documentación:
 - Duplica documentación existente
 - Sin solicitud explícita del usuario
 
----- Archivos a modificar listados por sprint
-- Calendario visual del mes
-- Diagrama de dependencias entre tareas
-- Riesgos y mitigaciones
-- Definition of Done (DoD)
-
-**`RESUMEN_EJECUTIVO.md` - Vista Stakeholders:**
-- Propuesta de valor (1 línea)
-- Dashboard ejecutivo ASCII (status, fase, milestone)
-- Tabla de hitos alcanzados con fechas
-- Funcionalidades: implementadas ✅, en desarrollo ⏳, planificadas 📋
-- KPIs técnicos (uptime, coverage, tests, build time)
-- Stack tecnológico en tabla lado a lado (frontend vs backend)
-- Blocker actual destacado
-- Roadmap simplificado (mes a mes)
-- Decisiones clave tomadas con justificación
-
 ---
 
 ## 🎯 FLUJO DE TRABAJO OBLIGATORIO
@@ -338,7 +321,7 @@ Al actualizar documentación:
 2. Verifica la estructura actual con grep_search o semantic_search
 3. Identifica el archivo exacto donde hacer el cambio
 4. Lee el archivo completo antes de editarlo
-5. Ejecuta tests relevantes antes de cambios
+5. Carga los skills relevantes de .ai/skills/
 ```
 
 ### 2. Al Crear Nuevas Features
@@ -363,49 +346,7 @@ Al actualizar documentación:
 6. Verifica que compile con tsc (no `any`)
 ```
 
-### 3. Al Debuggear
-
-```
-1. Lee el error completo antes de proponer solución
-2. Verifica archivos relacionados (imports, dependencias)
-3. Ejecuta tests para validar fix
-4. Si creas logs de debug, guárdalos en docs/copilot-logs/{topico}-logs/
-```
-
-### 4. Al Documentar Cambios
-
-**Cuando crear documentación:**
-- ✅ Soluciones de bugs complejos
-- ✅ Implementación de features nuevas con decisiones arquitectónicas
-- ✅ Refactorizaciones mayores
-- ✅ Logs de trabajo con IA
-
-**Estructura de documentación:**
-```
-docs/
-├─ setup/            ← Guías de instalación
-├─ architecture/     ← Diseño y decisiones técnicas
-├─ features/         ← Features implementadas
-├─ security/         ← Seguridad
-├─ development/      ← Guías, ESTADO, ROADMAP, inspections
-└─ diagramas/        ← Diagramas
-```
-
-**Reglas de documentación:**
-- ✅ Nombres descriptivos
-- ✅ Incluir decisiones, cambios y resultados
-- ✅ Actualizar docs/README.md como índice
-- ❌ No crear archivos sin descripción clara
-
-**Secciones de documentación:**
-- **setup/** - Guías de instalación
-- **architecture/** - Diseño y decisiones
-- **features/** - Features implementadas
-- **security/** - Seguridad
-- **development/** - Guías para devs, estado, roadmap
-- ~~**ai-logs/**~~ - ✅ ELIMINADO (2026-03-03)
-
-### 5. Al Instalar Dependencias
+### 3. Al Instalar Dependencias
 
 **Backend:**
 ```bash
@@ -421,37 +362,6 @@ pnpm add {package}
 # o
 pnpm add -D {package}  # para dev dependencies
 ```
-
----
-
-## 🧪 TESTING (OBLIGATORIO)
-
-### Cuándo Ejecutar Tests
-
-- ✅ Antes de modificar código existente
-- ✅ Después de cada cambio significativo
-- ✅ Antes de declarar "tarea completada"
-
-### Comandos de Testing
-
-**Backend:**
-```bash
-cd backend
-pytest                          # Todos los tests
-pytest tests/test_api/         # Solo tests de API
-pytest -v -s                    # Verbose con prints
-```
-
-**Frontend:**
-```bash
-cd frontend
-pnpm run type-check            # Verificar tipos TypeScript
-```
-
-### No Proceder Si:
-- ❌ Tests fallan
-- ❌ TypeScript no compila
-- ❌ Hay errores de sintaxis
 
 ---
 
@@ -580,6 +490,10 @@ docker-compose down -v         # No borrar volúmenes sin consultar
 
 ## 📝 CONVENCIONES DE CÓDIGO
 
+> **Nota:** Las convenciones detalladas de código están disponibles en los skills de .ai/
+> - Backend: `nodejs-backend-patterns`, `nodejs-best-practices`
+> - Frontend: `vercel-react-best-practices`, `vercel-composition-patterns`
+
 ### Python (Backend)
 
 ```python
@@ -636,72 +550,15 @@ export const fetchProducts = async (): Promise<any> => {  // No any
 - ❌ No `var` (usar `const`/`let`)
 - ❌ No `require()` (usar `import`)
 
-### Componentes React Native
-
-```tsx
-// ✅ Correcto
-interface ProductCardProps {
-  product: Product;
-  onPress: (id: string) => void;
-}
-
-export const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) => {
-  return (
-    <Pressable onPress={() => onPress(product.id)}>
-      <Text>{product.name}</Text>
-      <Text>${product.price}</Text>
-    </Pressable>
-  );
-};
-
-// ❌ Incorrecto
-export default function ProductCard({ product }: any) {  // No any, no default export
-  const [data, setData] = useState();  // No fetch en componente
-  useEffect(() => {
-    fetch('/api/products').then(/* ... */);  // Debe estar en api/
-  }, []);
-  return <View>...</View>;
-}
-```
-
 ---
 
-## 🎨 PATRONES Y ANTI-PATRONES
+## 🔍 DEBUGGING
 
-### ✅ Patrones Recomendados
+> **Nota:** Para debugging sistemático, usa el skill `systematic-debugging` de .ai/skills/
 
-**Backend:**
-- Dependency Injection (FastAPI `Depends`)
-- Repository pattern (services actúan como repos)
-- Excepciones custom para errores de negocio
-- Async para toda I/O (DB, HTTP)
+### Logging
 
-**Frontend:**
-- Componentes presentacionales + Container pattern
-- Custom hooks para lógica reutilizable
-- Zustand para estado global predictible
-- Optimistic updates en carrito
-
-### ❌ Anti-Patrones Prohibidos
-
-**Backend:**
-- God objects (clases con múltiples responsabilidades)
-- Queries SQL raw (usar SQLAlchemy)
-- Lógica en routers (debe estar en services)
-- Excepciones genéricas sin contexto
-
-**Frontend:**
-- Props drilling (más de 3 niveles → usar store)
-- Fetching en componentes (usar api/ + store)
-- Estado duplicado entre componentes
-- Hardcodear estilos (usar TailwindCSS classes)
-
----
-
-## 🔍 DEBUGGING Y LOGGING
-
-### Backend (Python)
-
+**Backend (Python):**
 ```python
 import logging
 
@@ -715,8 +572,7 @@ logger.error(f"Database error: {str(e)}", exc_info=True)
 print(f"User token: {token}")  # No print, no tokens
 ```
 
-### Frontend (React Native)
-
+**Frontend (React Native):**
 ```typescript
 // ✅ Correcto
 console.log('ProductList rendered with', products.length, 'items');
@@ -729,7 +585,9 @@ alert('Error');  // Usar toast/notification UI
 
 ---
 
-## 🚦 CRITERIOS DE "COMPLETADO"
+## 🎯 CRITERIOS DE "COMPLETADO"
+
+> **Nota:** Los criterios detallados de verificación están en el skill `verification-before-completion` de .ai/skills/
 
 Una tarea NO está completa hasta que:
 
@@ -743,7 +601,7 @@ Una tarea NO está completa hasta que:
 
 ---
 
-## � PULL REQUEST RULES (OBLIGATORIO)
+## 📝 PULL REQUEST RULES (OBLIGATORIO)
 
 ### 📌 Convención de Branch Names
 
@@ -955,7 +813,7 @@ git push origin feat/product-filters
 
 ---
 
-## �📞 CUANDO CONSULTAR
+## 📞 CUANDO CONSULTAR
 
 ### Siempre Preguntar Si:
 
@@ -964,7 +822,7 @@ git push origin feat/product-filters
 - Vas a modificar docker-compose.yml
 - La solución requiere dependencias nuevas
 - Hay conflicto entre estos guard rails y la solicitud
-- No estás seguro de dónde ubicar un archivo
+- No estás seguro de dónde ubicación un archivo
 - La tarea requiere borrar código existente significativo
 
 ### Puedes Proceder Sin Preguntar Si:
@@ -977,28 +835,9 @@ git push origin feat/product-filters
 
 ---
 
-## 🎓 RECURSOS DE REFERENCIA
-
-### Documentación Interna
-
-- **Arquitectura**: `docs/copilot-logs/status-logs/ARQUITECTURA.md`
-- **Testing**: `docs/copilot-logs/test-logs/TESTING_QUICK_START.md`
-- **Backend AI**: `backend/AI-README.md`
-- **Frontend AI**: `frontend/AI-README.md`
-
-### Documentación Externa
-
-- FastAPI: https://fastapi.tiangolo.com/
-- SQLAlchemy 2.0: https://docs.sqlalchemy.org/
-- Expo: https://docs.expo.dev/
-- React Native: https://reactnative.dev/
-- Zustand: https://zustand-demo.pmnd.rs/
-
----
-
 ## 📝 TEMPLATE OBLIGATORIO DE PR Y COMMITS
 
-**⚠️ CRÍTICO**: Al crear PRs o commits, SIEMPRE usar los templates definidos en README.md líneas 580-680.
+**⚠️ CRÍTICO**: Al crear PRs o commits, SIEMPRE usar los templates definidos en este documento.
 
 ### Commit Format (Conventional Commits):
 ```
@@ -1033,18 +872,19 @@ tipo(scope): descripción en presente
 
 ## 🤝 TL;DR - Reglas de Oro
 
-1. **Lee primero, modifica después** (AI-README.md + código existente)
+1. **Lee primero, modifica después** (AI-README.md + código existente + skills)
 2. **Sigue la arquitectura** (routers → services → models)
 3. **Ubica correctamente** (usa la matriz de ubicaciones)
 4. **No hardcodees nada** (env vars para todo)
-5. **Testea siempre** (antes y después de cambios)
+5. **Testea siempre** (usa skill `verification-before-completion`)
 6. **TypeScript estricto** (no `any`, types explícitos)
 7. **Seguridad primero** (no tokens en logs, no endpoints sin auth)
 8. **Pregunta si dudas** (mejor consultar que romper)
-9. **Usa templates de PR/commits** (README líneas 580-680)
+9. **Usa templates de PR/commits** (definidos en este documento)
+10. **Carga los skills relevantes** de `.ai/skills/` antes de trabajar
 
 ---
 
 **Este documento es ley.** Si encuentras conflictos con otros documentos, este `.cursorrules` tiene prioridad.
 
-Última actualización: 2026-01-19
+Última actualización: 2026-03-30
