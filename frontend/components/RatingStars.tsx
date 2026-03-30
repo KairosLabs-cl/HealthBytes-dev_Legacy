@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import { View, Pressable } from 'react-native';
 import { Star } from 'lucide-react-native';
 import { Text } from '@/components/ui/text';
@@ -20,7 +20,7 @@ export function RatingStars({
   onChange,
   showCount,
 }: RatingStarsProps) {
-  const [hoverRating, setHoverRating] = React.useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
   const displayRating = interactive && hoverRating > 0 ? hoverRating : rating;
 
   const renderStar = (index: number) => {
