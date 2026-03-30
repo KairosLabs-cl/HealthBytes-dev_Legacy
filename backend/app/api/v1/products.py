@@ -7,7 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.database import get_db
 from app.middleware.auth import verify_seller
 from app.schemas.product import ProductCreate, ProductResponse, ProductUpdate
-from app.services import product_service
+from app.schemas.review import ReviewCreate, ReviewResponse
+from app.services import product_service, review_service
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +65,65 @@ async def get_featured_product(db: AsyncSession = Depends(get_db)):
     if not product:
         raise HTTPException(status_code=404, detail="No featured product available")
     return product
+
+
+@router.get("/{product_id}/rating")
+async def get_product_rating(product_id: int, db: AsyncSession = Depends(get_db)):
+    """Get product rating statistics."""
+    product = await product_service.get_product(db, product_id)
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return await product_service.get_product_rating(db, product_id)
+
+
+@router.get("/{product_id}/reviews")
+async def get_product_reviews(
+    product_id: int,
+    skip: int = 0,
+    limit: int = Query(20, ge=1, le=100),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get all reviews for a product."""
+    product = await product_service.get_product(db, product_id)
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    reviews = await review_service.get_product_reviews(db, product_id, skip, limit)
+    return [
+        {
+            "id": r.id,
+            "user_id": r.user_id,
+            "product_id": r.product_id,
+            "rating": r.rating,
+            "comment": r.comment,
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+            "user_name": r.user.name if r.user else "Usuario"
+        }
+        for r in reviews
+    ]
+
+
+@router.post("/{product_id}/reviews", response_model=ReviewResponse, status_code=201)
+async def create_product_review(
+    product_id: int,
+    review_in: ReviewCreate,
+    db: AsyncSession = Depends(get_db),
+    user_id: int = 1  # TODO: get from auth
+):
+    """Create a review for a product."""
+    try:
+        review = await review_service.create_review(db, user_id, product_id, review_in)
+        if not review:
+            raise HTTPException(status_code=404, detail="Product not found")
+        return {
+            "id": review.id,
+            "user_id": review.user_id,
+            "product_id": review.product_id,
+            "rating": review.rating,
+            "comment": review.comment,
+            "created_at": review.created_at
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.get("/batch", response_model=List[ProductResponse])

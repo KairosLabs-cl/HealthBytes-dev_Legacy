@@ -4,6 +4,7 @@
  * Change the design here and it propagates everywhere automatically.
  */
 import FavoriteButton from "@/components/FavoriteButton";
+import RatingStars from "@/components/RatingStars";
 import StockBadge from "@/components/StockBadge";
 import { Text } from "@/components/ui/text";
 import { formatPrice } from "@/lib/formatPrice";
@@ -11,7 +12,9 @@ import { useCartAnimation } from "@/store/cartAnimationStore";
 import { useCart } from "@/store/cartStore";
 import type { Product } from "@/types/product";
 import { normalizeDietaryTag } from "@/types/product";
+import { getProductRating } from "@/api/products";
 import { useAuth } from "@clerk/clerk-expo";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import {
   Dumbbell,
@@ -20,6 +23,8 @@ import {
   Info,
   MilkOff,
   Package,
+  Star,
+  Store,
   Vegan,
   WheatOff,
 } from "lucide-react-native";
@@ -83,6 +88,13 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
   const cartScale = useSharedValue(1);
   const addBtnRef = useRef<any>(null);
   const [imgError, setImgError] = useState(false);
+
+  const { data: rating } = useQuery({
+    queryKey: ['product-rating', product.id],
+    queryFn: () => getProductRating(Number(product.id)),
+    staleTime: 5 * 60 * 1000,
+    enabled: !!product.id,
+  });
 
   const cartAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: cartScale.value }],
@@ -235,19 +247,41 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
             {product.name}
           </Text>
 
-          {/* Vendor name */}
+          {/* Vendor name + rating */}
           {product.vendor_name && (
-            <Text
-              numberOfLines={1}
-              style={{
-                fontSize: 11,
-                fontWeight: "400",
-                color: "#6B7280",
-                marginBottom: 8,
-              }}
-            >
-              {product.vendor_name}
-            </Text>
+            <View className="flex-row items-center justify-between mb-2">
+              <View className="flex-row items-center flex-1">
+                <Store size={12} color="#6B7280" style={{ marginRight: 4 }} />
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    fontSize: 11,
+                    fontWeight: "400",
+                    color: "#6B7280",
+                  }}
+                >
+                  {product.vendor_name}
+                </Text>
+              </View>
+              {rating && rating.review_count > 0 && (
+                <View className="flex-row items-center gap-1">
+                  <Star size={10} fill="#FBBF24" color="#FBBF24" />
+                  <Text className="text-xs text-gray-500">
+                    {rating.avg_rating}
+                  </Text>
+                </View>
+              )}
+            </View>
+          )}
+
+          {/* Product rating */}
+          {rating && rating.review_count > 0 && (
+            <View className="flex-row items-center mb-2">
+              <RatingStars rating={rating.avg_rating} size={12} />
+              <Text className="text-xs text-gray-500 ml-1">
+                ({rating.review_count})
+              </Text>
+            </View>
           )}
 
           {/* Dietary tags — max 2 visible, +N for rest */}

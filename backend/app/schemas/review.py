@@ -11,10 +11,11 @@ class ReviewCreate(BaseModel):
 
 class ReviewResponse(BaseModel):
     id: int
-    user_id: str
-    product_id: int
+    user_id: int
+    product_id: Optional[int] = None
+    vendor_id: Optional[int] = None
     rating: int
     comment: Optional[str]
-    created_at: datetime
+    created_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
