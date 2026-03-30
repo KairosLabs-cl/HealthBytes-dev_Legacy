@@ -4,7 +4,7 @@
  * Change the design here and it propagates everywhere automatically.
  */
 import FavoriteButton from "@/components/FavoriteButton";
-import RatingStars from "@/components/RatingStars";
+import { RatingStars } from "@/components/RatingStars";
 import StockBadge from "@/components/StockBadge";
 import { Text } from "@/components/ui/text";
 import { formatPrice } from "@/lib/formatPrice";
