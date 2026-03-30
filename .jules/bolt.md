@@ -9,3 +9,7 @@
 ## 2024-03-18 - Prevent N+1 queries during order cancellation with batch stock release
 **Learning:** Cancelling or refunding an order involves releasing stock for each product in the order. Iterating over order items and calling `release_stock` for each product sequentially creates an N+1 query pattern and acquires multiple consecutive database locks, hurting performance.
 **Action:** Use a single `release_stock_batch` method that fetches and locks all affected products in one query using an `IN` clause, ordered by `product_id` to prevent deadlocks, before updating their stock.
+
+## 2024-03-24 - Optimize Zustand set selectors to prevent CartItem re-renders
+**Learning:** Subscribing to an entire Set in Zustand (e.g. `useCart(state => state.updatingProducts)`) causes the component to re-render whenever the Set reference changes, even if the change doesn't affect the specific item the component cares about. In a list of CartItems, updating one item's quantity causes all CartItems to re-render.
+**Action:** Always use highly specific selectors that return primitive values. For Sets, select the boolean result of the `.has()` check for the specific item (e.g. `useCart(state => state.updatingProducts.has(itemId))`).
