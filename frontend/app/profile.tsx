@@ -87,6 +87,7 @@ export default function ProfileScreen() {
                 uri: user?.imageUrl || "https://via.placeholder.com/80",
               }}
               className="w-20 h-20 rounded-full"
+              alt="Foto de perfil"
             />
             <View className="ml-4 flex-1">
               <Text className="text-xl font-bold text-black">

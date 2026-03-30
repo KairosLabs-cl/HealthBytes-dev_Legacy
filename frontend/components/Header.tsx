@@ -3,6 +3,9 @@ import { Text } from "./ui/text";
 import { Search, ArrowLeft, X } from "lucide-react-native";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
+import { theme } from "@/lib/theme";
+
+const { colors } = theme;
 
 type HeaderProps = {
   userName: string;
@@ -72,11 +75,16 @@ export function Header({
   };
 
   return (
-    <View className="px-4 pt-6 pb-4 bg-white">
+    <View className="px-4 pt-6 pb-4 bg-surface-card">
       {showBackButton ? (
         <View className="flex-row items-center mb-1">
-          <Pressable onPress={() => router.push("/")} className="mr-2 p-1">
-            <ArrowLeft size={24} color="#000" />
+          <Pressable 
+            onPress={() => router.push("/")} 
+            className="mr-2 p-1"
+            accessibilityLabel="Volver"
+            accessibilityRole="button"
+          >
+            <ArrowLeft size={24} color={colors.ink.primary} />
           </Pressable>
           <Text className="text-lg font-bold">Volver</Text>
         </View>
@@ -88,22 +96,33 @@ export function Header({
         )
       )}
 
-      <View className="flex-row items-center mt-3 rounded-full border border-gray-300 px-3 py-2 bg-gray-50">
-        <Pressable onPress={handleSearchSubmit}>
-          <Search size={20} color="#888" />
+      <View className="flex-row items-center mt-3 rounded-full border border-border-subtle px-3 py-2 bg-surface-muted">
+        <Pressable 
+          onPress={handleSearchSubmit}
+          accessibilityLabel="Buscar"
+          accessibilityRole="button"
+        >
+          <Search size={20} color={colors.ink.muted} />
         </Pressable>
         <TextInput
           placeholder="¿Qué podemos encontrar por ti?"
           className="flex-1 ml-2 text-base"
-          placeholderTextColor="#888"
+          placeholderTextColor={colors.ink.muted}
           value={searchTerm}
           onChangeText={setSearchTerm}
           onSubmitEditing={handleSearchSubmit}
           returnKeyType="search"
+          accessibilityLabel="Buscar productos"
+          accessibilityHint="Ingresa el nombre del producto que buscas"
         />
         {searchTerm.length > 0 && (
-          <Pressable onPress={handleClear} className="ml-2">
-            <X size={20} color="#888" />
+          <Pressable 
+            onPress={handleClear} 
+            className="ml-2"
+            accessibilityLabel="Limpiar búsqueda"
+            accessibilityRole="button"
+          >
+            <X size={20} color={colors.ink.muted} />
           </Pressable>
         )}
       </View>

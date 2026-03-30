@@ -14,6 +14,7 @@ import Animated, {
   withSpring,
   withTiming
 } from "react-native-reanimated";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 const DIETARY_OPTIONS = [
   {
@@ -72,6 +73,7 @@ export default function OnboardingModal({
   const [selected, setSelected] = useState<string[]>([]);
   const { getToken } = useAuth();
   const setDietaryTags = useProductFilters((state) => state.setDietaryTags);
+  const reducedMotion = useReducedMotion();
 
   const toggle = useCallback((slug: string) => {
     setSelected((prev) =>
@@ -122,27 +124,27 @@ export default function OnboardingModal({
       animationType="slide"
       presentationStyle="fullScreen"
     >
-      <View className="flex-1 bg-[#FCFAF8]">
+      <View className="flex-1 bg-surface-warm">
         {/* Progress indicator */}
         <View className="px-6 pt-12 pb-4 flex-row gap-2">
           {Array.from({ length: TOTAL_STEPS }, (_, i) => (
             <View
               key={i}
               className={`flex-1 h-1.5 rounded-full ${
-                i <= step ? "bg-[#2E5C3A]" : "bg-[#EAE5E0]"
+                i <= step ? "bg-brand-green" : "bg-border-subtle"
               }`}
             />
           ))}
         </View>
 
         <View className="flex-1 px-6">
-          {step === 0 && <StepWelcome key="step0" />}
-          {step === 1 && <StepPreferences key="step1" selected={selected} toggle={toggle} />}
-          {step === 2 && <StepConfirmation key="step2" selectedCount={selected.length} />}
+          {step === 0 && <StepWelcome key="step0" reducedMotion={reducedMotion} />}
+          {step === 1 && <StepPreferences key="step1" selected={selected} toggle={toggle} reducedMotion={reducedMotion} />}
+          {step === 2 && <StepConfirmation key="step2" selectedCount={selected.length} reducedMotion={reducedMotion} />}
         </View>
 
         {/* Fixed Bottom Actions */}
-        <View className="px-6 pb-12 pt-4 bg-[#FCFAF8]">
+        <View className="px-6 pb-12 pt-4 bg-surface-warm">
           <PrimaryButton 
             testID={step === 2 ? "submit-btn" : undefined}
             onPress={step === 2 ? handleFinish : handleNext} 
@@ -159,8 +161,10 @@ export default function OnboardingModal({
               onPress={handleSkip}
               className="items-center mt-4"
               style={{ minHeight: 48, justifyContent: "center" }}
+              accessibilityLabel="Omitir tutorial"
+              accessibilityRole="button"
             >
-              <Text className="text-gray-500 text-sm font-medium">
+              <Text className="text-ink-subtle text-sm font-medium">
                 Saltar por ahora
               </Text>
             </Pressable>
@@ -190,6 +194,8 @@ function PrimaryButton({ onPress, label, testID }: { onPress: () => void; label:
       onPressOut={handlePressOut}
       onPress={onPress}
       style={{ width: "100%", marginTop: 8 }}
+      accessibilityLabel={label}
+      accessibilityRole="button"
     >
       <Animated.View
         style={[
@@ -197,7 +203,7 @@ function PrimaryButton({ onPress, label, testID }: { onPress: () => void; label:
           { 
             minHeight: 60, 
             width: "100%", 
-            backgroundColor: "#2D2926", 
+            backgroundColor: "#2D2926",
             borderRadius: 9999, 
             alignItems: "center", 
             justifyContent: "center",
@@ -209,7 +215,7 @@ function PrimaryButton({ onPress, label, testID }: { onPress: () => void; label:
           }
         ]}
       >
-        <Text style={{ color: "white", fontWeight: "bold", fontSize: 18 }}>
+        <Text className="text-white font-bold text-lg">
           {label}
         </Text>
       </Animated.View>
@@ -220,19 +226,23 @@ function PrimaryButton({ onPress, label, testID }: { onPress: () => void; label:
 
 /* ---------- Step 1: Welcome ---------- */
 
-function StepWelcome() {
+interface StepProps {
+  reducedMotion: boolean;
+}
+
+function StepWelcome({ reducedMotion }: StepProps) {
   return (
     <Animated.View
-      entering={FadeIn.duration(400)}
-      exiting={SlideOutLeft.duration(300)}
+      entering={reducedMotion ? FadeIn.duration(0) : FadeIn.duration(400)}
+      exiting={reducedMotion ? SlideOutLeft.duration(0) : SlideOutLeft.duration(300)}
       className="flex-1 justify-center items-center pb-8"
     >
       <View className="items-center mb-4">
         <Text className="text-[80px] mb-6">🥗</Text>
-        <Text className="text-4xl font-extrabold text-[#2D2926] text-center mb-4 leading-tight">
+        <Text className="text-4xl font-extrabold text-ink text-center mb-4 leading-tight">
           Bienvenido a HealthBytes
         </Text>
-        <Text className="text-lg text-[#2D2926] opacity-70 text-center leading-relaxed px-2">
+        <Text className="text-lg text-ink opacity-70 text-center leading-relaxed px-2">
           Encontra productos saludables adaptados a tus necesidades alimentarias. Filtramos por vos para que compres con tranquilidad.
         </Text>
       </View>
@@ -245,6 +255,7 @@ function StepWelcome() {
 interface StepPreferencesProps {
   selected: string[];
   toggle: (slug: string) => void;
+  reducedMotion: boolean;
 }
 
 function DietaryTagCard({
@@ -272,6 +283,9 @@ function DietaryTagCard({
       onPressOut={handlePressOut}
       onPress={onPress}
       style={{ width: "47%", minHeight: 120, marginBottom: 12 }}
+      accessibilityLabel={isActive ? `${item.label} seleccionado` : item.label}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: isActive }}
     >
       <Animated.View
         style={[
@@ -292,10 +306,10 @@ function DietaryTagCard({
           <Text style={{ fontSize: 36, marginBottom: 12 }}>{item.emoji}</Text>
         </View>
         <View>
-          <Text style={{ fontSize: 16, fontWeight: "bold", color: isActive ? "#2D2926" : "rgba(45, 41, 38, 0.8)" }}>
+          <Text style={{ fontSize: 16, fontWeight: "bold", color: isActive ? "#2D2926" : "#2D2926" }}>
             {item.label}
           </Text>
-          <Text style={{ fontSize: 12, marginTop: 4, fontWeight: isActive ? "500" : "normal", color: isActive ? "#2E5C3A" : "rgba(45, 41, 38, 0.5)" }}>
+          <Text style={{ fontSize: 12, marginTop: 4, fontWeight: isActive ? "500" : "normal", color: isActive ? "#2E5C3A" : "#6B6B6B" }}>
             {item.description}
           </Text>
         </View>
@@ -305,18 +319,18 @@ function DietaryTagCard({
 }
 
 
-function StepPreferences({ selected, toggle }: StepPreferencesProps) {
+function StepPreferences({ selected, toggle, reducedMotion }: StepPreferencesProps) {
   return (
     <Animated.View
-      entering={SlideInRight.duration(400)}
-      exiting={SlideOutLeft.duration(300)}
+      entering={reducedMotion ? SlideInRight.duration(0) : SlideInRight.duration(400)}
+      exiting={reducedMotion ? SlideOutLeft.duration(0) : SlideOutLeft.duration(300)}
       className="flex-1 pt-4"
     >
       <View className="my-6">
-        <Text className="text-3xl font-extrabold text-[#2D2926] text-center mb-2">
+        <Text className="text-3xl font-extrabold text-ink text-center mb-2">
           ¿Qué tipo de dieta sigues?
         </Text>
-        <Text className="text-[#2D2926] opacity-70 text-base text-center leading-relaxed px-4">
+        <Text className="text-ink opacity-70 text-base text-center leading-relaxed px-4">
           Selecciona tus restricciones para personalizar tu tienda.
         </Text>
       </View>
@@ -344,21 +358,22 @@ function StepPreferences({ selected, toggle }: StepPreferencesProps) {
 
 interface StepConfirmationProps {
   selectedCount: number;
+  reducedMotion: boolean;
 }
 
-function StepConfirmation({ selectedCount }: StepConfirmationProps) {
+function StepConfirmation({ selectedCount, reducedMotion }: StepConfirmationProps) {
   return (
     <Animated.View
-      entering={SlideInRight.duration(400)}
-      exiting={FadeOut.duration(300)}
+      entering={reducedMotion ? SlideInRight.duration(0) : SlideInRight.duration(400)}
+      exiting={reducedMotion ? FadeOut.duration(0) : FadeOut.duration(300)}
       className="flex-1 justify-center items-center pb-12"
     >
       <View className="items-center mb-8">
         <Text className="text-[80px] mb-6">🎉</Text>
-        <Text className="text-4xl font-extrabold text-[#2D2926] text-center mb-4 px-2">
+        <Text className="text-4xl font-extrabold text-ink text-center mb-4 px-2">
           ¡Todo listo!
         </Text>
-        <Text className="text-lg text-[#2D2926] opacity-70 text-center leading-relaxed px-6">
+        <Text className="text-lg text-ink opacity-70 text-center leading-relaxed px-6">
           {selectedCount > 0
             ? `Personalizamos tu experiencia con ${selectedCount} ${
                 selectedCount === 1 ? "restriccion" : "restricciones"

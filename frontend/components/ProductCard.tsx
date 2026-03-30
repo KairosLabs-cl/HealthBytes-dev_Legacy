@@ -4,14 +4,18 @@
  * Change the design here and it propagates everywhere automatically.
  */
 import FavoriteButton from "@/components/FavoriteButton";
+import { RatingStars } from "@/components/RatingStars";
 import StockBadge from "@/components/StockBadge";
 import { Text } from "@/components/ui/text";
 import { formatPrice } from "@/lib/formatPrice";
+import { theme } from "@/lib/theme";
 import { useCartAnimation } from "@/store/cartAnimationStore";
 import { useCart } from "@/store/cartStore";
 import type { Product } from "@/types/product";
 import { normalizeDietaryTag } from "@/types/product";
+import { getProductRating } from "@/api/products";
 import { useAuth } from "@clerk/clerk-expo";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import {
   Dumbbell,
@@ -20,6 +24,7 @@ import {
   Info,
   MilkOff,
   Package,
+  Store,
   Vegan,
   WheatOff,
 } from "lucide-react-native";
@@ -42,6 +47,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+const { colors, shadows } = theme;
+
 const DIETARY_ICONS: Record<
   string,
   React.ComponentType<{ size?: number; color?: string }>
@@ -57,14 +64,14 @@ const DIETARY_ICONS: Record<
 
 const TAG_COLORS: Record<string, { bg: string; text: string; border: string }> =
   {
-    green: { bg: "#F0FDF4", text: "#15803D", border: "#86EFAC" },
+    green: { bg: colors.brand.greenLight, text: colors.success, border: "#86EFAC" },
     blue: { bg: "#EFF6FF", text: "#1D4ED8", border: "#93C5FD" },
     orange: { bg: "#FFF7ED", text: "#C2410C", border: "#FDBA74" },
     purple: { bg: "#FAF5FF", text: "#7E22CE", border: "#D8B4FE" },
-    red: { bg: "#FEF2F2", text: "#B91C1C", border: "#FCA5A5" },
-    emerald: { bg: "#ECFDF5", text: "#047857", border: "#6EE7B7" },
+    red: { bg: "#FEF2F2", text: colors.error, border: "#FCA5A5" },
+    emerald: { bg: "#ECFDF5", text: colors.success, border: "#6EE7B7" },
   };
-const DEFAULT_TAG = { bg: "#F9FAFB", text: "#4B5563", border: "#D1D5DB" };
+const DEFAULT_TAG = { bg: colors.legacy.gray[50], text: colors.legacy.gray[600], border: colors.border.default };
 
 export type ProductCardProps = {
   product: Product;
@@ -83,6 +90,13 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
   const cartScale = useSharedValue(1);
   const addBtnRef = useRef<any>(null);
   const [imgError, setImgError] = useState(false);
+
+  const { data: rating } = useQuery({
+    queryKey: ['product-rating', product.id],
+    queryFn: () => getProductRating(Number(product.id)),
+    staleTime: 5 * 60 * 1000,
+    enabled: !!product.id,
+  });
 
   const cartAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: cartScale.value }],
@@ -137,18 +151,17 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
       <View
         style={{
           ...containerStyle,
-          backgroundColor: "#FFFFFF",
+          backgroundColor: colors.surface.card,
           borderRadius: 12,
           overflow: "hidden",
           borderWidth: 1,
-          borderColor: "rgba(0,0,0,0.07)",
+          borderColor: colors.border.subtle,
           ...Platform.select<any>({
             web: {
-              boxShadow:
-                "0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.06)",
+              boxShadow: shadows.lift,
             },
             ios: {
-              shadowColor: "#000",
+              shadowColor: colors.legacy.black,
               shadowOpacity: 0.1,
               shadowRadius: 12,
               shadowOffset: { width: 0, height: 3 },
@@ -178,18 +191,19 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
                 }}
                 resizeMode="cover"
                 onError={() => setImgError(true)}
+                alt={`Imagen de ${product.name}`}
               />
             ) : (
               <View
                 style={{
                   width: "100%",
                   height: "100%",
-                  backgroundColor: "#F3F4F6",
+                  backgroundColor: colors.legacy.gray[100],
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <Package size={32} color="#D1D5DB" strokeWidth={1.5} />
+                <Package size={32} color={colors.border.default} strokeWidth={1.5} />
               </View>
             )}
             <StockBadge stock={product.stock} variant="overlay" />
@@ -210,7 +224,7 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
             <Text
               style={{
                 fontSize: 9,
-                color: "#9CA3AF",
+                color: colors.ink.subtle,
                 fontWeight: "600",
                 letterSpacing: 0.8,
                 marginBottom: 4,
@@ -228,7 +242,7 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
             style={{
               fontSize: 13,
               fontWeight: "700",
-              color: "#111827",
+              color: colors.ink.primary,
               marginBottom: 2,
             }}
           >
@@ -237,17 +251,29 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
 
           {/* Vendor name */}
           {product.vendor_name && (
-            <Text
-              numberOfLines={1}
-              style={{
-                fontSize: 11,
-                fontWeight: "400",
-                color: "#6B7280",
-                marginBottom: 8,
-              }}
-            >
-              {product.vendor_name}
-            </Text>
+            <View className="flex-row items-center mb-2">
+              <Store size={12} color={colors.ink.muted} style={{ marginRight: 4 }} />
+              <Text
+                numberOfLines={1}
+                style={{
+                  fontSize: 11,
+                  fontWeight: "400",
+                  color: colors.ink.muted,
+                }}
+              >
+                {product.vendor_name}
+              </Text>
+            </View>
+          )}
+
+          {/* Product rating */}
+          {rating && rating.review_count > 0 && (
+            <View className="flex-row items-center mb-2">
+              <RatingStars rating={rating.avg_rating} size={12} />
+              <Text className="text-xs text-ink-subtle ml-1">
+                ({rating.review_count})
+              </Text>
+            </View>
           )}
 
           {/* Dietary tags — max 2 visible, +N for rest */}
@@ -290,16 +316,16 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
               {allTags.length > 2 && (
                 <View
                   style={{
-                    backgroundColor: "#F3F4F6",
+                    backgroundColor: colors.legacy.gray[100],
                     paddingHorizontal: 4,
                     paddingVertical: 2,
                     borderRadius: 12,
                     borderWidth: 0.8,
-                    borderColor: "#E5E7EB",
+                    borderColor: colors.legacy.gray[200],
                   }}
                 >
                   <Text
-                    style={{ fontSize: 9, fontWeight: "700", color: "#6B7280" }}
+                    style={{ fontSize: 9, fontWeight: "700", color: colors.ink.muted }}
                   >
                     +{allTags.length - 2}
                   </Text>
@@ -323,7 +349,7 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
               style={{
                 fontSize: 17,
                 fontWeight: "800",
-                color: "#111827",
+                color: colors.ink.primary,
                 letterSpacing: -0.3,
               }}
             >
@@ -349,7 +375,7 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
                 paddingVertical: 7,
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: isOutOfStock ? "#E5E7EB" : "#111827",
+                backgroundColor: isOutOfStock ? colors.legacy.gray[200] : colors.ink.primary,
                 minHeight: 36,
                 borderRadius: 999,
                 ...Platform.select<any>({
@@ -361,7 +387,7 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
                   default: isOutOfStock
                     ? {}
                     : {
-                        shadowColor: "#000",
+                        shadowColor: colors.legacy.black,
                         shadowOffset: { width: 0, height: 2 },
                         shadowOpacity: 0.18,
                         shadowRadius: 4,
@@ -374,7 +400,7 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
                 style={{
                   fontSize: 12,
                   fontWeight: "700",
-                  color: isOutOfStock ? "#9CA3AF" : "#FFFFFF",
+                  color: isOutOfStock ? colors.ink.subtle : colors.ink.inverse,
                   letterSpacing: 0.2,
                 }}
               >

@@ -20,8 +20,8 @@ function OrderItemRowInner({ item, product, isLast }: OrderItemRowProps) {
   return (
     <Pressable
       onPress={() => router.push(`/product/${item.product_id}`)}
-      className={`flex-row items-center py-3 active:bg-gray-50 rounded-lg ${
-        !isLast ? "border-b border-gray-100" : ""
+      className={`flex-row items-center py-3 active:bg-surface-muted rounded-lg ${
+        !isLast ? "border-b border-border-subtle" : ""
       }`}
       style={{ minHeight: 64 }}
       accessibilityRole="button"
@@ -29,34 +29,34 @@ function OrderItemRowInner({ item, product, isLast }: OrderItemRowProps) {
     >
       {/* Product Image or Fallback */}
       {product?.image ? (
-        <View className="w-12 h-12 rounded-lg overflow-hidden mr-3 bg-gray-100">
+        <View className="w-12 h-12 rounded-lg overflow-hidden mr-3 bg-surface-muted">
           <Image
             source={{ uri: product.image }}
-            alt={product.name ?? "Producto"}
+            alt={`Imagen de ${product.name ?? "Producto"}`}
             size="none"
             className="w-12 h-12"
             resizeMode="cover"
           />
         </View>
       ) : (
-        <View className="w-12 h-12 bg-gray-100 rounded-lg items-center justify-center mr-3">
+        <View className="w-12 h-12 bg-surface-muted rounded-lg items-center justify-center mr-3">
           <Package size={20} color="#6B7280" />
         </View>
       )}
 
       {/* Product Info */}
       <View className="flex-1 mr-2">
-        <Text className="text-gray-900 font-medium" numberOfLines={2}>
+        <Text className="text-ink font-medium" numberOfLines={2}>
           {product?.name ?? `Producto #${item.product_id}`}
         </Text>
-        <Text className="text-sm text-gray-500">
+        <Text className="text-sm text-ink-subtle">
           Cantidad: {item.quantity}
         </Text>
       </View>
 
       {/* Price + Chevron */}
       <View className="flex-row items-center">
-        <Text className="font-semibold text-gray-900 mr-1">
+        <Text className="font-semibold text-ink mr-1">
           {formatPrice(item.price * item.quantity)}
         </Text>
         <ChevronRight size={16} color="#9CA3AF" />

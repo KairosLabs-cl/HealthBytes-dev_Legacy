@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/toast";
 import "@/global.css";
 import { tokenCache } from "@/lib/cache";
+import { useAppFonts } from "@/lib/fonts";
 import { useCart, selectCartItemCount } from "@/store/cartStore";
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { usePreferencesStore } from "@/store/preferencesStore";
@@ -20,7 +21,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Link, Stack, useSegments } from "expo-router";
 import { User } from "lucide-react-native";
 import { useEffect } from "react";
-import { Pressable } from "react-native";
+import { Pressable, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Sentry from "@sentry/react-native";
 
@@ -184,6 +185,9 @@ function RootLayoutNav() {
 }
 
 export default Sentry.wrap(function RootLayout() {
+  // Load fonts in background - don't block UI
+  useAppFonts();
+
   return (
     <SafeAreaProvider>
       <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>

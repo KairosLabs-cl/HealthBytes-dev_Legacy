@@ -72,6 +72,8 @@ export default function LoginScreen() {
         onPress={() => router.back()}
         className="mt-4 ml-4 self-start p-2 active:opacity-60"
         hitSlop={8}
+        accessibilityLabel="Volver"
+        accessibilityRole="button"
       >
         <ChevronLeft size={24} color="#111827" />
       </Pressable>
@@ -87,7 +89,10 @@ export default function LoginScreen() {
         </Text>
 
         {error && (
-          <View className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-6">
+          <View 
+            className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-6"
+            accessibilityRole="alert"
+          >
             <Text className="text-red-600 text-sm">{error}</Text>
           </View>
         )}
@@ -97,6 +102,8 @@ export default function LoginScreen() {
           disabled={isLoading}
           className="flex-row items-center justify-center bg-white border border-gray-200 rounded-xl px-5 py-4 active:bg-gray-50"
           style={{ minHeight: 52 }}
+          accessibilityLabel={isLoading ? "Iniciando sesión con Google" : "Continuar con Google"}
+          accessibilityRole="button"
         >
           {isLoading ? (
             <ActivityIndicator size="small" color="#6B7280" />

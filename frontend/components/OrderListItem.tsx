@@ -49,13 +49,13 @@ export function OrderListItem({ order, onPress }: OrderListItemProps) {
   return (
     <Pressable onPress={() => onPress(order.id)}>
       <View
-        className={`${cardBgColor} border border-gray-200 rounded-lg p-4 mb-3 flex-row items-center justify-between`}
+        className={`${cardBgColor} border border-border-subtle rounded-lg p-4 mb-3 flex-row items-center justify-between`}
       >
         <View className="flex-1">
           {/* Order ID and Date */}
           <View className="flex-row items-center justify-between mb-2">
-            <Text className="font-semibold text-black">Orden #{orderId}</Text>
-            <Text className="text-xs text-gray-500">{formattedDate}</Text>
+            <Text className="font-semibold text-ink">Orden #{orderId}</Text>
+            <Text className="text-xs text-ink-subtle">{formattedDate}</Text>
           </View>
 
           {/* Status Badge */}
@@ -67,17 +67,17 @@ export function OrderListItem({ order, onPress }: OrderListItemProps) {
 
           {/* Items and Total */}
           <View className="flex-row items-center justify-between">
-            <Text className="text-sm text-gray-600">
+            <Text className="text-sm text-ink-muted">
               {totalItems} producto{totalItems !== 1 ? "s" : ""}
             </Text>
-            <Text className="font-bold text-black">
+            <Text className="font-bold text-ink">
               {formatPrice(totalPrice)}
             </Text>
           </View>
         </View>
 
         {/* Chevron */}
-        <Icon as={ChevronRight} size="md" className="ml-3 text-gray-400" />
+        <Icon as={ChevronRight} size="md" className="ml-3 text-ink-subtle" />
       </View>
     </Pressable>
   );
