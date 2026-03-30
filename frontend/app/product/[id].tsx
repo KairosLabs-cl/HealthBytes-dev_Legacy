@@ -5,6 +5,7 @@ import ProductCard from "@/components/ProductCard";
 import { useShimmerStyle } from "@/components/ProductCardSkeleton";
 import { RatingStars } from "@/components/RatingStars";
 import { ReviewCard } from "@/components/ReviewCard";
+import ReviewModal from "@/components/ReviewModal";
 import StockBadge from "@/components/StockBadge";
 import { Image } from "@/components/ui/image";
 import { Text } from "@/components/ui/text";
@@ -25,7 +26,7 @@ import {
   ShoppingCart,
   Store,
 } from "lucide-react-native";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Alert, Dimensions, Pressable, ScrollView, View, FlatList } from "react-native";
 import Animated, {
   cancelAnimation,
@@ -252,11 +253,19 @@ export default function ProductDetailsScreen() {
     enabled: !!id,
   });
 
-  const { data: reviews } = useQuery({
+  const { data: reviews, refetch: refetchReviews } = useQuery({
     queryKey: ['product-reviews', id],
     queryFn: () => getProductReviews(Number(id), 0, 5),
     enabled: !!id,
   });
+
+  const { refetch: refetchRating } = useQuery({
+    queryKey: ['product-rating', id],
+    queryFn: () => getProductRating(Number(id)),
+    enabled: false,
+  });
+
+  const [reviewModalVisible, setReviewModalVisible] = useState(false);
 
   // Filter out the current product from the vendor products list
   const otherVendorProducts = useMemo(() => {
@@ -591,39 +600,68 @@ export default function ProductDetailsScreen() {
           )}
 
           {/* Product Reviews */}
-          {rating && rating.review_count > 0 && (
-            <Animated.View entering={FadeInUp.delay(550).duration(400)} className="mt-6 mb-8">
-              <View className="flex-row items-center justify-between mb-4">
-                <Text className="text-lg font-extrabold text-gray-900">
-                  Reseñas del producto
-                </Text>
+          <Animated.View entering={FadeInUp.delay(550).duration(400)} className="mt-6 mb-8">
+            <View className="flex-row items-center justify-between mb-4">
+              <Text className="text-lg font-extrabold text-gray-900">
+                Reseñas del producto
+              </Text>
+              {rating && rating.review_count > 0 && (
                 <View className="flex-row items-center gap-2">
                   <RatingStars rating={rating.avg_rating} size={18} />
                   <Text className="text-sm text-gray-500">
                     ({rating.review_count})
                   </Text>
                 </View>
-              </View>
-              
-              {reviews?.slice(0, 3).map((review: any) => (
-                <ReviewCard
-                  key={review.id}
-                  userName={review.user_name || 'Usuario'}
-                  rating={review.rating}
-                  comment={review.comment}
-                  createdAt={review.created_at}
-                />
-              ))}
-              
-              {rating.review_count > 3 && (
-                <Pressable className="mt-3">
-                  <Text className="text-blue-600 text-sm text-center">
-                    Ver las {rating.review_count} reseñas
-                  </Text>
-                </Pressable>
               )}
-            </Animated.View>
-          )}
+            </View>
+            
+            {rating && rating.review_count > 0 ? (
+              <>
+                {reviews?.slice(0, 3).map((review: any) => (
+                  <ReviewCard
+                    key={review.id}
+                    userName={review.user_name || 'Usuario'}
+                    rating={review.rating}
+                    comment={review.comment}
+                    createdAt={review.created_at}
+                  />
+                ))}
+                
+                {rating.review_count > 3 && (
+                  <Pressable className="mt-3">
+                    <Text className="text-blue-600 text-sm text-center">
+                      Ver las {rating.review_count} reseñas
+                    </Text>
+                  </Pressable>
+                )}
+              </>
+            ) : (
+              <Text className="text-gray-500 text-center py-4">
+                Sé el primero en valorar este producto
+              </Text>
+            )}
+            
+            {/* Botón para escribir reseña */}
+            <Pressable
+              onPress={() => setReviewModalVisible(true)}
+              className="mt-4 bg-green-600 py-3 rounded-full"
+            >
+              <Text className="text-white text-center font-semibold">
+                Escribir una reseña
+              </Text>
+            </Pressable>
+          </Animated.View>
+
+          {/* Review Modal */}
+          <ReviewModal
+            productId={Number(id)}
+            visible={reviewModalVisible}
+            onClose={() => setReviewModalVisible(false)}
+            onReviewSubmitted={() => {
+              refetchReviews();
+              refetchRating();
+            }}
+          />
         </View>
       </ScrollView>
 
