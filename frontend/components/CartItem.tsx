@@ -44,22 +44,23 @@ const CartItem = ({
     [item.product.id, onRemove]
   );
   return (
-    <View className="bg-white p-4 rounded-2xl flex-row gap-3 border border-gray-100">
+    <View className="bg-surface-card p-4 rounded-2xl flex-row gap-3 border border-border-subtle">
       {/* Product Image */}
-      <View className="w-24 h-24 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden">
+      <View className="w-24 h-24 bg-surface-muted rounded-xl overflow-hidden">
         <Image
           source={{ uri: item.product.image }}
           className="w-full h-full"
           resizeMode="contain"
+          alt={`Imagen de ${item.product.name}`}
         />
       </View>
 
       {/* Product Info */}
       <View className="flex-1">
-        <Text className="font-bold text-sm text-gray-900 mb-1 leading-snug">
+        <Text className="font-bold text-sm text-ink mb-1 leading-snug">
           {item.product.name}
         </Text>
-        <Text className="text-lg font-black text-gray-900 mb-4">
+        <Text className="text-lg font-black text-ink mb-4">
           {formatPrice(item.product.price * item.quantity)}
         </Text>
 
@@ -70,8 +71,8 @@ const CartItem = ({
             disabled={isUpdating || isRemoving}
             className={`w-8 h-8 rounded-full items-center justify-center ${
               isUpdating || isRemoving
-                ? "bg-gray-300 opacity-40"
-                : "bg-black active:bg-gray-800"
+                ? "bg-ink opacity-40"
+                : "bg-ink active:bg-ink"
             }`}
           >
             <Minus
@@ -88,12 +89,11 @@ const CartItem = ({
               if (!isNaN(newQuantity) && newQuantity !== item.quantity) {
                 updateQuantity(newQuantity);
               } else {
-                // Reset to current quantity if invalid
                 setQuantityText(item.quantity.toString());
               }
             }}
             keyboardType="numeric"
-            className="px-3 py-1 bg-gray-100 rounded-lg min-w-[36px] text-center font-semibold text-gray-900 text-sm"
+            className="px-3 py-1 bg-surface-muted rounded-lg min-w-[36px] text-center font-semibold text-ink text-sm"
             editable={!isUpdating && !isRemoving}
           />
 
@@ -102,8 +102,8 @@ const CartItem = ({
             disabled={isAdding || isUpdating || isRemoving}
             className={`w-8 h-8 rounded-full items-center justify-center ${
               isAdding || isUpdating || isRemoving
-                ? "bg-gray-300 opacity-40"
-                : "bg-black active:bg-gray-800"
+                ? "bg-ink opacity-40"
+                : "bg-ink active:bg-ink"
             }`}
           >
             <Plus
@@ -121,7 +121,7 @@ const CartItem = ({
             disabled={isRemoving}
             className={`w-8 h-8 rounded-full items-center justify-center transition-colors ${
               isRemoving
-                ? "bg-gray-100 opacity-40"
+                ? "bg-surface-muted opacity-40"
                 : "bg-red-50 active:bg-red-100"
             }`}
           >

@@ -9,6 +9,7 @@ import Animated, {
   withSequence,
   withSpring,
 } from "react-native-reanimated";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 interface FavoriteButtonProps {
   productId: number;
@@ -17,7 +18,7 @@ interface FavoriteButtonProps {
 
 function FavoriteButton({ productId, size = 24 }: FavoriteButtonProps) {
   const { getToken } = useAuth();
-  // Granular selectors: only re-render when THIS product's favorite status changes
+  const reducedMotion = useReducedMotion();
   const favorited = useFavoritesStore((s) => s.favoriteIds.has(productId));
   const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
   const scale = useSharedValue(1);
@@ -36,13 +37,15 @@ function FavoriteButton({ productId, size = 24 }: FavoriteButtonProps) {
       return;
     }
 
-    scale.value = withSequence(
-      withSpring(1.3, { damping: 10, stiffness: 400 }),
-      withSpring(1, { damping: 10, stiffness: 400 })
-    );
+    if (!reducedMotion) {
+      scale.value = withSequence(
+        withSpring(1.3, { damping: 10, stiffness: 400 }),
+        withSpring(1, { damping: 10, stiffness: 400 })
+      );
+    }
 
     await toggleFavorite(productId, token);
-  }, [getToken, toggleFavorite, productId, scale]);
+  }, [getToken, toggleFavorite, productId, scale, reducedMotion]);
 
   // For web, we use onClick directly on the element
   const webProps =

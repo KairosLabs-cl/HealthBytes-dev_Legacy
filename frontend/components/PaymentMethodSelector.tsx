@@ -47,7 +47,7 @@ export function PaymentMethodSelector({
             Método de Pago
           </Text>
         </HStack>
-        <Text className="text-gray-500 text-sm">
+        <Text className="text-ink-subtle text-sm">
           Selecciona cómo deseas pagar
         </Text>
       </View>
@@ -76,13 +76,13 @@ export function PaymentMethodSelector({
                     </Text>
                     {method.disabled && method.disabledLabel && (
                       <View className="ml-2 px-2 py-0.5 bg-surface-warm border border-border-subtle rounded-full">
-                        <Text className="text-xs text-gray-500">
+                        <Text className="text-xs text-ink-subtle">
                           {method.disabledLabel}
                         </Text>
                       </View>
                     )}
                   </HStack>
-                  <Text className="text-sm text-gray-500">
+                  <Text className="text-sm text-ink-subtle">
                     {method.description}
                   </Text>
                 </View>

@@ -20,31 +20,31 @@ export function AuthGate({
 
   if (!isLoaded) {
     return (
-      <SafeAreaView className="flex-1 bg-white items-center justify-center">
-        <ActivityIndicator size="large" color="#000000" />
-        <Text className="mt-4 text-gray-500">Cargando...</Text>
+      <SafeAreaView className="flex-1 bg-surface-card items-center justify-center">
+        <ActivityIndicator size="large" color="#2D2926" />
+        <Text className="mt-4 text-ink-subtle">Cargando...</Text>
       </SafeAreaView>
     );
   }
 
   if (!isSignedIn) {
     return (
-      <SafeAreaView className="flex-1 bg-white items-center justify-center px-8">
-        <View className="w-20 h-20 rounded-full bg-gray-100 items-center justify-center mb-6">
+      <SafeAreaView className="flex-1 bg-surface-card items-center justify-center px-8">
+        <View className="w-20 h-20 rounded-full bg-surface-muted items-center justify-center mb-6">
           <Lock size={36} color="#6B7280" />
         </View>
 
-        <Text className="text-2xl font-extrabold text-gray-900 mb-3 text-center">
+        <Text className="text-2xl font-extrabold text-ink mb-3 text-center">
           Inicia sesion para continuar
         </Text>
 
-        <Text className="text-base text-gray-500 text-center mb-8 leading-6">
+        <Text className="text-base text-ink-subtle text-center mb-8 leading-6">
           {message}
         </Text>
 
         <Pressable
           onPress={() => router.push("/(auth)/login")}
-          className="w-full h-14 bg-black rounded-full items-center justify-center active:opacity-80 mb-6"
+          className="w-full h-14 bg-ink rounded-full items-center justify-center active:opacity-80 mb-6"
           style={{ minHeight: 52 }}
         >
           <Text className="text-white font-bold text-base">Inicia sesión</Text>
@@ -55,7 +55,7 @@ export function AuthGate({
           className="py-2 active:opacity-60"
           style={{ minHeight: 44 }}
         >
-          <Text className="text-gray-400 font-medium text-sm">
+          <Text className="text-ink-subtle font-medium text-sm">
             Volver al catalogo
           </Text>
         </Pressable>

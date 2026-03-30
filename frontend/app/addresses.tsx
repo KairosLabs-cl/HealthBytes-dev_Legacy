@@ -272,6 +272,8 @@ export default function AddressesScreen() {
                     onPress={handleCancelEdit}
                     style={{ minHeight: 48 }}
                     className="flex-row items-center justify-center gap-1.5 px-4 bg-gray-100 rounded-full active:bg-gray-200"
+                    accessibilityLabel="Cancelar edición"
+                    accessibilityRole="button"
                   >
                     <X size={14} color="#6B7280" />
                     <Text className="text-xs text-gray-500 font-medium">
@@ -298,6 +300,7 @@ export default function AddressesScreen() {
                       placeholder="Nombre de esta dirección"
                       value={addressLabel}
                       onChangeText={setAddressLabel}
+                      accessibilityLabel="Etiqueta de dirección"
                     />
                   </Input>
                 </View>
@@ -316,6 +319,7 @@ export default function AddressesScreen() {
                       placeholder="Calle, número, depto..."
                       value={addressLine}
                       onChangeText={setAddressLine}
+                      accessibilityLabel="Dirección"
                     />
                   </Input>
                 </View>
@@ -336,6 +340,7 @@ export default function AddressesScreen() {
                       onChangeText={setAddressPostalCode}
                       keyboardType="numeric"
                       maxLength={7}
+                      accessibilityLabel="Código postal"
                     />
                   </Input>
                 </View>
@@ -358,6 +363,7 @@ export default function AddressesScreen() {
                         setShowComunaSuggestions(true);
                       }}
                       onFocus={() => setShowComunaSuggestions(true)}
+                      accessibilityLabel="Comuna"
                     />
                     <View className="pr-4 justify-center">
                       <ChevronDown size={20} color="#9CA3AF" />
@@ -484,6 +490,8 @@ export default function AddressesScreen() {
                             onPress={() => handleStartEdit(addr)}
                             style={{ minHeight: 48, minWidth: 48, justifyContent: 'center', alignItems: 'center' }}
                             className="bg-gray-50 rounded-xl active:bg-gray-100 border border-gray-100"
+                            accessibilityLabel={`Editar dirección ${addr.label}`}
+                            accessibilityRole="button"
                           >
                             <Pencil size={18} color="#6B7280" />
                           </Pressable>
@@ -491,6 +499,8 @@ export default function AddressesScreen() {
                             onPress={() => handleDelete(addr.id)}
                             style={{ minHeight: 48, minWidth: 48, justifyContent: 'center', alignItems: 'center' }}
                             className="bg-red-50 rounded-xl active:bg-red-100 border border-red-100"
+                            accessibilityLabel={`Eliminar dirección ${addr.label}`}
+                            accessibilityRole="button"
                           >
                             <Trash2 size={18} color="#DC2626" />
                           </Pressable>

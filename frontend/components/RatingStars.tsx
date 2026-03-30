@@ -10,6 +10,7 @@ interface RatingStarsProps {
   interactive?: boolean;
   onChange?: (rating: number) => void;
   showCount?: number;
+  showFraction?: boolean;
 }
 
 export function RatingStars({
@@ -19,6 +20,7 @@ export function RatingStars({
   interactive = false,
   onChange,
   showCount,
+  showFraction = false,
 }: RatingStarsProps) {
   const [hoverRating, setHoverRating] = useState(0);
   const displayRating = interactive && hoverRating > 0 ? hoverRating : rating;
@@ -34,6 +36,8 @@ export function RatingStars({
           onPress={() => onChange?.(index + 1)}
           onPressIn={() => setHoverRating(index + 1)}
           onPressOut={() => setHoverRating(0)}
+          accessibilityLabel={`${index + 1} de ${maxStars} estrellas`}
+          accessibilityRole="button"
         >
           <Star
             size={size}
@@ -50,6 +54,7 @@ export function RatingStars({
         size={size}
         fill={filled || halfFilled ? '#FBBF24' : 'transparent'}
         color={filled || halfFilled ? '#FBBF24' : '#9CA3AF'}
+        accessibilityLabel={`${index + 1} de ${maxStars} estrellas`}
       />
     );
   };
@@ -57,8 +62,13 @@ export function RatingStars({
   return (
     <View className="flex-row items-center gap-1">
       {Array.from({ length: maxStars }, (_, i) => renderStar(i))}
-      {showCount !== undefined && (
-        <Text className="text-sm text-gray-500 ml-1">({showCount})</Text>
+      {showFraction && (
+        <Text className="text-sm font-bold text-ink-muted ml-1">
+          {rating.toFixed(1)}/{maxStars}
+        </Text>
+      )}
+      {showCount !== undefined && !showFraction && (
+        <Text className="text-sm text-ink-subtle ml-1">({showCount})</Text>
       )}
     </View>
   );

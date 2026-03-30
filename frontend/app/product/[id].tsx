@@ -431,7 +431,7 @@ export default function ProductDetailsScreen() {
             <Image
               source={{ uri: product.image }}
               className="w-full h-72"
-              alt={`${product.name} image`}
+              alt={`Imagen de ${product.name}`}
               resizeMode="contain"
             />
           </View>
@@ -600,15 +600,15 @@ export default function ProductDetailsScreen() {
           )}
 
           {/* Product Reviews */}
-          <Animated.View entering={FadeInUp.delay(550).duration(400)} className="mt-6 mb-8">
+          <Animated.View entering={FadeInUp.delay(550).duration(400)} className="mt-6 mb-8 px-1">
             <View className="flex-row items-center justify-between mb-4">
-              <Text className="text-lg font-extrabold text-gray-900">
-                Reseñas del producto
+              <Text className="text-xl font-black text-gray-900">
+                Reseñas
               </Text>
               {rating && rating.review_count > 0 && (
-                <View className="flex-row items-center gap-2">
-                  <RatingStars rating={rating.avg_rating} size={18} />
-                  <Text className="text-sm text-gray-500">
+                <View className="flex-row items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full">
+                  <RatingStars rating={rating.avg_rating} size={16} showFraction />
+                  <Text className="text-sm text-gray-500 font-medium">
                     ({rating.review_count})
                   </Text>
                 </View>
@@ -617,36 +617,39 @@ export default function ProductDetailsScreen() {
             
             {rating && rating.review_count > 0 ? (
               <>
-                {reviews?.slice(0, 3).map((review: any) => (
+                {reviews?.slice(0, 5).map((review: any) => (
                   <ReviewCard
                     key={review.id}
                     userName={review.user_name || 'Usuario'}
+                    userImage={review.user_image}
                     rating={review.rating}
                     comment={review.comment}
                     createdAt={review.created_at}
                   />
                 ))}
                 
-                {rating.review_count > 3 && (
-                  <Pressable className="mt-3">
-                    <Text className="text-blue-600 text-sm text-center">
+                {rating.review_count > 5 && (
+                  <Pressable className="mt-2 py-3">
+                    <Text className="text-green-600 text-center font-semibold">
                       Ver las {rating.review_count} reseñas
                     </Text>
                   </Pressable>
                 )}
               </>
             ) : (
-              <Text className="text-gray-500 text-center py-4">
-                Sé el primero en valorar este producto
-              </Text>
+              <View className="bg-gray-50 p-6 rounded-2xl">
+                <Text className="text-gray-500 text-center">
+                  Sé el primero en valorar este producto
+                </Text>
+              </View>
             )}
             
             {/* Botón para escribir reseña */}
             <Pressable
               onPress={() => setReviewModalVisible(true)}
-              className="mt-4 bg-green-600 py-3 rounded-full"
+              className="mt-4 bg-green-600 py-3.5 rounded-xl shadow-sm"
             >
-              <Text className="text-white text-center font-semibold">
+              <Text className="text-white text-center font-bold">
                 Escribir una reseña
               </Text>
             </Pressable>

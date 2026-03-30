@@ -270,7 +270,7 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
           {rating && rating.review_count > 0 && (
             <View className="flex-row items-center mb-2">
               <RatingStars rating={rating.avg_rating} size={12} />
-              <Text className="text-xs text-gray-500 ml-1">
+              <Text className="text-xs text-ink-subtle ml-1">
                 ({rating.review_count})
               </Text>
             </View>
