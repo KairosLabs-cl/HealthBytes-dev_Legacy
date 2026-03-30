@@ -22,7 +22,6 @@ from app.api.v1 import (
     products,
     stock,
     users,
-    vendors,
 )
 from app.config import settings
 from app.core.limiter import limiter
@@ -346,7 +345,6 @@ async def check_jwks_health():
 
 # Include routers (equivalent to app.use() in Express)
 app.include_router(products.router, prefix="/products", tags=["Products"])
-app.include_router(vendors.router, prefix="/vendors", tags=["Vendors"])
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(orders.router, prefix="/orders", tags=["Orders"])
 app.include_router(users.router, prefix="/users", tags=["Users"])

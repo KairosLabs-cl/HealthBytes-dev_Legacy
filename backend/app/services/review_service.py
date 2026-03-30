@@ -5,7 +5,7 @@ from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.db.schemas import Product, Review, Vendor
+from app.db.schemas import Product, Review
 from app.schemas.review import ReviewCreate
 
 logger = logging.getLogger(__name__)
@@ -57,28 +57,3 @@ async def get_product_reviews(
     )
 
     return list(result.scalars().all())
-
-
-async def create_vendor_review(
-    db: AsyncSession, user_id: int, vendor_id: int, review_in: ReviewCreate
-) -> Optional[Review]:
-    """Create a new review for a vendor."""
-    vendor_result = await db.execute(select(Vendor).where(Vendor.id == vendor_id))
-    vendor = vendor_result.scalar_one_or_none()
-    
-    if not vendor:
-        return None
-    
-    existing_result = await db.execute(
-        select(Review).where(Review.user_id == user_id).where(Review.vendor_id == vendor_id)
-    )
-    if existing_result.scalar_one_or_none():
-        raise ValueError("User has already reviewed this vendor")
-    
-    db_review = Review(
-        user_id=user_id, vendor_id=vendor_id, rating=review_in.rating, comment=review_in.comment
-    )
-    db.add(db_review)
-    await db.commit()
-    await db.refresh(db_review)
-    return db_review

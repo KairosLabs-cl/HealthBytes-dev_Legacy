@@ -42,11 +42,9 @@ class Product(Base):
     stock = Column(Integer, nullable=False, default=0)
     category = Column(String(100), nullable=True, index=True)
     vendor_name = Column(String(255), nullable=True)
-    vendor_id = Column(Integer, ForeignKey("vendors.id", ondelete="SET NULL"), nullable=True, index=True)
     nutritional_info = Column(Text, nullable=True)
 
     # Relationships
-    vendor = relationship("Vendor", back_populates="products")
     reviews = relationship("Review", back_populates="product")
 
     # Full-text search column
@@ -212,39 +210,22 @@ class CartItem(Base):
     __table_args__ = (UniqueConstraint("user_id", "product_id", name="uq_user_product_cart"),)
 
 
-class Vendor(Base):
-    """Vendors table - Stores seller/vendor information"""
-
-    __tablename__ = "vendors"
-
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    name = Column(String(255), nullable=False, index=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-
-    products = relationship("Product", back_populates="vendor")
-    reviews = relationship("Review", back_populates="vendor")
-
-
 class Review(Base):
-    """Reviews table - Stores product and vendor reviews"""
+    """Reviews table - Stores product reviews"""
 
     __tablename__ = "reviews"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     product_id = Column(Integer, ForeignKey("products.id", ondelete="CASCADE"), nullable=True, index=True)
-    vendor_id = Column(Integer, ForeignKey("vendors.id", ondelete="CASCADE"), nullable=True, index=True)
     rating = Column(Integer, nullable=False)
     comment = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     user = relationship("User")
     product = relationship("Product", back_populates="reviews")
-    vendor = relationship("Vendor", back_populates="reviews")
 
     __table_args__ = (
         Index("idx_review_product", "product_id"),
-        Index("idx_review_vendor", "vendor_id"),
         Index("idx_review_user_product", "user_id", "product_id", unique=True),
-        Index("idx_review_user_vendor", "user_id", "vendor_id", unique=True),
     )
