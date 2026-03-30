@@ -173,15 +173,38 @@ module.exports = {
           info: "rgb(var(--color-indicator-info)/<alpha-value>)",
           error: "rgb(var(--color-indicator-error)/<alpha-value>)",
         },
-        "surface-warm": "var(--surface-warm)",
-        "surface-card": "var(--surface-card)",
+        "surface-warm": "#FCFAF8",
+        "surface-card": "#FFFFFF",
+        "surface-elevated": "#FAFAF9",
+        "surface-muted": "#F5F5F4",
         ink: "var(--ink)",
         "brand-green": "var(--brand-green)",
         "border-subtle": "var(--border-subtle)",
+        
+        // Semantic tokens - Warm Earth Palette
+        // Backgrounds
+        "surface-warm-alt": "#FCFAF8",
+        
+        // Text - Ink system
+        "ink-primary": "#2D2926",
+        "ink-muted": "#6B6B6B",
+        "ink-subtle": "#9CA3AF",
+        
+        // Borders
+        "border-default": "#D1D5DB",
+        "border-focus": "#2D2926",
+        
+        // Accent
+        "accent-primary": "#5C6B5A",
+        "accent-hover": "#4A5649",
+        "accent-light": "#F0FDF4",
       },
       fontFamily: {
-        heading: undefined,
-        body: undefined,
+        // Custom distinctive fonts for HealthBytes
+        heading: ["Fraunces", "serif"],
+        body: ["PlusJakartaSans", "sans-serif"],
+        display: ["Fraunces", "serif"],
+        sans: ["PlusJakartaSans", "sans-serif"],
         mono: undefined,
         roboto: ["Roboto", "sans-serif"],
       },
