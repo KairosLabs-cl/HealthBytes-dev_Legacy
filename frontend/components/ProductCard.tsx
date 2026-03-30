@@ -23,7 +23,6 @@ import {
   Info,
   MilkOff,
   Package,
-  Star,
   Store,
   Vegan,
   WheatOff,
@@ -247,30 +246,20 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
             {product.name}
           </Text>
 
-          {/* Vendor name + rating */}
+          {/* Vendor name */}
           {product.vendor_name && (
-            <View className="flex-row items-center justify-between mb-2">
-              <View className="flex-row items-center flex-1">
-                <Store size={12} color="#6B7280" style={{ marginRight: 4 }} />
-                <Text
-                  numberOfLines={1}
-                  style={{
-                    fontSize: 11,
-                    fontWeight: "400",
-                    color: "#6B7280",
-                  }}
-                >
-                  {product.vendor_name}
-                </Text>
-              </View>
-              {rating && rating.review_count > 0 && (
-                <View className="flex-row items-center gap-1">
-                  <Star size={10} fill="#FBBF24" color="#FBBF24" />
-                  <Text className="text-xs text-gray-500">
-                    {rating.avg_rating}
-                  </Text>
-                </View>
-              )}
+            <View className="flex-row items-center mb-2">
+              <Store size={12} color="#6B7280" style={{ marginRight: 4 }} />
+              <Text
+                numberOfLines={1}
+                style={{
+                  fontSize: 11,
+                  fontWeight: "400",
+                  color: "#6B7280",
+                }}
+              >
+                {product.vendor_name}
+              </Text>
             </View>
           )}
 
