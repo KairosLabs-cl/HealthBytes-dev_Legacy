@@ -5,14 +5,14 @@ from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.db.schemas import Product, Review
+from app.db.schemas import OrderItem, Product, Review
 from app.schemas.review import ReviewCreate
 
 logger = logging.getLogger(__name__)
 
 
 async def create_review(
-    db: AsyncSession, user_id: str, product_id: int, review_in: ReviewCreate
+    db: AsyncSession, user_id: int, product_id: int, review_in: ReviewCreate
 ) -> Optional[Review]:
     """Create a new review for a product."""
     # Check if product exists
@@ -29,8 +29,19 @@ async def create_review(
     if existing_result.scalar_one_or_none():
         raise ValueError("User has already reviewed this product")
 
-    # Validar que el usuario compró el producto.
-    # TODO: Implementar validación desde order_service cruzando OrderItems y userId
+    # Validate that user has purchased the product (paid/processing/shipped/delivered)
+    from app.db.schemas import Order
+
+    valid_statuses = ["processing", "shipped", "delivered"]
+    order_check = await db.execute(
+        select(OrderItem)
+        .join(Order, onclause=OrderItem.order_id == Order.id)
+        .where(OrderItem.product_id == product_id)
+        .where(Order.user_id == user_id)
+        .where(Order.status.in_(valid_statuses))
+    )
+    if not order_check.scalar_one_or_none():
+        raise ValueError("You must purchase this product before reviewing it")
 
     db_review = Review(
         user_id=user_id, product_id=product_id, rating=review_in.rating, comment=review_in.comment
@@ -56,4 +67,4 @@ async def get_product_reviews(
         .limit(limit)
     )
 
-    return result.scalars().all()
+    return list(result.scalars().all())

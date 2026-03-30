@@ -67,7 +67,7 @@ describe("OnboardingModal", () => {
     render(<OnboardingModal visible={true} onComplete={onComplete} />);
 
     // Step 0 -> Step 1 (preferences)
-    fireEvent.press(screen.getByText("Siguiente"));
+    fireEvent.press(screen.getByText("Comenzar"));
 
     expect(screen.getByTestId("tag-celiac")).toBeTruthy();
     expect(screen.getByTestId("tag-diabetic")).toBeTruthy();

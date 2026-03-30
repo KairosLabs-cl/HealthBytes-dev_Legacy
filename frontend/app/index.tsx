@@ -79,7 +79,7 @@ const HeroBanner = React.memo(
 
     return (
       <View className="px-4 mt-4">
-        <View className="rounded-3xl bg-black flex-row items-center px-5 py-5 overflow-hidden">
+        <View className="rounded-3xl bg-ink flex-row items-center px-5 py-5 overflow-hidden">
           <View className="flex-1 pr-3">
             <Text className="text-[11px] uppercase text-gray-300 tracking-[1px]">
               Especial para ti
@@ -92,10 +92,10 @@ const HeroBanner = React.memo(
             </Text>
             <Pressable
               onPress={onViewAll}
-              className="mt-3 self-start bg-white rounded-full px-5 py-3"
+              className="mt-3 self-start bg-surface-card rounded-full px-5 py-3"
               style={{ minHeight: 44 }}
             >
-              <Text className="font-semibold text-black">Ver coleccion</Text>
+              <Text className="font-semibold text-ink">Ver coleccion</Text>
             </Pressable>
           </View>
           <View className="w-28 h-28 rounded-2xl bg-white/10 border border-white/10 items-center justify-center">
@@ -104,6 +104,7 @@ const HeroBanner = React.memo(
                 source={{ uri: heroProduct.image }}
                 className="w-full h-full"
                 resizeMode="contain"
+                alt={`Imagen de ${heroProduct.name}`}
               />
             ) : (
               <Text className="text-white text-sm">Snacks</Text>
@@ -328,13 +329,13 @@ export default function HomeScreen() {
     return (
       <>
         <Stack.Screen options={{ headerShown: false }} />
-        <View className="flex-1 items-center justify-center bg-white px-6">
+        <View className="flex-1 items-center justify-center bg-surface-warm px-6">
           <Text className="text-red-500 text-base mb-4">
             Error cargando productos
           </Text>
           <Pressable
             onPress={() => refetch()}
-            className="flex-row items-center gap-2 bg-black px-6 py-3 rounded-full"
+            className="flex-row items-center gap-2 bg-ink px-6 py-3 rounded-full"
             style={{ minHeight: 44 }}
           >
             <RefreshCw size={18} color="white" />
@@ -346,16 +347,16 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-surface-warm" edges={["top"]}>
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
 
       {isFetching && !refreshing && data && (
-        <View className="h-0.5 bg-green-600" />
+        <View className="h-0.5 bg-brand-green" />
       )}
 
       <FlatList
-        className="flex-1 bg-white"
+        className="flex-1 bg-surface-warm"
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={renderListHeader}
         onRefresh={handleRefresh}
@@ -364,12 +365,12 @@ export default function HomeScreen() {
           <View className="flex-1 items-center justify-center p-8">
             {dietaryTags.length > 0 ? (
               <>
-                <Text className="text-center text-gray-600 mb-4 text-base">
+                <Text className="text-center text-ink-muted mb-4 text-base">
                   No hay productos para estos filtros
                 </Text>
                 <Pressable
                   onPress={clearFilters}
-                  className="bg-black rounded-full px-6 py-3"
+                  className="bg-ink rounded-full px-6 py-3"
                   style={{ minHeight: 44 }}
                 >
                   <Text className="text-white font-semibold">
@@ -378,7 +379,7 @@ export default function HomeScreen() {
                 </Pressable>
               </>
             ) : (
-              <Text className="text-center text-gray-500 text-base">
+              <Text className="text-center text-ink-subtle text-base">
                 No hay productos disponibles
               </Text>
             )}

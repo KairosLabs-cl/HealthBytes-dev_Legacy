@@ -16,7 +16,7 @@ const TAG_COLORS: Record<string, { bg: string; text: string }> = {
   emerald: { bg: "bg-emerald-100", text: "text-emerald-700" },
 };
 
-const DEFAULT_COLORS = { bg: "bg-gray-100", text: "text-gray-700" };
+const DEFAULT_COLORS = { bg: "bg-surface-muted", text: "text-ink-muted" };
 
 interface DietaryBadgeProps {
   tag: DietaryTag;

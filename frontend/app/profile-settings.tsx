@@ -89,6 +89,7 @@ export default function ProfileSettingsScreen() {
                   uri: user?.imageUrl || "https://via.placeholder.com/80",
                 }}
                 className="w-16 h-16 rounded-full mr-4"
+                alt="Foto de perfil"
               />
               <View className="flex-1">
                 <Text className="text-base text-black font-semibold">
@@ -106,6 +107,8 @@ export default function ProfileSettingsScreen() {
                     "Para cambiar la foto necesitamos habilitar selección de imágenes."
                   )
                 }
+                accessibilityLabel="Cambiar foto de perfil"
+                accessibilityRole="button"
               >
                 <ButtonText className="text-white text-xs">Cambiar</ButtonText>
               </Button>
@@ -135,6 +138,7 @@ export default function ProfileSettingsScreen() {
                   placeholder="Tu nombre"
                   placeholderTextColor="#9CA3AF"
                   className="text-black"
+                  accessibilityLabel="Nombre"
                 />
               </Input>
             </View>
@@ -151,6 +155,7 @@ export default function ProfileSettingsScreen() {
                   placeholder="Tu apellido"
                   placeholderTextColor="#9CA3AF"
                   className="text-black"
+                  accessibilityLabel="Apellido"
                 />
               </Input>
             </View>

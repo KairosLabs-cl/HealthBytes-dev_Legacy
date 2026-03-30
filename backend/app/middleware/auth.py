@@ -1,4 +1,5 @@
 import logging
+import time
 from typing import Optional
 
 import jwt
@@ -21,13 +22,41 @@ logger = logging.getLogger(__name__)
 _clerk_jwks_client: Optional[PyJWKClient] = None
 _jwks_client_warned = False
 _jwks_verify_warned = False
+_jwks_client_created_at: float = 0
+
+# JWKS cache TTL - refresh every 5 minutes to handle key rotation
+JWKS_CACHE_TTL_SECONDS = 300
+
+
+def _reset_jwks_client() -> None:
+    """Reset JWKS client to force refresh from Clerk"""
+    global _clerk_jwks_client, _jwks_client_created_at
+    if _clerk_jwks_client is not None:
+        logger.info("Resetting JWKS client cache to fetch fresh keys from Clerk")
+    _clerk_jwks_client = None
+    _jwks_client_created_at = 0
 
 
 def get_clerk_jwks_client() -> Optional[PyJWKClient]:
-    """Get or create Clerk JWKS client"""
-    global _clerk_jwks_client
-    if _clerk_jwks_client is None and settings.clerk_jwks_url:
-        _clerk_jwks_client = PyJWKClient(settings.clerk_jwks_url)
+    """Get or create Clerk JWKS client with periodic cache refresh"""
+    global _clerk_jwks_client, _jwks_client_created_at
+
+    current_time = time.time()
+
+    # Check if we need to create a new client or refresh the cache
+    if _clerk_jwks_client is None:
+        if settings.clerk_jwks_url:
+            _clerk_jwks_client = PyJWKClient(settings.clerk_jwks_url)
+            _jwks_client_created_at = current_time
+            logger.info("Created new JWKS client for Clerk")
+    elif current_time - _jwks_client_created_at > JWKS_CACHE_TTL_SECONDS:
+        # Cache expired - reset and recreate
+        logger.info("JWKS cache expired, refreshing keys from Clerk")
+        _reset_jwks_client()
+        if settings.clerk_jwks_url:
+            _clerk_jwks_client = PyJWKClient(settings.clerk_jwks_url)
+            _jwks_client_created_at = current_time
+
     return _clerk_jwks_client
 
 
@@ -59,6 +88,32 @@ def verify_clerk_token(token: str) -> Optional[dict]:
             options={"verify_aud": False},  # Clerk doesn't always set audience
         )
         return payload
+    except jwt.exceptions.PyJWTError as e:
+        message = str(e)
+        # Check if this is a key not found error - might need to refresh JWKS cache
+        if "Unable to find a signing key" in message or "key ID" in message.lower():
+            logger.warning("Signing key not found in JWKS cache, refreshing...")
+            _reset_jwks_client()
+            # Try once more with fresh cache
+            jwks_client = get_clerk_jwks_client()
+            if jwks_client:
+                try:
+                    signing_key = jwks_client.get_signing_key_from_jwt(token)
+                    payload = jwt.decode(
+                        token,
+                        signing_key.key,
+                        algorithms=["RS256"],
+                        options={"verify_aud": False},
+                    )
+                    return payload
+                except Exception:
+                    pass
+
+        if "Signature has expired" not in message:
+            if not _jwks_verify_warned:
+                logger.warning("Clerk token verification failed: %s", type(e).__name__)
+                _jwks_verify_warned = True
+        return None
     except Exception as e:
         message = str(e)
         if "Signature has expired" not in message:
@@ -138,6 +193,7 @@ async def get_current_user(
                         clerk_id=clerk_user_id,
                         email=email or f"user_{clerk_user_id[:8]}@example.com",
                         role="customer",
+                        image_url=clerk_payload.get("image_url"),
                     )
                     db.add(new_user)
                     await db.commit()

@@ -51,3 +51,32 @@ export async function fetchProductById(id: number) {
   await throwIfNotOk(res, "Error fetching product");
   return res.json();
 }
+
+export type ProductRating = {
+  avg_rating: number;
+  review_count: number;
+};
+
+export type Review = {
+  id: number;
+  user_id: number;
+  product_id?: number;
+  vendor_id?: number;
+  rating: number;
+  comment?: string;
+  created_at: string;
+  user_name?: string;
+  user_image?: string | null;
+};
+
+export async function getProductRating(productId: number): Promise<ProductRating> {
+  const res = await fetch(`${API_URL}/products/${productId}/rating`);
+  await throwIfNotOk(res, 'Error fetching rating');
+  return res.json();
+}
+
+export async function getProductReviews(productId: number, skip = 0, limit = 20): Promise<Review[]> {
+  const res = await fetch(`${API_URL}/products/${productId}/reviews?skip=${skip}&limit=${limit}`);
+  await throwIfNotOk(res, 'Error fetching reviews');
+  return res.json();
+}
