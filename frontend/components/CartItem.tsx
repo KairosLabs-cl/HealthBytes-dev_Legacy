@@ -19,13 +19,9 @@ const CartItem = ({
   onDecrement,
   onRemove,
 }: CartItemProps) => {
-  const addingProducts = useCart((state) => state.addingProducts);
-  const updatingProducts = useCart((state) => state.updatingProducts);
-  const removingProducts = useCart((state) => state.removingProducts);
-
-  const isAdding = addingProducts.has(item.product.id);
-  const isUpdating = updatingProducts.has(item.product.id);
-  const isRemoving = removingProducts.has(item.product.id);
+  const isAdding = useCart((state) => state.addingProducts.has(item.product.id));
+  const isUpdating = useCart((state) => state.updatingProducts.has(item.product.id));
+  const isRemoving = useCart((state) => state.removingProducts.has(item.product.id));
 
   const [quantityText, setQuantityText] = useState(item.quantity.toString());
 
