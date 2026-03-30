@@ -24,8 +24,13 @@ export function usePushNotifications() {
   const { getToken, isSignedIn } = useAuth();
   const [expoPushToken, setExpoPushToken] = useState<string | undefined>();
   const [notification, setNotification] = useState<Notifications.Notification | undefined>();
-  const notificationListener = useRef<Notifications.Subscription | undefined>(undefined);
-  const responseListener = useRef<Notifications.Subscription | undefined>(undefined);
+<<<<<<< HEAD
+  const notificationListener = useRef<Notifications.EventSubscription | null>(null);
+  const responseListener = useRef<Notifications.EventSubscription | null>(null);
+=======
+  const notificationListener = useRef<Notifications.EventSubscription | null>(null);
+  const responseListener = useRef<Notifications.EventSubscription | null>(null);
+>>>>>>> origin/sentinel-fix-timing-attack-6733847747460464137
 
   async function registerForPushNotificationsAsync() {
     let token;
@@ -96,9 +101,9 @@ export function usePushNotifications() {
 
     // 3. Manejar interacciones del usuario con las notificaciones (ej. Deep linking)
     responseListener.current = Notifications.addNotificationResponseReceivedListener((response: Notifications.NotificationResponse) => {
-      const data = response.notification.request.content.data as { url?: string };
+      const data = response.notification.request.content.data;
       // Si el payload contiene una url via el backend...
-      if (data?.url) {
+      if (data?.url && typeof data.url === 'string') {
         // Asume esquema de la app (ej: healthbytes://orders/1) -> /orders/1
         const path = data.url.replace(/^healthbytes:\/\//, '/');
         // Redirige
