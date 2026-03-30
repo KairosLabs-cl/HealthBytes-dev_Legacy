@@ -44,6 +44,9 @@ class Product(Base):
     vendor_name = Column(String(255), nullable=True)
     nutritional_info = Column(Text, nullable=True)
 
+    # Relationships
+    reviews = relationship("Review", back_populates="product")
+
     # Full-text search column
     # PostgreSQL: TSVECTOR with GIN index, populated by trigger
     # SQLite (tests): Text fallback
@@ -112,6 +115,7 @@ class User(Base):
     name = Column(String(255), nullable=True)
     address = Column(Text, nullable=True)
     clerk_id = Column(String(255), unique=True, nullable=True, index=True)  # Clerk user ID
+    image_url = Column(String(500), nullable=True)  # Clerk profile image
     dietary_preferences = Column(JSON, nullable=True, default=list)  # e.g. ["sin-gluten", "vegano"]
 
     # Relationship with favorites
@@ -205,3 +209,28 @@ class CartItem(Base):
 
     # Constraint: one user can't have the same product duplicated in cart
     __table_args__ = (UniqueConstraint("user_id", "product_id", name="uq_user_product_cart"),)
+
+
+class Review(Base):
+    """Reviews table - Stores product reviews"""
+
+    __tablename__ = "reviews"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    product_id = Column(
+        Integer, ForeignKey("products.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+    rating = Column(Integer, nullable=False)
+    comment = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User")
+    product = relationship("Product", back_populates="reviews")
+
+    __table_args__ = (
+        Index("idx_review_product", "product_id"),
+        Index("idx_review_user_product", "user_id", "product_id", unique=True),
+    )

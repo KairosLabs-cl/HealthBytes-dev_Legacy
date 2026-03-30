@@ -71,7 +71,7 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
         <Image
           source={{ uri: product.image }}
           style={{ width: "100%", height: "100%" }}
-          alt={product.name}
+          alt={`Imagen de ${product.name}`}
           resizeMode="contain"
         />
       </Pressable>

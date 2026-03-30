@@ -247,6 +247,9 @@ export default function CheckoutV2Screen() {
                             ? "border-brand-green bg-[#F0FDF4]"
                             : "border-border-subtle bg-surface-card shadow-soft-lift"
                         }`}
+                        accessibilityLabel={`Dirección: ${address.street}, ${address.city}`}
+                        accessibilityRole="radio"
+                        accessibilityState={{ selected: selectedAddress?.id === address.id }}
                       >
                         <HStack className="items-start justify-between">
                           <View className="flex-1">
@@ -292,6 +295,8 @@ export default function CheckoutV2Screen() {
                       className="bg-brand-green"
                       style={{ minHeight: 48 }}
                       onPress={() => router.push("/addresses")}
+                      accessibilityLabel="Agregar nueva dirección"
+                      accessibilityRole="button"
                     >
                       <ButtonText>+ Añadir Dirección</ButtonText>
                     </Button>
@@ -305,6 +310,8 @@ export default function CheckoutV2Screen() {
                     className="border-brand-green"
                     style={{ minHeight: 48 }}
                     onPress={() => router.push("/addresses")}
+                    accessibilityLabel="Agregar nueva dirección"
+                    accessibilityRole="button"
                   >
                     <ButtonText className="text-brand-green">
                       + Añadir otra dirección

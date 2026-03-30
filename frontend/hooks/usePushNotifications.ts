@@ -24,13 +24,8 @@ export function usePushNotifications() {
   const { getToken, isSignedIn } = useAuth();
   const [expoPushToken, setExpoPushToken] = useState<string | undefined>();
   const [notification, setNotification] = useState<Notifications.Notification | undefined>();
-<<<<<<< HEAD
   const notificationListener = useRef<Notifications.EventSubscription | null>(null);
   const responseListener = useRef<Notifications.EventSubscription | null>(null);
-=======
-  const notificationListener = useRef<Notifications.EventSubscription | null>(null);
-  const responseListener = useRef<Notifications.EventSubscription | null>(null);
->>>>>>> origin/sentinel-fix-timing-attack-6733847747460464137
 
   async function registerForPushNotificationsAsync() {
     let token;

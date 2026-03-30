@@ -26,15 +26,15 @@ export function StepIndicator({
               <View
                 className={`w-10 h-10 rounded-full items-center justify-center mb-2 ${
                   isCompleted
-                    ? "bg-green-600"
+                    ? "bg-brand-green"
                     : isActive
                       ? "bg-blue-600"
-                      : "bg-gray-300"
+                      : "bg-border-subtle"
                 }`}
               >
                 <Text
                   className={`font-bold text-sm ${
-                    isCompleted || isActive ? "text-white" : "text-gray-600"
+                    isCompleted || isActive ? "text-white" : "text-ink-muted"
                   }`}
                 >
                   {isCompleted ? "✓" : stepNumber}
@@ -44,7 +44,7 @@ export function StepIndicator({
               {/* Label */}
               <Text
                 className={`text-xs font-semibold text-center ${
-                  isActive ? "text-blue-600" : "text-gray-500"
+                  isActive ? "text-blue-600" : "text-ink-subtle"
                 }`}
               >
                 {step}
@@ -55,7 +55,7 @@ export function StepIndicator({
       </HStack>
 
       {/* Progress Bar */}
-      <View className="h-1 bg-gray-200 rounded-full mt-4 overflow-hidden">
+      <View className="h-1 bg-border-subtle rounded-full mt-4 overflow-hidden">
         <View
           className="h-full bg-blue-600 rounded-full"
           style={{ width: `${((currentStep - 1) / (totalSteps - 1)) * 100}%` }}

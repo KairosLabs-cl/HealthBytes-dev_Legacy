@@ -22,7 +22,7 @@ export default function FavoritesBar({ products, limit = 8, onSeeAll }: Props) {
   return (
     <View className="mt-4 mb-4 bg-gradient-to-b from-amber-50 to-transparent rounded-2xl px-4 pt-4 pb-3 mx-4">
       <View className="flex-row items-center justify-between mb-3">
-        <Text className="text-[17px] font-bold text-gray-900">
+        <Text className="text-[17px] font-bold text-ink">
           {"⭐ Favoritos"}
         </Text>
         <Pressable
@@ -47,7 +47,7 @@ export default function FavoritesBar({ products, limit = 8, onSeeAll }: Props) {
         />
       ) : (
         <View className="py-4 items-center">
-          <Text className="text-gray-500 text-sm">
+          <Text className="text-ink-subtle text-sm">
             Aún no tienes productos favoritos.
           </Text>
         </View>
