@@ -98,6 +98,7 @@ async def get_product_reviews(
             "comment": r.comment,
             "created_at": r.created_at.isoformat() if r.created_at else None,
             "user_name": r.user.name if r.user else "Usuario",
+            "user_image": r.user.image_url if r.user and r.user.image_url else None,
         }
         for r in reviews
     ]

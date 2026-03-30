@@ -115,6 +115,7 @@ class User(Base):
     name = Column(String(255), nullable=True)
     address = Column(Text, nullable=True)
     clerk_id = Column(String(255), unique=True, nullable=True, index=True)  # Clerk user ID
+    image_url = Column(String(500), nullable=True)  # Clerk profile image
     dietary_preferences = Column(JSON, nullable=True, default=list)  # e.g. ["sin-gluten", "vegano"]
 
     # Relationship with favorites
