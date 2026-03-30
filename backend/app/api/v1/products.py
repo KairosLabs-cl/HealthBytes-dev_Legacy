@@ -82,7 +82,7 @@ async def get_product_reviews(
     product_id: int,
     skip: int = 0,
     limit: int = Query(20, ge=1, le=100),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Get all reviews for a product."""
     product = await product_service.get_product(db, product_id)
@@ -97,7 +97,7 @@ async def get_product_reviews(
             "rating": r.rating,
             "comment": r.comment,
             "created_at": r.created_at.isoformat() if r.created_at else None,
-            "user_name": r.user.name if r.user else "Usuario"
+            "user_name": r.user.name if r.user else "Usuario",
         }
         for r in reviews
     ]
@@ -108,7 +108,7 @@ async def create_product_review(
     product_id: int,
     review_in: ReviewCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """Create a review for a product."""
     try:
@@ -121,7 +121,7 @@ async def create_product_review(
             "product_id": review.product_id,
             "rating": review.rating,
             "comment": review.comment,
-            "created_at": review.created_at
+            "created_at": review.created_at,
         }
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

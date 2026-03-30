@@ -123,14 +123,12 @@ async def get_product(db: AsyncSession, product_id: int) -> Optional[Product]:
 async def get_product_rating(db: AsyncSession, product_id: int) -> dict:
     """Get average rating and review count for a product."""
     result = await db.execute(
-        select(func.avg(Review.rating), func.count(Review.id))
-        .where(Review.product_id == product_id)
+        select(func.avg(Review.rating), func.count(Review.id)).where(
+            Review.product_id == product_id
+        )
     )
     row = result.one()
-    return {
-        "avg_rating": round(float(row[0]), 1) if row[0] else 0,
-        "review_count": row[1] or 0
-    }
+    return {"avg_rating": round(float(row[0]), 1) if row[0] else 0, "review_count": row[1] or 0}
 
 
 async def get_products_by_ids(db: AsyncSession, product_ids: List[int]) -> List[Product]:

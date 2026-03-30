@@ -31,6 +31,7 @@ async def create_review(
 
     # Validate that user has purchased the product (paid/processing/shipped/delivered)
     from app.db.schemas import Order
+
     valid_statuses = ["processing", "shipped", "delivered"]
     order_check = await db.execute(
         select(OrderItem)
