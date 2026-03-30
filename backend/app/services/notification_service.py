@@ -1,4 +1,5 @@
 import logging
+
 from exponent_server_sdk import (
     DeviceNotRegisteredError,
     PushClient,
@@ -8,6 +9,7 @@ from exponent_server_sdk import (
 )
 
 logger = logging.getLogger(__name__)
+
 
 class NotificationService:
     @staticmethod
@@ -29,18 +31,14 @@ class NotificationService:
             else:
                 deep_link_url = f"{base_url}orders/{order_id}"
 
-            data_payload = {
-                "orderId": order_id,
-                "status": new_status,
-                "url": deep_link_url
-            }
+            data_payload = {"orderId": order_id, "status": new_status, "url": deep_link_url}
 
-            response = PushClient().publish(
+            PushClient().publish(
                 PushMessage(
                     to=expo_token,
                     title="Actualización de tu orden 📦",
                     body=f"Tu orden #{order_id} ahora está en el estado: {new_status}.",
-                    data=data_payload # Deep Link Payload
+                    data=data_payload,  # Deep Link Payload
                 )
             )
         except PushServerError as exc:
