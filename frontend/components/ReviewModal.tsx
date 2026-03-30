@@ -42,8 +42,11 @@ export default function ReviewModal({ productId, visible, onClose, onReviewSubmi
     setIsSubmitting(true);
     try {
       const token = await getToken();
-      // En fallback, usar process.env as well
-      const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+      const API_BASE = process.env.EXPO_PUBLIC_API_URL;
+      
+      if (!token) {
+        throw new Error('No estas autenticado');
+      }
       
       const response = await fetch(`${API_BASE}/products/${productId}/reviews`, {
         method: 'POST',
