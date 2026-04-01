@@ -8,11 +8,11 @@ from app.config import settings
 
 # Convert postgresql:// to postgresql+psycopg://
 # Note: Using psycopg instead of asyncpg for Python 3.14 compatibility
-***REDACTED_DATABASE_URL***
+DATABASE_URL = settings.DATABASE_URL.replace("postgresql://", "postgresql+psycopg://")
 
 # SQLite (used in tests) doesn't support connection pool params
 # Check for any SQLite variant (sqlite://, sqlite+aiosqlite://, sqlite+pysqlite://)
-_is_sqlite = "sqlite" in ***REDACTED_DATABASE_URL***
+_is_sqlite = "sqlite" in DATABASE_URL.lower()
 _pool_kwargs = (
     {}
     if _is_sqlite
@@ -25,7 +25,7 @@ _pool_kwargs = (
 )
 
 engine = create_async_engine(
-    ***REDACTED_DATABASE_URL***
+    DATABASE_URL,
     echo=True if settings.ENVIRONMENT == "dev" else False,
     **_pool_kwargs,
 )

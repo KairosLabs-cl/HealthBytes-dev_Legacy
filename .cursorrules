@@ -461,7 +461,7 @@ pnpm run type-check            # Verificar tipos TypeScript
 
 **Backend (.env):**
 ```bash
-***REDACTED_DATABASE_URL***
+DATABASE_URL=postgresql://...
 JWT_SECRET_KEY=...
 JWT_ALGORITHM=HS256
 ```

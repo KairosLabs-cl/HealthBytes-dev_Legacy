@@ -11,11 +11,11 @@ def test_jwt_secret_required(monkeypatch, tmp_path):
     monkeypatch.delenv("JWT_SECRET", raising=False)
 
     # Ensure other required fields are present so we specifically test JWT_SECRET
-    monkeypatch.setenv("***REDACTED_DATABASE_URL***
+    monkeypatch.setenv("DATABASE_URL", "sqlite:///:memory:")
 
     # Create an empty .env file so Settings doesn't load the real one
     empty_env = tmp_path / ".env"
-    empty_env.write_text("***REDACTED_DATABASE_URL***
+    empty_env.write_text("DATABASE_URL=sqlite:///:memory:\n")
 
     # Override the env_file to avoid loading real .env with JWT_SECRET
     with pytest.raises(ValidationError) as exc_info:
@@ -31,7 +31,7 @@ def test_jwt_secret_required(monkeypatch, tmp_path):
 def test_jwt_secret_configured(monkeypatch):
     """Test that the application starts if JWT_SECRET is provided."""
     monkeypatch.setenv("JWT_SECRET", "test-secret-value")
-    monkeypatch.setenv("***REDACTED_DATABASE_URL***
+    monkeypatch.setenv("DATABASE_URL", "sqlite:///:memory:")
 
     # Ensure invalid values from environment are overridden
     monkeypatch.setenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60")

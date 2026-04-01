@@ -42,10 +42,10 @@ pnpm start
 
 ### Backend (.env)
 ```bash
-***REDACTED_DATABASE_URL***
+DATABASE_URL=postgresql://user:password@localhost/healthbytes
 JWT_SECRET=your-secret-key-min-32-chars
 CLERK_PUBLISHABLE_KEY=pk_test_...
-***REDACTED_CLERK_SECRET_KEY***
+CLERK_SECRET_KEY=sk_test_...
 MERCADOPAGO_ACCESS_TOKEN=TEST-...
 ```
 
