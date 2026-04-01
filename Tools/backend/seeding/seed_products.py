@@ -12,14 +12,14 @@ from sqlalchemy.orm import sessionmaker
 # Add parent directories to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "backend"))
 
-from app.db.database import ***REDACTED_DATABASE_URL***
+from app.db.database import DATABASE_URL
 from app.db.schemas import Product
 
 
 async def seed_products():
     """Insert sample products"""
 
-    engine = create_async_engine(***REDACTED_DATABASE_URL***
+    engine = create_async_engine(DATABASE_URL, echo=False)
     async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
     products = [

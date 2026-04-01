@@ -20,7 +20,7 @@ from app.services.mercadopago_service import MercadoPagoService
 def mp_settings():
     """Mock settings for Mercado Pago"""
     settings = MagicMock(spec=Settings)
-    settings.***REDACTED_MERCADOPAGO_TOKEN***
+    settings.MERCADO_PAGO_ACCESS_TOKEN = "TEST-1234567890-ACCESS-TOKEN"
     settings.MERCADO_PAGO_WEBHOOK_SECRET = "secret123"
     settings.BACKEND_URL = "http://localhost:3001"
     settings.FRONTEND_URL = "http://localhost:8081"
@@ -454,7 +454,7 @@ def test_validate_x_signature_invalid(mp_service):
 def test_validate_x_signature_no_secret():
     """Test signature validation raises error when no secret configured"""
     settings = MagicMock(spec=Settings)
-    settings.***REDACTED_MERCADOPAGO_TOKEN***
+    settings.MERCADO_PAGO_ACCESS_TOKEN = "test"
     settings.MERCADO_PAGO_WEBHOOK_SECRET = None
 
     service = MercadoPagoService(settings)
