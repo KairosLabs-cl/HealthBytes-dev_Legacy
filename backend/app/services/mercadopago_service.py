@@ -29,7 +29,7 @@ class MercadoPagoService:
 
     def __init__(self, settings: Settings):
         self.settings = settings
-        self.access_token = settings.***REDACTED_MERCADOPAGO_TOKEN***
+        self.access_token = settings.MERCADO_PAGO_ACCESS_TOKEN
         self.webhook_secret = settings.MERCADO_PAGO_WEBHOOK_SECRET
         self.api_base_url = "https://api.mercadopago.com"
 

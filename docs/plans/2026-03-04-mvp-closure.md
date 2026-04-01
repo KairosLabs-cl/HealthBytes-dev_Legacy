@@ -274,13 +274,13 @@ Esperado: ECR repository creado, URI impresa.
         { "name": "HOST", "value": "0.0.0.0" }
       ],
       "secrets": [
-        { "name": "***REDACTED_DATABASE_URL***
+        { "name": "DATABASE_URL",                  "valueFrom": "/healthbytes/prod/DATABASE_URL" },
         { "name": "JWT_SECRET",                    "valueFrom": "/healthbytes/prod/JWT_SECRET" },
         { "name": "CLERK_PUBLISHABLE_KEY",         "valueFrom": "/healthbytes/prod/CLERK_PUBLISHABLE_KEY" },
-        { "name": "***REDACTED_CLERK_SECRET_KEY***
-        { "name": "***REDACTED_MERCADOPAGO_TOKEN***
+        { "name": "CLERK_SECRET_KEY",              "valueFrom": "/healthbytes/prod/CLERK_SECRET_KEY" },
+        { "name": "MERCADO_PAGO_ACCESS_TOKEN",     "valueFrom": "/healthbytes/prod/MERCADO_PAGO_ACCESS_TOKEN" },
         { "name": "MERCADO_PAGO_WEBHOOK_SECRET",   "valueFrom": "/healthbytes/prod/MERCADO_PAGO_WEBHOOK_SECRET" },
-        { "name": "***REDACTED_RESEND_KEY***
+        { "name": "RESEND_API_KEY",                "valueFrom": "/healthbytes/prod/RESEND_API_KEY" },
         { "name": "EMAIL_FROM_ADDRESS",            "valueFrom": "/healthbytes/prod/EMAIL_FROM_ADDRESS" },
         { "name": "BACKEND_URL",                   "valueFrom": "/healthbytes/prod/BACKEND_URL" },
         { "name": "FRONTEND_URL",                  "valueFrom": "/healthbytes/prod/FRONTEND_URL" },
@@ -348,13 +348,13 @@ echo "=== HealthBytes Production Secrets Setup ==="
 echo "Region: $REGION | Prefix: $PREFIX"
 echo ""
 
-put_secret "***REDACTED_DATABASE_URL***
+put_secret "DATABASE_URL"                "RDS PostgreSQL connection string (postgresql+psycopg://...)"
 put_secret "JWT_SECRET"                  "JWT signing secret — min 32 chars"
 put_secret "CLERK_PUBLISHABLE_KEY"       "Clerk prod publishable key (pk_live_...)"
-put_secret "***REDACTED_CLERK_SECRET_KEY***
-put_secret "***REDACTED_MERCADOPAGO_TOKEN***
+put_secret "CLERK_SECRET_KEY"            "Clerk prod secret key (sk_live_...)"
+put_secret "MERCADO_PAGO_ACCESS_TOKEN"   "Mercado Pago prod access token"
 put_secret "MERCADO_PAGO_WEBHOOK_SECRET" "Mercado Pago webhook HMAC secret"
-put_secret "***REDACTED_RESEND_KEY***
+put_secret "RESEND_API_KEY"              "Resend API key for transactional email"
 put_secret "EMAIL_FROM_ADDRESS"          "From address e.g. HealthBytes <no-reply@healthbytes.cl>"
 put_secret "BACKEND_URL"                 "e.g. https://api.healthbytes.cl (no trailing slash)"
 put_secret "FRONTEND_URL"               "e.g. https://healthbytes.cl (no trailing slash)"
@@ -388,12 +388,12 @@ En GitHub → Settings → Secrets and variables → Actions → New repository 
 ```
 AWS_ACCESS_KEY_ID           IAM access key con permisos ECS/ECR/SSM
 AWS_SECRET_ACCESS_KEY       IAM secret key
-STAGING_***REDACTED_DATABASE_URL***
+STAGING_DATABASE_URL        RDS staging connection string
 STAGING_URL                 https://staging.healthbytes.cl
 STAGING_BACKEND_TASK_DEFINITION  healthbytes-backend
 STAGING_ECS_SERVICE         healthbytes-backend-staging
 STAGING_ECS_CLUSTER         healthbytes-staging
-PROD_***REDACTED_DATABASE_URL***
+PROD_DATABASE_URL           RDS prod connection string
 PROD_URL                    https://api.healthbytes.cl
 PROD_BACKEND_TASK_DEFINITION     healthbytes-backend
 PROD_ECS_SERVICE            healthbytes-backend-prod
@@ -458,7 +458,7 @@ aws ecs create-service \
 ### Step 6: Aplicar migraciones en staging
 
 ```bash
-***REDACTED_DATABASE_URL***
+DATABASE_URL="<staging_rds_url>" \
 JWT_SECRET="placeholder-min-32-chars-for-migration" \
   python -m alembic upgrade head
 ```
@@ -685,7 +685,7 @@ Crear `backend/tests/e2e/test_email_flow.py`:
 
 ```python
 """
-E2E test — Email service: graceful degradation when ***REDACTED_RESEND_KEY***
+E2E test — Email service: graceful degradation when RESEND_API_KEY is absent.
 """
 import pytest
 
@@ -693,11 +693,11 @@ import pytest
 @pytest.mark.asyncio
 async def test_send_email_does_not_raise_when_api_key_missing(monkeypatch):
     """
-    When ***REDACTED_RESEND_KEY***
+    When RESEND_API_KEY is None (e.g. staging without key),
     email_service.send_email must log a warning instead of raising.
     This prevents a missing env var from crashing the order flow.
     """
-    monkeypatch.setattr("app.config.settings.***REDACTED_RESEND_KEY***
+    monkeypatch.setattr("app.config.settings.RESEND_API_KEY", None)
     from app.services.email_service import send_email
     # Must complete without raising any exception
     await send_email(
@@ -709,8 +709,8 @@ async def test_send_email_does_not_raise_when_api_key_missing(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_send_email_calls_resend_when_key_present(monkeypatch):
-    """When ***REDACTED_RESEND_KEY***
-    monkeypatch.setattr("app.config.settings.***REDACTED_RESEND_KEY***
+    """When RESEND_API_KEY is set, resend.Emails.send must be called."""
+    monkeypatch.setattr("app.config.settings.RESEND_API_KEY", "re_test_key_123")
     from unittest.mock import patch, MagicMock
     with patch("resend.Emails.send") as mock_send:
         mock_send.return_value = {"id": "email_123"}

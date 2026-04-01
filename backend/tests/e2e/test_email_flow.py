@@ -1,5 +1,5 @@
 """
-E2E test — Email service: graceful degradation when ***REDACTED_RESEND_KEY***
+E2E test — Email service: graceful degradation when RESEND_API_KEY is absent.
 """
 
 import pytest
@@ -9,11 +9,11 @@ from unittest.mock import patch, AsyncMock
 @pytest.mark.asyncio
 async def test_send_email_does_not_raise_when_api_key_missing(monkeypatch):
     """
-    When ***REDACTED_RESEND_KEY***
+    When RESEND_API_KEY is None (e.g. staging without key),
     email_service.send_email must log a warning instead of raising.
     This prevents a missing env var from crashing the order flow.
     """
-    monkeypatch.setattr("app.config.settings.***REDACTED_RESEND_KEY***
+    monkeypatch.setattr("app.config.settings.RESEND_API_KEY", None)
     monkeypatch.setattr("app.config.settings.EMAIL_FROM_ADDRESS", "test@test.com")
     monkeypatch.setattr("app.config.settings.FRONTEND_URL", "https://test.com")
     from app.config import settings
@@ -30,8 +30,8 @@ async def test_send_email_does_not_raise_when_api_key_missing(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_send_email_calls_resend_when_key_present(monkeypatch):
-    """When ***REDACTED_RESEND_KEY***
-    monkeypatch.setattr("app.config.settings.***REDACTED_RESEND_KEY***
+    """When RESEND_API_KEY is set, resend.Emails.send must be called."""
+    monkeypatch.setattr("app.config.settings.RESEND_API_KEY", "re_test_key_123")
     monkeypatch.setattr("app.config.settings.EMAIL_FROM_ADDRESS", "test@test.com")
     monkeypatch.setattr("app.config.settings.FRONTEND_URL", "https://test.com")
     with patch("resend.Emails.send") as mock_send:

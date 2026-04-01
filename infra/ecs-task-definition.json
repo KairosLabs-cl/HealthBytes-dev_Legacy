@@ -29,8 +29,8 @@
       ],
       "secrets": [
         {
-          "name": "***REDACTED_DATABASE_URL***
-          "valueFrom": "/healthbytes/prod/***REDACTED_DATABASE_URL***
+          "name": "DATABASE_URL",
+          "valueFrom": "/healthbytes/prod/DATABASE_URL"
         },
         {
           "name": "JWT_SECRET",
@@ -41,20 +41,20 @@
           "valueFrom": "/healthbytes/prod/CLERK_PUBLISHABLE_KEY"
         },
         {
-          "name": "***REDACTED_CLERK_SECRET_KEY***
-          "valueFrom": "/healthbytes/prod/***REDACTED_CLERK_SECRET_KEY***
+          "name": "CLERK_SECRET_KEY",
+          "valueFrom": "/healthbytes/prod/CLERK_SECRET_KEY"
         },
         {
-          "name": "***REDACTED_MERCADOPAGO_TOKEN***
-          "valueFrom": "/healthbytes/prod/***REDACTED_MERCADOPAGO_TOKEN***
+          "name": "MERCADO_PAGO_ACCESS_TOKEN",
+          "valueFrom": "/healthbytes/prod/MERCADO_PAGO_ACCESS_TOKEN"
         },
         {
           "name": "MERCADO_PAGO_WEBHOOK_SECRET",
           "valueFrom": "/healthbytes/prod/MERCADO_PAGO_WEBHOOK_SECRET"
         },
         {
-          "name": "***REDACTED_RESEND_KEY***
-          "valueFrom": "/healthbytes/prod/***REDACTED_RESEND_KEY***
+          "name": "RESEND_API_KEY",
+          "valueFrom": "/healthbytes/prod/RESEND_API_KEY"
         },
         {
           "name": "EMAIL_FROM_ADDRESS",

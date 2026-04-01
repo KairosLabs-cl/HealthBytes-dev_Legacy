@@ -371,7 +371,7 @@ pnpm add -D {package}  # para dev dependencies
 
 **Backend (.env):**
 ```bash
-***REDACTED_DATABASE_URL***
+DATABASE_URL=postgresql://...
 JWT_SECRET_KEY=...
 JWT_ALGORITHM=HS256
 ```

@@ -107,7 +107,7 @@ DB_NAME=healthbytes
 # Auth & Security
 JWT_SECRET=your-secret-key-change-in-production
 CLERK_PUBLISHABLE_KEY=pk_test_...
-***REDACTED_CLERK_SECRET_KEY***
+CLERK_SECRET_KEY=sk_test_...
 
 # App
 ENVIRONMENT=development
