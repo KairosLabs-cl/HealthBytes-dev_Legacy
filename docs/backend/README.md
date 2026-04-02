@@ -222,7 +222,7 @@ Crear archivo `.env` en `backend/` (ver `.env.example` como plantilla):
 
 ```env
 # Database
-***REDACTED_DATABASE_URL***
+DATABASE_URL="postgresql://user:password@localhost:5432/healthbytes"
 
 # JWT (authentication)
 JWT_SECRET="tu-secreto-super-seguro-aqui"
@@ -231,7 +231,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES=43200
 
 # Clerk (autenticación externa - opcional)
 CLERK_PUBLISHABLE_KEY="pk_test_..."
-***REDACTED_CLERK_SECRET_KEY***
+CLERK_SECRET_KEY="sk_test_..."
 
 # Application
 ENVIRONMENT="dev"
@@ -275,7 +275,7 @@ docker run --name healthbytes-postgres \
 
 Update en `.env`:
 ```env
-***REDACTED_DATABASE_URL***
+DATABASE_URL="postgresql://healthbytes_user:password123@localhost:5432/healthbytes"
 ```
 
 ### Crear Tablas
@@ -474,7 +474,7 @@ kill -9 <PID>
 ### Error: "Database connection failed"
 
 1. Verifica PostgreSQL está corriendo
-2. Verifica `***REDACTED_DATABASE_URL***
+2. Verifica `DATABASE_URL` en `.env`
 3. Verifica credenciales de base de datos
 
 ### Error: "JWT signature verification failed"

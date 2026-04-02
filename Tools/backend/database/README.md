@@ -45,19 +45,19 @@ python create_cart_table.py
 
 ## 🌍 Configuración de Base de Datos
 
-Los scripts usan `***REDACTED_DATABASE_URL***
+Los scripts usan `DATABASE_URL` de:
 
 ```python
 # backend/app/db/database.py
 from app.config import settings
 
-***REDACTED_DATABASE_URL***
+DATABASE_URL = settings.DATABASE_URL
 ```
 
 Verifica tu `.env` en `backend/.env`:
 
 ```env
-***REDACTED_DATABASE_URL***
+DATABASE_URL=postgresql://usuario:contraseña@host:puerto/base_datos
 ```
 
 ---

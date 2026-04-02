@@ -10,7 +10,7 @@ from app.services.email_service import EmailService, OrderEmailData, OrderItemDa
 
 @pytest.fixture
 def email_service():
-    settings = Settings("***REDACTED_RESEND_KEY***"
+    settings = Settings(RESEND_API_KEY="test-key")
     return EmailService(settings=settings)
 
 

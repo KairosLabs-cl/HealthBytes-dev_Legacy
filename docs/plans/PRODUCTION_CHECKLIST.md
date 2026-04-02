@@ -89,13 +89,13 @@ aws ssm get-parameters-by-path \
 ```
 
 - [ ] `ENVIRONMENT` = `production` (exactamente este valor — activa las validaciones de startup)
-- [ ] `***REDACTED_DATABASE_URL***
+- [ ] `DATABASE_URL` apunta a RDS prod (formato: `postgresql+psycopg://user:pass@host:5432/healthbytes`)
 - [ ] `JWT_SECRET` tiene al menos 32 caracteres
 - [ ] `CLERK_PUBLISHABLE_KEY` es clave de producción (empieza con `pk_live_`)
-- [ ] `***REDACTED_CLERK_SECRET_KEY***
-- [ ] `***REDACTED_MERCADOPAGO_TOKEN***
+- [ ] `CLERK_SECRET_KEY` es clave de producción (empieza con `sk_live_`)
+- [ ] `MERCADO_PAGO_ACCESS_TOKEN` es token de producción (no el de sandbox)
 - [ ] `MERCADO_PAGO_WEBHOOK_SECRET` está configurado
-- [ ] `***REDACTED_RESEND_KEY***
+- [ ] `RESEND_API_KEY` está configurado
 - [ ] `EMAIL_FROM_ADDRESS` usa un dominio verificado en Resend (no `onboarding@resend.dev`)
 - [ ] `BACKEND_URL` = `https://api.healthbytes.cl` (sin trailing slash)
 - [ ] `FRONTEND_URL` = `https://healthbytes.cl` (sin trailing slash)
@@ -117,7 +117,7 @@ el proceso falla en startup con `RuntimeError`. Esto es intencional — verifica
 - [ ] Migración más reciente confirmada: `20260302_35d20be20a0a_fix_address_user_id_integer_fk`
 - [ ] Conexión verificada desde el entorno de deploy:
   ```bash
-  psql $PROD_***REDACTED_DATABASE_URL***
+  psql $PROD_DATABASE_URL -c "SELECT version();"
   ```
 - [ ] Security group de RDS permite tráfico en puerto 5432 desde el security group del ECS task
 - [ ] RDS tiene backups automáticos habilitados (retention ≥ 7 días)

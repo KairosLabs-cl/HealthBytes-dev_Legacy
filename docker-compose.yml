@@ -35,10 +35,10 @@ services:
     container_name: healthbytes-backend
     restart: unless-stopped
     environment:
-      ***REDACTED_DATABASE_URL***
+      DATABASE_URL: postgresql://${DB_USER:-healthbytes}:${DB_PASSWORD:-healthbytes_dev}@postgres:5432/${DB_NAME:-healthbytes}
       JWT_SECRET: ${JWT_SECRET}  # Set in .env file - never hardcode
       CLERK_PUBLISHABLE_KEY: ${CLERK_PUBLISHABLE_KEY}
-      ***REDACTED_CLERK_SECRET_KEY***
+      CLERK_SECRET_KEY: ${CLERK_SECRET_KEY}
       ENVIRONMENT: ${ENVIRONMENT:-development}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       REDIS_URL: redis://redis:6379/0

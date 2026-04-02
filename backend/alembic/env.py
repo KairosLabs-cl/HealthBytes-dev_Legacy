@@ -36,7 +36,7 @@ logger = logging.getLogger("alembic.env")
 config = context.config
 
 # Build the async DB URL from settings (bypasses ConfigParser % interpolation issues)
-db_url = getattr(settings, "***REDACTED_DATABASE_URL***", None)
+db_url = settings.DATABASE_URL.replace("postgresql://", "postgresql+psycopg://")
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)

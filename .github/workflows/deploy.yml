@@ -31,12 +31,12 @@ env:
 #   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
 #
 # Staging:
-#   STAGING_***REDACTED_DATABASE_URL***
+#   STAGING_DATABASE_URL, STAGING_URL
 #   STAGING_BACKEND_TASK_DEFINITION  (JSON string of ECS task def)
 #   STAGING_ECS_SERVICE, STAGING_ECS_CLUSTER
 #
 # Production:
-#   PROD_***REDACTED_DATABASE_URL***
+#   PROD_DATABASE_URL, PROD_URL
 #   PROD_BACKEND_TASK_DEFINITION
 #   PROD_ECS_SERVICE, PROD_ECS_CLUSTER
 #
@@ -120,7 +120,7 @@ jobs:
       - name: Run DB migrations
         working-directory: backend
         env:
-          ***REDACTED_DATABASE_URL***
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
           JWT_SECRET: placeholder
         run: |
           pip install alembic psycopg sqlalchemy pydantic-settings python-dotenv
@@ -177,7 +177,7 @@ jobs:
       - name: Run DB migrations
         working-directory: backend
         env:
-          ***REDACTED_DATABASE_URL***
+          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
           JWT_SECRET: placeholder
         run: |
           pip install alembic psycopg sqlalchemy pydantic-settings python-dotenv

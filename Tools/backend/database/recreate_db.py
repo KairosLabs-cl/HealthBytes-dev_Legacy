@@ -10,7 +10,7 @@ from pathlib import Path
 # Add parent directories to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "backend"))
 
-from app.db.database import ***REDACTED_DATABASE_URL***
+from app.db.database import DATABASE_URL, Base
 from app.db.schemas import Order, OrderItem, Product, User
 from sqlalchemy.ext.asyncio import create_async_engine
 
@@ -19,7 +19,7 @@ async def recreate_db():
     """Drop and recreate all tables"""
 
     # Create async engine
-    engine = create_async_engine(***REDACTED_DATABASE_URL***
+    engine = create_async_engine(DATABASE_URL, echo=True)
 
     async with engine.begin() as conn:
         # Drop all tables
