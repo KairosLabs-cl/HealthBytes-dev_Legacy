@@ -61,9 +61,9 @@ def check_jwks_access():
         return False
 
     if secret_key:
-        print(f"   ✅ ***REDACTED_CLERK_SECRET_KEY***
+        print(f"   ✅ "***REDACTED_CLERK_SECRET_KEY***"
     else:
-        print("   ⚠️  ***REDACTED_CLERK_SECRET_KEY***
+        print("   ⚠️  "***REDACTED_CLERK_SECRET_KEY***"
 
     # Get JWKS URL
     print("\n2. Generating JWKS URL...")

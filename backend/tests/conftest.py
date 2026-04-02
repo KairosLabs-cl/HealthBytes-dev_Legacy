@@ -15,14 +15,14 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 # Database setup for testing - Use SQLite for tests
-***REDACTED_DATABASE_URL***
+"***REDACTED_DATABASE_URL***"
 
 
 @pytest.fixture(scope="session")
 def engine():
     """Create test database engine using SQLite in-memory."""
     engine = create_engine(
-        ***REDACTED_DATABASE_URL***
+        "***REDACTED_DATABASE_URL***"
     )
     Base.metadata.create_all(bind=engine)
     yield engine

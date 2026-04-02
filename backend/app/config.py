@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     """Application settings"""
 
     # Database
-    ***REDACTED_DATABASE_URL***
+    "***REDACTED_DATABASE_URL***"
 
     # JWT (Legacy - for backwards compatibility)
     JWT_SECRET: str
@@ -23,14 +23,14 @@ class Settings(BaseSettings):
 
     # Clerk Authentication
     CLERK_PUBLISHABLE_KEY: Optional[str] = None
-    ***REDACTED_CLERK_SECRET_KEY***
+    "***REDACTED_CLERK_SECRET_KEY***"
 
     # Mercado Pago
-    ***REDACTED_MERCADOPAGO_TOKEN***
+    "***REDACTED_MERCADOPAGO_TOKEN***"
     MERCADO_PAGO_WEBHOOK_SECRET: Optional[str] = None
 
     # Email (Resend)
-    ***REDACTED_RESEND_KEY***
+    "***REDACTED_RESEND_KEY***"
     EMAIL_FROM_ADDRESS: str = "HealthBytes <onboarding@resend.dev>"
 
     # URLs for callbacks (required in production — no localhost defaults)
@@ -99,11 +99,11 @@ def _validate_production_config(s: Settings) -> None:
     if getattr(s, "ENVIRONMENT", "development") != "production":
         return
     required = {
-        "***REDACTED_DATABASE_URL***
+        "***REDACTED_DATABASE_URL***": getattr(s, "***REDACTED_DATABASE_URL***", None),
         "MERCADO_PAGO_WEBHOOK_SECRET": (
             s.MERCADO_PAGO_WEBHOOK_SECRET if hasattr(s, "MERCADO_PAGO_WEBHOOK_SECRET") else None
         ),
-        "***REDACTED_CLERK_SECRET_KEY***
+        "***REDACTED_CLERK_SECRET_KEY***": getattr(s, "***REDACTED_CLERK_SECRET_KEY***", None),
         "BACKEND_URL": s.BACKEND_URL,
         "FRONTEND_URL": s.FRONTEND_URL,
     }
