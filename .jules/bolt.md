@@ -13,3 +13,7 @@
 ## 2024-03-24 - Optimize Zustand set selectors to prevent CartItem re-renders
 **Learning:** Subscribing to an entire Set in Zustand (e.g. `useCart(state => state.updatingProducts)`) causes the component to re-render whenever the Set reference changes, even if the change doesn't affect the specific item the component cares about. In a list of CartItems, updating one item's quantity causes all CartItems to re-render.
 **Action:** Always use highly specific selectors that return primitive values. For Sets, select the boolean result of the `.has()` check for the specific item (e.g. `useCart(state => state.updatingProducts.has(itemId))`).
+
+## 2024-03-25 - Prevent redundant DB fetches after session commit
+**Learning:** In SQLAlchemy, when `expire_on_commit=False` is set on the session, ORM objects and their loaded relationships remain accessible after a `db.commit()`. Re-querying the database to fetch the exact same object and relationships immediately after a commit is a redundant network hop and performance de-optimization.
+**Action:** Instead of re-fetching objects after a commit, manually attach pre-fetched related entities to newly created objects (e.g., `new_item.product = pre_fetched_product`) and rely on the session keeping the data accessible. Use eager loading (`selectinload`) during the initial fetch.
