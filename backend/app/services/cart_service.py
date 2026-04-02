@@ -88,13 +88,10 @@ async def add_to_cart(
 
         existing_item.quantity = new_quantity
         await db.commit()
-        # Re-load with dietary_tags after commit
-        result = await db.execute(
-            select(CartItem)
-            .where(CartItem.id == existing_item.id)
-            .options(joinedload(CartItem.product).selectinload(Product.dietary_tags))
-        )
-        existing_item = result.scalar_one()
+
+        # Attach pre-fetched product to avoid MissingGreenlet
+        existing_item.product = product
+
         return CartItemResponse.model_validate(existing_item)
 
     # Create new cart item
@@ -103,13 +100,8 @@ async def add_to_cart(
     await db.commit()
     await db.refresh(new_item)
 
-    # Load product relationship with dietary_tags
-    result = await db.execute(
-        select(CartItem)
-        .where(CartItem.id == new_item.id)
-        .options(joinedload(CartItem.product).selectinload(Product.dietary_tags))
-    )
-    new_item = result.scalar_one()
+    # Attach already loaded product to avoid redundant query
+    new_item.product = product
 
     return CartItemResponse.model_validate(new_item)
 
@@ -141,13 +133,6 @@ async def update_cart_item(
 
     cart_item.quantity = quantity
     await db.commit()
-    # Re-load with dietary_tags after commit
-    result = await db.execute(
-        select(CartItem)
-        .where(CartItem.id == cart_item.id)
-        .options(joinedload(CartItem.product).selectinload(Product.dietary_tags))
-    )
-    cart_item = result.scalar_one()
 
     return CartItemResponse.model_validate(cart_item)
 
