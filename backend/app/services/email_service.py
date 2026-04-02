@@ -2,7 +2,7 @@
 Email service for transactional emails using Resend.
 
 Sends order confirmation, payment success, and shipping notification emails.
-In dev mode (no ***REDACTED_RESEND_KEY***
+In dev mode (no "***REDACTED_RESEND_KEY***"
 """
 
 import html
@@ -47,7 +47,7 @@ class EmailService:
     """Transactional email service using Resend."""
 
     def __init__(self, settings: Settings):
-        self.api_key = settings.***REDACTED_RESEND_KEY***
+        self.api_key = getattr(settings, "***REDACTED_RESEND_KEY***", None)
         self.from_address = settings.EMAIL_FROM_ADDRESS
         self.frontend_url = settings.FRONTEND_URL
         self._enabled = bool(self.api_key)
@@ -228,7 +228,7 @@ class EmailService:
         """
         if not self._enabled:
             logger.info(
-                "Email not sent (no ***REDACTED_RESEND_KEY***
+                "Email not sent (no REDACTED_RESEND_KEY): to=%s, subject=%s",
                 to,
                 subject,
             )
