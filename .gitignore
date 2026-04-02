@@ -42,6 +42,7 @@ backend/.pytest_cache/
 .opencode/node_modules/
 .opencode/bun.lock
 .claude/settings.local.json
+.worktrees/
 
 # Frontend local artifacts
 frontend/error.log

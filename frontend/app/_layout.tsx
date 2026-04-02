@@ -12,7 +12,7 @@ import {
 import "@/global.css";
 import { tokenCache } from "@/lib/cache";
 import { useAppFonts } from "@/lib/fonts";
-import { useCart, selectCartItemCount } from "@/store/cartStore";
+import { useCart } from "@/store/cartStore";
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { usePreferencesStore } from "@/store/preferencesStore";
 import OnboardingModal from "@/components/OnboardingModal";
@@ -59,7 +59,6 @@ if (!publishableKey) {
 }
 
 function RootLayoutNav() {
-  const cartItemsNum = useCart(selectCartItemCount);
   const setAuth = useCart((state) => state.setAuth);
   const mergeAndSync = useCart((state) => state.mergeAndSync);
   const error = useCart((state) => state.error);

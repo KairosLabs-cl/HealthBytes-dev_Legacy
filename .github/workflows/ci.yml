@@ -74,7 +74,7 @@ jobs:
 
       - name: Create test .env
         run: |
-          echo "***REDACTED_DATABASE_URL***
+          echo "DATABASE_URL=sqlite+aiosqlite:///:memory:" > .env
           echo "JWT_SECRET=ci-test-secret-key-min-32-characters-long" >> .env
 
       - name: Run tests

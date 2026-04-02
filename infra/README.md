@@ -55,13 +55,13 @@ El workflow `deploy.yml` en `.github/workflows/` hace deploy automático a stagi
 ## Estructura de Secrets en SSM
 
 ```
-/healthbytes/prod/***REDACTED_DATABASE_URL***
+/healthbytes/prod/DATABASE_URL
 /healthbytes/prod/JWT_SECRET
 /healthbytes/prod/CLERK_PUBLISHABLE_KEY
-/healthbytes/prod/***REDACTED_CLERK_SECRET_KEY***
-/healthbytes/prod/***REDACTED_MERCADOPAGO_TOKEN***
+/healthbytes/prod/CLERK_SECRET_KEY
+/healthbytes/prod/MERCADO_PAGO_ACCESS_TOKEN
 /healthbytes/prod/MERCADO_PAGO_WEBHOOK_SECRET
-/healthbytes/prod/***REDACTED_RESEND_KEY***
+/healthbytes/prod/RESEND_API_KEY
 /healthbytes/prod/EMAIL_FROM_ADDRESS
 /healthbytes/prod/BACKEND_URL
 /healthbytes/prod/FRONTEND_URL

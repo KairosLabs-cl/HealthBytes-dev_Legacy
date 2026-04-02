@@ -22,7 +22,7 @@ from tests.conftest import MockAsyncSession
 def email_settings():
     """Mock settings with Resend API key."""
     settings = MagicMock(spec=Settings)
-    settings.***REDACTED_RESEND_KEY***
+    settings.RESEND_API_KEY = "re_test_123"
     settings.EMAIL_FROM_ADDRESS = "Test <test@test.com>"
     settings.FRONTEND_URL = "http://localhost:8081"
     settings.ENVIRONMENT = "dev"
@@ -33,7 +33,7 @@ def email_settings():
 def email_settings_no_key():
     """Mock settings without Resend API key (dev mode)."""
     settings = MagicMock(spec=Settings)
-    settings.***REDACTED_RESEND_KEY***
+    settings.RESEND_API_KEY = None
     settings.EMAIL_FROM_ADDRESS = "Test <test@test.com>"
     settings.FRONTEND_URL = "http://localhost:8081"
     settings.ENVIRONMENT = "dev"
