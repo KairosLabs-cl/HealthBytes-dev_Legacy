@@ -1,6 +1,6 @@
 # 🗺️ Roadmap de Mejoras UI/UX - HealthBytes
 
-> **Última actualización**: Marzo 5, 2026 (Post UI Redesign Sprint)  
+> **Última actualización**: Abril 1, 2026 (Alineado con prioridades operativas 7/14/30)  
 > **Demo Target**: Febrero 15, 2026 (Listo para revisión)  
 > **Basado en**: Análisis profundo UI/UX + screenshots del estado actual
 
@@ -98,6 +98,33 @@ Este roadmap refleja el estado **actual** de la aplicación (Feb 10) y prioriza 
 - Crear modelo en Backend (SQLAlchemy) + Endpoints.
 - Mapear peticiones desde el frontend a `/addresses`.
 - Integrar la validación y UX final en el Checkout.
+
+---
+
+## 🚨 Prioridades Operativas Actuales (Abril 2026)
+
+Estas prioridades complementan el roadmap por fases y ordenan la ejecucion inmediata por riesgo/impacto.
+
+### P0 (critico - ejecutar primero)
+
+- Rotar secretos comprometidos y cerrar inventario de credenciales
+- Limpiar historial git para eliminar secretos historicos
+- Ejecutar checklist de produccion con evidencia centralizada
+- Validar E2E real de compra en dispositivo
+- Ejecutar smoke tests post-deploy (8/8)
+
+### P1 (alto - estabilizacion)
+
+- Unificar fuente de verdad del estado del proyecto y roadmap
+- Cerrar end-to-end Addresses + Checkout con casos borde
+- Formalizar gate de release (security + E2E + smoke)
+
+### P2 (medio - mejora continua)
+
+- Limpiar deprecations no bloqueantes
+- Consolidar scorecard semanal de roadmap
+
+Referencia de seguimiento detallado: `docs/plans/2026-04-01-estado-roadmap-prioridades.md`
 
 ---
 

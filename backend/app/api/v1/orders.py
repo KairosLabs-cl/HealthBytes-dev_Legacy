@@ -86,9 +86,7 @@ async def create_order(
                     )
                 ],
             )
-            error_status = (
-                status.HTTP_404_NOT_FOUND if is_not_found else status.HTTP_422_UNPROCESSABLE_ENTITY
-            )
+            error_status = status.HTTP_404_NOT_FOUND if is_not_found else 422
             raise HTTPException(status_code=error_status, detail=error.model_dump())
 
         # Build response
@@ -309,9 +307,7 @@ async def update_order(
                     )
                 ],
             )
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=error.model_dump()
-            )
+            raise HTTPException(status_code=422, detail=error.model_dump())
 
         if not order:
             error = ErrorResponse.not_found(

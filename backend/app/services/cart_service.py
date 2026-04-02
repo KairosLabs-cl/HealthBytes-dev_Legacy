@@ -8,7 +8,7 @@ from typing import List
 from fastapi import HTTPException
 from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 
 from app.db.schemas import CartItem, OrderItem, Product
 from app.schemas.cart import CartItemCreate, CartItemResponse, CartResponse
@@ -57,7 +57,9 @@ async def add_to_cart(
     Add item to cart or increment quantity if already exists
     """
     # Check if product exists
-    product_result = await db.execute(select(Product).where(Product.id == product_id))
+    product_result = await db.execute(
+        select(Product).where(Product.id == product_id).options(selectinload(Product.dietary_tags))
+    )
     product = product_result.scalar_one_or_none()
 
     if not product:
