@@ -5,12 +5,20 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 
 
 def count_occurrences(file_path: Path, token: str) -> int:
     text = file_path.read_text(encoding="utf-8")
     return text.count(token)
+
+
+def check_baseline_permissions(baseline_path: Path) -> None:
+    """Warn if baseline file is writable (should be read-only)."""
+    if os.access(baseline_path, os.W_OK):
+        print("WARNING: baseline file is writable, consider making it read-only")
+        print("  Suggested: chmod 444 <baseline_file>")
 
 
 def count_backend_tokens(repo_root: Path) -> dict[str, int]:
@@ -52,6 +60,9 @@ def main() -> int:
         print(f"ERROR: baseline file not found: {baseline_path}")
         return 2
 
+    # Check baseline file permissions
+    check_baseline_permissions(baseline_path)
+
     baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
 
     frontend_lock_path = repo_root / "frontend" / "pnpm-lock.yaml"
@@ -71,8 +82,7 @@ def main() -> int:
     print(f"frontend_lock_deprecated={frontend_dep}")
     print(f"backend_http_422_token={backend_counts['backend_http_422_token']}")
     print(
-        "backend_deprecationwarning_token="
-        f"{backend_counts['backend_deprecationwarning_token']}"
+        "backend_deprecationwarning_token=" f"{backend_counts['backend_deprecationwarning_token']}"
     )
 
     if current_total > baseline_total:
