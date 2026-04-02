@@ -8,7 +8,7 @@ from typing import List
 from fastapi import HTTPException
 from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 
 from app.db.schemas import CartItem, OrderItem, Product
 from app.schemas.cart import CartItemCreate, CartItemResponse, CartResponse
