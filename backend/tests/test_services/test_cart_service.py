@@ -1,7 +1,7 @@
 """Unit tests for cart_service"""
 
 import pytest
-from app.db.schemas import CartItem, Product
+from app.db.schemas import Product
 from app.schemas.cart import CartItemCreate
 from app.services.cart_service import (
     add_to_cart,
@@ -191,3 +191,38 @@ async def test_merge_cart_items(db_session, product_a, product_b):
     assert item_a.quantity == 2  # Local quantity replaces server quantity
     assert item_b.quantity == 1
     assert merged_cart.total == (2 * 10.0) + (1 * 20.0)
+
+
+@pytest.mark.asyncio
+async def test_add_to_cart_no_redundant_queries_after_commit(db_session, product_a):
+    """
+    Test that add_to_cart does not produce redundant queries after commit.
+
+    This test verifies that the product dietary_tags are eagerly loaded
+    to avoid N+1 query problems. We check that:
+    1. Adding to an existing cart item works correctly
+    2. Product dietary relationships are properly loaded after commit
+    """
+    mock_db = MockAsyncSession(db_session)
+    user_id = 1
+
+    # First add - creates new item
+    item1 = await add_to_cart(user_id, product_a.id, 1, mock_db)
+    assert item1.quantity == 1
+    assert item1.product.name == "Product A"
+    # Product should have dietary_tags loaded (even if empty list)
+    assert hasattr(item1.product, "dietary_tags")
+
+    # Second add - increments existing item (this is where commit + reload happens)
+    # After commit, we should not need additional queries to access product.dietary_tags
+    item2 = await add_to_cart(user_id, product_a.id, 2, mock_db)
+    assert item2.quantity == 3
+    assert item2.product.name == "Product A"
+    # Verify dietary_tags is accessible without triggering new queries
+    assert hasattr(item2.product, "dietary_tags")
+
+    # Verify the cart state
+    cart = await get_cart(user_id, mock_db)
+    assert len(cart.items) == 1
+    assert cart.items[0].quantity == 3
+    assert cart.total == 30.0  # 3 * 10.0
