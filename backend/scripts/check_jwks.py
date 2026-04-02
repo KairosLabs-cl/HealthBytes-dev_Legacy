@@ -52,7 +52,7 @@ def check_jwks_access():
     # Check environment variables
     print("\n1. Checking environment variables...")
     publishable_key = os.getenv("CLERK_PUBLISHABLE_KEY")
-    secret_key = os.getenv("***REDACTED_CLERK_SECRET_KEY***
+    secret_key = os.getenv("CLERK_SECRET_KEY")
 
     if publishable_key:
         print(f"   ✅ CLERK_PUBLISHABLE_KEY: {publishable_key[:20]}...")
@@ -61,9 +61,9 @@ def check_jwks_access():
         return False
 
     if secret_key:
-        print(f"   ✅ ***REDACTED_CLERK_SECRET_KEY***
+        print(f"   ✅ CLERK_SECRET_KEY: {secret_key[:20]}...")
     else:
-        print("   ⚠️  ***REDACTED_CLERK_SECRET_KEY***
+        print("   ⚠️  CLERK_SECRET_KEY: Not set (optional for JWKS)")
 
     # Get JWKS URL
     print("\n2. Generating JWKS URL...")

@@ -430,7 +430,7 @@ Crea un archivo `.env` en la carpeta `backend/` con las siguientes variables:
 # ============================================
 # DATABASE CONFIGURATION
 # ============================================
-***REDACTED_DATABASE_URL***
+DATABASE_URL="postgresql://user:password@localhost:5432/healthbytes"
 # Formato: postgresql://[usuario]:[contraseña]@[host]:[puerto]/[nombre_db]
 
 # ============================================
@@ -438,7 +438,7 @@ Crea un archivo `.env` en la carpeta `backend/` con las siguientes variables:
 # ============================================
 # Ver documento de keys: https://app.clickup.com/90131597357/v/dc/2ky4621d-2233
 CLERK_PUBLISHABLE_KEY="pk_test_..."
-***REDACTED_CLERK_SECRET_KEY***
+CLERK_SECRET_KEY="sk_test_..."
 
 # ============================================
 # JWT CONFIGURATION
@@ -481,7 +481,7 @@ Si no tienes acceso, solicítalo al líder del equipo.
    CREATE USER healthbytes_user WITH PASSWORD 'tu_password';
    GRANT ALL PRIVILEGES ON DATABASE healthbytes TO healthbytes_user;
    ```
-3. Actualiza `***REDACTED_DATABASE_URL***
+3. Actualiza `DATABASE_URL` en tu `.env`
 
 **Opción 2: Docker (Recomendado para desarrollo)**
 
@@ -500,7 +500,7 @@ docker run --name healthbytes-postgres \
 2. Crea una nueva aplicación
 3. Copia las API Keys:
    - `CLERK_PUBLISHABLE_KEY` (empieza con `pk_`)
-   - `***REDACTED_CLERK_SECRET_KEY***
+   - `CLERK_SECRET_KEY` (empieza con `sk_`)
 4. Pégalas en tu archivo `.env`
 
 **⚠️ IMPORTANTE**: Las keys reales están guardadas en ClickUp (solo para el equipo)
@@ -511,7 +511,7 @@ Una vez configurado todo, verifica que funciona:
 
 ```bash
 cd backend
-python -c "from app.core.config import settings; print(settings.***REDACTED_DATABASE_URL***
+python -c "from app.core.config import settings; print(settings.DATABASE_URL)"
 ```
 
 Si ves la URL de tu base de datos, ¡todo está bien! 🎉
@@ -787,7 +787,7 @@ Convertir HealthBytes en la **plataforma líder** de e-commerce para personas co
 - [X] **Address CRUD** - ✅ Completado
 - [X] **Stock Management** - ✅ Completado (locking atómico)
 - [X] **Webhooks Payment Confirmation** - ✅ Completado
-- [X] **Order Emails** (Resend) - ✅ Completado (configurar ***REDACTED_RESEND_KEY***
+- [X] **Order Emails** (Resend) - ✅ Completado (configurar RESEND_API_KEY en prod)
 - [X] **AWS Infrastructure** (ECS, ECR, SSM) - ✅ Completado (scripts en infra/)
 - [X] **E2E Tests** - ✅ Completado (8 tests)
 - [X] **Redis Cache** - ✅ Completado (TTL 5min en products)
