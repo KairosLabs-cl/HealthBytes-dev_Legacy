@@ -30,13 +30,13 @@ echo "=== HealthBytes Production Secrets Setup ==="
 echo "Region: $REGION | Prefix: $PREFIX"
 echo ""
 
-put_secret "***REDACTED_DATABASE_URL***
+put_secret "DATABASE_URL"                "RDS PostgreSQL connection string (postgresql+psycopg://user:pass@host:5432/db)"
 put_secret "JWT_SECRET"                  "JWT signing secret — min 32 characters"
 put_secret "CLERK_PUBLISHABLE_KEY"       "Clerk prod publishable key (pk_live_...)"
-put_secret "***REDACTED_CLERK_SECRET_KEY***
-put_secret "***REDACTED_MERCADOPAGO_TOKEN***
+put_secret "CLERK_SECRET_KEY"            "Clerk prod secret key (sk_live_...)"
+put_secret "MERCADO_PAGO_ACCESS_TOKEN"   "Mercado Pago prod access token"
 put_secret "MERCADO_PAGO_WEBHOOK_SECRET" "Mercado Pago webhook HMAC secret"
-put_secret "***REDACTED_RESEND_KEY***
+put_secret "RESEND_API_KEY"              "Resend API key for transactional email"
 put_secret "EMAIL_FROM_ADDRESS"          "From address e.g. HealthBytes <no-reply@healthbytes.cl>"
 put_secret "BACKEND_URL"                 "Backend URL e.g. https://api.healthbytes.cl (no trailing slash)"
 put_secret "FRONTEND_URL"               "Frontend URL e.g. https://healthbytes.cl (no trailing slash)"
