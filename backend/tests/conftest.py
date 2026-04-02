@@ -1,8 +1,6 @@
 """Pytest configuration and fixtures for backend tests."""
 
-from contextlib import asynccontextmanager
 from typing import Generator
-from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from app.db.database import Base, get_db
