@@ -80,6 +80,9 @@ jobs:
       - name: Run tests
         run: pytest --tb=short --cov=app --cov-fail-under=80 -q
 
+      - name: P2 deprecations no-net-increase check
+        run: python scripts/check_p2_deprecations.py
+
       - name: Audit Python dependencies
         run: |
           pip install safety

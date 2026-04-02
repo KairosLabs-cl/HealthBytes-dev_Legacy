@@ -125,7 +125,7 @@ class TestAddToCart:
         payload = {"product_id": test_products[0].id, "quantity": 0}
         response = client.post("/cart/items", json=payload, headers=auth_headers)
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == 422
 
 
 class TestUpdateCartItem:
