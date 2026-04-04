@@ -33,6 +33,7 @@ def count_backend_tokens(repo_root: Path) -> dict[str, int]:
             continue
         if file_path.resolve() == self_path:
             continue
+        # Exclude the test file itself which contains these strings in mock data
         if file_path.name == "test_check_p2_deprecations.py":
             continue
         try:
