@@ -58,10 +58,10 @@ Las personas con condiciones como celiaquía, diabetes o alergias alimentarias e
 | Componente | Estado | Detalle |
 | --- | --- | --- |
 | 🎨 Frontend Mobile | ✅ Funcional | React Native + Expo — 130 tests pasando |
-| ⚙️ Backend API | ✅ Funcional | FastAPI + SQLAlchemy async — 442 tests pasando |
+| ⚙️ Backend API | ✅ Funcional | FastAPI + SQLAlchemy async — 450 tests pasando |
 | 🗄️ Base de Datos | ✅ Funcional | PostgreSQL con modelos core + índices optimizados |
 | 🔐 Autenticación | ✅ Implementado | JWT + Clerk (dual auth), AuthGate en screens protegidos |
-| 🧪 Tests | ✅ Estable | 572 tests (442 backend + 130 frontend) — 41% coverage |
+| 🧪 Tests | ✅ Estable | 580 tests (450 backend + 130 frontend) — 40% coverage |
 | 🛡️ Security | ✅ Hardened | Bandit + Gitleaks + pnpm audit en CI |
 | 🐳 Docker | ✅ Funcional | docker-compose con backend + DB |
 | 🚀 CI/CD | ✅ Implementado | GitHub Actions (lint, test, SAST, secret-scan, deploy) |
@@ -280,9 +280,9 @@ HealthBytes sigue una arquitectura **monolítica modular** que facilita el desar
 <!-- DOCSYNC:stack-backend -->
 | Tecnología | Versión | Propósito |
 | ----------- | -------- | ------------------------ |
-| FastAPI | 0.135.1 | Framework web moderno |
-| Python | 3.12.13 | Lenguaje principal |
-| SQLAlchemy | 2.0.48 | ORM async |
+| FastAPI | 0.135.3 | Framework web moderno |
+| Python | 3.13.1 | Lenguaje principal |
+| SQLAlchemy | 2.0.49 | ORM async |
 | Pydantic | 2.12.5 | Validación de datos |
 | PostgreSQL | 14+ | Base de datos relacional |
 | pytest | Latest | Testing framework |
@@ -742,13 +742,13 @@ pytest -v
 <!-- DOCSYNC:testing-table -->
 | Suite | Tests | Estado |
 | -------- | ----- | ------------ |
-| Backend | 442 | ✅ Passing |
+| Backend | 450 | ✅ Passing |
 | Frontend | 130/130 (14 suites) | ✅ Passing |
 | E2E | 10 | ✅ Passing |
 | Smoke | 8 checks | ✅ Ready |
-| **Total** | **572** | ✅ **All green** |
+| **Total** | **580** | ✅ **All green** |
 
-> Coverage backend: **41%** — API endpoints: **45** — TODOs pendientes: **1**
+> Coverage backend: **40%** — API endpoints: **48** — TODOs pendientes: **1**
 <!-- /DOCSYNC:testing-table -->
 
 Ver más detalles en [tests/README.md](backend/tests/README.md)
@@ -1100,7 +1100,7 @@ Al usar HealthBytes, el usuario acepta que:
 Hecho con ❤️ por el equipo de HealthBytes
 
 <!-- DOCSYNC:last-updated -->
-_Última actualización: 2026-03-18 — generado automáticamente por docsync_
+_Última actualización: 2026-04-04 — generado automáticamente por docsync_
 <!-- /DOCSYNC:last-updated -->
 
 </div>
