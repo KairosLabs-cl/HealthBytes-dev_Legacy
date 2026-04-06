@@ -124,7 +124,7 @@ Estas prioridades complementan el roadmap por fases y ordenan la ejecucion inmed
 - Limpiar deprecations no bloqueantes
 - Consolidar scorecard semanal de roadmap
 
-Referencia de seguimiento detallado: `docs/plans/2026-04-01-estado-roadmap-prioridades.md`
+Referencia de seguimiento detallado: `docs/architecture/HealthBytes_Architecture_Review.md`
 
 ---
 
