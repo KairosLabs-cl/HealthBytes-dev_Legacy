@@ -14,6 +14,7 @@ Guías paso a paso para configurar el entorno de desarrollo:
 Comprende cómo está construido HealthBytes:
 - **[README.md](./architecture/README.md)** - Estructura y decisiones técnicas
 - **[API_DESIGN_ANALYSIS.md](./architecture/API_DESIGN_ANALYSIS.md)** - Análisis completo del REST API
+- **[04_negocio.md](./architecture/04_negocio.md)** - Auditoría de lógica de negocio y resiliencia transaccional
 
 ### ✨ [features/](./features/) - Características Implementadas
 Documentación detallada de features del proyecto:
@@ -28,10 +29,14 @@ Información sobre seguridad y mejoras implementadas:
 
 ### 👨‍💻 [development/](./development/) - Para Desarrolladores
 Guías para trabajar en el código:
-- **[ESTADO.md](./development/ESTADO.md)** - Estado actual del proyecto y arquitectura
 - **[UIUX_ROADMAP.md](./development/UIUX_ROADMAP.md)** - Roadmap UI/UX detallado
 - **[UIUX_SYSTEM_OVERVIEW.md](./development/UIUX_SYSTEM_OVERVIEW.md)** - Overview del design system
 - **[inspections/](./development/inspections/)** - Reportes de inspección de código
+- **[inspections/01_infra.md](./development/inspections/01_infra.md)** - Auditoría de infraestructura, CI/CD y DevOps
+
+### 📱 [frontend/](./frontend/) - Auditorías Frontend
+Reportes específicos de frontend y experiencia de usuario:
+- **[03_frontend.md](./frontend/03_frontend.md)** - Auditoría de cumplimiento y performance frontend
 
 ---
 
@@ -44,7 +49,7 @@ Guías para trabajar en el código:
 | ✨ Ver features | [features/](./features/) |
 | 🔐 Seguridad | [security/](./security/) |
 | 👨‍💻 Contribuir | [development/](./development/) |
-| 📊 Estado del proyecto | [development/ESTADO.md](./development/ESTADO.md) |
+| 🏗️ Auditorías técnicas | [development/inspections/](./development/inspections/) |
 
 ---
 
@@ -52,7 +57,6 @@ Guías para trabajar en el código:
 
 **En la raíz:**
 - [README.md](../README.md) - Overview del proyecto
-- [UIUX_AUDIT_PROMPT.md](../UIUX_AUDIT_PROMPT.md) - Prompt para auditorías UI/UX
 
 **En las carpetas de código:**
 - [backend/README.md](../backend/README.md) - Backend
@@ -62,7 +66,7 @@ Guías para trabajar en el código:
 
 ---
 
-**Última actualización:** Marzo 3, 2026 ✅
+**Última actualización:** Abril 2, 2026 ✅
 
 - **Requisitos**: Python 3.14+, Node.js 20+, PostgreSQL 14+
 - **Lenguajes**: Python (backend), TypeScript (frontend)

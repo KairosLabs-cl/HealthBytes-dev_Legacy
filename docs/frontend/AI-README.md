@@ -37,8 +37,9 @@ Si una decisión técnica complica estos puntos → **debe justificarse o descar
 
 ### 3. Seguridad
 
-- ✋ **Nunca guardar tokens en localStorage** → AsyncStorage cifrado
-- ✋ **No hardcodear URLs de API** → variables de entorno
+- ✋ **Nunca manipular tokens Clerk manualmente** → usar hooks de `@clerk/clerk-expo` (`useAuth`, `useUser`, `useSignIn`)
+- ✋ **La persistencia de tokens la maneja Clerk** vía `expo-secure-store` internamente — no usar `AsyncStorage` para tokens
+- ✋ **No hardcodear URLs de API** → variables de entorno (`EXPO_PUBLIC_API_URL`)
 - ✋ **No loguear datos sensibles** (tokens, contraseñas, emails)
 - ✋ **Validar entrada del usuario** siempre
 - ✋ **No usar `any` en TypeScript** → types explícitos
@@ -51,16 +52,21 @@ Si una decisión técnica complica estos puntos → **debe justificarse o descar
 
 <!-- DOCSYNC:frontend-stack -->
 - **Framework**: React Native 0.81.5
-- **Tooling**: Expo 54.0.33
-- **Lenguaje**: TypeScript 5.x
-- **Estado**: Zustand 5.0.10
-- **UI**: Gluestack UI
-- **Testing**: Jest — 130/130 tests, 14 suites
+- **Runtime**: React 19.1.0
+- **Tooling**: Expo ~54.0.33
+- **Lenguaje**: TypeScript ~5.9.2
+- **Estado local**: Zustand ^5.0.10
+- **Server state / data fetching**: TanStack React Query ^5.90.19
+- **Autenticación**: @clerk/clerk-expo ^2.19.26 (Clerk maneja tokens vía expo-secure-store)
+- **UI**: Gluestack UI (paquetes individuales @gluestack-ui/*)
+- **Theming**: NativeWind ^4.2.1 (Tailwind para React Native)
+- **Navegación**: Expo Router ~6.0.23 (file-based)
+- **Error Tracking**: @sentry/react-native ^7.2.0
+- **Testing**: Jest + RNTL — 130/130 tests, 14 suites
 <!-- /DOCSYNC:frontend-stack -->
 
-- **Theming**: Gluestack + Tailwind (NativeWind)
-- **Navegación**: Expo Router (file-based)
-- **Fetching**: Fetch nativo (no axios sin permiso)
+- **Fetching**: TanStack Query + fetch nativo (no axios sin permiso explícito)
+- **Package manager**: pnpm 10.26.0 (NO npm, NO yarn)
 
 ### Organización de Carpetas
 
@@ -152,14 +158,47 @@ const [total, setTotal] = useState(0); // No guardes esto
 
 ### Manejo de API Calls
 
-**Todos deben manejar**: loading, error, success
+El proyecto usa **TanStack React Query v5** como capa principal de server state. Los ejemplos con `useState` + `useEffect` son válidos solo para casos simples sin cache.
+
+**Patrón preferido con TanStack Query:**
+
+```typescript
+// api/products.ts
+export const fetchProducts = async (): Promise<Product[]> => {
+  const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/products`);
+  if (!response.ok) throw new Error('Failed to fetch products');
+  return response.json();
+};
+
+// hooks/useProducts.ts
+import { useQuery } from '@tanstack/react-query';
+
+export const useProducts = () => {
+  return useQuery({
+    queryKey: ['products'],
+    queryFn: fetchProducts,
+    staleTime: 1000 * 60 * 5, // 5 min
+  });
+};
+
+// Uso en componente
+export const ProductList = () => {
+  const { data: products, isLoading, error } = useProducts();
+
+  if (isLoading) return <SkeletonLoader count={3} />;
+  if (error) return <ErrorMessage />;
+  return <FlatList data={products} />;
+};
+```
+
+**Patrón alternativo con fetch directo** (solo para casos simples sin cache):
 
 ```typescript
 // ✅ BIEN: Estados completos
 const fetchProducts = async () => {
   setLoading(true);
   try {
-    const data = await fetch('/api/v1/products');
+    const data = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/products`);
     setProducts(await data.json());
   } catch (err) {
     setError(err);
@@ -291,15 +330,17 @@ Antes de generar código, verifica:
 ## 🚫 Reglas Obligatorias (NO violar)
 
 1. **Nunca `any`** → Usa types explícitos
-2. **Nunca localStorage** para tokens → AsyncStorage
-3. **Nunca hardcodear URLs** → Usa constants o .env
-4. **Nunca console.log** en producción → Usa logger
-5. **Nunca renderizar datos sin validar** → Null checks
-6. **Nunca hacer fetch sin manejo de error**
-7. **Nunca bloquear UI** → Usa loading states
-8. **Nunca ignorar TypeScript warnings**
-9. **Nunca olvidar cleanup** en useEffect (return function)
-10. **Nunca props muy complejos** → Simplificar o estructurar
+2. **Nunca manipular tokens Clerk manualmente** → usar `useAuth()`, `useSignIn()`, `useSignOut()` de `@clerk/clerk-expo`
+3. **Nunca AsyncStorage para tokens** → Clerk usa `expo-secure-store` internamente
+4. **Nunca hardcodear URLs** → Usa `process.env.EXPO_PUBLIC_API_URL`
+5. **Nunca console.log** en producción → Usa logger o Sentry
+6. **Nunca renderizar datos sin validar** → Null checks
+7. **Nunca hacer fetch sin manejo de error**
+8. **Nunca bloquear UI** → Usa loading states (skeleton preferido sobre spinner)
+9. **Nunca ignorar TypeScript warnings**
+10. **Nunca olvidar cleanup** en useEffect (return function)
+11. **Nunca props muy complejos** → Simplificar o estructurar
+12. **Nunca instalar paquetes con npm o yarn** → Solo `pnpm`
 
 ---
 
@@ -458,9 +499,9 @@ describe('ProductCard', () => {
 
 ---
 
-## � Template Obligatorio de PR y Commits
+## 📝 Template Obligatorio de PR y Commits
 
-**⚠️ IMPORTANTE**: Al crear PRs o commits, seguir templates de README.md (líneas 580-680).
+**⚠️ IMPORTANTE**: Al crear PRs o commits, seguir los templates definidos en `.cursorrules` (sección "PULL REQUEST RULES").
 
 **Commit format**:
 ```bash
@@ -470,13 +511,16 @@ tipo(scope): descripción en presente
 Closes #123
 ```
 
-**PR Description**: Ver template completo en README.md líneas 650-680.
+**Tipos**: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `perf`
+
+**PR Description**: Ver template completo en `.cursorrules` → sección "Estructura Obligatoria de Pull Request".
 
 ---
 
-## �📞 Dudas
+## 📞 Dudas
 
 Si algo no está claro en este documento:
-1. Revisa el README.md (documentación para devs)
+1. Revisa `.cursorrules` (reglas globales del proyecto)
 2. Busca ejemplos en `components/`
-3. Pregunta en el contexto de la conversación
+3. Revisa `docs/frontend/README.md` (documentación para devs)
+4. Pregunta en el contexto de la conversación

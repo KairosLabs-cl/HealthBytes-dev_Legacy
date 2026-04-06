@@ -172,18 +172,20 @@ docs/
 │
 ├─ setup/                      ← 🚀 Configuración e instalación
 │  ├─ README.md
-│  ├─ environment-variables.md
+│  ├─ ANDROID_BUILD_GUIDE.md
+│  ├─ DOCKER_SETUP.md
 │  └─ frontend-setup.md
 │
 ├─ architecture/               ← 🏗️  Diseño y decisiones
 │  ├─ README.md
-│  └─ (contenido técnico)
+│  └─ API_DESIGN_ANALYSIS.md
 │
 ├─ features/                   ← ✨ Features implementadas
 │  ├─ README.md
 │  ├─ full-text-search.md
-│  ├─ authentication.md
-│  └─ cart-system.md
+│  ├─ nutritional-info.md
+│  ├─ wishlist.md
+│  └─ ui-ux-improvements.md
 │
 ├─ security/                   ← 🔐 Seguridad
 │  ├─ README.md
@@ -191,14 +193,30 @@ docs/
 │
 ├─ development/                ← 👨‍💻 Guías para desarrolladores
 │  ├─ README.md
-│  ├─ ESTADO.md                 ← Estado actual del proyecto
-│  ├─ ROADMAP.md                ← Roadmap de desarrollo
-│  ├─ ROADMAP_VISUAL.md         ← Roadmap visual
-│  ├─ TESTING_REPORT.md         ← Reporte de testing
-│  ├─ inspections/              ← Reportes de inspección de código
-│  └─ ...                       ← git-workflow, testing-guide, code-standards
+│  ├─ ESTADO.md                ← Estado actual del proyecto
+│  ├─ UIUX_ROADMAP.md
+│  └─ inspections/             ← Reportes de inspección de código
 │
-└─ diagramas/                   ← Diagramas de arquitectura
+├─ plans/                      ← 📋 Planes de implementación (por fecha)
+│  └─ YYYY-MM-DD-nombre.md
+│
+├─ reports/                    ← 📊 Reportes semanales
+│  └─ SEMANA-*.md
+│
+├─ backend/                    ← 🤖 Contexto IA para backend
+│  ├─ AI-README.md             ← LEER antes de tocar código backend
+│  └─ README.md
+│
+├─ frontend/                   ← 🤖 Contexto IA para frontend
+│  ├─ AI-README.md             ← LEER antes de tocar código frontend
+│  └─ README.md
+│
+├─ diagramas/                  ← Diagramas de arquitectura
+│  └─ Infrastructura.drawio
+│
+└─ ia-tools/                   ← Prompts y contextos para herramientas IA
+   ├─ bolt.md
+   └─ sentinel.md
 ```
 
 **Reglas de Documentación (OBLIGATORIAS):**
@@ -223,13 +241,13 @@ Solo pueden existir estos archivos canónicos:
 
 **Orden de actualización ante cambios mayores:**
 ```
-1. ARQUITECTURA.md    (cambios estructurales)
+1. docs/backend/AI-README.md o docs/frontend/AI-README.md  (cambios de stack/patrones)
    ↓
-2. ESTADO.md          (refleja realidad)
+2. docs/development/ESTADO.md                              (refleja realidad actual)
    ↓
-3. PLAN_DE_ACCION.md  (qué hacer)
+3. docs/plans/YYYY-MM-DD-nombre.md                        (nuevo plan si aplica)
    ↓
-4. RESUMEN_EJECUTIVO.md (comunicar resultado)
+4. .cursorrules                                            (si cambian reglas globales)
 ```
 
 #### 3. Reportes de Inspección
@@ -317,7 +335,7 @@ Al actualizar documentación:
 ### 1. Antes de Modificar Código
 
 ```
-1. Lee el AI-README.md correspondiente (backend/frontend)
+1. Lee docs/backend/AI-README.md o docs/frontend/AI-README.md según corresponda
 2. Verifica la estructura actual con grep_search o semantic_search
 3. Identifica el archivo exacto donde hacer el cambio
 4. Lee el archivo completo antes de editarlo
@@ -371,21 +389,54 @@ pnpm add -D {package}  # para dev dependencies
 
 **Backend (.env):**
 ```bash
-DATABASE_URL=postgresql://...
-JWT_SECRET_KEY=...
+# Base de datos
+DATABASE_URL=postgresql+asyncpg://...
+
+# JWT
+JWT_SECRET=...
 JWT_ALGORITHM=HS256
+
+# Clerk (autenticación producción)
+CLERK_PUBLISHABLE_KEY=...
+CLERK_SECRET_KEY=...
+
+# MercadoPago
+MERCADO_PAGO_ACCESS_TOKEN=...
+MERCADO_PAGO_WEBHOOK_SECRET=...
+
+# Email
+RESEND_API_KEY=...
+EMAIL_FROM_ADDRESS=...
+
+# Cache
+REDIS_URL=redis://localhost:6379
+
+# App
+BACKEND_URL=...
+FRONTEND_URL=...
+ENVIRONMENT=dev  # dev | staging | production
+
+# Error tracking
+SENTRY_DSN=...
+
+# Dev only (NUNCA en staging/producción)
+DEV_BYPASS_AUTH=false
 ```
 
 **Frontend (.env):**
 ```bash
-EXPO_PUBLIC_API_URL=http://...
+EXPO_PUBLIC_API_URL=http://localhost:3001
+EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=...
+EXPO_PUBLIC_SENTRY_DSN=...
 ```
 
 **Reglas:**
-- ✅ Usar `config.py` (backend) o process.env (frontend)
+- ✅ Usar `config.py` (backend) o `process.env.EXPO_PUBLIC_*` (frontend)
 - ✅ Proveer `.env.example` con valores dummy
+- ✅ En producción, los secrets vienen de **AWS SSM Parameter Store** (no de archivos `.env`)
 - ❌ NUNCA commitear `.env`
 - ❌ NUNCA hardcodear valores sensibles
+- ❌ NUNCA habilitar `DEV_BYPASS_AUTH` fuera de desarrollo local
 
 ### Autenticación
 
@@ -395,9 +446,11 @@ EXPO_PUBLIC_API_URL=http://...
 - ❌ NUNCA endpoints sin auth (excepto login, health, docs)
 
 **Frontend:**
-- ✅ Tokens en AsyncStorage cifrado
-- ✅ Limpiar tokens en logout
-- ❌ NUNCA localStorage para tokens
+- ✅ Clerk maneja tokens vía `expo-secure-store` internamente
+- ✅ Usar hooks de Clerk: `useAuth()`, `useUser()`, `useSignIn()`, `useSignOut()`
+- ✅ Limpiar sesión en logout con `signOut()` de Clerk (no limpiar tokens manualmente)
+- ❌ NUNCA manipular tokens Clerk directamente
+- ❌ NUNCA usar `AsyncStorage` para guardar tokens de sesión
 - ❌ NUNCA tokens en URL query params
 
 ---
@@ -411,27 +464,47 @@ EXPO_PUBLIC_API_URL=http://...
 fastapi>=0.104.0
 uvicorn[standard]>=0.24.0
 sqlalchemy>=2.0.0
+asyncpg                  # Driver async para PostgreSQL
+aiosqlite                # Driver async para SQLite (tests)
 pydantic>=2.0.0
-psycopg2-binary>=2.9.9
+alembic                  # Migraciones DB
 python-jose[cryptography]
 passlib[bcrypt]
 python-multipart
+redis                    # Cache (redis-py)
+slowapi                  # Rate limiting
+sentry-sdk               # Error tracking
+resend                   # Emails transaccionales
+mercadopago              # Pagos
 pytest
+pytest-asyncio
 httpx
 ```
+
+> **Nota**: `pyproject.toml` existe en el proyecto pero es **solo para configuración de herramientas** (black, isort, pytest, bandit). Las dependencias se gestionan exclusivamente en `requirements.txt` (no poetry, no conda).
 
 **Frontend (package.json):**
 ```json
 {
   "dependencies": {
-    "expo": "~52.0.0",
-    "react-native": "0.76.5",
-    "@gluestack-ui/themed": "*",
-    "zustand": "*",
-    "nativewind": "*"
+    "react": "19.1.0",
+    "react-native": "0.81.5",
+    "expo": "~54.0.33",
+    "expo-router": "~6.0.23",
+    "@clerk/clerk-expo": "^2.19.26",
+    "@tanstack/react-query": "^5.90.19",
+    "@sentry/react-native": "^7.2.0",
+    "@gluestack-ui/button": "*",
+    "@gluestack-ui/input": "*",
+    "@gluestack-ui/toast": "*",
+    "zustand": "^5.0.10",
+    "nativewind": "^4.2.1"
   }
 }
 ```
+
+> **Nota sobre Gluestack UI**: Se usan paquetes individuales `@gluestack-ui/*`, NO el paquete monolítico `@gluestack-ui/themed`.
+> **Package manager**: Solo `pnpm` (no npm, no yarn).
 
 ### Antes de Añadir Nuevas:
 1. ¿Es realmente necesaria?
@@ -490,9 +563,9 @@ docker-compose down -v         # No borrar volúmenes sin consultar
 
 ## 📝 CONVENCIONES DE CÓDIGO
 
-> **Nota:** Las convenciones detalladas de código están disponibles en los skills de .ai/
-> - Backend: `nodejs-backend-patterns`, `nodejs-best-practices`
-> - Frontend: `vercel-react-best-practices`, `vercel-composition-patterns`
+> **Nota:** Las convenciones detalladas de código están disponibles en los skills de `.ai/`
+> - Backend (Python/FastAPI): `systematic-debugging`, `error-handling-patterns`, `supabase-postgres-best-practices`
+> - Frontend (React Native/Expo): `vercel-react-best-practices`, `vercel-composition-patterns`, `react-native-best-practices`, `building-native-ui`
 
 ### Python (Backend)
 
@@ -872,7 +945,7 @@ tipo(scope): descripción en presente
 
 ## 🤝 TL;DR - Reglas de Oro
 
-1. **Lee primero, modifica después** (AI-README.md + código existente + skills)
+1. **Lee primero, modifica después** (`docs/backend/AI-README.md` o `docs/frontend/AI-README.md` + código existente + skills)
 2. **Sigue la arquitectura** (routers → services → models)
 3. **Ubica correctamente** (usa la matriz de ubicaciones)
 4. **No hardcodees nada** (env vars para todo)
@@ -887,4 +960,4 @@ tipo(scope): descripción en presente
 
 **Este documento es ley.** Si encuentras conflictos con otros documentos, este `.cursorrules` tiene prioridad.
 
-Última actualización: 2026-03-30
+Última actualización: 2026-04-02

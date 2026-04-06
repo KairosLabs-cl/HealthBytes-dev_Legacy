@@ -7,7 +7,7 @@ Documentación para el equipo de desarrollo de HealthBytes.
 ## 📋 Contenido
 
 ### Estado y Arquitectura
-- **[ESTADO.md](./ESTADO.md)** - ⭐ Estado actual del proyecto, arquitectura completa, esquemas de BD, endpoints API
+- **[HealthBytes_Architecture_Review.md](../architecture/HealthBytes_Architecture_Review.md)** - Estado técnico consolidado y plan de acción de arquitectura
 
 ### UI/UX
 - **[UIUX_ROADMAP.md](./UIUX_ROADMAP.md)** - Roadmap de mejoras UI/UX pendientes
@@ -15,9 +15,8 @@ Documentación para el equipo de desarrollo de HealthBytes.
 
 ### Inspecciones de Código
 - **[inspections/](./inspections/)** - Reportes de revisión de código recientes
+  - `01_infra.md` - Auditoría de infraestructura, CI/CD y DevOps
   - `DEEP_INSPECTION_2026-03-03.md` - Inspección profunda del backend
-  - `FRONTEND_INSPECTION_REPORT.md` - Reporte de inspección frontend
-  - `FRONTEND_INSPECTION_SUMMARY.md` - Resumen de inspección frontend
   - `STAFF_ENGINEER_REVIEW_2026-03-02.md` - Review de staff engineer
 
 ---
@@ -35,4 +34,4 @@ Documentación para el equipo de desarrollo de HealthBytes.
 
 ---
 
-**Última actualización:** Marzo 3, 2026
+**Última actualización:** Abril 2, 2026

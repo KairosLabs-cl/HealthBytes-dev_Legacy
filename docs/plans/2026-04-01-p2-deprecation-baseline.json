@@ -1,8 +1,0 @@
-{
-  "baseline_total": 14,
-  "frontend_lock_deprecated": 9,
-  "backend_http_422_token": 3,
-  "backend_deprecationwarning_token": 2,
-  "captured_at": "2026-04-01T21:34:00Z",
-  "notes": "S1 baseline para regla no-net-increase de P2"
-}

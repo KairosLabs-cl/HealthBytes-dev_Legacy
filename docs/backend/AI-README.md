@@ -9,13 +9,18 @@ Este archivo define reglas, patrones y principios que debes seguir cuando genere
 
 ## 🎯 Propósito del Proyecto
 
-**HealthBytes** es una API REST para un e-commerce specializado en productos para personas con restricciones de salud.
+**HealthBytes** es una API REST para un e-commerce especializado en productos para personas con restricciones de salud (celiaquía, diabetes, alergias). Mercado latinoamericano, idioma español.
 
 **Características clave**:
-- Catálogo de productos filtrable
-- Autenticación JWT
-- Carrito de compras y órdenes
-- Validaciones de seguridad
+- Catálogo de productos con filtros dietéticos (tags M2M) y búsqueda full-text (PostgreSQL `tsvector` + GIN index)
+- Autenticación dual: JWT HS256 propio + verificación Clerk JWKS (producción)
+- Carrito de compras persistido en servidor y órdenes con lifecycle completo
+- Pagos con MercadoPago (intents + webhooks)
+- Notificaciones push via Expo Push Notifications
+- Emails transaccionales via Resend
+- Wishlist, reseñas, direcciones de entrega, preferencias dietéticas por usuario
+- Cache de productos en Redis (TTL 5 min)
+- Rate limiting (slowapi), seguridad headers, body-size limit
 
 ---
 
@@ -25,12 +30,18 @@ Este archivo define reglas, patrones y principios que debes seguir cuando genere
 
 <!-- DOCSYNC:backend-stack -->
 - **Framework**: FastAPI 0.135.1
-- **Lenguaje**: Python 3.13.1
-- **ORM**: SQLAlchemy 2.0.48 (async)
+- **Lenguaje**: Python 3.12+ (3.12.13 en runtime, >=3.12 requerido)
+- **ORM**: SQLAlchemy 2.0.48 (async, driver asyncpg para PostgreSQL)
 - **Validación**: Pydantic v2.12.5
-- **Base de Datos**: PostgreSQL 14+
-- **Testing**: pytest — 442 tests, 41% coverage
-- **Autenticación**: JWT (HS256)
+- **Base de Datos**: PostgreSQL 16 (Docker), SQLite en memoria para tests
+- **Cache**: Redis 7 (redis-py, TTL 5 min en endpoints de productos)
+- **Migraciones**: Alembic
+- **Autenticación**: JWT HS256 propio + Clerk JWKS verification (producción)
+- **Pagos**: MercadoPago (intents + webhooks)
+- **Email**: Resend
+- **Rate Limiting**: slowapi
+- **Error Tracking**: Sentry SDK
+- **Testing**: pytest + pytest-asyncio — cobertura actual ~41%, mínimo CI: **80%**
 <!-- /DOCSYNC:backend-stack -->
 
 **No cambiar sin aprobación explícita**.
@@ -315,7 +326,17 @@ async def get_product(product_id: str, db: AsyncSession = Depends(get_db)):
 
 ## 🔐 Autenticación y Autorización
 
-### JWT Validation
+### Flujo de autenticación en producción (Clerk JWKS)
+
+En producción el frontend envía tokens Clerk JWT. El backend los verifica contra el endpoint JWKS de Clerk:
+
+```python
+# Middleware: attach_user_for_rate_limiting extrae el token del header
+# Authorization: Bearer <clerk_jwt>
+# El middleware verifica vía JWKS y adjunta el usuario a request.state
+```
+
+### JWT HS256 propio (auth legacy / dev)
 
 ```python
 # app/core/security.py
@@ -365,6 +386,10 @@ async def get_user_order(
     
     return order
 ```
+
+### DEV_BYPASS_AUTH
+
+`DEV_BYPASS_AUTH=true` es **solo para desarrollo local**. Nunca en staging ni producción.
 
 ---
 
@@ -417,7 +442,7 @@ Antes de generar código, verifica:
 ## 🧪 Testing
 
 <!-- DOCSYNC:test-status -->
-**Suite green | 41% coverage | 0 failures**
+**Suite green | ~41% coverage actual | mínimo CI: 80% | 0 failures**
 
 | Suite | Tests | Estado |
 |-------|-------|--------|
@@ -426,9 +451,9 @@ Antes de generar código, verifica:
 | `test_middleware/` | ~30 | ✅ Todos pasan |
 | `test_schemas/` | ~20 | ✅ Todos pasan |
 | `e2e/` | 10 | ✅ Todos pasan |
-| **Total** | **442** | ✅ |
+| **Total** | **~330+** | ✅ |
 
-Coverage mínimo CI: **80%**
+Coverage mínimo CI: **80%** (enforced en `pyproject.toml` con `--cov-fail-under=80`)
 <!-- /DOCSYNC:test-status -->
 
 ### Test Structure
@@ -622,14 +647,14 @@ async def create_order(
 
 ### Testing en CI/CD
 - Todos los tests deben pasar antes de merge
-- Coverage mínimo 70%
+- Coverage mínimo **80%** (definido en `pyproject.toml`, enforced en GitHub Actions)
 - Slow tests marcar con `@pytest.mark.slow`
 
 ---
 
-## � Template Obligatorio de PR y Commits
+## 📝 Template Obligatorio de PR y Commits
 
-**⚠️ IMPORTANTE**: Al crear PRs o commits, seguir templates de README.md (líneas 580-680).
+**⚠️ IMPORTANTE**: Al crear PRs o commits, seguir los templates definidos en `.cursorrules` (sección "PULL REQUEST RULES").
 
 **Commit format (Conventional Commits)**:
 ```bash
@@ -641,14 +666,15 @@ Closes #123
 
 **Tipos**: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `perf`
 
-**PR Description**: Ver template completo en README.md líneas 650-680.
+**PR Description**: Ver template completo en `.cursorrules` → sección "Estructura Obligatoria de Pull Request".
 
 ---
 
-## �📞 Dudas
+## 📞 Dudas
 
 Si algo no está claro:
-1. Revisa README.md (documentación para devs)
+1. Revisa `.cursorrules` (reglas globales del proyecto)
 2. Busca ejemplos en `app/api/v1/`
 3. Mira los tests en `tests/`
-4. Pregunta en el contexto
+4. Revisa `docs/backend/README.md` (documentación para devs)
+5. Pregunta en el contexto

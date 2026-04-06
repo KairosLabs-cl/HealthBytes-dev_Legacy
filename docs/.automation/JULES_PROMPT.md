@@ -155,11 +155,11 @@ Docs que mantenés:
 - `backend/AI-README.md` — contexto para agentes de IA en backend
 - `frontend/AI-README.md` — contexto para agentes de IA en frontend
 - `CHANGELOG.md` — historial de cambios por fecha
-- `docs/plans/TECHNICAL_AUDIT_2026-03-05.md` — auditoría técnica (actualizar métricas si cambian >5%)
+- `docs/architecture/HealthBytes_Architecture_Review.md` — auditoría técnica consolidada
+- `docs/development/inspections/01_infra.md` — auditoría de infraestructura, CI/CD y seguridad
 
 Archivos que **nunca** tocás:
 - Todo lo que esté en `backend/app/`, `frontend/`, `infra/`, `.github/`
-- `docs/plans/PRODUCTION_CHECKLIST.md` (lo firma el equipo manualmente)
 - `.cursorrules`, `copilot-instructions.md`
 
 ---
