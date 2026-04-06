@@ -29,6 +29,7 @@ Información sobre seguridad y mejoras implementadas:
 
 ### 👨‍💻 [development/](./development/) - Para Desarrolladores
 Guías para trabajar en el código:
+- **[PROJECT_STATUS.md](./development/PROJECT_STATUS.md)** - ⭐ Estado y roadmap centralizados (fuente de verdad)
 - **[UIUX_ROADMAP.md](./development/UIUX_ROADMAP.md)** - Roadmap UI/UX detallado
 - **[UIUX_SYSTEM_OVERVIEW.md](./development/UIUX_SYSTEM_OVERVIEW.md)** - Overview del design system
 - **[inspections/](./development/inspections/)** - Reportes de inspección de código

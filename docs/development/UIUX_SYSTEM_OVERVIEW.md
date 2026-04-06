@@ -1,5 +1,7 @@
 # 🎨 Sistema de Auditoría UX/UI para HealthBytes
 
+> ⚠️ **Documento Historico / Contexto**: Este documento es referencia para el diseno y auditoria del sistema. Para el estado y roadmap oficial del proyecto, por favor referirse a [PROJECT_STATUS.md](./PROJECT_STATUS.md).
+
 > **Prompt especializado para mejorar la experiencia de usuario con asistencia de IA**
 
 ---

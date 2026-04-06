@@ -365,15 +365,15 @@ HealthBytes-dev/
 | [frontend/AI-README.md](frontend/AI-README.md)                     | Patrones, reglas y arquitectura del frontend            |
 | [.cursorrules](.cursorrules)                                       | **CRÍTICO**: Reglas obligatorias y prohibiciones        |
 | [.github/copilot-instructions.md](.github/copilot-instructions.md) | Instrucciones globales para IA                         |
-| [docs/plans/2026-03-04-mvp-closure.md](docs/plans/2026-03-04-mvp-closure.md) | Plan de cierre del MVP (implementado)                 |
-| [docs/plans/PRODUCTION_CHECKLIST.md](docs/plans/PRODUCTION_CHECKLIST.md) | Checklist para deploy a producción                     |
+| [docs/development/PROJECT_STATUS.md](docs/development/PROJECT_STATUS.md) | Estado + roadmap centralizados (fuente de verdad)      |
+| [docs/architecture/HealthBytes_Architecture_Review.md](docs/architecture/HealthBytes_Architecture_Review.md) | Hallazgos tecnicos y plan de accion de arquitectura |
 
 ### Navegación Rápida
 
 | Necesito...              | Ve a...                                   |
 | ------------------------ | ----------------------------------------- |
 | Documentación principal | [docs/README.md](docs/README.md)             |
-| Ver estado del proyecto  | [docs/development/ESTADO.md](docs/development/ESTADO.md) |
+| Ver estado del proyecto  | [docs/development/PROJECT_STATUS.md](docs/development/PROJECT_STATUS.md) |
 | Backend info             | [backend/README.md](backend/README.md)       |
 | Frontend info            | [frontend/README.md](frontend/README.md)     |
 | Tools scripts            | [Tools/README.md](Tools/README.md)           |
@@ -680,7 +680,7 @@ pre-commit run --files app/api/v1/products.py
 
 | Documento                                                                          | Descripción                                       | Audiencia |
 | ---------------------------------------------------------------------------------- | -------------------------------------------------- | --------- |
-| [Estado del Proyecto](docs/development/ESTADO.md) | ⭐**Estado completo** - Arquitectura y análisis exhaustivo | Todos     |
+| [Estado del Proyecto](docs/development/PROJECT_STATUS.md) | ⭐**Estado y roadmap unificados** - Fuente de verdad | Todos     |
 | [docs/README.md](docs/README.md)                                                      | Índice general de documentación                  | Todos     |
 
 ### READMEs Específicos
@@ -830,7 +830,7 @@ Convertir HealthBytes en la **plataforma líder** de e-commerce para personas co
 ### 📊 Documentación Completa
 
 - **UI/UX Roadmap**: [docs/development/UIUX_ROADMAP.md](docs/development/UIUX_ROADMAP.md) - Mejoras de experiencia de usuario
-- **Estado del Proyecto**: [docs/development/ESTADO.md](docs/development/ESTADO.md) - Arquitectura y estado actual
+- **Estado del Proyecto**: [docs/development/PROJECT_STATUS.md](docs/development/PROJECT_STATUS.md) - Estado y roadmap centralizados
 
 ### 🚧 Features en Progreso
 
@@ -1031,7 +1031,7 @@ git push origin feat/product-filters
 - ✅ Payment integration completa (Mercado Pago)
 - ✅ CI/CD Pipeline activo (GitHub Actions)
 
-**Ver**: [Estado Completo](docs/development/ESTADO.md)
+**Ver**: [Estado Completo](docs/development/PROJECT_STATUS.md)
 
 ---
 
@@ -1077,7 +1077,7 @@ Al usar HealthBytes, el usuario acepta que:
 ### Enlaces Útiles
 
 - 📖 [Documentación Completa](docs/)
-- 🎯 [Roadmap del Proyecto](docs/development/ROADMAP.md)
+- 🎯 [Roadmap del Proyecto](docs/development/PROJECT_STATUS.md)
 - [📱 Wireframe / Diseño Figma](https://www.figma.com/design/0yTwgp5ddVCKM1SL1p2rIS/Wireframes---HealthBytes?node-id=11606-22516&t=VWSNkneVk6PCZnrh-1)
 - [🔑 Llaves de acceso para .env  ](https://app.clickup.com/90131597357/v/dc/2ky4621d-2233)
 

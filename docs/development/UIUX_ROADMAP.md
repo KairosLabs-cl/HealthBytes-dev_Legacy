@@ -1,5 +1,7 @@
 # 🗺️ Roadmap de Mejoras UI/UX - HealthBytes
 
+> ⚠️ **Documento Historico / Contexto**: Este documento refleja el estado del UI/UX en Abril 2026. Para el estado y roadmap oficial del proyecto, por favor referirse a [PROJECT_STATUS.md](./PROJECT_STATUS.md).
+
 > **Última actualización**: Abril 1, 2026 (Alineado con prioridades operativas 7/14/30)  
 > **Demo Target**: Febrero 15, 2026 (Listo para revisión)  
 > **Basado en**: Análisis profundo UI/UX + screenshots del estado actual

@@ -235,15 +235,15 @@ Solo pueden existir estos archivos canónicos:
 
 | # | Archivo | Propósito | Cuándo Actualizar |
 |---|---------|-----------|------------------|
-| 1️⃣ | `ESTADO.md` | Arquitectura, scorecard, tests, features, estado actual | Cambios estructurales PRIMERO |
-| 2️⃣ | `ROADMAP.md` | Roadmap de desarrollo, tareas, estimaciones | Define "hacia dónde" |
+| 1️⃣ | `PROJECT_STATUS.md` | Estado + roadmap centralizados (fuente de verdad) | Cambios estructurales PRIMERO |
+| 2️⃣ | `UIUX_ROADMAP.md` | Roadmap UI/UX y mejoras de experiencia | Define prioridades de interfaz |
 | 3️⃣ | `inspections/` | Reportes de inspección de código | Análisis profundos |
 
 **Orden de actualización ante cambios mayores:**
 ```
 1. docs/backend/AI-README.md o docs/frontend/AI-README.md  (cambios de stack/patrones)
    ↓
-2. docs/development/ESTADO.md                              (refleja realidad actual)
+2. docs/development/PROJECT_STATUS.md                      (refleja realidad actual)
    ↓
 3. docs/plans/YYYY-MM-DD-nombre.md                        (nuevo plan si aplica)
    ↓
