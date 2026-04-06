@@ -1,7 +1,7 @@
 """Payment model for payment processing across multiple providers"""
 
 import enum
-from datetime import datetime
+from datetime import UTC, datetime
 
 from sqlalchemy import (
     TIMESTAMP,
@@ -88,12 +88,12 @@ class Payment(Base):
     error_message = Column(String(500), nullable=True)
 
     # Timestamps
-    created_at = Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
+    created_at = Column(TIMESTAMP, nullable=False, default=lambda: datetime.now(UTC))
     updated_at = Column(
         TIMESTAMP,
         nullable=False,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
     )
     completed_at = Column(TIMESTAMP, nullable=True)
 
