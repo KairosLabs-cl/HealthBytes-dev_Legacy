@@ -31,6 +31,12 @@ def count_backend_tokens(repo_root: Path) -> dict[str, int]:
     for file_path in py_files:
         if file_path.resolve() == self_path:
             continue
+        # Skip tests folder and its contents
+        if "tests" in file_path.parts:
+            continue
+        # Skip virtual environment folders
+        if ".venv" in file_path.parts or "venv" in file_path.parts or ".env" in file_path.parts:
+            continue
         try:
             text = file_path.read_text(encoding="utf-8")
         except Exception:
