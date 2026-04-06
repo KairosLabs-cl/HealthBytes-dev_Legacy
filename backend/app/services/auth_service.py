@@ -29,6 +29,9 @@ async def register_user(db: AsyncSession, user_in: UserCreate) -> User:
     existing_user = result.scalar_one_or_none()
 
     if existing_user:
+        # Prevent timing attacks by simulating password hashing delay
+        # to avoid user enumeration during registration.
+        verify_password_mock(user_in.password)
         raise ValueError("Email already registered")
 
     # Create user with hashed password
