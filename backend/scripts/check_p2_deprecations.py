@@ -29,7 +29,11 @@ def count_backend_tokens(repo_root: Path) -> dict[str, int]:
     dep_warning = 0
     self_path = Path(__file__).resolve()
     for file_path in py_files:
+        if ".venv" in file_path.parts:
+            continue
         if file_path.resolve() == self_path:
+            continue
+        if file_path.name == "test_check_p2_deprecations.py":
             continue
         try:
             text = file_path.read_text(encoding="utf-8")
