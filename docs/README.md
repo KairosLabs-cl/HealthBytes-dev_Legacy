@@ -67,13 +67,13 @@ Reportes específicos de frontend y experiencia de usuario:
 
 ---
 
-**Última actualización:** Abril 2, 2026 ✅
+**Última actualización:** Abril 6, 2026 ✅
 
 - **Requisitos**: Python 3.14+, Node.js 20+, PostgreSQL 14+
 - **Lenguajes**: Python (backend), TypeScript (frontend)
 - **Arquitectura**: FastAPI + React Native (Expo)
 - **Base de Datos**: PostgreSQL (prod), SQLite (testing)
-- **Tests**: 548 tests passing (422 backend + 126 frontend), 80%+ coverage
+- **Tests**: 580 checks verdes (450 backend + 130 frontend + 10 E2E), smoke listo
 
 ---
 

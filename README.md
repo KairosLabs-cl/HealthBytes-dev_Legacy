@@ -50,9 +50,10 @@ Las personas con condiciones como celiaquía, diabetes o alergias alimentarias e
 
 ### Estado Actual del Proyecto
 
-**Versión:** Pre-MVP (70% production-ready)
-**Última actualización:** Marzo 5, 2026
-**Auditoría técnica:** [Ver reporte completo](docs/plans/TECHNICAL_AUDIT_2026-03-05.md)
+**Versión:** MVP en cierre técnico (90% del roadmap principal)
+**Última actualización:** Abril 6, 2026
+**Fuente de verdad:** [docs/development/PROJECT_STATUS.md](docs/development/PROJECT_STATUS.md)
+**Auditoría técnica consolidada:** [docs/architecture/HealthBytes_Architecture_Review.md](docs/architecture/HealthBytes_Architecture_Review.md)
 
 <!-- DOCSYNC:status-table -->
 | Componente | Estado | Detalle |
@@ -832,18 +833,17 @@ Convertir HealthBytes en la **plataforma líder** de e-commerce para personas co
 - **UI/UX Roadmap**: [docs/development/UIUX_ROADMAP.md](docs/development/UIUX_ROADMAP.md) - Mejoras de experiencia de usuario
 - **Estado del Proyecto**: [docs/development/PROJECT_STATUS.md](docs/development/PROJECT_STATUS.md) - Estado y roadmap centralizados
 
-### 🚧 Features en Progreso
+### 🚧 Seguimiento Actual
 
-| Feature                            | Owner   | ETA    | Status                         |
-| ---------------------------------- | ------- | ------ | ------------------------------ |
-| Backend Testing 80%+               | QA      | Mar 3  | ✅ Done (422 tests, 80%+ cov) |
-| Docker Configuration               | DevOps  | Mar 1  | ✅ Done                        |
-| Payment Integration (Mercado Pago) | Backend | Mar 3  | ✅ Done                        |
-| AWS Infrastructure Scripts         | DevOps  | Mar 4  | ✅ Done                        |
-| E2E Tests Suite                   | QA      | Mar 4  | ✅ Done                        |
-| Redis Cache                       | Backend | Mar 4  | ✅ Done                        |
-| Onboarding Modal                   | Frontend| Mar 4  | ✅ Done                        |
-| PRODUCTION_CHECKLIST              | DevOps  | Mar 4  | ✅ Done                        |
+| Línea de trabajo | Ventana | Estado |
+| ---------------- | ------- | ------ |
+| MVP Launch | Abril 2026 | 🟢 En progreso (90%) |
+| App Store Release | Mayo 2026 | 📋 Planeado |
+| 100 Beta Users | Abril 2026 | 📋 Planeado |
+| Push Notifications | Abril 2026 | 📋 Pendiente |
+| Sistema de recomendaciones | Abril 2026 | 📋 Pendiente |
+| Reviews & Ratings (básico) | Abril 2026 | 📋 Pendiente |
+| Deep Linking | Abril 2026 | 📋 Pendiente |
 
 ### ❌ Features Descartadas
 
@@ -1019,17 +1019,13 @@ git push origin feat/product-filters
 
 ---
 
-## 📊 Estado del Proyecto (Actualizado: 03/03/2026)
+## 📊 Estado del Proyecto (Actualizado: 2026-04-06)
 
-**Calificación Global**: 🟢 **92/100** - Muy Bueno
-
-- ✅ Arquitectura sólida (100% backend, 90% frontend)
-- ✅ Seguridad hardened (auditoría completa, CI scanning, CORS, webhooks)
-- ✅ Testing robusto (548 tests, 80%+ coverage, 0 failures)
-- ✅ N+1 queries optimizados (batch queries + stock locking)
-- ✅ Frontend tests completos (126 tests, 13 suites)
-- ✅ Payment integration completa (Mercado Pago)
-- ✅ CI/CD Pipeline activo (GitHub Actions)
+- ✅ MVP en cierre técnico con foco en release readiness.
+- ✅ 580 tests en verde: 450 backend, 130 frontend, 10 E2E, smoke checks listos.
+- ✅ Checkout, pagos, direcciones, CI/CD e infraestructura base ya están resueltos.
+- 📋 El siguiente tramo del roadmap se concentra en play store, beta users y features P1 de engagement.
+- ⚠️ La referencia canónica de estado y roadmap vive en `docs/development/PROJECT_STATUS.md`.
 
 **Ver**: [Estado Completo](docs/development/PROJECT_STATUS.md)
 
