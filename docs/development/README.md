@@ -7,6 +7,7 @@ Documentación para el equipo de desarrollo de HealthBytes.
 ## 📋 Contenido
 
 ### Estado y Arquitectura
+- **[PROJECT_STATUS.md](./PROJECT_STATUS.md)** - Fuente de verdad unica: estado y roadmap del proyecto
 - **[HealthBytes_Architecture_Review.md](../architecture/HealthBytes_Architecture_Review.md)** - Estado técnico consolidado y plan de acción de arquitectura
 
 ### UI/UX
