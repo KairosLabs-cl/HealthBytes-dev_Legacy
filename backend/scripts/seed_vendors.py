@@ -1,13 +1,19 @@
-import asyncio, selectors, sys
+import asyncio
+import selectors
+import sys
 
 sys.path.insert(0, ".")
 
 
 async def main():
-    import app.db.models.product, app.db.models.user, app.db.models.order
-    import app.db.models.address, app.db.models.payment
-    from app.db.database import AsyncSessionLocal
     from sqlalchemy import text
+
+    import app.db.models.address
+    import app.db.models.order
+    import app.db.models.payment
+    import app.db.models.product
+    import app.db.models.user
+    from app.db.database import AsyncSessionLocal
 
     vendors = {
         1: "Bio Mundo",
