@@ -3,16 +3,17 @@
 This test measures the performance impact of adding an index to Order.user_id.
 """
 
-import pytest
-from decimal import Decimal
 import time
+from decimal import Decimal
 from typing import List
 from unittest.mock import AsyncMock, patch
+
+import pytest
+from sqlalchemy import event
 
 from app.db.schemas import Order, Product, User
 from app.schemas.order import OrderCreate, OrderItemCreate
 from app.services.order_service import create_order, get_user_orders
-from sqlalchemy import event
 from tests.conftest import MockAsyncSession
 
 

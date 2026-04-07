@@ -4,6 +4,7 @@ Tests for stock management with race condition prevention
 """
 
 import pytest
+
 from app.core.security import create_access_token
 from app.db.schemas import Product
 from app.services.stock_service import StockService, StockStatus

@@ -7,13 +7,14 @@ N+1 query pattern has been successfully eliminated.
 
 import time
 from typing import List
-from unittest.mock import patch, AsyncMock
+from unittest.mock import AsyncMock, patch
 
 import pytest
+from sqlalchemy import event, select
+
 from app.db.schemas import Product, User
 from app.schemas.order import OrderCreate, OrderItemCreate
 from app.services.order_service import create_order
-from sqlalchemy import event, select
 from tests.conftest import MockAsyncSession
 
 

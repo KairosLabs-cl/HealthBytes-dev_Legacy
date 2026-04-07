@@ -7,8 +7,9 @@ Testing strategy:
 - Refund validations
 """
 
-import pytest
 from decimal import Decimal
+
+import pytest
 
 from app.db.models.payment import Payment, PaymentProvider, PaymentStatus
 from app.services.payment_service import PaymentService

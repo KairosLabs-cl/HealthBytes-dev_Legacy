@@ -10,15 +10,15 @@ Uses httpx.AsyncClient with ASGITransport to exercise the full ASGI stack
 (middleware chain included) without spinning up a real server.
 """
 
-import pytest
 import httpx
+import pytest
 from httpx import ASGITransport
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from app.main import app
 from app.db.database import Base, get_db
+from app.main import app
 
 # ---------------------------------------------------------------------------
 # Fixtures

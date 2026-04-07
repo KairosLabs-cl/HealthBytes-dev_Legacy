@@ -2,6 +2,7 @@
 
 import pytest
 from fastapi import HTTPException
+
 from app.db.models.address import Address
 from app.schemas.address import AddressCreate, AddressUpdate
 from app.services.address_service import AddressService

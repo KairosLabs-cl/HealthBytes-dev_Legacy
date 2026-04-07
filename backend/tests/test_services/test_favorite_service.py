@@ -1,6 +1,7 @@
 """Tests for favorite_service - User favorites management"""
 
 import pytest
+
 from app.db.schemas import Product, UserFavorite
 from app.services.favorite_service import (
     add_favorite,

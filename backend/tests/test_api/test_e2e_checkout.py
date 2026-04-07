@@ -11,9 +11,9 @@ Flow covered:
   GET  /orders/{id}      → verify final DB state
 """
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
 from sqlalchemy import select as sql_select
 
 from app.db.models.payment import Payment, PaymentProvider, PaymentStatus
