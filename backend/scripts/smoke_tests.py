@@ -6,8 +6,8 @@ Usage: python scripts/smoke_tests.py [base_url]
 """
 
 import sys
-import urllib.request
 import urllib.error
+import urllib.request
 
 
 def check(url: str, expected: int, name: str) -> bool:
