@@ -21,7 +21,7 @@ router = APIRouter()
 
 
 @router.post("/register", response_model=UserWithToken, status_code=201)
-@limiter.limit("5/minute")
+@limiter.limit("10/minute")
 async def register(request: Request, user_data: UserCreate, db: AsyncSession = Depends(get_db)):
     """
     POST /auth/register
@@ -34,6 +34,9 @@ async def register(request: Request, user_data: UserCreate, db: AsyncSession = D
         existing_user = result.scalar_one_or_none()
 
         if existing_user:
+            # Prevent timing attacks by simulating password hashing
+            # to prevent user enumeration during registration.
+            verify_password_mock(user_data.password)
             raise HTTPException(status_code=400, detail="Something went wrong")
 
         # Hash password

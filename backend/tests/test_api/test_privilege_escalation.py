@@ -1,4 +1,5 @@
 import pytest
+
 from app.main import app
 from tests.conftest import create_test_user
 

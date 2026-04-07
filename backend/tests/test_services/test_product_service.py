@@ -1,6 +1,8 @@
 """Unit tests for product_service"""
 
 import pytest
+from sqlalchemy import select
+
 from app.db.schemas import Product
 from app.schemas.product import ProductCreate, ProductUpdate
 from app.services.product_service import (
@@ -11,7 +13,6 @@ from app.services.product_service import (
     search_products,
     update_product,
 )
-from sqlalchemy import select
 from tests.conftest import MockAsyncSession
 
 

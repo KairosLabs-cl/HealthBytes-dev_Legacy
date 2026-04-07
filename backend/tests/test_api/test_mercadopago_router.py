@@ -3,8 +3,9 @@ Tests for Mercado Pago API router endpoints.
 Covers create-preference, webhook, get-payment-status, refund.
 """
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 from app.main import app
 from app.middleware.auth import get_current_user

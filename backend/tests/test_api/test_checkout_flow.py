@@ -4,8 +4,9 @@ Covers the address_id + payment_method fields added to orders.
 """
 
 import pytest
-from app.db.schemas import Product
+
 from app.db.models.address import Address
+from app.db.schemas import Product
 from app.main import app
 from app.middleware.auth import get_current_user
 from tests.conftest import create_test_user

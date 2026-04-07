@@ -7,10 +7,11 @@ For FTS testing, run against PostgreSQL with migrations applied.
 """
 
 import pytest
-from app.db.schemas import Product
-from app.main import app
 from fastapi.testclient import TestClient
 from sqlalchemy import select
+
+from app.db.schemas import Product
+from app.main import app
 from tests.conftest import create_test_user
 
 
