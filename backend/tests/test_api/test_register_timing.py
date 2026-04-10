@@ -11,7 +11,8 @@ def test_api_register_timing(client):
     email = "register_timing@example.com"
     password = "password123"
 
-    # Register user first time
+    # Register user first time (use a unique IP to avoid rate limits from other tests)
+    unique_ip = "192.168.100.1"
     res = client.post(
         "/auth/register",
         json={
@@ -20,10 +21,11 @@ def test_api_register_timing(client):
             "name": "Timing Test",
             "address": "123 Test St",
         },
+        headers={"X-Forwarded-For": unique_ip},
     )
     assert res.status_code == 201
 
-    # Measure: Existing User
+    # Measure: Existing User (same IP, this is the 2nd request, limit is 5)
     start = time.perf_counter()
     existing_response = client.post(
         "/auth/register",
@@ -33,10 +35,11 @@ def test_api_register_timing(client):
             "name": "Timing Test",
             "address": "123 Test St",
         },
+        headers={"X-Forwarded-For": unique_ip},
     )
     existing_time = time.perf_counter() - start
 
-    # Measure: New User
+    # Measure: New User (same IP, 3rd request, limit is 5)
     new_email = "new_register_timing@example.com"
     start = time.perf_counter()
     new_response = client.post(
@@ -47,6 +50,7 @@ def test_api_register_timing(client):
             "name": "Timing Test",
             "address": "123 Test St",
         },
+        headers={"X-Forwarded-For": unique_ip},
     )
     new_time = time.perf_counter() - start
 
