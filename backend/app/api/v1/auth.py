@@ -34,6 +34,9 @@ async def register(request: Request, user_data: UserCreate, db: AsyncSession = D
         existing_user = result.scalar_one_or_none()
 
         if existing_user:
+            # Prevent timing attacks by simulating password hashing delay
+            # to prevent user enumeration on registration.
+            get_password_hash(user_data.password)
             raise HTTPException(status_code=400, detail="Something went wrong")
 
         # Hash password

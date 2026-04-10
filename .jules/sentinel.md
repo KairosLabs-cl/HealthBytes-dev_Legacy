@@ -1,0 +1,4 @@
+## 2025-04-10 - User Enumeration Timing Attack on Registration Endpoint
+**Vulnerability:** The `/register` API endpoint checked for email existence and immediately returned a 400 error without hashing the password. Since password hashing is computationally expensive (~300ms), an attacker could measure the response time to determine if an email exists in the database (user enumeration).
+**Learning:** Returning early on predictable errors is a standard development practice but creates a timing discrepancy in authentication endpoints. Password hashing must always happen regardless of early error conditions to maintain uniform response times.
+**Prevention:** Always simulate the expensive cryptographic operation (hashing or verification) even when a fast-path error (like existing email or missing user) is triggered. Ensure the time spent is statistically similar to the successful path.
