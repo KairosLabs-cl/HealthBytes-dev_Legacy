@@ -7,7 +7,6 @@ import ProductListItem from "@/components/ProductListItem";
 import RecentlyViewedBar from "@/components/RecentlyViewedBar";
 import { Text } from "@/components/ui/text";
 import { useBreakpointValue } from "@/components/ui/utils/use-break-point-value";
-import { useFavoritesStore } from "@/store/favoritesStore";
 import { usePreferencesStore } from "@/store/preferencesStore";
 import { DietaryTag, useProductFilters } from "@/store/productFiltersStore";
 import { Product } from "@/types/product";
@@ -151,7 +150,7 @@ interface HomeListHeaderProps {
   dietaryTags: DietaryTag[];
   toggleDietaryTag: (tag: DietaryTag) => void;
   heroProduct: Product | undefined;
-  favoriteProducts: Product[];
+  products: Product[];
   onViewAll: () => void;
   onClearFilters: () => void;
   onSeeAllFavorites: () => void;
@@ -163,7 +162,7 @@ const HomeListHeader = React.memo(
     dietaryTags,
     toggleDietaryTag,
     heroProduct,
-    favoriteProducts,
+    products,
     onViewAll,
     onClearFilters,
     onSeeAllFavorites,
@@ -182,12 +181,10 @@ const HomeListHeader = React.memo(
       />
 
       <RecentlyViewedBar />
-      {favoriteProducts.length > 0 && (
-        <FavoritesBar
-          products={favoriteProducts}
-          onSeeAll={onSeeAllFavorites}
-        />
-      )}
+      <FavoritesBar
+        products={products}
+        onSeeAll={onSeeAllFavorites}
+      />
 
       <View className="px-4 flex-row items-center justify-between mt-4 mb-2">
         <Text className="text-lg font-bold text-gray-900">
@@ -222,7 +219,6 @@ export default function HomeScreen() {
   const clearFilters = useProductFilters((state) => state.clearFilters);
   const { user } = useUser();
   const dietaryPreferences = usePreferencesStore((state) => state.dietaryPreferences);
-  const favoriteIds = useFavoritesStore((state) => state.favoriteIds);
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -265,11 +261,6 @@ export default function HomeScreen() {
     xl: 4,
   }) as number;
 
-  const favoriteProducts = useMemo(() => {
-    if (!data) return [];
-    return data.filter((p: Product) => favoriteIds.has(Number(p.id)));
-  }, [data, favoriteIds]);
-
   const userName = user?.firstName || user?.fullName || "Usuario";
 
   const onViewAll = useCallback(() => router.push("/all-products"), [router]);
@@ -298,7 +289,7 @@ export default function HomeScreen() {
         dietaryTags={dietaryTags}
         toggleDietaryTag={toggleDietaryTag}
         heroProduct={heroProduct}
-        favoriteProducts={favoriteProducts}
+        products={data || []}
         onViewAll={onViewAll}
         onClearFilters={clearFilters}
         onSeeAllFavorites={onSeeAllFavorites}
@@ -309,7 +300,7 @@ export default function HomeScreen() {
       dietaryTags,
       toggleDietaryTag,
       heroProduct,
-      favoriteProducts,
+      data,
       onViewAll,
       clearFilters,
       onSeeAllFavorites,

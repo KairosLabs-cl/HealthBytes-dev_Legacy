@@ -1,5 +1,6 @@
 import HorizontalProductCard from "@/components/HorizontalProductCard";
 import { Text } from "@/components/ui/text";
+import { useFavoritesStore } from "@/store/favoritesStore";
 import type { Product } from "@/types/product";
 import { useCallback, useMemo } from "react";
 import { FlatList, Pressable, View } from "react-native";
@@ -9,10 +10,16 @@ type Props = { products?: Product[]; limit?: number; onSeeAll?: () => void };
 const cardKeyExtractor = (item: Product) => String(item.id);
 
 export default function FavoritesBar({ products, limit = 8, onSeeAll }: Props) {
-  const favs = useMemo(
-    () => (products?.length ? products.slice(0, limit) : []),
-    [products, limit]
-  );
+  const favoriteIds = useFavoritesStore((state) => state.favoriteIds);
+
+  const favs = useMemo(() => {
+    if (!products?.length) return [];
+    return products.filter((p) => favoriteIds.has(Number(p.id))).slice(0, limit);
+  }, [products, limit, favoriteIds]);
+
+  if (favs.length === 0) {
+    return null;
+  }
 
   const renderItem = useCallback(
     ({ item }: { item: Product }) => <HorizontalProductCard product={item} />,
@@ -33,25 +40,17 @@ export default function FavoritesBar({ products, limit = 8, onSeeAll }: Props) {
         </Pressable>
       </View>
 
-      {favs.length > 0 ? (
-        <FlatList
-          horizontal
-          data={favs}
-          keyExtractor={cardKeyExtractor}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 0 }}
-          renderItem={renderItem}
-          initialNumToRender={3}
-          maxToRenderPerBatch={3}
-          windowSize={5}
-        />
-      ) : (
-        <View className="py-4 items-center">
-          <Text className="text-ink-subtle text-sm">
-            Aún no tienes productos favoritos.
-          </Text>
-        </View>
-      )}
+      <FlatList
+        horizontal
+        data={favs}
+        keyExtractor={cardKeyExtractor}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 0 }}
+        renderItem={renderItem}
+        initialNumToRender={3}
+        maxToRenderPerBatch={3}
+        windowSize={5}
+      />
     </View>
   );
 }
