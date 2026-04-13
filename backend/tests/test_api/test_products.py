@@ -182,14 +182,14 @@ def test_create_product_as_seller(client, db_session):
 @pytest.mark.unit
 @pytest.mark.products
 def test_create_product_as_customer_forbidden(client, db_session):
-    """Test POST /products as customer returns 401."""
+    """Test POST /products as customer returns 403."""
     from tests.conftest import create_test_user
 
     user = create_test_user(db_session, email="customer@test.com", role="customer")
     token = create_access_token({"userId": user.id, "role": "customer"})
     headers = {"Authorization": f"Bearer {token}"}
     response = client.post("/products", json={"name": "X", "price": 1.0}, headers=headers)
-    assert response.status_code == 401
+    assert response.status_code == 403
 
 
 # ---- UPDATE ----

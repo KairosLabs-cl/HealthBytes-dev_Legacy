@@ -3,7 +3,7 @@ import time
 from typing import Optional
 
 import jwt
-from fastapi import Depends, Header, HTTPException, status
+from fastapi import Depends, Header, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt import PyJWKClient
 from sqlalchemy import select
@@ -124,6 +124,7 @@ def verify_clerk_token(token: str) -> Optional[dict]:
 
 
 async def get_current_user(
+    request: Request,
     authorization: Optional[str] = Header(None),
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(security),
     db: AsyncSession = Depends(get_db),
@@ -134,7 +135,15 @@ async def get_current_user(
     SECURITY: All tokens are cryptographically verified. The only bypass is
     DEV_BYPASS_AUTH=true in dev, which skips token checks entirely and returns
     a default test user.
+
+    PERFORMANCE: First checks request.state.user (set by auth middleware) to avoid
+    duplicate database lookups per request.
     """
+    # Check if user is already cached from auth middleware (avoids duplicate DB query)
+    cached_user = getattr(request.state, "user", None)
+    if cached_user:
+        return cached_user
+
     # DEV_BYPASS_AUTH: opt-in bypass for local development without tokens
     if settings.ENVIRONMENT == "dev" and settings.DEV_BYPASS_AUTH:
         result = await db.execute(select(User).limit(1))
@@ -218,6 +227,7 @@ async def get_current_user(
 
 
 async def get_current_user_optional(
+    request: Request,
     authorization: Optional[str] = Header(None),
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(security),
     db: AsyncSession = Depends(get_db),
@@ -226,7 +236,7 @@ async def get_current_user_optional(
     Optional version - returns None if no valid token
     """
     try:
-        return await get_current_user(authorization, credentials, db)
+        return await get_current_user(request, authorization, credentials, db)
     except HTTPException:
         return None
 
@@ -237,7 +247,7 @@ async def verify_seller(current_user: User = Depends(get_current_user)) -> User:
     Replica of verifySeller middleware from Node.js
     """
     if current_user.role != "seller":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Seller access required")
     return current_user
 
 
@@ -246,5 +256,5 @@ async def verify_admin(current_user: User = Depends(get_current_user)) -> User:
     Verify that current user has admin role
     """
     if current_user.role != "admin":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
     return current_user

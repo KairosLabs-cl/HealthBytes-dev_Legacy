@@ -23,65 +23,56 @@ const iconStyle = tva({
   },
 });
 
-export const Icon = React.forwardRef<
-  React.ComponentRef<typeof UIIcon>,
-  React.ComponentPropsWithoutRef<typeof UIIcon> &
-    VariantProps<typeof iconStyle> & {
-      height?: number | string;
-      width?: number | string;
+type IconProps = React.ComponentPropsWithoutRef<typeof UIIcon> &
+  VariantProps<typeof iconStyle> & {
+    height?: number | string;
+    width?: number | string;
+  };
+
+export const Icon = React.forwardRef<React.ElementRef<typeof UIIcon>, IconProps>(
+  function Icon({ size = "md", className, ...props }, ref) {
+    if (typeof size === "number") {
+      return (
+        <UIIcon
+          ref={ref as never}
+          {...props}
+          className={iconStyle({ class: className })}
+          size={size}
+        />
+      );
+    } else if (
+      (props.height !== undefined || props.width !== undefined) &&
+      size === undefined
+    ) {
+      return (
+        <UIIcon
+          ref={ref as never}
+          {...props}
+          className={iconStyle({ class: className })}
+        />
+      );
     }
->(function Icon({ size = "md", className, ...props }, ref) {
-  if (typeof size === "number") {
     return (
       <UIIcon
-        // @ts-expect-error : TODO: fix this
-        ref={ref}
+        ref={ref as never}
         {...props}
-        className={iconStyle({ class: className })}
-        size={size}
-      />
-    );
-  } else if (
-    (props.height !== undefined || props.width !== undefined) &&
-    size === undefined
-  ) {
-    return (
-      <UIIcon
-        // @ts-expect-error : TODO: fix this
-        ref={ref}
-        {...props}
-        className={iconStyle({ class: className })}
+        className={iconStyle({ size, class: className })}
       />
     );
   }
-  return (
-    <UIIcon
-      // @ts-expect-error : TODO: fix this
-      ref={ref}
-      {...props}
-      className={iconStyle({ size, class: className })}
-    />
-  );
-});
+);
 
 type ParameterTypes = Omit<Parameters<typeof createIcon>[0], "Root">;
 
-const accessClassName = (style: any) => {
+const accessClassName = (style: unknown) => {
   const styleObject = Array.isArray(style) ? style[0] : style;
-  const keys = Object.keys(styleObject);
-  return styleObject[keys[1]];
+  const keys = Object.keys(styleObject as object);
+  return (styleObject as Record<string, unknown>)[keys[1]] as string;
 };
 
 const createIconUI = ({ ...props }: ParameterTypes) => {
   const NewUIIcon = createIcon({ Root: Svg, ...props });
-  return React.forwardRef<
-    React.ComponentRef<typeof UIIcon>,
-    React.ComponentPropsWithoutRef<typeof UIIcon> &
-      VariantProps<typeof iconStyle> & {
-        height?: number | string;
-        width?: number | string;
-      }
-  >(function UIIcon({ className, ...inComingprops }, ref) {
+  return React.forwardRef(function UIIcon({ className, ...inComingprops }, ref) {
     const calculateClassName = React.useMemo(() => {
       return className === undefined
         ? accessClassName(inComingprops?.style)
@@ -89,13 +80,12 @@ const createIconUI = ({ ...props }: ParameterTypes) => {
     }, [className, inComingprops?.style]);
     return (
       <NewUIIcon
-        // @ts-expect-error : TODO: fix this
-        ref={ref}
+        ref={ref as never}
         {...inComingprops}
         className={calculateClassName}
       />
     );
-  });
+  }) as React.FC<IconProps>;
 };
 
 export { createIconUI as createIcon };

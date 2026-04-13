@@ -18,6 +18,8 @@ Stricter per-endpoint limits override the global default for sensitive operation
 from fastapi import Request
 from slowapi import Limiter
 
+from app.config import settings
+
 
 def get_identifier(request: Request) -> str:
     """
@@ -38,12 +40,10 @@ def get_identifier(request: Request) -> str:
     Active usage can easily generate 40-60 requests/minute.
     300/minute = 5 req/second allows comfortable headroom without enabling abuse.
     """
-    # Try to get user_id from request state (set by auth middleware)
     user = getattr(request.state, "user", None)
     if user and hasattr(user, "id"):
         return f"user:{user.id}"
 
-    # Fallback to IP for unauthenticated requests
     forwarded = request.headers.get("X-Forwarded-For")
     if forwarded:
         return forwarded.split(",")[0].strip()
@@ -55,5 +55,5 @@ def get_identifier(request: Request) -> str:
 limiter = Limiter(
     key_func=get_identifier,
     default_limits=["300/minute"],
-    storage_uri="memory://",
+    storage_uri=settings.REDIS_URL if settings.REDIS_URL else "memory://",
 )
