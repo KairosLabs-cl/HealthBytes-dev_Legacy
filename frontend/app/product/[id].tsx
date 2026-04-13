@@ -1,4 +1,5 @@
 import { fetchProductById, getProductRating, getProductReviews, listProducts } from "@/api/products";
+import { Product } from "@/types/product";
 import { DietaryBadgeList } from "@/components/DietaryBadge";
 import FavoriteButton from "@/components/FavoriteButton";
 import ProductCard from "@/components/ProductCard";
@@ -14,10 +15,10 @@ import { useCart, selectCartItemCount } from "@/store/cartStore";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from "@clerk/clerk-expo";
+import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import {
-  ArrowLeft,
   ChevronRight,
   Minus,
   Package,
@@ -27,7 +28,7 @@ import {
   Store,
 } from "lucide-react-native";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Alert, Dimensions, Pressable, ScrollView, View, FlatList } from "react-native";
+import { Alert, Dimensions, Pressable, ScrollView, View } from "react-native";
 import Animated, {
   cancelAnimation,
   Easing,
@@ -45,7 +46,7 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 function ProductDetailSkeleton() {
   const shimmer = useShimmerStyle();
@@ -333,14 +334,6 @@ export default function ProductDetailsScreen() {
     decrementProduct(product.id);
   };
 
-  const handleBack = () => {
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.push("/");
-    }
-  };
-
   const ctaLabel = () => {
     if (!product || product.stock === 0) return "Agotado";
     if (currentInCart >= product.stock) return "Máximo alcanzado";
@@ -432,7 +425,6 @@ export default function ProductDetailsScreen() {
               source={{ uri: product.image }}
               className="w-full h-72"
               alt={`Imagen de ${product.name}`}
-              resizeMode="contain"
             />
           </View>
         </Animated.View>
@@ -585,7 +577,7 @@ export default function ProductDetailsScreen() {
                 </Pressable>
               </View>
               <View className="-mx-5">
-                <FlatList
+                <FlashList<Product>
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}
@@ -594,6 +586,7 @@ export default function ProductDetailsScreen() {
                   renderItem={({ item }) => (
                     <ProductCard product={item} width={160} />
                   )}
+                  estimatedItemSize={172}
                 />
               </View>
             </Animated.View>

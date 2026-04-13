@@ -1,9 +1,10 @@
 "use client";
 import React from "react";
 import { createImage } from "@gluestack-ui/image";
-import { Platform, Image as RNImage } from "react-native";
+import { Image as ExpoImage } from "expo-image";
 import { tva } from "@gluestack-ui/nativewind-utils/tva";
 import type { VariantProps } from "@gluestack-ui/nativewind-utils";
+import { Platform } from "react-native";
 
 const imageStyle = tva({
   base: "max-w-full",
@@ -22,7 +23,7 @@ const imageStyle = tva({
   },
 });
 
-const UIImage = createImage({ Root: RNImage });
+const UIImage = createImage({ Root: ExpoImage as any });
 
 type ImageProps = VariantProps<typeof imageStyle> &
   React.ComponentProps<typeof UIImage>;

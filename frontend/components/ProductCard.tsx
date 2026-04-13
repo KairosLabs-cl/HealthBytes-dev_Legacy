@@ -13,9 +13,8 @@ import { useCartAnimation } from "@/store/cartAnimationStore";
 import { useCart } from "@/store/cartStore";
 import type { Product } from "@/types/product";
 import { normalizeDietaryTag } from "@/types/product";
-import { getProductRating } from "@/api/products";
 import { useAuth } from "@clerk/clerk-expo";
-import { useQuery } from "@tanstack/react-query";
+import { Image as ExpoImage } from "expo-image";
 import { useRouter } from "expo-router";
 import {
   Dumbbell,
@@ -32,7 +31,6 @@ import { memo, useRef, useState } from "react";
 import {
   Alert,
   GestureResponderEvent,
-  Image,
   Platform,
   Pressable,
   View,
@@ -79,9 +77,10 @@ export type ProductCardProps = {
   width: "full" | number;
   /** Called when the add-to-cart button is pressed. Defaults to cart store action. */
   onAddToCart?: () => void;
+  rating?: { avg_rating: number; review_count: number } | null;
 };
 
-function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
+function ProductCard({ product, width, onAddToCart, rating }: ProductCardProps) {
   const router = useRouter();
   const { isSignedIn } = useAuth();
   const addProduct = useCart((state) => state.addProduct);
@@ -90,13 +89,6 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
   const cartScale = useSharedValue(1);
   const addBtnRef = useRef<any>(null);
   const [imgError, setImgError] = useState(false);
-
-  const { data: rating } = useQuery({
-    queryKey: ['product-rating', product.id],
-    queryFn: () => getProductRating(Number(product.id)),
-    staleTime: 5 * 60 * 1000,
-    enabled: !!product.id,
-  });
 
   const cartAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: cartScale.value }],
@@ -182,16 +174,18 @@ function ProductCard({ product, width, onAddToCart }: ProductCardProps) {
             }}
           >
             {!imgError && product.image ? (
-              <Image
+              <ExpoImage
                 source={{ uri: product.image }}
                 style={{
                   width: "100%",
                   height: "100%",
                   opacity: isOutOfStock ? 0.5 : 1,
                 }}
-                resizeMode="cover"
+                contentFit="cover"
                 onError={() => setImgError(true)}
                 alt={`Imagen de ${product.name}`}
+                transition={200}
+                placeholder={{ blurhash: "LGF5]+Yk^6#M@-5c,1J5@[or[Q6." }}
               />
             ) : (
               <View

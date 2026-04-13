@@ -2,9 +2,10 @@ import HorizontalProductCard from "@/components/HorizontalProductCard";
 import { Text } from "@/components/ui/text";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 import type { Product } from "@/types/product";
+import { FlashList } from "@shopify/flash-list";
 import { useRouter } from "expo-router";
 import { useCallback } from "react";
-import { FlatList, Pressable, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 const cardKeyExtractor = (item: Product) => String(item.id);
 
@@ -37,16 +38,14 @@ export default function RecentlyViewedBar() {
           <Text className="text-sm font-semibold text-blue-600">Ver mas</Text>
         </Pressable>
       </View>
-      <FlatList
+      <FlashList<Product>
         horizontal
         data={items.slice(0, 10)}
         keyExtractor={cardKeyExtractor}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 0 }}
         renderItem={renderItem}
-        initialNumToRender={3}
-        maxToRenderPerBatch={3}
-        windowSize={5}
+        estimatedItemSize={222}
       />
     </View>
   );

@@ -1,4 +1,5 @@
-import { FlatList, Pressable, View } from "react-native";
+import { FlashList } from "@shopify/flash-list";
+import { Pressable, View } from "react-native";
 import ProductCardSkeleton from "@/components/ProductCardSkeleton";
 import { useQuery } from "@tanstack/react-query";
 import { Text } from "@/components/ui/text";
@@ -8,7 +9,6 @@ import ProductListItem from "@/components/ProductListItem";
 import { Header } from "@/components/Header";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useUser } from "@clerk/clerk-expo";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Product } from "@/types/product";
 import { useCallback, useMemo } from "react";
@@ -155,22 +155,20 @@ export default function SearchScreen() {
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
 
-      <FlatList
-        className="flex-1 bg-gray-50"
-        showsVerticalScrollIndicator={false}
-        ListHeaderComponent={renderHeader}
-        ListEmptyComponent={renderEmpty}
-        key={numColumns}
-        keyExtractor={keyExtractor}
-        data={data || []}
-        numColumns={numColumns}
-        contentContainerClassName="gap-2 max-w-[960px] mx-auto w-full px-3 pb-32"
-        columnWrapperClassName="gap-2"
-        renderItem={renderItem}
-        initialNumToRender={6}
-        windowSize={7}
-        maxToRenderPerBatch={6}
-      />
+      <View key={numColumns} className="flex-1">
+        <FlashList<Product>
+          className="flex-1 bg-gray-50"
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={renderHeader}
+          ListEmptyComponent={renderEmpty}
+          keyExtractor={keyExtractor}
+          data={data || []}
+          numColumns={numColumns}
+          contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 128 }}
+          renderItem={renderItem}
+          estimatedItemSize={280}
+        />
+      </View>
     </View>
   );
 }
