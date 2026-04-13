@@ -233,8 +233,9 @@ def test_get_current_user_clerk_token_auto_creates_user(client, db_session):
     # (200 for empty cart or similar)
     assert response.status_code in (200, 201)
 
-    from app.db.schemas import User
     from sqlalchemy import select
+
+    from app.db.schemas import User
 
     result = db_session.execute(select(User).where(User.clerk_id == "clerk_new_user_456"))
     created_user = result.scalar_one_or_none()
@@ -397,8 +398,9 @@ def test_dev_bypass_auth_returns_first_user(client, db_session):
 def test_dev_bypass_auth_no_users_returns_401(client, db_session):
     """DEV_BYPASS_AUTH=True but empty DB raises 401."""
     # Ensure no users exist
-    from app.db.schemas import User
     from sqlalchemy import delete
+
+    from app.db.schemas import User
 
     db_session.execute(delete(User))
     db_session.commit()

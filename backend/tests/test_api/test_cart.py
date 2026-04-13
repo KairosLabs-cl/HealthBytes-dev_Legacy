@@ -3,9 +3,10 @@ Tests for Cart API endpoints
 """
 
 import pytest
+from fastapi import status
+
 from app.core.security import create_access_token
 from app.db.schemas import CartItem, Product
-from fastapi import status
 from tests.conftest import create_test_user
 
 

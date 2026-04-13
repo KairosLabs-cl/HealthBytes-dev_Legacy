@@ -1,6 +1,8 @@
 """Unit tests for auth_service"""
 
 import pytest
+from sqlalchemy import select
+
 from app.db.schemas import User
 from app.schemas.user import UserCreate
 from app.services.auth_service import (
@@ -9,7 +11,6 @@ from app.services.auth_service import (
     login_user,
     register_user,
 )
-from sqlalchemy import select
 from tests.conftest import MockAsyncSession
 
 
