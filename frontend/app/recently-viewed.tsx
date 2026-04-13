@@ -23,15 +23,9 @@ export default function RecentlyViewedScreen() {
 
   const renderItem = useCallback(
     ({ item }: { item: any }) => (
-      <View
-        style={{
-          width: numColumns === 2 ? "50%" : numColumns === 3 ? "33.33%" : "25%",
-        }}
-      >
-        <ProductListItem product={item} />
-      </View>
+      <ProductListItem product={item} />
     ),
-    [numColumns]
+    []
   );
 
   return (

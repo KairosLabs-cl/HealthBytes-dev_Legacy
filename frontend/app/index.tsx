@@ -292,15 +292,9 @@ export default function HomeScreen() {
 
   const renderItem = useCallback(
     ({ item }: { item: Product }) => (
-      <View
-        style={{
-          width: numColumns === 2 ? "50%" : numColumns === 3 ? "33.33%" : "25%",
-        }}
-      >
-        <ProductListItem product={item} />
-      </View>
+      <ProductListItem product={item} />
     ),
-    [numColumns]
+    []
   );
 
   const renderListHeader = useCallback(

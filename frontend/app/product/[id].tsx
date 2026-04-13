@@ -424,6 +424,7 @@ export default function ProductDetailsScreen() {
             <Image
               source={{ uri: product.image }}
               className="w-full h-72"
+              resizeMode="contain"
               alt={`Imagen de ${product.name}`}
             />
           </View>
