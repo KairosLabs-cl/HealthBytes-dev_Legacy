@@ -12,12 +12,14 @@ import { usePreferencesStore } from "@/store/preferencesStore";
 import { DietaryTag, useProductFilters } from "@/store/productFiltersStore";
 import { Product } from "@/types/product";
 import { useAuth, useUser } from "@clerk/clerk-expo";
+import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
+import { Image as ExpoImage } from "expo-image";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { RefreshCw } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList, Image, Pressable, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -100,11 +102,12 @@ const HeroBanner = React.memo(
           </View>
           <View className="w-28 h-28 rounded-2xl bg-white/10 border border-white/10 items-center justify-center">
             {heroProduct ? (
-              <Image
+              <ExpoImage
                 source={{ uri: heroProduct.image }}
-                className="w-full h-full"
-                resizeMode="contain"
+                style={{ width: "100%", height: "100%" }}
+                contentFit="contain"
                 alt={`Imagen de ${heroProduct.name}`}
+                transition={300}
               />
             ) : (
               <Text className="text-white text-sm">Snacks</Text>
@@ -364,47 +367,45 @@ products={data}
         <View className="h-0.5 bg-brand-green" />
       )}
 
-      <FlatList
-        className="flex-1 bg-surface-warm"
-        showsVerticalScrollIndicator={false}
-        ListHeaderComponent={renderListHeader}
-        onRefresh={handleRefresh}
-        refreshing={refreshing}
-        ListEmptyComponent={
-          <View className="flex-1 items-center justify-center p-8">
-            {dietaryTags.length > 0 ? (
-              <>
-                <Text className="text-center text-ink-muted mb-4 text-base">
-                  No hay productos para estos filtros
-                </Text>
-                <Pressable
-                  onPress={clearFilters}
-                  className="bg-ink rounded-full px-6 py-3"
-                  style={{ minHeight: 44 }}
-                >
-                  <Text className="text-white font-semibold">
-                    Ver todos los productos
+      <View key={numColumns} className="flex-1">
+        <FlashList<Product>
+          className="flex-1 bg-surface-warm"
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={renderListHeader}
+          onRefresh={handleRefresh}
+          refreshing={refreshing}
+          ListEmptyComponent={
+            <View className="flex-1 items-center justify-center p-8">
+              {dietaryTags.length > 0 ? (
+                <>
+                  <Text className="text-center text-ink-muted mb-4 text-base">
+                    No hay productos para estos filtros
                   </Text>
-                </Pressable>
-              </>
-            ) : (
-              <Text className="text-center text-ink-subtle text-base">
-                No hay productos disponibles
-              </Text>
-            )}
-          </View>
-        }
-        key={numColumns}
-        keyExtractor={keyExtractor}
-        data={data}
-        numColumns={numColumns}
-        contentContainerClassName="gap-3 max-w-[960px] mx-auto w-full px-4 pb-32"
-        columnWrapperClassName="gap-3"
-        renderItem={renderItem}
-        initialNumToRender={6}
-        windowSize={7}
-        maxToRenderPerBatch={6}
-      />
+                  <Pressable
+                    onPress={clearFilters}
+                    className="bg-ink rounded-full px-6 py-3"
+                    style={{ minHeight: 44 }}
+                  >
+                    <Text className="text-white font-semibold">
+                      Ver todos los productos
+                    </Text>
+                  </Pressable>
+                </>
+              ) : (
+                <Text className="text-center text-ink-subtle text-base">
+                  No hay productos disponibles
+                </Text>
+              )}
+            </View>
+          }
+          keyExtractor={keyExtractor}
+          data={data}
+          numColumns={numColumns}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 128 }}
+          renderItem={renderItem}
+          estimatedItemSize={280}
+        />
+      </View>
     </SafeAreaView>
   );
 }

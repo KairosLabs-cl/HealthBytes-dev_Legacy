@@ -2,8 +2,9 @@ import HorizontalProductCard from "@/components/HorizontalProductCard";
 import { Text } from "@/components/ui/text";
 import { useFavoritesStore } from "@/store/favoritesStore";
 import type { Product } from "@/types/product";
+import { FlashList } from "@shopify/flash-list";
 import { useCallback, useMemo } from "react";
-import { FlatList, Pressable, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 type Props = { products?: Product[]; limit?: number; onSeeAll?: () => void };
 
@@ -40,16 +41,14 @@ export default function FavoritesBar({ products, limit = 8, onSeeAll }: Props) {
         </Pressable>
       </View>
 
-      <FlatList
+      <FlashList<Product>
         horizontal
         data={favs}
         keyExtractor={cardKeyExtractor}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 0 }}
         renderItem={renderItem}
-        initialNumToRender={3}
-        maxToRenderPerBatch={3}
-        windowSize={5}
+        estimatedItemSize={222}
       />
     </View>
   );

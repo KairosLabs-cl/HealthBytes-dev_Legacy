@@ -2,9 +2,10 @@ import { Text } from "@/components/ui/text";
 import { formatPrice } from "@/lib/formatPrice";
 import { useCart } from "@/store/cartStore";
 import { CartItem as CartItemType, Product } from "@/types/cart";
+import { Image as ExpoImage } from "expo-image";
 import { Minus, Plus, Trash2 } from "lucide-react-native";
 import React, { memo, useCallback, useState } from "react";
-import { Image, Pressable, TextInput, View } from "react-native";
+import { Pressable, TextInput, View } from "react-native";
 
 type CartItemProps = {
   item: CartItemType;
@@ -47,11 +48,12 @@ const CartItem = ({
     <View className="bg-surface-card p-4 rounded-2xl flex-row gap-3 border border-border-subtle">
       {/* Product Image */}
       <View className="w-24 h-24 bg-surface-muted rounded-xl overflow-hidden">
-        <Image
+        <ExpoImage
           source={{ uri: item.product.image }}
-          className="w-full h-full"
-          resizeMode="contain"
+          style={{ width: "100%", height: "100%" }}
+          contentFit="contain"
           alt={`Imagen de ${item.product.name}`}
+          transition={200}
         />
       </View>
 

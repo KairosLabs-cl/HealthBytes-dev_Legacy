@@ -1,7 +1,7 @@
+import { FlashList } from "@shopify/flash-list";
 import { useCallback, useMemo, useState } from "react";
-import { View, FlatList, Pressable } from "react-native";
+import { View, Pressable } from "react-native";
 import { Stack } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Text } from "@/components/ui/text";
 import { useBreakpointValue } from "@/components/ui/utils/use-break-point-value";
@@ -10,9 +10,8 @@ import { listProducts } from "@/api/products";
 import ProductCard from "@/components/ProductCard";
 import DietaryFilterBar from "@/components/DietaryFilterBar";
 import { RefreshCw, Package } from "lucide-react-native";
-import { useProductFilters, DietaryTag } from "@/store/productFiltersStore";
+import { useProductFilters } from "@/store/productFiltersStore";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
-import { useUser } from "@clerk/clerk-expo";
 import { Product } from "@/types/product";
 
 const keyExtractor = (item: Product) => item.id.toString();
@@ -22,8 +21,6 @@ export default function AllProductsScreen() {
   const dietaryTags = useProductFilters((state) => state.dietaryTags);
   const toggleDietaryTag = useProductFilters((state) => state.toggleDietaryTag);
   const clearFilters = useProductFilters((state) => state.clearFilters);
-  const { user } = useUser();
-  const userName = user?.firstName || user?.fullName || "Usuario";
   const [refreshing, setRefreshing] = useState(false);
 
   const {
@@ -116,43 +113,41 @@ export default function AllProductsScreen() {
           </Pressable>
         </View>
       ) : (
-        <FlatList
-          data={isLoading ? [] : products}
-          renderItem={renderItem}
-          key={numColumns}
-          keyExtractor={keyExtractor}
-          numColumns={numColumns}
-          ListHeaderComponent={listHeader}
-          onRefresh={handleRefresh}
-          refreshing={refreshing}
-          contentContainerClassName="gap-2 max-w-[960px] mx-auto w-full px-4 pb-32"
-          columnWrapperClassName="gap-2"
-          showsVerticalScrollIndicator={false}
-          initialNumToRender={6}
-          windowSize={7}
-          maxToRenderPerBatch={12}
-          ListEmptyComponent={
-            isLoading ? null : (
-              <View className="items-center justify-center py-20">
-                <Package size={48} color="#D1D5DB" />
-                <Text className="text-gray-400 mt-4 text-center">
-                  {dietaryTags.length > 0
-                    ? "No hay productos para estos filtros"
-                    : "No hay productos disponibles por ahora."}
-                </Text>
-                {dietaryTags.length > 0 && (
-                  <Pressable
-                    onPress={clearFilters}
-                    className="mt-4 bg-black rounded-full px-6 py-3"
-                    style={{ minHeight: 44 }}
-                  >
-                    <Text className="text-white font-semibold">Ver todos</Text>
-                  </Pressable>
-                )}
-              </View>
-            )
-          }
-        />
+        <View key={numColumns} className="flex-1">
+          <FlashList<Product>
+            data={isLoading ? [] : products}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            numColumns={numColumns}
+            ListHeaderComponent={listHeader}
+            onRefresh={handleRefresh}
+            refreshing={refreshing}
+            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 128 }}
+            showsVerticalScrollIndicator={false}
+            estimatedItemSize={280}
+            ListEmptyComponent={
+              isLoading ? null : (
+                <View className="items-center justify-center py-20">
+                  <Package size={48} color="#D1D5DB" />
+                  <Text className="text-gray-400 mt-4 text-center">
+                    {dietaryTags.length > 0
+                      ? "No hay productos para estos filtros"
+                      : "No hay productos disponibles por ahora."}
+                  </Text>
+                  {dietaryTags.length > 0 && (
+                    <Pressable
+                      onPress={clearFilters}
+                      className="mt-4 bg-black rounded-full px-6 py-3"
+                      style={{ minHeight: 44 }}
+                    >
+                      <Text className="text-white font-semibold">Ver todos</Text>
+                    </Pressable>
+                  )}
+                </View>
+              )
+            }
+          />
+        </View>
       )}
     </View>
   );
