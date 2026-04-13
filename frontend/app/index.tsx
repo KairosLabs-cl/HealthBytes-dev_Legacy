@@ -143,6 +143,26 @@ const GuestBanner = React.memo(() => {
 });
 GuestBanner.displayName = "GuestBanner";
 
+// ─── HomeFavorites ────────────────────────────────────────────────────────────
+
+const HomeFavorites = React.memo(({ products, onSeeAll }: { products: Product[] | undefined, onSeeAll: () => void }) => {
+  const favoriteIds = useFavoritesStore((state) => state.favoriteIds);
+  const favoriteProducts = useMemo(() => {
+    if (!products) return [];
+    return products.filter((p: Product) => favoriteIds.has(Number(p.id)));
+  }, [products, favoriteIds]);
+
+  if (favoriteProducts.length === 0) return null;
+
+  return (
+    <FavoritesBar
+      products={favoriteProducts}
+      onSeeAll={onSeeAll}
+    />
+  );
+});
+HomeFavorites.displayName = "HomeFavorites";
+
 // ─── HomeListHeader ───────────────────────────────────────────────────────────
 
 interface HomeListHeaderProps {
@@ -150,7 +170,7 @@ interface HomeListHeaderProps {
   dietaryTags: DietaryTag[];
   toggleDietaryTag: (tag: DietaryTag) => void;
   heroProduct: Product | undefined;
-  products: Product[];
+products: Product[] | undefined;
   onViewAll: () => void;
   onClearFilters: () => void;
   onSeeAllFavorites: () => void;
@@ -181,10 +201,7 @@ const HomeListHeader = React.memo(
       />
 
       <RecentlyViewedBar />
-      <FavoritesBar
-        products={products}
-        onSeeAll={onSeeAllFavorites}
-      />
+<HomeFavorites products={products} onSeeAll={onSeeAllFavorites} />
 
       <View className="px-4 flex-row items-center justify-between mt-4 mb-2">
         <Text className="text-lg font-bold text-gray-900">
@@ -289,7 +306,8 @@ export default function HomeScreen() {
         dietaryTags={dietaryTags}
         toggleDietaryTag={toggleDietaryTag}
         heroProduct={heroProduct}
-        products={data || []}
+<<<<<<< HEAD
+        products={data}
         onViewAll={onViewAll}
         onClearFilters={clearFilters}
         onSeeAllFavorites={onSeeAllFavorites}
