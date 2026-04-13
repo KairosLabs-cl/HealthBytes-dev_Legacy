@@ -7,6 +7,7 @@ import ProductListItem from "@/components/ProductListItem";
 import RecentlyViewedBar from "@/components/RecentlyViewedBar";
 import { Text } from "@/components/ui/text";
 import { useBreakpointValue } from "@/components/ui/utils/use-break-point-value";
+import { useFavoritesStore } from "@/store/favoritesStore";
 import { usePreferencesStore } from "@/store/preferencesStore";
 import { DietaryTag, useProductFilters } from "@/store/productFiltersStore";
 import { Product } from "@/types/product";
@@ -306,8 +307,7 @@ export default function HomeScreen() {
         dietaryTags={dietaryTags}
         toggleDietaryTag={toggleDietaryTag}
         heroProduct={heroProduct}
-<<<<<<< HEAD
-        products={data}
+products={data}
         onViewAll={onViewAll}
         onClearFilters={clearFilters}
         onSeeAllFavorites={onSeeAllFavorites}
