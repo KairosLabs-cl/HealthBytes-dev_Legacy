@@ -68,7 +68,6 @@ function RootLayoutNav() {
   const { isSignedIn, getToken } = useAuth();
 
   // Onboarding
-// Onboarding
   // ⚡ Bolt: Using granular Zustand selectors instead of destructuring the whole store
   // prevents full layout re-renders when unrelated preferences change
   const hasCompletedOnboarding = usePreferencesStore((state) => state.hasCompletedOnboarding);
