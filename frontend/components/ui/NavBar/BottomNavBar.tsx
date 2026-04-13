@@ -147,12 +147,11 @@ const TabItem = React.memo(
       </View>
     );
 
-    // On native: use AnimatedPressable with spring animations
     if (isMobile && AnimatedPressable) {
       return (
         <Link href={href} asChild>
-          <AnimatedPressable
-            style={[animatedStyle, { minHeight: 48 }]}
+          <Pressable
+            style={{ minHeight: 48 }}
             className="flex-1 items-center justify-center"
             accessibilityRole="button"
             accessibilityLabel={label}
@@ -160,8 +159,8 @@ const TabItem = React.memo(
             onPressOut={handlePressOut}
             onPress={handlePress}
           >
-            {innerContent}
-          </AnimatedPressable>
+            <Animated.View style={animatedStyle}>{innerContent}</Animated.View>
+          </Pressable>
         </Link>
       );
     }
