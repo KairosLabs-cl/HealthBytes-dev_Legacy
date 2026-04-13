@@ -28,7 +28,10 @@
 3. All documentation PRs are merged
 4. No test regressions after merging
 
-**Plans:** TBD
+**Plans:** 1 plan
+
+**Plan list:**
+- [x] 01-01-PLAN.md — Review and merge all PRs
 
 ### Phase 2: Security Hardening
 
@@ -69,7 +72,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1 - PR Review & Acceptance | 0/3 | Not started | - |
+| 1 - PR Review & Acceptance | 1/1 | Planning | - |
 | 2 - Security Hardening | 0/5 | Not started | - |
 | 3 - Bug Fixes & Polish | 0/4 | Not started | - |
 
