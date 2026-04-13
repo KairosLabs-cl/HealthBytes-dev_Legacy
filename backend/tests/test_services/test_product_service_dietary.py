@@ -1,7 +1,8 @@
 """Unit tests for product_service dietary tag filtering."""
 
 import pytest
-from app.db.schemas import Product, DietaryTag
+
+from app.db.schemas import DietaryTag, Product
 from app.services.product_service import list_products
 from tests.conftest import MockAsyncSession
 

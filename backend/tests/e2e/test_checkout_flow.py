@@ -5,6 +5,7 @@ Mocks external dependencies (Mercado Pago) but uses real service layer.
 
 import pytest
 from fastapi.testclient import TestClient
+
 from app.main import app
 
 

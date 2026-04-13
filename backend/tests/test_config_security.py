@@ -1,8 +1,9 @@
 import os
 
 import pytest
-from app.config import Settings
 from pydantic import ValidationError
+
+from app.config import Settings
 
 
 def test_jwt_secret_required(monkeypatch, tmp_path):

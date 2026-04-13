@@ -3,12 +3,13 @@ Test Stock Service Unit Tests
 Unit tests for StockService methods
 """
 
+from unittest.mock import AsyncMock, MagicMock
+
 import pytest
-from unittest.mock import MagicMock, AsyncMock
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.services.stock_service import StockService, StockStatus
 from app.db.schemas import Product
+from app.services.stock_service import StockService, StockStatus
 
 
 @pytest.mark.asyncio

@@ -4,8 +4,9 @@ Verifica que el backend NO confíe en los precios enviados por el cliente.
 """
 
 import pytest
-from app.db.schemas import Product, User
 from fastapi.testclient import TestClient
+
+from app.db.schemas import Product, User
 
 
 @pytest.fixture

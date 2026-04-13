@@ -4,9 +4,9 @@ Covers add, remove, list, check, and get IDs.
 """
 
 from datetime import datetime
+from unittest.mock import AsyncMock, patch
 
 import pytest
-from unittest.mock import AsyncMock, patch
 
 from app.db.schemas import Product, User
 from app.main import app

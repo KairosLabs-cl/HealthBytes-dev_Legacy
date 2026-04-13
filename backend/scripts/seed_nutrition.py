@@ -4,17 +4,18 @@ Execute with: python scripts/seed_nutrition.py
 """
 
 import asyncio
-import sys
-from pathlib import Path
 import json
 import random
+import sys
+from pathlib import Path
 
 # Add parent directory to path to allow imports
 sys.path.append(str(Path(__file__).parent.parent))
 
+from sqlalchemy import select, update
+
 from app.db.database import AsyncSessionLocal
 from app.db.schemas import Product
-from sqlalchemy import select, update
 
 # Nutrition data templates per category (approximate values)
 NUTRITION_TEMPLATES = {
