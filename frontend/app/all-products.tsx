@@ -53,7 +53,8 @@ export default function AllProductsScreen() {
     ({ item }: { item: Product }) => (
       <View
         style={{
-          width: numColumns === 2 ? "50%" : numColumns === 3 ? "33.33%" : "25%",
+          flex: 1,
+          padding: 4,
         }}
       >
         <ProductCard product={item} width="full" />
