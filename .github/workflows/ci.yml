@@ -86,8 +86,7 @@ jobs:
       - name: Audit Python dependencies
         run: |
           pip install safety
-          safety check -r requirements.txt --continue-on-error
-        continue-on-error: true
+          safety check -r requirements.txt --severity critical,high || exit 1
 
   frontend-lint:
     name: Frontend Lint & Types

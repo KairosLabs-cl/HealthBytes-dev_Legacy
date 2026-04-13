@@ -340,7 +340,7 @@ def test_get_current_user_optional_returns_none_on_no_token(client):
 @pytest.mark.unit
 @pytest.mark.auth
 def test_verify_seller_rejects_non_seller(client, db_session):
-    """verify_seller raises 401 for a customer user."""
+    """verify_seller raises 403 for a customer user."""
     from app.middleware.auth import get_current_user
 
     user = create_test_user(db_session, email="not_seller@example.com", role="customer")
@@ -351,7 +351,7 @@ def test_verify_seller_rejects_non_seller(client, db_session):
         "/products",
         json={"name": "Test", "description": "Desc", "price": 10, "image": "img.jpg"},
     )
-    assert response.status_code == 401
+    assert response.status_code == 403
 
     del client.app.dependency_overrides[get_current_user]
 
