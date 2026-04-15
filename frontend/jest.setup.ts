@@ -40,14 +40,15 @@ jest.mock("@shopify/flash-list", () => {
   const { View } = require("react-native");
   return {
     FlashList: ({ data, renderItem, ListHeaderComponent, ListFooterComponent }: any) => {
-      return (
-        <View>
-          {ListHeaderComponent && <ListHeaderComponent />}
-          {data?.map((item: any, index: number) => (
-            <View key={index}>{renderItem && renderItem({ item, index })}</View>
-          ))}
-          {ListFooterComponent && <ListFooterComponent />}
-        </View>
+      // Create element directly without using JSX to avoid ts(1005) when tsc parses it as standard typescript instead of tsx
+      return React.createElement(
+        View,
+        null,
+        ListHeaderComponent && React.createElement(ListHeaderComponent, null),
+        data?.map((item: any, index: number) =>
+          React.createElement(View, { key: index }, renderItem && renderItem({ item, index }))
+        ),
+        ListFooterComponent && React.createElement(ListFooterComponent, null)
       );
     },
   };
