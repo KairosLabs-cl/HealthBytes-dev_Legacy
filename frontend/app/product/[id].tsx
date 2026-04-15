@@ -109,7 +109,6 @@ export default function ProductDetailsScreen() {
   const insets = useSafeAreaInsets();
   const addProduct = useCart((state) => state.addProduct);
   const decrementProduct = useCart((state) => state.decrementProduct);
-  const cartItems = useCart((state) => state.items);
   const cartItemCount = useCart(selectCartItemCount);
   const ctaScale = useSharedValue(1);
 
@@ -273,9 +272,10 @@ export default function ProductDetailsScreen() {
     return vendorProducts?.filter((p: any) => p.id.toString() !== id) || [];
   }, [vendorProducts, id]);
 
-  const currentInCart = useMemo(
-    () => cartItems.find((i) => i.product.id === product?.id)?.quantity || 0,
-    [cartItems, product?.id]
+  // ⚡ Bolt: Granular selector to prevent component re-render when unrelated cart items change
+  const currentInCart = useCart(
+    (state) =>
+      state.items.find((i) => i.product.id === product?.id)?.quantity || 0
   );
 
   const canAddMore = product

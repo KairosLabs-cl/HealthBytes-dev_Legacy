@@ -34,3 +34,21 @@ jest.mock("expo-router", () => ({
   Stack: { Screen: () => null },
   router: { push: jest.fn(), replace: jest.fn() },
 }));
+
+jest.mock("@shopify/flash-list", () => {
+  const React = require("react");
+  const { View } = require("react-native");
+  return {
+    FlashList: ({ data, renderItem, ListHeaderComponent, ListFooterComponent }: any) => {
+      return (
+        <View>
+          {ListHeaderComponent && <ListHeaderComponent />}
+          {data?.map((item: any, index: number) => (
+            <View key={index}>{renderItem && renderItem({ item, index })}</View>
+          ))}
+          {ListFooterComponent && <ListFooterComponent />}
+        </View>
+      );
+    },
+  };
+});
