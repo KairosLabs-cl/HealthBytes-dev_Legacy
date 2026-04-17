@@ -10,7 +10,7 @@ from typing import List
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from sqlalchemy import event, select
+from sqlalchemy import event
 
 from app.db.schemas import Product, User
 from app.schemas.order import OrderCreate, OrderItemCreate
@@ -131,7 +131,7 @@ async def test_order_creation_query_count(mock_email, db_session, test_user_perf
     print(f"  INSERT queries: {len(insert_queries)}")
 
     # Debug: Print all queries to diagnose
-    print(f"\n  All queries:")
+    print("\n  All queries:")
     for idx, q in enumerate(counter.queries, 1):
         query_type = (
             "SELECT" if "SELECT" in q.upper() else "INSERT" if "INSERT" in q.upper() else "OTHER"
@@ -173,9 +173,9 @@ async def test_order_creation_query_count(mock_email, db_session, test_user_perf
     product_select_count = len(product_queries)
 
     print(f"\n{'='*60}")
-    print(f"QUERY ANALYSIS:")
+    print("QUERY ANALYSIS:")
     print(f"   Product queries: {product_select_count} for {item_count} items")
-    print(f"   Note: StockService adds per-product SELECT FOR UPDATE (intentional)")
+    print("   Note: StockService adds per-product SELECT FOR UPDATE (intentional)")
     print(f"{'='*60}\n")
 
 
@@ -243,7 +243,7 @@ async def test_order_creation_performance_scaling(mock_email, db_session, test_u
         f"50 items took {time_50:.2f}ms vs 5 items took {time_5:.2f}ms"
     )
 
-    print(f"\n✅ Performance scaling is acceptable!")
+    print("\n✅ Performance scaling is acceptable!")
     print(f"   5 items: {time_5:.2f}ms")
     print(f"   50 items: {time_50:.2f}ms")
     print(f"   Ratio: {time_50/time_5:.1f}x (should be ~10x for linear scaling)")
@@ -282,7 +282,7 @@ async def test_verify_single_product_query(mock_email, db_session, test_user_per
     ]
 
     print(f"\n{'='*60}")
-    print(f"Product Query Analysis (10 items):")
+    print("Product Query Analysis (10 items):")
     print(f"{'='*60}")
     print(f"Number of product SELECT queries: {len(product_selects)}")
 
@@ -301,7 +301,7 @@ async def test_verify_single_product_query(mock_email, db_session, test_user_per
     product_query = product_selects[0]
     assert "IN" in product_query.upper(), "Product query should use IN clause for batch fetching"
 
-    print(f"✅ Batch product query confirmed!")
+    print("✅ Batch product query confirmed!")
     print(f"   Queries found: {len(product_selects)} (constant, not {item_count})")
     print(f"   First query uses IN clause: {product_query[:100]}...")
     print(f"{'='*60}\n")

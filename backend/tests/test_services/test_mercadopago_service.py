@@ -11,7 +11,7 @@ import pytest
 
 from app.config import Settings
 from app.core.exceptions import PaymentError
-from app.db.models.payment import Payment, PaymentCurrency, PaymentProvider, PaymentStatus
+from app.db.models.payment import PaymentProvider, PaymentStatus
 from app.db.schemas import Order, OrderItem
 from app.services.mercadopago_service import MercadoPagoService
 

@@ -205,9 +205,9 @@ async def test_get_user_orders_query_plan(db_session, benchmark_user, benchmark_
 
         # Check if user_id is in WHERE clause
         if "user_id" in query.lower():
-            print(f"  [OK] Filters by user_id")
+            print("  [OK] Filters by user_id")
         else:
-            print(f"  [WARN] Does NOT filter by user_id (unexpected)")
+            print("  [WARN] Does NOT filter by user_id (unexpected)")
 
     print(f"{'='*70}\n")
 
@@ -284,16 +284,16 @@ async def test_get_user_orders_scalability(db_session, benchmark_product):
     max_growth = 10.0
     actual_growth = time_100 / time_10
 
-    print(f"\nScalability Result:")
+    print("\nScalability Result:")
     print(f"   10 orders: {time_10:.3f}ms")
     print(f"   100 orders: {time_100:.3f}ms")
     print(f"   Growth factor: {actual_growth:.2f}x")
     print(f"   Threshold: {max_growth}x")
 
     if actual_growth < max_growth:
-        print(f"   [OK] Good scalability - growing sub-linearly")
+        print("   [OK] Good scalability - growing sub-linearly")
     else:
-        print(f"   [WARN] Poor scalability - may indicate missing index or table scan")
+        print("   [WARN] Poor scalability - may indicate missing index or table scan")
 
     print(f"{'='*70}\n")
 

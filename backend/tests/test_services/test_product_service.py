@@ -1,7 +1,6 @@
 """Unit tests for product_service"""
 
 import pytest
-from sqlalchemy import select
 
 from app.db.schemas import Product
 from app.schemas.product import ProductCreate, ProductUpdate

@@ -24,9 +24,9 @@ if __name__ == "__main__":
     print("=" * 70)
     print("Iniciando HealthBytes FastAPI Server")
     print("=" * 70)
-    print(f"Servidor: http://127.0.0.1:3001")
-    print(f"Docs: http://127.0.0.1:3001/docs")
-    print(f"ReDoc: http://127.0.0.1:3001/redoc")
+    print("Servidor: http://127.0.0.1:3001")
+    print("Docs: http://127.0.0.1:3001/docs")
+    print("ReDoc: http://127.0.0.1:3001/redoc")
     print("=" * 70)
     print("\nPresiona CTRL+C para detener el servidor\n")
 

@@ -8,11 +8,6 @@ sys.path.insert(0, ".")
 async def main():
     from sqlalchemy import text
 
-    import app.db.models.address
-    import app.db.models.order
-    import app.db.models.payment
-    import app.db.models.product
-    import app.db.models.user
     from app.db.database import AsyncSessionLocal
 
     vendors = {

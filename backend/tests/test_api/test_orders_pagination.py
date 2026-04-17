@@ -2,7 +2,6 @@
 Test for order pagination.
 """
 
-import time
 
 import pytest
 

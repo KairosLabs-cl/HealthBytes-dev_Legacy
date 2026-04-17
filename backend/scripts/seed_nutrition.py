@@ -12,7 +12,7 @@ from pathlib import Path
 # Add parent directory to path to allow imports
 sys.path.append(str(Path(__file__).parent.parent))
 
-from sqlalchemy import select, update
+from sqlalchemy import select
 
 from app.db.database import AsyncSessionLocal
 from app.db.schemas import Product

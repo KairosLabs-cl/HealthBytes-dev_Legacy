@@ -192,7 +192,7 @@ def test_get_clerk_jwks_client_returns_none_without_url():
 @pytest.mark.auth
 def test_get_current_user_clerk_token_existing_user(client, db_session):
     """Clerk token for an existing user returns that user."""
-    user = create_test_user(
+    create_test_user(
         db_session, email="clerk_existing@example.com", clerk_id="clerk_abc_123"
     )
     clerk_payload = {"sub": "clerk_abc_123", "email": "clerk_existing@example.com"}
@@ -382,7 +382,7 @@ def test_verify_admin_rejects_non_admin(client, db_session):
 @pytest.mark.auth
 def test_dev_bypass_auth_returns_first_user(client, db_session):
     """DEV_BYPASS_AUTH=True in dev returns the first user without a token."""
-    user = create_test_user(db_session, email="devbypass@example.com", role="customer")
+    create_test_user(db_session, email="devbypass@example.com", role="customer")
 
     with patch("app.middleware.auth.settings") as mock_settings:
         mock_settings.ENVIRONMENT = "dev"

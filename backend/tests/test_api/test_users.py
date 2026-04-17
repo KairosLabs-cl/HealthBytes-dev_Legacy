@@ -1,12 +1,10 @@
 """Tests for users API endpoints"""
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from app.core.security import create_access_token
 from tests.conftest import create_test_user
 
 
@@ -16,7 +14,7 @@ class TestListUsers:
     def test_list_users_requires_admin(self, client: TestClient, db_session: Session):
         """Test that listing users requires admin role"""
         # Create a regular customer user
-        user = create_test_user(
+        create_test_user(
             db_session, email="customer@example.com", password="testpass123", role="customer"
         )
 
