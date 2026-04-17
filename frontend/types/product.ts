@@ -18,6 +18,8 @@ export type Product = {
   vendor_name?: string;
   dietary_tags?: (DietaryTag | string)[];
   nutritional_info?: string;
+  discount_percentage?: number | string; // UI only
+  original_price?: number; // UI only
 };
 
 /** Map of known tag names to display info for when API returns plain strings */

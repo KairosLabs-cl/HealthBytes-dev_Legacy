@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import HomeSkeleton from "@/components/HomeSkeleton";
 import ProductListItem from "@/components/ProductListItem";
 import RecentlyViewedBar from "@/components/RecentlyViewedBar";
+import DiscountsBar from "@/components/DiscountsBar";
 import { Text } from "@/components/ui/text";
 import { useBreakpointValue } from "@/components/ui/utils/use-break-point-value";
 import { useFavoritesStore } from "@/store/favoritesStore";
@@ -205,7 +206,8 @@ const HomeListHeader = React.memo(
       />
 
       <RecentlyViewedBar />
-<HomeFavorites products={products} onSeeAll={onSeeAllFavorites} />
+      <DiscountsBar products={products} onSeeAll={onViewAll} />
+      <HomeFavorites products={products} onSeeAll={onSeeAllFavorites} />
 
       <View className="px-4 flex-row items-center justify-between mt-4 mb-2">
         <Text className="text-lg font-bold text-gray-900">
@@ -254,7 +256,7 @@ export default function HomeScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { data, isLoading, error, isFetching, refetch } = useQuery({
+  const { data: rawData, isLoading, error, isFetching, refetch } = useQuery({
     queryKey: ["products", dietaryTags],
     queryFn: () =>
       listProducts({
@@ -263,6 +265,18 @@ export default function HomeScreen() {
     placeholderData: (previousData) => previousData,
     staleTime: 5 * 60 * 1000,
   });
+
+  const data = useMemo(() => {
+    if (!rawData) return rawData;
+    // Mocking discounts for the visual showcase
+    return rawData.map((p, index) => {
+      if (index === 0) return { ...p, discount_percentage: 20, original_price: Math.round(p.price * 1.25) };
+      if (index === 1) return { ...p, discount_percentage: "OFERTA", original_price: Math.round(p.price * 1.15) };
+      if (index === 3) return { ...p, discount_percentage: 15, original_price: Math.round(p.price * 1.17) };
+      if (index === 4) return { ...p, discount_percentage: 30, original_price: Math.round(p.price * 1.42) };
+      return p;
+    });
+  }, [rawData]);
 
   const { data: heroProduct } = useQuery({
     queryKey: ["products", "featured"],

@@ -164,7 +164,49 @@ function ProductCard({ product, width, onAddToCart, rating }: ProductCardProps) 
         }}
       >
         {/* Image */}
-        <View style={{ padding: 8 }}>
+        <View style={{ padding: 8, position: "relative" }}>
+          {/* Discount Badge */}
+          {product.discount_percentage && (
+            <View
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                zIndex: 20,
+                backgroundColor: "#DC2626", // Red-600
+                borderRadius: 25,
+                width: 48,
+                height: 48,
+                alignItems: "center",
+                justifyContent: "center",
+                ...Platform.select<any>({
+                  web: {
+                    boxShadow: "0px 2px 4px rgba(0,0,0,0.2)",
+                  },
+                  default: {
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 3,
+                    elevation: 4,
+                  },
+                }),
+              }}
+            >
+              <Text
+                style={{
+                  color: "#fff",
+                  fontWeight: "900",
+                  fontSize: 12,
+                  textAlign: "center"
+                }}
+              >
+                {typeof product.discount_percentage === "number"
+                  ? `-${product.discount_percentage}%`
+                  : product.discount_percentage}
+              </Text>
+            </View>
+          )}
           <View
             style={{
               position: "relative",
@@ -339,17 +381,32 @@ function ProductCard({ product, width, onAddToCart, rating }: ProductCardProps) 
               marginBottom: 10,
             }}
           >
-            <Text
-              style={{
-                fontSize: 17,
-                fontWeight: "800",
-                color: colors.ink.primary,
-                letterSpacing: -0.3,
-              }}
-            >
-              <Text style={{ fontSize: 11, fontWeight: "700" }}>$</Text>
-              {formatPrice(product.price).replace("$", "")}
-            </Text>
+            <View>
+              <Text
+                style={{
+                  fontSize: 17,
+                  fontWeight: "800",
+                  color: colors.ink.primary,
+                  letterSpacing: -0.3,
+                }}
+              >
+                <Text style={{ fontSize: 11, fontWeight: "700" }}>$</Text>
+                {formatPrice(product.price).replace("$", "")}
+              </Text>
+              {product.original_price ? (
+                <Text
+                  style={{
+                    fontSize: 11,
+                    fontWeight: "500",
+                    color: colors.ink.muted,
+                    textDecorationLine: "line-through",
+                    marginTop: 1,
+                  }}
+                >
+                  {formatPrice(product.original_price)}
+                </Text>
+              ) : null}
+            </View>
             <StockBadge stock={product.stock} variant="inline" />
           </View>
 
