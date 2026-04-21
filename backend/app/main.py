@@ -237,6 +237,9 @@ cors_origins = [
     "http://0.0.0.0:8081",
 ]
 
+if settings.FRONTEND_URL:
+    cors_origins.append(settings.FRONTEND_URL)
+
 if settings.ENVIRONMENT == "dev":
     # Add common local development origins
     cors_origins += [
