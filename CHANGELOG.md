@@ -4,6 +4,16 @@
 > Para revisión humana antes de cada release, editar esta sección si es necesario.
 
 <!-- DOCSYNC:changelog-body -->
+## [2026-04-25] — Snapshot automático
+
+> Generado por `docsync.py` | 1 commits en los últimos 7 días
+> Tests totales: **581** | Coverage backend: **40%** | Endpoints API: **48**
+
+### Docs
+  - Merge pull request #168 from nojustbenja/juanito-docs-sync-7678814345473343788
+
+---
+
 ## [2026-04-23] — Snapshot automático
 
 > Generado por `docsync.py` | 1 commits en los últimos 7 días
