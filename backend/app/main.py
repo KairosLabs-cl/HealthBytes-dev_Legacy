@@ -227,19 +227,21 @@ async def limit_request_body_size(request: Request, call_next):
 # CORS Configuration
 # SECURITY: Never use wildcard (*) with allow_credentials=True — browsers reject it.
 # In dev, we use a broad but explicit list of local origins.
-cors_origins = [
-    "http://localhost:8081",
-    "http://localhost:3000",
-    "http://localhost:19006",  # Expo web
-    "http://localhost:8080",
-    "http://127.0.0.1:8081",
-    "http://127.0.0.1:8082",
-    "http://0.0.0.0:8081",
-]
+cors_origins = []
+
+if settings.FRONTEND_URL:
+    cors_origins.append(settings.FRONTEND_URL)
 
 if settings.ENVIRONMENT == "dev":
     # Add common local development origins
     cors_origins += [
+        "http://localhost:8081",
+        "http://localhost:3000",
+        "http://localhost:19006",  # Expo web
+        "http://localhost:8080",
+        "http://127.0.0.1:8081",
+        "http://127.0.0.1:8082",
+        "http://0.0.0.0:8081",
         "http://localhost:19000",
         "http://localhost:19001",
     ]
