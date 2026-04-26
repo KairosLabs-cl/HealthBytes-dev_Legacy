@@ -5,3 +5,7 @@
 ## 2024-05-24 - Zustand store destructuring in Root Layout
 **Learning:** Destructuring a Zustand store in a root layout component (e.g., `_layout.tsx` in Expo Router) causes the entire application tree to re-render whenever *any* unrelated state in that store changes. For example, destructuring `{ hasCompletedOnboarding } = usePreferencesStore()` would cause the layout to re-render even if only `dietaryPreferences` changed.
 **Action:** Always use highly granular selectors when subscribing to Zustand stores in layout or top-level components (e.g., `const hasCompletedOnboarding = usePreferencesStore(s => s.hasCompletedOnboarding)`).
+
+## 2026-04-26 - Granular Zustand Selectors for Array Items
+**Learning:** Subscribing to an entire array in a Zustand store (like `useCart((state) => state.items)`) causes unnecessary component re-renders whenever *any* item in that array changes, even if the change is unrelated to the current component's data (e.g., in a product details page).
+**Action:** Use specific inline selectors to access primitive properties or specific array elements (e.g., `useCart((state) => state.items.find(i => i.product.id === Number(id))?.quantity || 0)`) to prevent cascading full-app re-renders on unrelated state changes.
