@@ -109,7 +109,7 @@ export default function ProductDetailsScreen() {
   const insets = useSafeAreaInsets();
   const addProduct = useCart((state) => state.addProduct);
   const decrementProduct = useCart((state) => state.decrementProduct);
-  const cartItems = useCart((state) => state.items);
+  const currentInCart = useCart((state) => state.items.find((i) => i.product.id === product?.id)?.quantity || 0);
   const cartItemCount = useCart(selectCartItemCount);
   const ctaScale = useSharedValue(1);
 
@@ -272,11 +272,6 @@ export default function ProductDetailsScreen() {
   const otherVendorProducts = useMemo(() => {
     return vendorProducts?.filter((p: any) => p.id.toString() !== id) || [];
   }, [vendorProducts, id]);
-
-  const currentInCart = useMemo(
-    () => cartItems.find((i) => i.product.id === product?.id)?.quantity || 0,
-    [cartItems, product?.id]
-  );
 
   const canAddMore = product
     ? (product.stock ?? 0) > 0 && currentInCart < (product.stock ?? 0)
