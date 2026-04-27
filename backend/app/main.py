@@ -143,7 +143,8 @@ async def attach_user_for_rate_limiting(request: Request, call_next):
                             request.state.user = user
                         break
         except Exception:
-            # Silently fail - rate limiting will use IP fallback
+            # Rate limiting will use IP fallback, but log the error
+            logging.exception("Token extraction failed for rate limiting")
             pass
 
     return await call_next(request)
