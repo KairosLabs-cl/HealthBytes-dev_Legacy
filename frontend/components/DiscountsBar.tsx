@@ -15,14 +15,14 @@ export default function DiscountsBar({ products, limit = 8, onSeeAll }: Props) {
     return products.filter((p) => p.discount_percentage).slice(0, limit);
   }, [products, limit]);
 
-  if (discounts.length === 0) {
-    return null;
-  }
-
   const renderItem = useCallback(
     ({ item }: { item: Product }) => <HorizontalProductCard product={item} />,
     []
   );
+
+  if (discounts.length === 0) {
+    return null;
+  }
 
   return (
     <View className="mt-4 mb-4 bg-gradient-to-b from-red-50 to-transparent rounded-2xl px-4 pt-4 pb-3 mx-4">

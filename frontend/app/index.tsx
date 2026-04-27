@@ -269,7 +269,7 @@ export default function HomeScreen() {
   const data = useMemo(() => {
     if (!rawData) return rawData;
     // Mocking discounts for the visual showcase
-    return rawData.map((p, index) => {
+    return rawData.map((p: Product, index: number) => {
       if (index === 0) return { ...p, discount_percentage: 20, original_price: Math.round(p.price * 1.25) };
       if (index === 1) return { ...p, discount_percentage: "OFERTA", original_price: Math.round(p.price * 1.15) };
       if (index === 3) return { ...p, discount_percentage: 15, original_price: Math.round(p.price * 1.17) };
