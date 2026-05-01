@@ -9,3 +9,7 @@
 ## 2026-04-27 - Zustand Array Selector Re-renders
 **Learning:** Subscribing to an entire array in a Zustand store (like `useCart((state) => state.items)`) causes unnecessary component re-renders whenever any item in that array changes.
 **Action:** Use inline selectors to access specific array elements or primitive properties (e.g., `useCart((state) => state.items.find(i => i.product.id === Number(id))?.quantity || 0)`).
+
+## 2024-05-24 - Zustand Selectors in Async Routes
+**Learning:** When writing Zustand selectors that depend on external IDs in a component (like a product ID), use available route parameters (e.g. `id` from `useLocalSearchParams()`) directly rather than waiting for an asynchronously fetched variable (e.g. `product?.id`). This ensures the selector is deterministic and doesn't return unstable results during loading states.
+**Action:** Extract numeric route IDs and use them directly inside the selector function.

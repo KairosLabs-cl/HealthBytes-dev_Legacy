@@ -109,7 +109,10 @@ export default function ProductDetailsScreen() {
   const insets = useSafeAreaInsets();
   const addProduct = useCart((state) => state.addProduct);
   const decrementProduct = useCart((state) => state.decrementProduct);
-  const currentInCart = useCart((state) => state.items.find((i) => i.product.id === product?.id)?.quantity || 0);
+  const currentInCart = useCart((state) => {
+    const numericId = Number(id);
+    return state.items.find((i) => i.product.id === numericId)?.quantity || 0;
+  });
   const cartItemCount = useCart(selectCartItemCount);
   const ctaScale = useSharedValue(1);
 
