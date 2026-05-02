@@ -109,7 +109,9 @@ export default function ProductDetailsScreen() {
   const insets = useSafeAreaInsets();
   const addProduct = useCart((state) => state.addProduct);
   const decrementProduct = useCart((state) => state.decrementProduct);
-  const currentInCart = useCart((state) => state.items.find((i) => i.product.id === product?.id)?.quantity || 0);
+  // ⚡ Bolt: Use deterministic route parameter `id` instead of asynchronous `product?.id`
+  // to avoid evaluating to undefined during loading state and ensure a stable selector.
+  const currentInCart = useCart((state) => state.items.find((i) => i.product.id === Number(id))?.quantity || 0);
   const cartItemCount = useCart(selectCartItemCount);
   const ctaScale = useSharedValue(1);
 
