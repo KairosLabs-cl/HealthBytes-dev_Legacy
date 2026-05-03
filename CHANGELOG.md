@@ -9,7 +9,8 @@
 > Generado por `docsync.py` | 1 commits en los últimos 7 días
 > Tests totales: **581** | Coverage backend: **40%** | Endpoints API: **48**
 
-### Sin cambios convencionales registrados en este período
+### Docs
+  - docs(sync): merge pull request #179 from nojustbenja/juanito-docs-sync
 
 ---
 
