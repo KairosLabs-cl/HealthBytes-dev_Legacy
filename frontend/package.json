@@ -23,7 +23,7 @@
     "build:android:local": "expo prebuild && cd android && ./gradlew assembleRelease"
   },
   "dependencies": {
-    "@clerk/clerk-expo": "2.19.26",
+    "@clerk/clerk-expo": "2.19.36",
     "@expo/html-elements": "^0.13.8",
     "@expo/metro-runtime": "^6.1.2",
     "@gluestack-ui/button": "^1.0.14",
