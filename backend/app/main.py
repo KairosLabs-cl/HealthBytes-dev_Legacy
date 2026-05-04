@@ -88,6 +88,19 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Global exception handler to prevent leaking internal details to clients."""
+    logging.exception("Unhandled exception: %s", str(exc))
+    # Return a secure JSON response without the stack trace
+    from fastapi.responses import JSONResponse
+
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "Internal Server Error"},
+    )
+
+
 @app.middleware("http")
 async def attach_user_for_rate_limiting(request: Request, call_next):
     """
