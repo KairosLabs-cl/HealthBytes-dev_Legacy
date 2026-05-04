@@ -103,6 +103,24 @@ async def get_featured_product(db: AsyncSession) -> Optional[Product]:
     return result.scalar_one_or_none()
 
 
+async def list_discounted_products(
+    db: AsyncSession,
+    skip: int = 0,
+    limit: int = 20,
+) -> List[Product]:
+    """Get products that have an active discount."""
+    result = await db.execute(
+        select(Product)
+        .options(selectinload(Product.dietary_tags))
+        .where(Product.discount_percentage.isnot(None))
+        .where(Product.discount_percentage > 0)
+        .order_by(desc(Product.discount_percentage))
+        .offset(skip)
+        .limit(limit)
+    )
+    return result.scalars().all()
+
+
 async def get_product(db: AsyncSession, product_id: int) -> Optional[Product]:
     """
     Get product by ID with dietary tags loaded.
@@ -338,6 +356,7 @@ def _serialize_product(p: Product) -> dict:
         "category": p.category,
         "image": p.image,
         "vendor_name": p.vendor_name,
+        "discount_percentage": p.discount_percentage,
         "nutritional_info": p.nutritional_info,
         "dietary_tags": [
             {

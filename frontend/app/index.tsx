@@ -206,7 +206,7 @@ const HomeListHeader = React.memo(
       />
 
       <RecentlyViewedBar />
-      <DiscountsBar products={products} onSeeAll={onViewAll} />
+      <DiscountsBar onSeeAll={onViewAll} />
       <HomeFavorites products={products} onSeeAll={onSeeAllFavorites} />
 
       <View className="px-4 flex-row items-center justify-between mt-4 mb-2">
@@ -256,7 +256,7 @@ export default function HomeScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { data: rawData, isLoading, error, isFetching, refetch } = useQuery({
+  const { data, isLoading, error, isFetching, refetch } = useQuery({
     queryKey: ["products", dietaryTags],
     queryFn: () =>
       listProducts({
@@ -265,18 +265,6 @@ export default function HomeScreen() {
     placeholderData: (previousData) => previousData,
     staleTime: 5 * 60 * 1000,
   });
-
-  const data = useMemo(() => {
-    if (!rawData) return rawData;
-    // Mocking discounts for the visual showcase
-    return rawData.map((p: Product, index: number) => {
-      if (index === 0) return { ...p, discount_percentage: 20, original_price: Math.round(p.price * 1.25) };
-      if (index === 1) return { ...p, discount_percentage: "OFERTA", original_price: Math.round(p.price * 1.15) };
-      if (index === 3) return { ...p, discount_percentage: 15, original_price: Math.round(p.price * 1.17) };
-      if (index === 4) return { ...p, discount_percentage: 30, original_price: Math.round(p.price * 1.42) };
-      return p;
-    });
-  }, [rawData]);
 
   const { data: heroProduct } = useQuery({
     queryKey: ["products", "featured"],

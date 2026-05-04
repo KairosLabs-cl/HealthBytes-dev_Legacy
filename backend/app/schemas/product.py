@@ -35,6 +35,7 @@ class ProductBase(BaseModel):
 class ProductCreate(ProductBase):
     """Schema for creating a product - Replica of createProductSchema"""
 
+    discount_percentage: Optional[int] = Field(None, ge=0, le=100)
     dietary_tag_ids: Optional[List[int]] = Field(default_factory=list)
 
 
@@ -49,6 +50,7 @@ class ProductUpdate(BaseModel):
     # If this fails, use without _ids (old master used bare field name)
     dietary_tag_ids: Optional[List[int]] = None
     category: Optional[str] = Field(None, max_length=100)
+    discount_percentage: Optional[int] = Field(None, ge=0, le=100)
 
 
 class ProductResponse(ProductBase):
@@ -57,6 +59,7 @@ class ProductResponse(ProductBase):
     id: int
     dietary_tags: List[DietaryTagResponse] = Field(default_factory=list)
     nutritional_info: Optional[str] = None
+    discount_percentage: Optional[int] = None
 
     @computed_field
     @property
@@ -74,5 +77,13 @@ class ProductResponse(ProductBase):
     def is_available(self) -> bool:
         """Computed field: whether product can be purchased"""
         return self.stock > 0
+
+    @computed_field
+    @property
+    def original_price(self) -> Optional[float]:
+        """When discounted, original_price = price / (1 - discount/100)"""
+        if self.discount_percentage and self.discount_percentage > 0:
+            return round(float(self.price) / (1 - self.discount_percentage / 100), 2)
+        return None
 
     model_config = ConfigDict(from_attributes=True)

@@ -201,9 +201,7 @@ function ProductCard({ product, width, onAddToCart, rating }: ProductCardProps) 
                   textAlign: "center"
                 }}
               >
-                {typeof product.discount_percentage === "number"
-                  ? `-${product.discount_percentage}%`
-                  : product.discount_percentage}
+                {`-${product.discount_percentage}%`}
               </Text>
             </View>
           )}

@@ -42,6 +42,7 @@ class Product(Base):
     stock = Column(Integer, nullable=False, default=0)
     category = Column(String(100), nullable=True, index=True)
     vendor_name = Column(String(255), nullable=True)
+    discount_percentage = Column(Integer, nullable=True)
     nutritional_info = Column(Text, nullable=True)
 
     # Relationships

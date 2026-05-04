@@ -1,26 +1,29 @@
 import HorizontalProductCard from "@/components/HorizontalProductCard";
 import { Text } from "@/components/ui/text";
 import type { Product } from "@/types/product";
+import { listDiscountedProducts } from "@/api/products";
 import { FlashList } from "@shopify/flash-list";
-import { useCallback, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useCallback } from "react";
 import { Pressable, View } from "react-native";
 
-type Props = { products?: Product[]; limit?: number; onSeeAll?: () => void };
+type Props = { limit?: number; onSeeAll?: () => void };
 
 const cardKeyExtractor = (item: Product) => String(item.id);
 
-export default function DiscountsBar({ products, limit = 8, onSeeAll }: Props) {
-  const discounts = useMemo(() => {
-    if (!products?.length) return [];
-    return products.filter((p) => p.discount_percentage).slice(0, limit);
-  }, [products, limit]);
+export default function DiscountsBar({ limit = 8, onSeeAll }: Props) {
+  const { data: discounts } = useQuery({
+    queryKey: ["products", "discounts"],
+    queryFn: () => listDiscountedProducts(0, limit),
+    staleTime: 5 * 60 * 1000,
+  });
 
   const renderItem = useCallback(
     ({ item }: { item: Product }) => <HorizontalProductCard product={item} />,
     []
   );
 
-  if (discounts.length === 0) {
+  if (!discounts?.length) {
     return null;
   }
 
