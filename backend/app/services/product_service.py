@@ -440,3 +440,26 @@ async def get_products_cached(
         logger.warning("Redis cache write failed: %s", exc)
 
     return results
+
+
+async def get_recommended_products(
+    db: AsyncSession,
+    dietary_preferences: List[str],
+    limit: int = 12,
+) -> List[Product]:
+    if dietary_preferences:
+        from app.db.schemas import DietaryTag, product_dietary_tags
+
+        stmt = (
+            select(Product)
+            .join(product_dietary_tags, product_dietary_tags.c.product_id == Product.id)
+            .join(DietaryTag, DietaryTag.id == product_dietary_tags.c.dietary_tag_id)
+            .where(DietaryTag.name.in_(dietary_preferences))
+            .distinct()
+            .limit(limit)
+        )
+    else:
+        stmt = select(Product).order_by(desc(Product.id)).limit(limit)
+
+    result = await db.execute(stmt)
+    return list(result.scalars().all())

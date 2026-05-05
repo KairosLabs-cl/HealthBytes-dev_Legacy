@@ -81,6 +81,25 @@ async def list_discounted_products(
     return await product_service.list_discounted_products(db, skip=skip, limit=limit)
 
 
+@router.get("/recommended", response_model=List[ProductResponse])
+async def get_recommended_products(
+    limit: int = Query(12, ge=1, le=50),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    GET /products/recommended
+    Returns products matching the authenticated user's dietary_preferences.
+    Falls back to latest products if no preferences are set.
+    """
+    try:
+        prefs = current_user.dietary_preferences or []
+        return await product_service.get_recommended_products(db, prefs, limit=limit)
+    except Exception as e:
+        logger.error("Error getting recommended products: %s", type(e).__name__)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
 @router.get("/{product_id}/rating")
 async def get_product_rating(product_id: int, db: AsyncSession = Depends(get_db)):
     """Get product rating statistics."""
