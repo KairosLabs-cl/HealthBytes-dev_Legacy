@@ -329,6 +329,25 @@ async def update_order(
             except Exception:
                 logger.exception("Failed to send shipped email for order %s", order.id)
 
+        # Send push notification for status changes (best-effort)
+        if order_data.status in ("processing", "shipped", "delivered"):
+            try:
+                from sqlalchemy import select as sa_select
+
+                from app.db.schemas import User as UserModel
+                from app.services.notification_service import NotificationService
+
+                user_result = await db.execute(
+                    sa_select(UserModel).where(UserModel.id == order.user_id)
+                )
+                order_user = user_result.scalar_one_or_none()
+                if order_user and order_user.expo_push_token:
+                    NotificationService.send_order_status_update(
+                        order_user.expo_push_token, order.id, order_data.status
+                    )
+            except Exception:
+                logger.exception("Failed to send push notification for order %s", order.id)
+
         # Build response
         items_response = [
             OrderItemResponse(
