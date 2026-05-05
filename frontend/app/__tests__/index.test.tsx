@@ -62,6 +62,15 @@ jest.mock("@/components/RecentlyViewedBar", () => {
   return Component;
 });
 
+jest.mock("@/components/RecommendationsBar", () => {
+  const React = require("react");
+  const { View } = require("react-native");
+  const Component = (props: any) =>
+    React.createElement(View, props, "RecommendationsBar");
+  Component.displayName = "RecommendationsBar";
+  return Component;
+});
+
 const mockProductFiltersStore = {
   dietaryTags: [],
   toggleDietaryTag: jest.fn(),

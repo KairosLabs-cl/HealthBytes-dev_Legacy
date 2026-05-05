@@ -224,7 +224,8 @@ async def update_product(
         try:
             from sqlalchemy import select as sa_select
 
-            from app.db.schemas import User as UserModel, UserFavorite
+            from app.db.schemas import User as UserModel
+            from app.db.schemas import UserFavorite
             from app.services.notification_service import NotificationService
 
             favs_result = await db.execute(
