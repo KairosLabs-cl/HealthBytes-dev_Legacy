@@ -10,4 +10,14 @@
     --brand-green: #2E5C3A;
     --border-subtle: #EAE5E0;
   }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface-warm: #1C1C1E;
+      --surface-card: #2C2C2E;
+      --ink: #F5F0EB;
+      --brand-green: #4CAF72;
+      --border-subtle: #3A3A3C;
+    }
+  }
 }
