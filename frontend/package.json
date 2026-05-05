@@ -23,7 +23,7 @@
     "build:android:local": "expo prebuild && cd android && ./gradlew assembleRelease"
   },
   "dependencies": {
-    "@clerk/clerk-expo": "^2.19.26",
+    "@clerk/clerk-expo": "2.19.36",
     "@expo/html-elements": "^0.13.8",
     "@expo/metro-runtime": "^6.1.2",
     "@gluestack-ui/button": "^1.0.14",
@@ -95,7 +95,18 @@
       "minimatch": "^10.2.3",
       "glob": "^11.0.0",
       "babel-plugin-module-resolver>glob": "^8",
-      "tar": ">=7.5.10"
+      "tar": ">=7.5.10",
+      "@clerk/shared": "~3.47.4",
+      "flatted": "~3.4.2",
+      "lodash": "~4.18.0",
+      "undici": "~6.24.0",
+      "picomatch": "~4.0.4",
+      "@xmldom/xmldom": "~0.8.12",
+      "node-forge": "~1.4.0",
+      "brace-expansion": "~5.0.5",
+      "yaml": "~2.8.3",
+      "@tootallnate/once": "~3.0.1",
+      "@clerk/types": "4.101.20"
     },
     "ignoredBuiltDependencies": [
       "@clerk/shared",

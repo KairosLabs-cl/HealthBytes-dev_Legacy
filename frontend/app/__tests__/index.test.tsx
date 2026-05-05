@@ -145,6 +145,15 @@ jest.mock("react-native-reanimated", () => {
 
 jest.mock("@/components/HomeSkeleton", () => () => null);
 
+jest.mock("@/components/DiscountsBar", () => {
+  const React = require("react");
+  const { View } = require("react-native");
+  const Component = (props: any) =>
+    React.createElement(View, props, "DiscountsBar");
+  Component.displayName = "DiscountsBar";
+  return Component;
+});
+
 jest.mock("expo-router", () => ({
   Stack: { Screen: () => null },
   useRouter: () => ({ push: jest.fn(), replace: jest.fn(), back: jest.fn() }),

@@ -88,6 +88,19 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Global exception handler to prevent leaking internal details to clients."""
+    logging.exception("Unhandled exception: %s", str(exc))
+    # Return a secure JSON response without the stack trace
+    from fastapi.responses import JSONResponse
+
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "Internal Server Error"},
+    )
+
+
 @app.middleware("http")
 async def attach_user_for_rate_limiting(request: Request, call_next):
     """
@@ -143,7 +156,8 @@ async def attach_user_for_rate_limiting(request: Request, call_next):
                             request.state.user = user
                         break
         except Exception:
-            # Silently fail - rate limiting will use IP fallback
+            # Rate limiting will use IP fallback, but log the error
+            logging.exception("Token extraction failed for rate limiting")
             pass
 
     return await call_next(request)
@@ -227,19 +241,20 @@ async def limit_request_body_size(request: Request, call_next):
 # CORS Configuration
 # SECURITY: Never use wildcard (*) with allow_credentials=True — browsers reject it.
 # In dev, we use a broad but explicit list of local origins.
-cors_origins = [
-    "http://localhost:8081",
-    "http://localhost:3000",
-    "http://localhost:19006",  # Expo web
-    "http://localhost:8080",
-    "http://127.0.0.1:8081",
-    "http://127.0.0.1:8082",
-    "http://0.0.0.0:8081",
-]
+cors_origins = []
+if settings.FRONTEND_URL:
+    cors_origins.append(settings.FRONTEND_URL)
 
 if settings.ENVIRONMENT == "dev":
     # Add common local development origins
     cors_origins += [
+        "http://localhost:8081",
+        "http://localhost:3000",
+        "http://localhost:19006",  # Expo web
+        "http://localhost:8080",
+        "http://127.0.0.1:8081",
+        "http://127.0.0.1:8082",
+        "http://0.0.0.0:8081",
         "http://localhost:19000",
         "http://localhost:19001",
     ]
