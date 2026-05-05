@@ -38,3 +38,6 @@ sentry-sdk[fastapi]>=2.0.0
 
 # Redis (cache)
 redis[asyncio]>=5.0.0
+
+# Push Notifications
+exponent-server-sdk>=2.0.0

@@ -6,6 +6,7 @@ import HomeSkeleton from "@/components/HomeSkeleton";
 import ProductListItem from "@/components/ProductListItem";
 import RecentlyViewedBar from "@/components/RecentlyViewedBar";
 import DiscountsBar from "@/components/DiscountsBar";
+import RecommendationsBar from "@/components/RecommendationsBar";
 import { Text } from "@/components/ui/text";
 import { useBreakpointValue } from "@/components/ui/utils/use-break-point-value";
 import { useFavoritesStore } from "@/store/favoritesStore";
@@ -207,6 +208,7 @@ const HomeListHeader = React.memo(
 
       <RecentlyViewedBar />
       <DiscountsBar onSeeAll={onViewAll} />
+      <RecommendationsBar />
       <HomeFavorites products={products} onSeeAll={onSeeAllFavorites} />
 
       <View className="px-4 flex-row items-center justify-between mt-4 mb-2">

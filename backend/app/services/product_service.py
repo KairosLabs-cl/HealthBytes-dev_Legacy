@@ -206,10 +206,10 @@ async def update_product(
     if not db_product:
         return None
 
-    # Update only provided fields
+    old_price = float(db_product.price)
+
     update_data = product_in.model_dump(exclude_unset=True)
 
-    # Defense in depth: explicitly drop protected fields to prevent mass assignment
     protected_fields = {"id", "search_vector"}
     safe_update_data = {k: v for k, v in update_data.items() if k not in protected_fields}
 
@@ -218,6 +218,34 @@ async def update_product(
 
     await db.commit()
     await db.refresh(db_product)
+
+    new_price = float(db_product.price)
+    if "price" in safe_update_data and new_price < old_price:
+        try:
+            from sqlalchemy import select as sa_select
+
+            from app.db.schemas import User as UserModel
+            from app.db.schemas import UserFavorite
+            from app.services.notification_service import NotificationService
+
+            favs_result = await db.execute(
+                sa_select(UserFavorite).where(UserFavorite.product_id == product_id)
+            )
+            for fav in favs_result.scalars().all():
+                user_result = await db.execute(
+                    sa_select(UserModel).where(UserModel.id == fav.user_id)
+                )
+                fav_user = user_result.scalar_one_or_none()
+                if fav_user and fav_user.expo_push_token:
+                    NotificationService.send_price_drop_notification(
+                        fav_user.expo_push_token,
+                        product_id,
+                        db_product.name,
+                        new_price,
+                    )
+        except Exception:
+            logger.exception("Failed to send price drop notifications for product %s", product_id)
+
     return db_product
 
 
@@ -440,3 +468,26 @@ async def get_products_cached(
         logger.warning("Redis cache write failed: %s", exc)
 
     return results
+
+
+async def get_recommended_products(
+    db: AsyncSession,
+    dietary_preferences: List[str],
+    limit: int = 12,
+) -> List[Product]:
+    if dietary_preferences:
+        from app.db.schemas import DietaryTag, product_dietary_tags
+
+        stmt = (
+            select(Product)
+            .join(product_dietary_tags, product_dietary_tags.c.product_id == Product.id)
+            .join(DietaryTag, DietaryTag.id == product_dietary_tags.c.dietary_tag_id)
+            .where(DietaryTag.name.in_(dietary_preferences))
+            .distinct()
+            .limit(limit)
+        )
+    else:
+        stmt = select(Product).order_by(desc(Product.id)).limit(limit)
+
+    result = await db.execute(stmt)
+    return list(result.scalars().all())

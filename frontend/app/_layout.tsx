@@ -15,6 +15,7 @@ import { useAppFonts } from "@/lib/fonts";
 import { useCart } from "@/store/cartStore";
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { usePreferencesStore } from "@/store/preferencesStore";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 import OnboardingModal from "@/components/OnboardingModal";
 import { ClerkLoaded, ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -66,6 +67,8 @@ function RootLayoutNav() {
   const toast = useToast();
 
   const { isSignedIn, getToken } = useAuth();
+
+  usePushNotifications();
 
   // Onboarding
   // ⚡ Bolt: Using granular Zustand selectors instead of destructuring the whole store
