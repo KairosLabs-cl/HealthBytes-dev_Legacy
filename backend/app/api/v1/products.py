@@ -68,6 +68,19 @@ async def get_featured_product(db: AsyncSession = Depends(get_db)):
     return product
 
 
+@router.get("/discounts", response_model=List[ProductResponse])
+async def list_discounted_products(
+    skip: int = 0,
+    limit: int = Query(20, ge=1, le=100),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    GET /products/discounts
+    Get products with active discounts, ordered by discount percentage.
+    """
+    return await product_service.list_discounted_products(db, skip=skip, limit=limit)
+
+
 @router.get("/{product_id}/rating")
 async def get_product_rating(product_id: int, db: AsyncSession = Depends(get_db)):
     """Get product rating statistics."""

@@ -80,3 +80,11 @@ export async function getProductReviews(productId: number, skip = 0, limit = 20)
   await throwIfNotOk(res, 'Error fetching reviews');
   return res.json();
 }
+
+export async function listDiscountedProducts(skip = 0, limit = 20) {
+  const res = await fetch(
+    `${API_URL}/products/discounts?skip=${skip}&limit=${limit}`
+  );
+  await throwIfNotOk(res, "Error fetching discounted products");
+  return res.json();
+}
