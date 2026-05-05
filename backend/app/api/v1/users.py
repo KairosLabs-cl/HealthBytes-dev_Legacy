@@ -9,7 +9,12 @@ from app.core.security import get_password_hash
 from app.db.database import get_db
 from app.db.schemas import User
 from app.middleware.auth import get_current_user, verify_admin
-from app.schemas.user import DietaryPreferencesUpdate, UserResponse, UserUpdate
+from app.schemas.user import (
+    DietaryPreferencesUpdate,
+    PushTokenUpdate,
+    UserResponse,
+    UserUpdate,
+)
 from app.services import user_service
 
 logger = logging.getLogger(__name__)
@@ -74,6 +79,32 @@ async def update_my_dietary_preferences(
         await db.rollback()
         logger.error(
             "Error updating dietary preferences for user %s: %s",
+            current_user.id,
+            type(e).__name__,
+        )
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+@router.patch("/me/push-token")
+async def update_push_token(
+    data: PushTokenUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    PATCH /users/me/push-token
+    Store Expo push notification token for the authenticated user.
+    """
+    try:
+        current_user.expo_push_token = data.token
+        await db.commit()
+        await db.refresh(current_user)
+
+        return {"ok": True}
+    except Exception as e:
+        await db.rollback()
+        logger.error(
+            "Error updating push token for user %s: %s",
             current_user.id,
             type(e).__name__,
         )
