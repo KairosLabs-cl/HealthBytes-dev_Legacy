@@ -52,7 +52,7 @@ async def list_products(
             max_price=max_price,
         )
     except Exception as e:
-        logger.error("Error listing/searching products: %s", type(e).__name__)
+        logger.error("Error listing/searching products: %s", str(e))
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 

@@ -37,17 +37,7 @@ async def list_users(
         result = await db.execute(select(User).offset(skip).limit(limit))
         users = result.scalars().all()
 
-        return [
-            UserResponse(
-                id=user.id,
-                email=user.email,
-                role=user.role,
-                name=user.name,
-                address=user.address,
-                dietary_preferences=user.dietary_preferences or [],
-            )
-            for user in users
-        ]
+        return [UserResponse.model_validate(user) for user in users]
     except Exception as e:
         logger.error("Error listing users: %s", type(e).__name__)
         raise HTTPException(status_code=500, detail="Internal Server Error")
@@ -132,13 +122,7 @@ async def get_user_by_id(
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
 
-        return UserResponse(
-            id=user.id,
-            email=user.email,
-            role=user.role,
-            name=user.name,
-            address=user.address,
-        )
+        return UserResponse.model_validate(user)
     except HTTPException:
         raise
     except Exception as e:
@@ -152,6 +136,35 @@ async def get_user_by_id(
 # exposing privileged fields.
 ALLOWED_USER_FIELDS = {"name", "address", "password", "dietary_preferences"}
 ALLOWED_ADMIN_FIELDS = ALLOWED_USER_FIELDS | {"email", "role"}
+
+
+@router.put("/me", response_model=UserResponse)
+async def update_me(
+    user_data: UserUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    PUT /users/me
+    Update own profile (no ID needed).
+    """
+    try:
+        update_data = user_data.model_dump(exclude_unset=True)
+        update_data = {k: v for k, v in update_data.items() if k in ALLOWED_USER_FIELDS}
+
+        if "password" in update_data and update_data["password"]:
+            update_data["password"] = get_password_hash(update_data["password"])
+
+        for key, value in update_data.items():
+            setattr(current_user, key, value)
+
+        await db.commit()
+        await db.refresh(current_user)
+        return UserResponse.model_validate(current_user)
+    except Exception as e:
+        await db.rollback()
+        logger.error("Error updating own profile user %s: %s", current_user.id, type(e).__name__)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 @router.put("/{id}", response_model=UserResponse)
@@ -193,13 +206,7 @@ async def update_user(
         await db.commit()
         await db.refresh(user)
 
-        return UserResponse(
-            id=user.id,
-            email=user.email,
-            role=user.role,
-            name=user.name,
-            address=user.address,
-        )
+        return UserResponse.model_validate(user)
     except HTTPException:
         raise
     except Exception as e:
