@@ -71,6 +71,8 @@ const CartItem = ({
           <Pressable
             onPress={() => onDecrement(item.product.id)}
             disabled={isUpdating || isRemoving}
+            accessibilityRole="button"
+            accessibilityLabel="Disminuir cantidad"
             className={`w-8 h-8 rounded-full items-center justify-center ${
               isUpdating || isRemoving
                 ? "bg-ink opacity-40"
@@ -95,6 +97,7 @@ const CartItem = ({
               }
             }}
             keyboardType="numeric"
+            accessibilityLabel="Cantidad"
             className="px-3 py-1 bg-surface-muted rounded-lg min-w-[36px] text-center font-semibold text-ink text-sm"
             editable={!isUpdating && !isRemoving}
           />
@@ -102,6 +105,8 @@ const CartItem = ({
           <Pressable
             onPress={() => onIncrement(item.product)}
             disabled={isAdding || isUpdating || isRemoving}
+            accessibilityRole="button"
+            accessibilityLabel="Aumentar cantidad"
             className={`w-8 h-8 rounded-full items-center justify-center ${
               isAdding || isUpdating || isRemoving
                 ? "bg-ink opacity-40"
