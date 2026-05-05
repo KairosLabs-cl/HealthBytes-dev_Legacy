@@ -45,6 +45,12 @@ class DietaryPreferencesUpdate(BaseModel):
     tags: List[str] = Field(default_factory=list, description="List of dietary tag slugs")
 
 
+class PushTokenUpdate(BaseModel):
+    """Schema for updating Expo push notification token"""
+
+    token: str = Field(..., min_length=1, max_length=255)
+
+
 class UserResponse(BaseModel):
     """User response schema (without password)"""
 

@@ -23,7 +23,7 @@ export const useRecommendationsStore = create<RecommendationsState>((set) => ({
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+      const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001';
       const response = await fetch(`${API_BASE}/products/recommended`, { headers });
       
       if (!response.ok) {
