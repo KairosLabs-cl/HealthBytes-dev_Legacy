@@ -59,10 +59,10 @@ Las personas con condiciones como celiaquía, diabetes o alergias alimentarias e
 | Componente | Estado | Detalle |
 | --- | --- | --- |
 | 🎨 Frontend Mobile | ✅ Funcional | React Native + Expo — 130 tests pasando |
-| ⚙️ Backend API | ✅ Funcional | FastAPI + SQLAlchemy async — 451 tests pasando |
+| ⚙️ Backend API | ✅ Funcional | FastAPI + SQLAlchemy async — 464 tests pasando |
 | 🗄️ Base de Datos | ✅ Funcional | PostgreSQL con modelos core + índices optimizados |
 | 🔐 Autenticación | ✅ Implementado | JWT + Clerk (dual auth), AuthGate en screens protegidos |
-| 🧪 Tests | ✅ Estable | 581 tests (451 backend + 130 frontend) — 40% coverage |
+| 🧪 Tests | ✅ Estable | 594 tests (464 backend + 130 frontend) — 40% coverage |
 | 🛡️ Security | ✅ Hardened | Bandit + Gitleaks + pnpm audit en CI |
 | 🐳 Docker | ✅ Funcional | docker-compose con backend + DB |
 | 🚀 CI/CD | ✅ Implementado | GitHub Actions (lint, test, SAST, secret-scan, deploy) |
@@ -743,13 +743,13 @@ pytest -v
 <!-- DOCSYNC:testing-table -->
 | Suite | Tests | Estado |
 | -------- | ----- | ------------ |
-| Backend | 451 | ✅ Passing |
+| Backend | 464 | ✅ Passing |
 | Frontend | 130/130 (14 suites) | ✅ Passing |
 | E2E | 10 | ✅ Passing |
 | Smoke | 8 checks | ✅ Ready |
-| **Total** | **581** | ✅ **All green** |
+| **Total** | **594** | ✅ **All green** |
 
-> Coverage backend: **40%** — API endpoints: **48** — TODOs pendientes: **1**
+> Coverage backend: **40%** — API endpoints: **51** — TODOs pendientes: **1**
 <!-- /DOCSYNC:testing-table -->
 
 Ver más detalles en [tests/README.md](backend/tests/README.md)
@@ -1096,7 +1096,7 @@ Al usar HealthBytes, el usuario acepta que:
 Hecho con ❤️ por el equipo de HealthBytes
 
 <!-- DOCSYNC:last-updated -->
-_Última actualización: 2026-05-04 — generado automáticamente por docsync_
+_Última actualización: 2026-05-05 — generado automáticamente por docsync_
 <!-- /DOCSYNC:last-updated -->
 
 </div>

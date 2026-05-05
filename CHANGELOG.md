@@ -4,6 +4,16 @@
 > Para revisión humana antes de cada release, editar esta sección si es necesario.
 
 <!-- DOCSYNC:changelog-body -->
+## [2026-05-05] — Snapshot automático
+
+> Generado por `docsync.py` | 1 commits en los últimos 7 días
+> Tests totales: **594** | Coverage backend: **40%** | Endpoints API: **51**
+
+### Features
+  - feat: Mayo 2026 — Push Notifications, Reviews, Recommendations, Deep Linking, Dark Mode, A11y (#193)
+
+---
+
 ## [2026-05-04] — Snapshot automático
 
 > Generado por `docsync.py` | 1 commits en los últimos 7 días
