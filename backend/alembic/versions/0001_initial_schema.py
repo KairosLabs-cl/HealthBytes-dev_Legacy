@@ -235,9 +235,19 @@ def upgrade() -> None:
     paymentprovider = sa.Enum("MERCADO_PAGO", name="paymentprovider", create_type=False)
 
     # Create enums explicitly (safe no-op on SQLite)
-    paymentcurrency.create(op.get_bind(), checkfirst=True)
-    paymentstatus.create(op.get_bind(), checkfirst=True)
-    paymentprovider.create(op.get_bind(), checkfirst=True)
+    # Use execute to handle "already exists" gracefully
+    try:
+        paymentcurrency.create(op.get_bind(), checkfirst=True)
+    except:
+        pass
+    try:
+        paymentstatus.create(op.get_bind(), checkfirst=True)
+    except:
+        pass
+    try:
+        paymentprovider.create(op.get_bind(), checkfirst=True)
+    except:
+        pass
 
     op.create_table(
         "payments",
