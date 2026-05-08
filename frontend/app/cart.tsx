@@ -14,6 +14,7 @@ import { Stack, useRouter } from "expo-router";
 import { ShoppingBag } from "lucide-react-native";
 import React, { useCallback, useMemo } from "react";
 import { FlatList, Pressable, View } from "react-native";
+import { useShallow } from "zustand/react/shallow";
 
 interface CartFooterProps {
   itemCount: number;
@@ -71,12 +72,23 @@ const CartFooter = React.memo<CartFooterProps>(
 CartFooter.displayName = "CartFooter";
 
 export default function CartScreen() {
-  const items = useCart((state) => state.items);
-  const itemCount = useCart(selectCartItemCount);
-  const subtotal = useCart(selectCartSubtotal);
-  const addProduct = useCart((state) => state.addProduct);
-  const decrementProduct = useCart((state) => state.decrementProduct);
-  const removeProduct = useCart((state) => state.removeProduct);
+  const {
+    items,
+    itemCount,
+    subtotal,
+    addProduct,
+    decrementProduct,
+    removeProduct,
+  } = useCart(
+    useShallow((state) => ({
+      items: state.items,
+      itemCount: selectCartItemCount(state),
+      subtotal: selectCartSubtotal(state),
+      addProduct: state.addProduct,
+      decrementProduct: state.decrementProduct,
+      removeProduct: state.removeProduct,
+    }))
+  );
   const router = useRouter();
 
   const onCheckout = useCallback(() => {

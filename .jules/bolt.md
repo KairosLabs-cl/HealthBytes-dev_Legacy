@@ -13,3 +13,7 @@
 ## 2026-05-02 - Zustand Selectors with Route Params
 **Learning:** When writing Zustand selectors that depend on external IDs in a component (like a product ID), using available route parameters (e.g., `id` from `useLocalSearchParams()`) directly rather than waiting for an asynchronously fetched variable (e.g., `product?.id`) ensures the selector is deterministic and doesn't return unstable results during loading states.
 **Action:** Always use route parameters directly in inline selectors when the ID is available in the route.
+
+## 2026-05-08 - Grouping Multiple Zustand Selectors
+**Learning:** Extracting multiple fields from a Zustand store using separate selector calls creates multiple subscriptions, adding overhead in lists.
+**Action:** Group related selectors and wrap them in `useShallow` from `zustand/react/shallow` to batch renders and improve performance.
