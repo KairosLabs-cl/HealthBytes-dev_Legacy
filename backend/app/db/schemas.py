@@ -17,7 +17,7 @@ from sqlalchemy.orm import relationship
 
 from app.db.database import Base
 from app.db.models.address import Address  # noqa: F401 - ensures Address registered before Order
-from app.db.models.payment import Payment  # noqa: F401 - ensures Payment registered (Order.payments backref)
+from app.db.models.payment import Payment  # noqa: F401 - ensures Payment registered
 
 
 # Custom type that works with both PostgreSQL and SQLite
@@ -30,6 +30,7 @@ class SearchVector(TypeDecorator):
     def load_dialect_impl(self, dialect):
         if dialect.name == "postgresql":
             from sqlalchemy.dialects.postgresql import TSVECTOR
+
             return dialect.type_descriptor(TSVECTOR())
         else:
             return dialect.type_descriptor(Text())
