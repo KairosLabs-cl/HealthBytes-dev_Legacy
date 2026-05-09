@@ -11,11 +11,14 @@ Flow covered:
   GET  /orders/{id}      → verify final DB state
 """
 
+import hashlib
+import hmac
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from sqlalchemy import select as sql_select
 
+from app.config import settings
 from app.db.models.payment import Payment, PaymentProvider, PaymentStatus
 from app.db.schemas import Order, Product
 from app.main import app
@@ -56,6 +59,21 @@ def e2e_product(db_session):
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+
+def _webhook_signature(payment_id, request_id=None, ts="1707849600"):
+    """Build signed Mercado Pago webhook headers for tests."""
+    if request_id:
+        manifest = f"id:{payment_id};request-id:{request_id};ts:{ts};"
+    else:
+        manifest = f"id:{payment_id};ts:{ts};"
+    v1 = hmac.new(
+        settings.MERCADO_PAGO_WEBHOOK_SECRET.encode(), manifest.encode(), hashlib.sha256
+    ).hexdigest()
+    headers = {"x-signature": f"ts={ts},v1={v1}"}
+    if request_id:
+        headers["x-request-id"] = request_id
+    return headers
 
 
 def _order_payload(product, **extra):
@@ -165,7 +183,7 @@ class TestE2ECheckoutApproved:
                 webhook_resp = client.post(
                     f"{MP_BASE}/webhook",
                     json={"type": "payment", "data": {"id": mp_pay_id}},
-                    headers={"x-request-id": "e2e-req-001"},
+                    headers=_webhook_signature(mp_pay_id, "e2e-req-001"),
                 )
                 assert webhook_resp.status_code == 200, webhook_resp.json()
                 webhook_data = webhook_resp.json()
@@ -241,6 +259,7 @@ class TestE2ECheckoutRejected:
                 webhook_resp = client.post(
                     f"{MP_BASE}/webhook",
                     json={"type": "payment", "data": {"id": mp_pay_id}},
+                    headers=_webhook_signature(mp_pay_id),
                 )
                 assert webhook_resp.status_code == 200, webhook_resp.json()
                 assert webhook_resp.json()["result"]["status"] == "failed"
@@ -308,13 +327,21 @@ class TestE2EWebhookIdempotency:
                 webhook_payload = {"type": "payment", "data": {"id": mp_pay_id}}
 
                 # First webhook — transitions payment PENDING → COMPLETED
-                r1 = client.post(f"{MP_BASE}/webhook", json=webhook_payload)
+                r1 = client.post(
+                    f"{MP_BASE}/webhook",
+                    json=webhook_payload,
+                    headers=_webhook_signature(mp_pay_id),
+                )
                 assert r1.status_code == 200
                 assert r1.json()["status"] == "ok"
                 assert r1.json()["result"]["status"] == "completed"
 
                 # Second identical webhook — idempotency guard returns early
-                r2 = client.post(f"{MP_BASE}/webhook", json=webhook_payload)
+                r2 = client.post(
+                    f"{MP_BASE}/webhook",
+                    json=webhook_payload,
+                    headers=_webhook_signature(mp_pay_id),
+                )
                 assert r2.status_code == 200
                 assert r2.json()["status"] == "ok"
                 # Status still reported as completed (not an error)

@@ -3,12 +3,13 @@
 import pytest
 from sqlalchemy import select
 
-from app.db.schemas import Product
+from app.db.schemas import DietaryTag, Product
 from app.schemas.product import ProductCreate, ProductUpdate
 from app.services.product_service import (
     create_product,
     delete_product,
     get_product,
+    get_recommended_products,
     list_products,
     search_products,
     update_product,
@@ -494,3 +495,26 @@ async def test_list_products_large_skip(db_session):
     result = await list_products(mock_db, skip=100, limit=10)
 
     assert len(result) == 0
+
+
+@pytest.mark.asyncio
+async def test_get_recommended_products_eager_loads_dietary_tags(db_session):
+    """Recommended products should serialize dietary_tags without lazy loading."""
+    mock_db = MockAsyncSession(db_session)
+    vegan_tag = DietaryTag(name="vegano", display_name="Vegano", color="green")
+    product = Product(
+        id=501,
+        name="Protein Bar",
+        description="Plant protein",
+        price=1990,
+        image="https://example.com/protein.jpg",
+    )
+    product.dietary_tags.append(vegan_tag)
+    db_session.add(product)
+    db_session.commit()
+
+    result = await get_recommended_products(mock_db, ["vegano"], limit=12)
+
+    assert len(result) == 1
+    assert result[0].name == "Protein Bar"
+    assert [tag.name for tag in result[0].dietary_tags] == ["vegano"]

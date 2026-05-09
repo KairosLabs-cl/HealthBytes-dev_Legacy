@@ -16,6 +16,18 @@ from app.db.schemas import Order, OrderItem
 from app.services.mercadopago_service import MercadoPagoService
 
 
+def build_mp_signature(
+    secret: str, data_id: str, request_id: str | None = None, ts: str = "1707849600"
+) -> str:
+    """Build a Mercado Pago x-signature for webhook tests."""
+    if request_id:
+        manifest = f"id:{data_id};request-id:{request_id};ts:{ts};"
+    else:
+        manifest = f"id:{data_id};ts:{ts};"
+    v1 = hmac.new(secret.encode(), manifest.encode(), hashlib.sha256).hexdigest()
+    return f"ts={ts},v1={v1}"
+
+
 @pytest.fixture
 def mp_settings():
     """Mock settings for Mercado Pago"""
@@ -228,7 +240,12 @@ async def test_process_webhook_no_external_reference(mp_service, mock_db):
     mp_service.get_payment_info = AsyncMock(return_value=payment_info)
 
     with pytest.raises(PaymentError, match="No external_reference"):
-        await mp_service.process_webhook(db=mock_db, payment_id="12345", topic="payment")
+        await mp_service.process_webhook(
+            db=mock_db,
+            payment_id="12345",
+            topic="payment",
+            webhook_signature=build_mp_signature(mp_service.webhook_secret, "12345"),
+        )
 
 
 @pytest.mark.asyncio
@@ -246,7 +263,12 @@ async def test_process_webhook_payment_not_found(mp_service, mock_db):
     )
 
     with pytest.raises(PaymentError, match="Payment not found"):
-        await mp_service.process_webhook(db=mock_db, payment_id="12345", topic="payment")
+        await mp_service.process_webhook(
+            db=mock_db,
+            payment_id="12345",
+            topic="payment",
+            webhook_signature=build_mp_signature(mp_service.webhook_secret, "12345"),
+        )
 
 
 @pytest.mark.asyncio
@@ -270,7 +292,12 @@ async def test_process_webhook_approved(mp_service, mock_db, test_payment):
         ]
     )
 
-    result = await mp_service.process_webhook(db=mock_db, payment_id="12345", topic="payment")
+    result = await mp_service.process_webhook(
+        db=mock_db,
+        payment_id="12345",
+        topic="payment",
+        webhook_signature=build_mp_signature(mp_service.webhook_secret, "12345"),
+    )
 
     assert result["status"] == "completed"
     assert order_mock.status == "processing"
@@ -300,7 +327,12 @@ async def test_process_webhook_rejected(mp_service, mock_db, test_payment, test_
     with patch(
         "app.services.mercadopago_service.StockService.release_stock_batch", new_callable=AsyncMock
     ) as mock_release:
-        result = await mp_service.process_webhook(db=mock_db, payment_id="12345", topic="payment")
+        result = await mp_service.process_webhook(
+            db=mock_db,
+            payment_id="12345",
+            topic="payment",
+            webhook_signature=build_mp_signature(mp_service.webhook_secret, "12345"),
+        )
 
         assert result["status"] == "failed"
         assert test_order_with_items.status == "cancelled"
@@ -317,6 +349,42 @@ async def test_process_webhook_invalid_signature(mp_service, mock_db):
             payment_id="12345",
             topic="payment",
             webhook_signature="ts=12345,v1=invalid_hash",
+        )
+
+
+@pytest.mark.asyncio
+async def test_process_webhook_requires_signature_when_secret_configured(mp_service, mock_db):
+    """Webhook processing must fail closed when x-signature is missing."""
+    mp_service.get_payment_info = AsyncMock(return_value={"id": "12345", "status": "approved"})
+
+    with pytest.raises(PaymentError, match="Missing webhook signature"):
+        await mp_service.process_webhook(db=mock_db, payment_id="12345", topic="payment")
+
+    mp_service.get_payment_info.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_process_webhook_rejects_external_reference_mismatch(
+    mp_service, mock_db, test_payment
+):
+    """Webhook payment data must match the local payment order id."""
+    payment_info = {
+        "id": "12345",
+        "status": "approved",
+        "external_reference": "999",
+    }
+    test_payment.order_id = 1
+    mp_service.get_payment_info = AsyncMock(return_value=payment_info)
+    mock_db.execute = AsyncMock(
+        return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=test_payment))
+    )
+
+    with pytest.raises(PaymentError, match="does not match"):
+        await mp_service.process_webhook(
+            db=mock_db,
+            payment_id="12345",
+            topic="payment",
+            webhook_signature=build_mp_signature(mp_service.webhook_secret, "12345"),
         )
 
 

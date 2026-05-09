@@ -238,8 +238,11 @@ class MercadoPagoService:
         Raises:
             PaymentError: If processing fails
         """
-        # Validate signature if provided
-        if webhook_signature and self.webhook_secret:
+        # Validate signature fail-closed whenever a webhook secret is configured.
+        if self.webhook_secret:
+            if not webhook_signature:
+                logger.warning("Missing webhook signature for payment %s", payment_id)
+                raise PaymentError("Missing webhook signature")
             if not self._validate_x_signature(webhook_signature, payment_id, request_id):
                 logger.warning("Invalid webhook signature for payment %s", payment_id)
                 raise PaymentError("Invalid webhook signature")
@@ -267,6 +270,12 @@ class MercadoPagoService:
 
         if not payment:
             raise PaymentError(f"Payment not found for order {order_id}")
+
+        if payment.order_id != order_id:
+            raise PaymentError(
+                f"Webhook external_reference {order_id} does not match "
+                f"local payment order {payment.order_id}"
+            )
 
         # Update payment status based on MP status
         status_map = {
