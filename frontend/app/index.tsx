@@ -243,12 +243,15 @@ export default function HomeScreen() {
   const setDietaryTags = useProductFilters((state) => state.setDietaryTags);
   const clearFilters = useProductFilters((state) => state.clearFilters);
   const { user } = useUser();
-  const dietaryPreferences = usePreferencesStore((state) => state.dietaryPreferences);
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
 
   // Pre-apply saved dietary preferences on first mount only
   useEffect(() => {
+    // ⚡ Bolt: Use getState() instead of the hook to avoid subscribing to dietaryPreferences.
+    // Since we only use it on mount, subscribing causes unnecessary full-screen re-renders
+    // if preferences change in the background.
+    const dietaryPreferences = usePreferencesStore.getState().dietaryPreferences;
     if (dietaryPreferences.length > 0) {
       const validTags = dietaryPreferences.filter((t) =>
         VALID_DIETARY_TAGS.has(t)

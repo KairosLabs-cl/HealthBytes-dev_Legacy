@@ -136,7 +136,7 @@ export default function CartScreen() {
               initialNumToRender={8}
               windowSize={5}
               maxToRenderPerBatch={5}
-              ListFooterComponent={() => (
+              ListFooterComponent={
                 <View className="mt-2 pb-16">
                   <CartFooter
                     itemCount={itemCount}
@@ -145,7 +145,7 @@ export default function CartScreen() {
                   />
                   <RecentlyViewedBar />
                 </View>
-              )}
+              }
             />
           </View>
         </>

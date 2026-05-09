@@ -13,3 +13,7 @@
 ## 2026-05-02 - Zustand Selectors with Route Params
 **Learning:** When writing Zustand selectors that depend on external IDs in a component (like a product ID), using available route parameters (e.g., `id` from `useLocalSearchParams()`) directly rather than waiting for an asynchronously fetched variable (e.g., `product?.id`) ensures the selector is deterministic and doesn't return unstable results during loading states.
 **Action:** Always use route parameters directly in inline selectors when the ID is available in the route.
+
+## 2026-05-05 - Zustand getState for One-Time Reads
+**Learning:** Subscribing to a Zustand store value (e.g., `usePreferencesStore((state) => state.value)`) when the value is only needed once on mount (e.g., inside an empty-dependency `useEffect`) causes the component to re-render unnecessarily on all future updates to that value.
+**Action:** Use `store.getState().value` inside the `useEffect` instead of the hook for one-time reads to prevent unnecessary component re-renders.
