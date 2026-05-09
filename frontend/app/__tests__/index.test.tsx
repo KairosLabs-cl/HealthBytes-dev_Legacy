@@ -91,10 +91,15 @@ const mockPreferencesStore = {
 };
 
 jest.mock("@/store/preferencesStore", () => ({
-  usePreferencesStore: jest.fn().mockImplementation((selector) =>
-    typeof selector === "function"
-      ? selector(mockPreferencesStore)
-      : mockPreferencesStore
+  usePreferencesStore: Object.assign(
+    jest.fn().mockImplementation((selector) =>
+      typeof selector === "function"
+        ? selector(mockPreferencesStore)
+        : mockPreferencesStore
+    ),
+    {
+      getState: () => mockPreferencesStore,
+    }
   ),
 }));
 
