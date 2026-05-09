@@ -20,6 +20,7 @@ import OnboardingModal from "@/components/OnboardingModal";
 import { ClerkLoaded, ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Link, Stack, useSegments } from "expo-router";
+import { useShallow } from "zustand/react/shallow";
 import { User } from "lucide-react-native";
 import { useEffect } from "react";
 import { Pressable, View } from "react-native";
@@ -60,10 +61,12 @@ if (!publishableKey) {
 }
 
 function RootLayoutNav() {
-  const setAuth = useCart((state) => state.setAuth);
-  const mergeAndSync = useCart((state) => state.mergeAndSync);
-  const error = useCart((state) => state.error);
-  const clearError = useCart((state) => state.clearError);
+  const { setAuth, mergeAndSync, error, clearError } = useCart(useShallow((state) => ({
+    setAuth: state.setAuth,
+    mergeAndSync: state.mergeAndSync,
+    error: state.error,
+    clearError: state.clearError,
+  })));
   const toast = useToast();
 
   const { isSignedIn, getToken } = useAuth();
