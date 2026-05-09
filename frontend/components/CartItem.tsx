@@ -6,6 +6,7 @@ import { Image as ExpoImage } from "expo-image";
 import { Minus, Plus, Trash2 } from "lucide-react-native";
 import React, { memo, useCallback, useState } from "react";
 import { Pressable, TextInput, View } from "react-native";
+import { useShallow } from "zustand/react/shallow";
 
 type CartItemProps = {
   item: CartItemType;
@@ -20,9 +21,13 @@ const CartItem = ({
   onDecrement,
   onRemove,
 }: CartItemProps) => {
-  const isAdding = useCart((state) => state.addingProducts.has(item.product.id));
-  const isUpdating = useCart((state) => state.updatingProducts.has(item.product.id));
-  const isRemoving = useCart((state) => state.removingProducts.has(item.product.id));
+  const { isAdding, isUpdating, isRemoving } = useCart(
+    useShallow((state) => ({
+      isAdding: state.addingProducts.has(item.product.id),
+      isUpdating: state.updatingProducts.has(item.product.id),
+      isRemoving: state.removingProducts.has(item.product.id),
+    }))
+  );
 
   const [quantityText, setQuantityText] = useState(item.quantity.toString());
 
