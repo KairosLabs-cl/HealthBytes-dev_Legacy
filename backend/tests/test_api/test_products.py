@@ -80,6 +80,23 @@ def test_get_products_with_price_range(client, db_session):
 
 @pytest.mark.unit
 @pytest.mark.products
+def test_get_discounted_products_orders_active_discounts(client, db_session):
+    """Test GET /products/discounts returns only discounted products, highest first."""
+    _create_product(db_session, name="No Discount", discount_percentage=None)
+    _create_product(db_session, name="Zero Discount", discount_percentage=0)
+    _create_product(db_session, name="Small Discount", discount_percentage=10)
+    _create_product(db_session, name="Big Discount", discount_percentage=35)
+
+    response = client.get("/products/discounts")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert [product["name"] for product in data] == ["Big Discount", "Small Discount"]
+    assert [product["discount_percentage"] for product in data] == [35, 10]
+
+
+@pytest.mark.unit
+@pytest.mark.products
 def test_get_product_by_id_found(client, db_session):
     """Test GET /products/{id} returns product when found."""
     product = _create_product(db_session, name="FindMe")
