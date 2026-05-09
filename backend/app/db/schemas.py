@@ -17,7 +17,7 @@ from sqlalchemy.orm import relationship
 
 from app.db.database import Base
 from app.db.models.address import Address  # noqa: F401 - ensures Address registered before Order
-from app.db.models.payment import (  # noqa: F401 - ensures Payment registered (Order.payments backref)
+from app.db.models.payment import (  # noqa: F401
     Payment,
 )
 
