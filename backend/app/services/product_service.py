@@ -480,6 +480,7 @@ async def get_recommended_products(
 
         stmt = (
             select(Product)
+            .options(selectinload(Product.dietary_tags))
             .join(product_dietary_tags, product_dietary_tags.c.product_id == Product.id)
             .join(DietaryTag, DietaryTag.id == product_dietary_tags.c.dietary_tag_id)
             .where(DietaryTag.name.in_(dietary_preferences))
@@ -487,7 +488,12 @@ async def get_recommended_products(
             .limit(limit)
         )
     else:
-        stmt = select(Product).order_by(desc(Product.id)).limit(limit)
+        stmt = (
+            select(Product)
+            .options(selectinload(Product.dietary_tags))
+            .order_by(desc(Product.id))
+            .limit(limit)
+        )
 
     result = await db.execute(stmt)
     return list(result.scalars().all())

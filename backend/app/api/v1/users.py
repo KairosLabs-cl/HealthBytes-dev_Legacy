@@ -10,6 +10,7 @@ from app.db.database import get_db
 from app.db.schemas import User
 from app.middleware.auth import get_current_user, verify_admin
 from app.schemas.user import (
+    AdminUserUpdate,
     DietaryPreferencesUpdate,
     PushTokenUpdate,
     UserResponse,
@@ -170,7 +171,7 @@ async def update_me(
 @router.put("/{id}", response_model=UserResponse)
 async def update_user(
     id: int,
-    user_data: UserUpdate,
+    user_data: AdminUserUpdate,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
