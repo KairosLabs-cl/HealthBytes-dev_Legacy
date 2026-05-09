@@ -4,6 +4,15 @@
 > Para revisión humana antes de cada release, editar esta sección si es necesario.
 
 <!-- DOCSYNC:changelog-body -->
+## [2026-05-09] — Snapshot automático
+
+> Generado por `docsync.py` | 1 commits en los últimos 7 días
+> Tests totales: **594** | Coverage backend: **40%** | Endpoints API: **52**
+
+### Sin cambios convencionales registrados en este período
+
+---
+
 ## [2026-05-06] — Snapshot automático
 
 > Generado por `docsync.py` | 1 commits en los últimos 7 días

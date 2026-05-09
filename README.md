@@ -284,7 +284,7 @@ HealthBytes sigue una arquitectura **monolítica modular** que facilita el desar
 | FastAPI | 0.136.1 | Framework web moderno |
 | Python | 3.13.1 | Lenguaje principal |
 | SQLAlchemy | 2.0.49 | ORM async |
-| Pydantic | 2.13.3 | Validación de datos |
+| Pydantic | 2.13.4 | Validación de datos |
 | PostgreSQL | 14+ | Base de datos relacional |
 | pytest | Latest | Testing framework |
 <!-- /DOCSYNC:stack-backend -->
@@ -1096,7 +1096,7 @@ Al usar HealthBytes, el usuario acepta que:
 Hecho con ❤️ por el equipo de HealthBytes
 
 <!-- DOCSYNC:last-updated -->
-_Última actualización: 2026-05-06 — generado automáticamente por docsync_
+_Última actualización: 2026-05-09 — generado automáticamente por docsync_
 <!-- /DOCSYNC:last-updated -->
 
 </div>
