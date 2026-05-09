@@ -27,11 +27,18 @@ from tests.conftest import create_test_user
 
 MP_BASE = "/api/v1/payments/mercadopago"
 ORDERS_BASE = "/orders"
+TEST_WEBHOOK_SECRET = "test-webhook-secret"
 
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
+
+@pytest.fixture(autouse=True)
+def mp_webhook_secret(monkeypatch):
+    """Configure webhook secret so E2E webhook tests exercise signature validation."""
+    monkeypatch.setattr(settings, "MERCADO_PAGO_WEBHOOK_SECRET", TEST_WEBHOOK_SECRET)
 
 
 @pytest.fixture
@@ -67,9 +74,9 @@ def _webhook_signature(payment_id, request_id=None, ts="1707849600"):
         manifest = f"id:{payment_id};request-id:{request_id};ts:{ts};"
     else:
         manifest = f"id:{payment_id};ts:{ts};"
-    v1 = hmac.new(
-        settings.MERCADO_PAGO_WEBHOOK_SECRET.encode(), manifest.encode(), hashlib.sha256
-    ).hexdigest()
+    webhook_secret = settings.MERCADO_PAGO_WEBHOOK_SECRET
+    assert webhook_secret, "MERCADO_PAGO_WEBHOOK_SECRET must be set for signed webhook tests"
+    v1 = hmac.new(webhook_secret.encode(), manifest.encode(), hashlib.sha256).hexdigest()
     headers = {"x-signature": f"ts={ts},v1={v1}"}
     if request_id:
         headers["x-request-id"] = request_id
