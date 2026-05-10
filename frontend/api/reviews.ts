@@ -50,3 +50,11 @@ export async function createReview(
   await throwIfNotOk(res, "Error creando reseña");
   return res.json();
 }
+
+export async function createProductReview(
+  productId: number,
+  data: ReviewCreate,
+  token: string
+): Promise<void> {
+  await createReview(productId, data, token);
+}

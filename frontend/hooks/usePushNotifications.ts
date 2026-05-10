@@ -4,9 +4,9 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { useRouter } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
+import { updatePushToken } from "@/api/users";
 import Constants from "expo-constants";
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
 const PLACEHOLDER_PROJECT_ID = "REPLACE_WITH_YOUR_EAS_PROJECT_ID";
 const EXPO_PUSH_TOKEN_PATTERN = /^(ExponentPushToken|ExpoPushToken)\[[^\]]+\]$/;
 const ALLOWED_DEEP_LINK_PATTERNS = [/^\/orders\/\d+$/, /^\/product\/\d+$/];
@@ -116,14 +116,7 @@ export function usePushNotifications() {
             const jwt = await getToken();
             if (!jwt) return;
 
-            await fetch(`${API_URL}/users/me/push-token`, {
-              method: "PATCH",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${jwt}`,
-              },
-              body: JSON.stringify({ token }),
-            });
+            await updatePushToken(jwt, token);
           } catch (error) {
             console.error("Error enviando push token al backend", error);
           }

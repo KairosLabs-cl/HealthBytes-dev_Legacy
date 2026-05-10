@@ -1,4 +1,5 @@
 import { throwIfNotOk } from "@/lib/apiError";
+import type { Product } from "@/types/product";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -95,4 +96,25 @@ export async function listDiscountedProducts(skip = 0, limit = 20) {
   );
   await throwIfNotOk(res, "Error fetching discounted products");
   return res.json();
+}
+
+export async function getRecommendedProducts(
+  token?: string | null,
+  limit = 12
+): Promise<Product[]> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const res = await fetch(`${API_URL}/products/recommended?limit=${limit}`, {
+    headers,
+  });
+  await throwIfNotOk(res, "Error fetching recommendations");
+
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
 }

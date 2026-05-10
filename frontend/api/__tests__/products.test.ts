@@ -1,4 +1,8 @@
-import { listProducts, fetchProductById } from "../products";
+import {
+  fetchProductById,
+  getRecommendedProducts,
+  listProducts,
+} from "../products";
 
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
@@ -99,5 +103,31 @@ describe("fetchProductById", () => {
     });
 
     await expect(fetchProductById(999)).rejects.toThrow("Not found");
+  });
+});
+
+describe("getRecommendedProducts", () => {
+  test("fetches recommended products with auth and limit", async () => {
+    const products = [{ id: 1, name: "Avena", price: 1990 }];
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(products),
+    });
+
+    const result = await getRecommendedProducts("jwt-token", 12);
+    const [url, options] = mockFetch.mock.calls[0];
+
+    expect(url).toContain("/products/recommended?limit=12");
+    expect(options.headers.Authorization).toBe("Bearer jwt-token");
+    expect(result).toEqual(products);
+  });
+
+  test("returns empty array for non-array recommended response", async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ products: [] }),
+    });
+
+    await expect(getRecommendedProducts("jwt-token")).resolves.toEqual([]);
   });
 });

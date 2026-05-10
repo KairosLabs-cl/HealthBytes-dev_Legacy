@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createProductReview } from "@/api/reviews";
 import {
   Modal,
   View,
@@ -61,28 +62,11 @@ export default function ReviewModal({
     setIsSubmitting(true);
     try {
       const token = await getToken();
-      const API_BASE = process.env.EXPO_PUBLIC_API_URL;
-
       if (!token) {
         throw new Error("No estas autenticado");
       }
 
-      const response = await fetch(
-        `${API_BASE}/products/${productId}/reviews`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ rating, comment }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Error al enviar reseña");
-      }
+      await createProductReview(productId, { rating, comment }, token);
 
       toast.show({
         placement: "top",
