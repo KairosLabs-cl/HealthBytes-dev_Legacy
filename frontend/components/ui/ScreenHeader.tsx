@@ -3,12 +3,13 @@ import { View, Pressable } from "react-native";
 import { Text } from "./text";
 import { Icon } from "./icon";
 import { ArrowLeft } from "lucide-react-native";
+import type { LucideIcon } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface ScreenHeaderProps {
   title: string;
-  icon?: any;
+  icon?: LucideIcon;
   showBackButton?: boolean;
   rightElement?: React.ReactNode;
 }

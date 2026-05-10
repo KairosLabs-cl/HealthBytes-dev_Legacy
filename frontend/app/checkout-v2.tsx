@@ -99,7 +99,7 @@ export default function CheckoutV2Screen() {
       setCurrentStep("summary");
       scrollRef.current?.scrollTo({ y: 0, animated: true });
     } else if (currentStep === "summary") {
-      // Safety net: hard auth check before any payment processing
+      // Safety net: hard auth check before payment processing
       if (!isSignedIn) {
         Alert.alert(
           "Sesion requerida",

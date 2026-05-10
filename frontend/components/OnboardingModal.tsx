@@ -313,7 +313,7 @@ function DietaryTagCard({
 
   return (
     <Pressable
-      testID={(item as any).testID}
+      testID={"testID" in item ? item.testID : undefined}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       onPress={onPress}

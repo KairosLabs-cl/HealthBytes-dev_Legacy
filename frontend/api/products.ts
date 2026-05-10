@@ -12,7 +12,9 @@ export type ProductFilters = {
 };
 
 // Función mejorada que acepta múltiples filtros
-export async function listProducts(filters?: ProductFilters) {
+export async function listProducts(
+  filters?: ProductFilters
+): Promise<Product[]> {
   // Construir query string dinámicamente
   const params = new URLSearchParams();
 
@@ -41,13 +43,13 @@ export async function listProducts(filters?: ProductFilters) {
   return res.json();
 }
 
-export async function getFeaturedProduct() {
+export async function getFeaturedProduct(): Promise<Product> {
   const res = await fetch(`${API_URL}/products/featured`);
   await throwIfNotOk(res, "Error fetching featured product");
   return res.json();
 }
 
-export async function fetchProductById(id: number) {
+export async function fetchProductById(id: number): Promise<Product> {
   const res = await fetch(`${API_URL}/products/${id}`);
   await throwIfNotOk(res, "Error fetching product");
   return res.json();
@@ -90,7 +92,10 @@ export async function getProductReviews(
   return res.json();
 }
 
-export async function listDiscountedProducts(skip = 0, limit = 20) {
+export async function listDiscountedProducts(
+  skip = 0,
+  limit = 20
+): Promise<Product[]> {
   const res = await fetch(
     `${API_URL}/products/discounts?skip=${skip}&limit=${limit}`
   );

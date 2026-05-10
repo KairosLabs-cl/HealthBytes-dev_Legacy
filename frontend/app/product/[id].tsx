@@ -3,6 +3,7 @@ import {
   getProductRating,
   getProductReviews,
   listProducts,
+  type Review,
 } from "@/api/products";
 import { Product } from "@/types/product";
 import { DietaryBadgeList } from "@/components/DietaryBadge";
@@ -114,7 +115,7 @@ export default function ProductDetailsScreen() {
   const insets = useSafeAreaInsets();
   const addProduct = useCart((state) => state.addProduct);
   const decrementProduct = useCart((state) => state.decrementProduct);
-  // ⚡ Bolt: Use deterministic route parameter `id` instead of asynchronous `product?.id`
+  // Use deterministic route parameter `id` instead of asynchronous `product?.id`
   // to avoid evaluating to undefined during loading state and ensure a stable selector.
   const currentInCart = useCart(
     (state) =>
@@ -128,7 +129,7 @@ export default function ProductDetailsScreen() {
   }));
 
   // Fly-to-cart animation
-  const ctaBtnRef = useRef<any>(null);
+  const ctaBtnRef = useRef<View>(null);
   const cartBounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flyX = useSharedValue(0);
   const flyY = useSharedValue(0);
@@ -159,7 +160,7 @@ export default function ProductDetailsScreen() {
   }));
 
   const triggerFlyAnimation = (startX: number, startY: number) => {
-    // Cancel any in-flight animations so rapid presses start clean
+    // Cancel in-flight animations so rapid presses start clean
     cancelAnimation(flyX);
     cancelAnimation(flyY);
     cancelAnimation(flyScale);
@@ -280,7 +281,7 @@ export default function ProductDetailsScreen() {
 
   // Filter out the current product from the vendor products list
   const otherVendorProducts = useMemo(() => {
-    return vendorProducts?.filter((p: any) => p.id.toString() !== id) || [];
+    return vendorProducts?.filter((p) => p.id.toString() !== id) || [];
   }, [vendorProducts, id]);
 
   const canAddMore = product
@@ -340,8 +341,9 @@ export default function ProductDetailsScreen() {
   };
 
   const ctaLabel = () => {
-    if (!product || product.stock === 0) return "Agotado";
-    if (currentInCart >= product.stock) return "Máximo alcanzado";
+    const stock = product?.stock ?? 0;
+    if (!product || stock === 0) return "Agotado";
+    if (currentInCart >= stock) return "Máximo alcanzado";
     if (currentInCart > 0) return "Agregar uno más";
     return "Agregar al carrito";
   };
@@ -375,6 +377,17 @@ export default function ProductDetailsScreen() {
       </SafeAreaView>
     );
   }
+
+  if (!product) {
+    return (
+      <>
+        <Stack.Screen options={{ headerShown: false }} />
+        <ProductDetailSkeleton />
+      </>
+    );
+  }
+
+  const productStock = product.stock ?? 0;
 
   return (
     <View className="flex-1 bg-white">
@@ -476,15 +489,15 @@ export default function ProductDetailsScreen() {
               <Text className="text-3xl font-black text-black">
                 {formatPrice(product.price)}
               </Text>
-              {product.stock === 0 ? (
+              {productStock === 0 ? (
                 <View className="flex-row items-center bg-red-50 px-3 py-1.5 rounded-full">
                   <View className="w-2 h-2 rounded-full bg-red-500 mr-1.5" />
                   <Text className="text-xs font-semibold text-red-700">
                     Agotado
                   </Text>
                 </View>
-              ) : product.stock <= 5 ? (
-                <StockBadge stock={product.stock} variant="inline" />
+              ) : productStock <= 5 ? (
+                <StockBadge stock={productStock} variant="inline" />
               ) : (
                 <View className="flex-row items-center bg-green-50 px-3 py-1.5 rounded-full">
                   <View className="w-2 h-2 rounded-full bg-green-500 mr-1.5" />
@@ -635,7 +648,7 @@ export default function ProductDetailsScreen() {
 
             {rating && rating.review_count > 0 ? (
               <>
-                {reviews?.slice(0, 5).map((review: any) => (
+                {reviews?.slice(0, 5).map((review: Review) => (
                   <ReviewCard
                     key={review.id}
                     userName={review.user_name || "Usuario"}

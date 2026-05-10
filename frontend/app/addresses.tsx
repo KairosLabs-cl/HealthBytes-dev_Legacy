@@ -194,8 +194,10 @@ export default function AddressesScreen() {
 
       resetForm();
       setTimeout(() => setSuccess(null), 3000);
-    } catch (err: any) {
-      setLocalError(err.message || "Error al guardar la dirección");
+    } catch (err: unknown) {
+      setLocalError(
+        err instanceof Error ? err.message : "Error al guardar la dirección"
+      );
     } finally {
       setIsActionLoading(false);
     }

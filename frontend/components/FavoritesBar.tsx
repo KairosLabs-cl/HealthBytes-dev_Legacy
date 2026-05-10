@@ -20,14 +20,14 @@ export default function FavoritesBar({ products, limit = 8, onSeeAll }: Props) {
       .slice(0, limit);
   }, [products, limit, favoriteIds]);
 
-  if (favs.length === 0) {
-    return null;
-  }
-
   const renderItem = useCallback(
     ({ item }: { item: Product }) => <HorizontalProductCard product={item} />,
     []
   );
+
+  if (favs.length === 0) {
+    return null;
+  }
 
   return (
     <View className="mt-4 mb-4 bg-gradient-to-b from-amber-50 to-transparent rounded-2xl px-4 pt-4 pb-3 mx-4">

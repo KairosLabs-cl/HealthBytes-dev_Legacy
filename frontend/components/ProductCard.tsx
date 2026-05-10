@@ -34,6 +34,7 @@ import {
   Platform,
   Pressable,
   View,
+  type ViewStyle,
 } from "react-native";
 
 import Animated, {
@@ -78,6 +79,7 @@ const DEFAULT_TAG = {
   text: colors.legacy.gray[600],
   border: colors.border.default,
 };
+type CrossPlatformViewStyle = ViewStyle & { boxShadow?: string };
 
 export type ProductCardProps = {
   product: Product;
@@ -100,7 +102,7 @@ function ProductCard({
   const triggerFly = useCartAnimation((s) => s.trigger);
   const isOutOfStock = product.stock === 0;
   const cartScale = useSharedValue(1);
-  const addBtnRef = useRef<any>(null);
+  const addBtnRef = useRef<View>(null);
   const [imgError, setImgError] = useState(false);
 
   const cartAnimatedStyle = useAnimatedStyle(() => ({
@@ -161,7 +163,7 @@ function ProductCard({
           overflow: "hidden",
           borderWidth: 1,
           borderColor: colors.border.subtle,
-          ...Platform.select<any>({
+          ...Platform.select<CrossPlatformViewStyle>({
             web: {
               boxShadow: shadows.lift,
             },
@@ -192,7 +194,7 @@ function ProductCard({
                 height: 48,
                 alignItems: "center",
                 justifyContent: "center",
-                ...Platform.select<any>({
+                ...Platform.select<CrossPlatformViewStyle>({
                   web: {
                     boxShadow: "0px 2px 4px rgba(0,0,0,0.2)",
                   },
@@ -454,7 +456,7 @@ function ProductCard({
                   : colors.ink.primary,
                 minHeight: 36,
                 borderRadius: 999,
-                ...Platform.select<any>({
+                ...Platform.select<CrossPlatformViewStyle>({
                   web: {
                     boxShadow: isOutOfStock
                       ? "none"

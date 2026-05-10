@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
-import { useRouter } from "expo-router";
+import { useRouter, type Href } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 import { updatePushToken } from "@/api/users";
 import Constants from "expo-constants";
@@ -34,7 +34,7 @@ function getEasProjectId(): string | undefined {
   return projectId;
 }
 
-function notificationUrlToSafePath(url: unknown): string | null {
+function notificationUrlToSafePath(url: unknown): Href | null {
   if (typeof url !== "string") return null;
 
   const path = url.replace(/^healthbytes:\/\//, "/");
@@ -42,7 +42,7 @@ function notificationUrlToSafePath(url: unknown): string | null {
     return null;
   }
 
-  return path;
+  return path as Href;
 }
 
 export function usePushNotifications() {
@@ -140,7 +140,7 @@ export function usePushNotifications() {
             response.notification.request.content.data?.url
           );
           if (path) {
-            router.push(path as any);
+            router.push(path);
           }
         }
       );
