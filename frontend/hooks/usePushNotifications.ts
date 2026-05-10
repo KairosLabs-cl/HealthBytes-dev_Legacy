@@ -101,7 +101,7 @@ export function usePushNotifications() {
 
       setExpoPushToken(token);
     } else {
-      console.log("Must use physical device for Push Notifications");
+      console.warn("Must use physical device for Push Notifications");
     }
 
     return token;

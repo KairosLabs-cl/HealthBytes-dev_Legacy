@@ -6,7 +6,6 @@ const createTokenCache = (): TokenCache => {
   return {
     getToken: async (key: string) => {
       try {
-        if (__DEV__) console.log(`[CACHE] getToken() - key: "${key}"`);
         const item = await SecureStore.getItemAsync(key);
         return item;
       } catch (error) {

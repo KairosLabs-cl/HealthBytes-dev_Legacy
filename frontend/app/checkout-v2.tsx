@@ -127,7 +127,6 @@ export default function CheckoutV2Screen() {
       setIsProcessing(true);
 
       try {
-        if (__DEV__) console.log("📋 Creando orden...");
         const orderResponse = await createOrder(
           items.map((item) => ({
             productId: Number(item.product.id),
@@ -140,9 +139,7 @@ export default function CheckoutV2Screen() {
         );
 
         const orderId = orderResponse.id;
-        if (__DEV__) console.log("✅ Orden creada:", orderId);
 
-        if (__DEV__) console.log("💳 Creando preference de Mercado Pago...");
         const preference = await createMercadoPagoPreference(
           {
             order_id: Number(orderId),
@@ -152,13 +149,9 @@ export default function CheckoutV2Screen() {
           getToken
         );
 
-        if (__DEV__)
-          console.log("✅ Preference creada:", preference.preference_id);
-
         const checkoutUrl = __DEV__
           ? preference.sandbox_init_point || preference.init_point
           : preference.init_point;
-        if (__DEV__) console.log("🔗 Redirigiendo a:", checkoutUrl);
 
         const canOpen = await Linking.canOpenURL(checkoutUrl);
         if (canOpen) {
