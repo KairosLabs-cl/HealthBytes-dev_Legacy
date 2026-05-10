@@ -59,10 +59,10 @@ Las personas con condiciones como celiaquía, diabetes o alergias alimentarias e
 | Componente | Estado | Detalle |
 | --- | --- | --- |
 | 🎨 Frontend Mobile | ✅ Funcional | React Native + Expo — 130 tests pasando |
-| ⚙️ Backend API | ✅ Funcional | FastAPI + SQLAlchemy async — 464 tests pasando |
+| ⚙️ Backend API | ✅ Funcional | FastAPI + SQLAlchemy async — 474 tests pasando |
 | 🗄️ Base de Datos | ✅ Funcional | PostgreSQL con modelos core + índices optimizados |
 | 🔐 Autenticación | ✅ Implementado | JWT + Clerk (dual auth), AuthGate en screens protegidos |
-| 🧪 Tests | ✅ Estable | 594 tests (464 backend + 130 frontend) — 40% coverage |
+| 🧪 Tests | ✅ Estable | 604 tests (474 backend + 130 frontend) — 40% coverage |
 | 🛡️ Security | ✅ Hardened | Bandit + Gitleaks + pnpm audit en CI |
 | 🐳 Docker | ✅ Funcional | docker-compose con backend + DB |
 | 🚀 CI/CD | ✅ Implementado | GitHub Actions (lint, test, SAST, secret-scan, deploy) |
@@ -284,7 +284,7 @@ HealthBytes sigue una arquitectura **monolítica modular** que facilita el desar
 | FastAPI | 0.136.1 | Framework web moderno |
 | Python | 3.13.1 | Lenguaje principal |
 | SQLAlchemy | 2.0.49 | ORM async |
-| Pydantic | 2.13.3 | Validación de datos |
+| Pydantic | 2.13.4 | Validación de datos |
 | PostgreSQL | 14+ | Base de datos relacional |
 | pytest | Latest | Testing framework |
 <!-- /DOCSYNC:stack-backend -->
@@ -743,11 +743,11 @@ pytest -v
 <!-- DOCSYNC:testing-table -->
 | Suite | Tests | Estado |
 | -------- | ----- | ------------ |
-| Backend | 464 | ✅ Passing |
+| Backend | 474 | ✅ Passing |
 | Frontend | 130/130 (14 suites) | ✅ Passing |
 | E2E | 10 | ✅ Passing |
 | Smoke | 8 checks | ✅ Ready |
-| **Total** | **594** | ✅ **All green** |
+| **Total** | **604** | ✅ **All green** |
 
 > Coverage backend: **40%** — API endpoints: **52** — TODOs pendientes: **1**
 <!-- /DOCSYNC:testing-table -->
@@ -1096,7 +1096,7 @@ Al usar HealthBytes, el usuario acepta que:
 Hecho con ❤️ por el equipo de HealthBytes
 
 <!-- DOCSYNC:last-updated -->
-_Última actualización: 2026-05-06 — generado automáticamente por docsync_
+_Última actualización: 2026-05-10 — generado automáticamente por docsync_
 <!-- /DOCSYNC:last-updated -->
 
 </div>
