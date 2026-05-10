@@ -229,7 +229,11 @@ export default function AddressesScreen() {
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
 
-        <ScreenHeader title="Mis Direcciones" icon={MapPin} showBackButton={true} />
+        <ScreenHeader
+          title="Mis Direcciones"
+          icon={MapPin}
+          showBackButton={true}
+        />
 
         <ScrollView
           ref={scrollRef}
@@ -488,7 +492,12 @@ export default function AddressesScreen() {
                         <View className="flex-row gap-2">
                           <Pressable
                             onPress={() => handleStartEdit(addr)}
-                            style={{ minHeight: 48, minWidth: 48, justifyContent: 'center', alignItems: 'center' }}
+                            style={{
+                              minHeight: 48,
+                              minWidth: 48,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
                             className="bg-gray-50 rounded-xl active:bg-gray-100 border border-gray-100"
                             accessibilityLabel={`Editar dirección ${addr.label}`}
                             accessibilityRole="button"
@@ -497,7 +506,12 @@ export default function AddressesScreen() {
                           </Pressable>
                           <Pressable
                             onPress={() => handleDelete(addr.id)}
-                            style={{ minHeight: 48, minWidth: 48, justifyContent: 'center', alignItems: 'center' }}
+                            style={{
+                              minHeight: 48,
+                              minWidth: 48,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
                             className="bg-red-50 rounded-xl active:bg-red-100 border border-red-100"
                             accessibilityLabel={`Eliminar dirección ${addr.label}`}
                             accessibilityRole="button"

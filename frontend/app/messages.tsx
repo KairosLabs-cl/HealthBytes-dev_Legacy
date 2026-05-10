@@ -16,7 +16,11 @@ export default function MessagesScreen() {
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
 
-        <ScreenHeader title="Mensajes" icon={MessageSquare} showBackButton={true} />
+        <ScreenHeader
+          title="Mensajes"
+          icon={MessageSquare}
+          showBackButton={true}
+        />
 
         <ScrollView
           className="flex-1"

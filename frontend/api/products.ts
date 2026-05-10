@@ -69,15 +69,23 @@ export type Review = {
   user_image?: string | null;
 };
 
-export async function getProductRating(productId: number): Promise<ProductRating> {
+export async function getProductRating(
+  productId: number
+): Promise<ProductRating> {
   const res = await fetch(`${API_URL}/products/${productId}/rating`);
-  await throwIfNotOk(res, 'Error fetching rating');
+  await throwIfNotOk(res, "Error fetching rating");
   return res.json();
 }
 
-export async function getProductReviews(productId: number, skip = 0, limit = 20): Promise<Review[]> {
-  const res = await fetch(`${API_URL}/products/${productId}/reviews?skip=${skip}&limit=${limit}`);
-  await throwIfNotOk(res, 'Error fetching reviews');
+export async function getProductReviews(
+  productId: number,
+  skip = 0,
+  limit = 20
+): Promise<Review[]> {
+  const res = await fetch(
+    `${API_URL}/products/${productId}/reviews?skip=${skip}&limit=${limit}`
+  );
+  await throwIfNotOk(res, "Error fetching reviews");
   return res.json();
 }
 

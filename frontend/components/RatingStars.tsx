@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { View, Pressable } from 'react-native';
-import { Star } from 'lucide-react-native';
-import { Text } from '@/components/ui/text';
+import { useState } from "react";
+import { View, Pressable } from "react-native";
+import { Star } from "lucide-react-native";
+import { Text } from "@/components/ui/text";
 
 interface RatingStarsProps {
   rating: number;
@@ -41,8 +41,8 @@ export function RatingStars({
         >
           <Star
             size={size}
-            fill={filled || halfFilled ? '#FBBF24' : 'transparent'}
-            color={filled || halfFilled ? '#FBBF24' : '#9CA3AF'}
+            fill={filled || halfFilled ? "#FBBF24" : "transparent"}
+            color={filled || halfFilled ? "#FBBF24" : "#9CA3AF"}
           />
         </Pressable>
       );
@@ -52,8 +52,8 @@ export function RatingStars({
       <Star
         key={index}
         size={size}
-        fill={filled || halfFilled ? '#FBBF24' : 'transparent'}
-        color={filled || halfFilled ? '#FBBF24' : '#9CA3AF'}
+        fill={filled || halfFilled ? "#FBBF24" : "transparent"}
+        color={filled || halfFilled ? "#FBBF24" : "#9CA3AF"}
         accessibilityLabel={`${index + 1} de ${maxStars} estrellas`}
       />
     );

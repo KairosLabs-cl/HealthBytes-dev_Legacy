@@ -1,5 +1,5 @@
-import { View, Text, Image } from 'react-native';
-import { RatingStars } from './RatingStars';
+import { View, Text, Image } from "react-native";
+import { RatingStars } from "./RatingStars";
 
 interface ReviewCardProps {
   userName: string;
@@ -9,7 +9,7 @@ interface ReviewCardProps {
   userImage?: string | null;
 }
 
-const COLORS = ['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6'];
+const COLORS = ["#EF4444", "#F59E0B", "#10B981", "#3B82F6", "#8B5CF6"];
 
 const getAvatarColor = (name: string): string => {
   const index = name.charCodeAt(0) % COLORS.length;
@@ -20,16 +20,29 @@ const getInitial = (name: string): string => {
   return name.charAt(0).toUpperCase();
 };
 
-export function ReviewCard({ userName, rating, comment, createdAt, userImage }: ReviewCardProps) {
+export function ReviewCard({
+  userName,
+  rating,
+  comment,
+  createdAt,
+  userImage,
+}: ReviewCardProps) {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-    if (diffDays === 0) return 'Hoy';
-    if (diffDays === 1) return 'Ayer';
+    const diffDays = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    if (diffDays === 0) return "Hoy";
+    if (diffDays === 1) return "Ayer";
     if (diffDays < 7) return `Hace ${diffDays} días`;
-    if (diffDays < 30) return `Hace ${Math.floor(diffDays / 7)} semana${Math.floor(diffDays / 7) > 1 ? 's' : ''}`;
-    return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+    if (diffDays < 30)
+      return `Hace ${Math.floor(diffDays / 7)} semana${Math.floor(diffDays / 7) > 1 ? "s" : ""}`;
+    return date.toLocaleDateString("es-ES", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
   };
 
   return (
@@ -42,7 +55,7 @@ export function ReviewCard({ userName, rating, comment, createdAt, userImage }: 
             className="w-12 h-12 rounded-full"
           />
         ) : (
-          <View 
+          <View
             className="w-12 h-12 rounded-full items-center justify-center"
             style={{ backgroundColor: getAvatarColor(userName) }}
           >

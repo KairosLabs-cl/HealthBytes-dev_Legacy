@@ -28,8 +28,12 @@ const DIETARY_OPTIONS = [
 export default function DietaryPreferencesScreen() {
   const { getToken } = useAuth();
   // ⚡ Bolt: Use granular selectors to avoid re-renders when other preferences change
-  const dietaryPreferences = usePreferencesStore((state) => state.dietaryPreferences);
-  const setDietaryPreferences = usePreferencesStore((state) => state.setDietaryPreferences);
+  const dietaryPreferences = usePreferencesStore(
+    (state) => state.dietaryPreferences
+  );
+  const setDietaryPreferences = usePreferencesStore(
+    (state) => state.setDietaryPreferences
+  );
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -71,7 +75,11 @@ export default function DietaryPreferencesScreen() {
       <View className="flex-1 bg-white">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
-        <ScreenHeader title="Preferencias alimentarias" icon={Salad} showBackButton={true} />
+        <ScreenHeader
+          title="Preferencias alimentarias"
+          icon={Salad}
+          showBackButton={true}
+        />
 
         <ScrollView
           className="flex-1 px-6 pt-6"

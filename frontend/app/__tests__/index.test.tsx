@@ -79,11 +79,13 @@ const mockProductFiltersStore = {
 };
 
 jest.mock("@/store/productFiltersStore", () => ({
-  useProductFilters: jest.fn().mockImplementation((selector) =>
-    typeof selector === "function"
-      ? selector(mockProductFiltersStore)
-      : mockProductFiltersStore
-  ),
+  useProductFilters: jest
+    .fn()
+    .mockImplementation((selector) =>
+      typeof selector === "function"
+        ? selector(mockProductFiltersStore)
+        : mockProductFiltersStore
+    ),
 }));
 
 const mockPreferencesStore = {
@@ -92,11 +94,13 @@ const mockPreferencesStore = {
 
 jest.mock("@/store/preferencesStore", () => ({
   usePreferencesStore: Object.assign(
-    jest.fn().mockImplementation((selector) =>
-      typeof selector === "function"
-        ? selector(mockPreferencesStore)
-        : mockPreferencesStore
-    ),
+    jest
+      .fn()
+      .mockImplementation((selector) =>
+        typeof selector === "function"
+          ? selector(mockPreferencesStore)
+          : mockPreferencesStore
+      ),
     {
       getState: () => mockPreferencesStore,
     }
@@ -110,11 +114,13 @@ const mockFavoritesStore = {
 };
 
 jest.mock("@/store/favoritesStore", () => ({
-  useFavoritesStore: jest.fn().mockImplementation((selector) =>
-    typeof selector === "function"
-      ? selector(mockFavoritesStore)
-      : mockFavoritesStore
-  ),
+  useFavoritesStore: jest
+    .fn()
+    .mockImplementation((selector) =>
+      typeof selector === "function"
+        ? selector(mockFavoritesStore)
+        : mockFavoritesStore
+    ),
 }));
 
 jest.mock("@clerk/clerk-expo", () => ({

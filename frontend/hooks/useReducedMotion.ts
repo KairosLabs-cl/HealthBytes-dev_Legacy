@@ -1,4 +1,4 @@
-import { useReducedMotion as useReanimatedReducedMotion } from 'react-native-reanimated';
+import { useReducedMotion as useReanimatedReducedMotion } from "react-native-reanimated";
 
 export function useReducedMotion(): boolean {
   const reducedMotion = useReanimatedReducedMotion();

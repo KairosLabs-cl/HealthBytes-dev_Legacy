@@ -25,7 +25,11 @@ export default function SupportScreen() {
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
 
-        <ScreenHeader title="Centro de Ayuda" icon={HelpCircle} showBackButton={true} />
+        <ScreenHeader
+          title="Centro de Ayuda"
+          icon={HelpCircle}
+          showBackButton={true}
+        />
 
         <ScrollView
           className="flex-1"

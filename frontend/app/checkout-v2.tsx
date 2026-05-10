@@ -17,7 +17,15 @@ import { Stack, useRouter } from "expo-router";
 import { MapPinIcon, PhoneIcon } from "lucide-react-native";
 import { useEffect, useRef, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { View, ScrollView, Pressable, Linking, ActivityIndicator, Alert, Text } from "react-native";
+import {
+  View,
+  ScrollView,
+  Pressable,
+  Linking,
+  ActivityIndicator,
+  Alert,
+  Text,
+} from "react-native";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { CreditCard } from "lucide-react-native";
 import { AuthGate } from "@/components/AuthGate";
@@ -202,7 +210,11 @@ export default function CheckoutV2Screen() {
       <View className="flex-1 bg-surface-warm">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
-        <ScreenHeader title="Checkout" icon={CreditCard} showBackButton={true} />
+        <ScreenHeader
+          title="Checkout"
+          icon={CreditCard}
+          showBackButton={true}
+        />
 
         <ScrollView
           ref={scrollRef}
@@ -249,7 +261,9 @@ export default function CheckoutV2Screen() {
                         }`}
                         accessibilityLabel={`Dirección: ${address.street}, ${address.city}`}
                         accessibilityRole="radio"
-                        accessibilityState={{ selected: selectedAddress?.id === address.id }}
+                        accessibilityState={{
+                          selected: selectedAddress?.id === address.id,
+                        }}
                       >
                         <HStack className="items-start justify-between">
                           <View className="flex-1">

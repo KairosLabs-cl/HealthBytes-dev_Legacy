@@ -89,7 +89,7 @@ export default function LoginScreen() {
         </Text>
 
         {error && (
-          <View 
+          <View
             className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-6"
             accessibilityRole="alert"
           >
@@ -102,7 +102,9 @@ export default function LoginScreen() {
           disabled={isLoading}
           className="flex-row items-center justify-center bg-white border border-gray-200 rounded-xl px-5 py-4 active:bg-gray-50"
           style={{ minHeight: 52 }}
-          accessibilityLabel={isLoading ? "Iniciando sesión con Google" : "Continuar con Google"}
+          accessibilityLabel={
+            isLoading ? "Iniciando sesión con Google" : "Continuar con Google"
+          }
           accessibilityRole="button"
         >
           {isLoading ? (

@@ -132,7 +132,11 @@ export default function OrdersScreen() {
       <View className="flex-1 bg-white">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
-        <ScreenHeader title="Mis órdenes" icon={Package} showBackButton={true} />
+        <ScreenHeader
+          title="Mis órdenes"
+          icon={Package}
+          showBackButton={true}
+        />
         <View className="flex-1 items-center justify-center px-6">
           <Icon as={Package} size="xl" className="text-gray-300 mb-4" />
           <Text className="text-xl font-semibold text-black mb-2">
@@ -160,33 +164,33 @@ export default function OrdersScreen() {
   const listHeader = (
     <View className="px-4 pt-4">
       {/* Filter chips */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          className="flex-row gap-2"
-          contentContainerStyle={{ paddingRight: 16, gap: 8 }}
-        >
-          {filters.map((f) => (
-            <Pressable
-              key={f.id}
-              onPress={() => handleFilterPress(f.id as OrderStatus)}
-              style={{ minHeight: 44, justifyContent: "center" }}
-              className={`px-4 rounded-full border ${
-                selectedFilter === f.id
-                  ? "bg-black border-black"
-                  : "bg-white border-gray-300"
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        className="flex-row gap-2"
+        contentContainerStyle={{ paddingRight: 16, gap: 8 }}
+      >
+        {filters.map((f) => (
+          <Pressable
+            key={f.id}
+            onPress={() => handleFilterPress(f.id as OrderStatus)}
+            style={{ minHeight: 44, justifyContent: "center" }}
+            className={`px-4 rounded-full border ${
+              selectedFilter === f.id
+                ? "bg-black border-black"
+                : "bg-white border-gray-300"
+            }`}
+          >
+            <Text
+              className={`font-semibold ${
+                selectedFilter === f.id ? "text-white" : "text-gray-700"
               }`}
             >
-              <Text
-                className={`font-semibold ${
-                  selectedFilter === f.id ? "text-white" : "text-gray-700"
-                }`}
-              >
-                {f.label}
-              </Text>
-            </Pressable>
-          ))}
-        </ScrollView>
+              {f.label}
+            </Text>
+          </Pressable>
+        ))}
+      </ScrollView>
 
       {/* Result count */}
       <View className="mb-4">
@@ -283,7 +287,11 @@ export default function OrdersScreen() {
       <View className="flex-1 bg-white">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
-        <ScreenHeader title="Mis órdenes" icon={Package} showBackButton={true} />
+        <ScreenHeader
+          title="Mis órdenes"
+          icon={Package}
+          showBackButton={true}
+        />
 
         <FlatList
           className="flex-1 bg-white"

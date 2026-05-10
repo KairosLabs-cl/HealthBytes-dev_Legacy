@@ -12,7 +12,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  withTiming
+  withTiming,
 } from "react-native-reanimated";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
@@ -138,21 +138,40 @@ export default function OnboardingModal({
         </View>
 
         <View className="flex-1 px-6">
-          {step === 0 && <StepWelcome key="step0" reducedMotion={reducedMotion} />}
-          {step === 1 && <StepPreferences key="step1" selected={selected} toggle={toggle} reducedMotion={reducedMotion} />}
-          {step === 2 && <StepConfirmation key="step2" selectedCount={selected.length} reducedMotion={reducedMotion} />}
+          {step === 0 && (
+            <StepWelcome key="step0" reducedMotion={reducedMotion} />
+          )}
+          {step === 1 && (
+            <StepPreferences
+              key="step1"
+              selected={selected}
+              toggle={toggle}
+              reducedMotion={reducedMotion}
+            />
+          )}
+          {step === 2 && (
+            <StepConfirmation
+              key="step2"
+              selectedCount={selected.length}
+              reducedMotion={reducedMotion}
+            />
+          )}
         </View>
 
         {/* Fixed Bottom Actions */}
         <View className="px-6 pb-12 pt-4 bg-surface-warm">
-          <PrimaryButton 
+          <PrimaryButton
             testID={step === 2 ? "submit-btn" : undefined}
-            onPress={step === 2 ? handleFinish : handleNext} 
+            onPress={step === 2 ? handleFinish : handleNext}
             label={
-              step === 0 ? "Comenzar" :
-              step === 1 ? (selected.length > 0 ? `Continuar (${selected.length})` : "Continuar") :
-              "Explorar catálogo"
-            } 
+              step === 0
+                ? "Comenzar"
+                : step === 1
+                  ? selected.length > 0
+                    ? `Continuar (${selected.length})`
+                    : "Continuar"
+                  : "Explorar catálogo"
+            }
           />
 
           {step < 2 && (
@@ -177,15 +196,27 @@ export default function OnboardingModal({
 
 /* ---------- Reusable Button ---------- */
 
-function PrimaryButton({ onPress, label, testID }: { onPress: () => void; label: string; testID?: string }) {
+function PrimaryButton({
+  onPress,
+  label,
+  testID,
+}: {
+  onPress: () => void;
+  label: string;
+  testID?: string;
+}) {
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
 
-  const handlePressIn = () => { scale.value = withSpring(0.96); };
-  const handlePressOut = () => { scale.value = withSpring(1); };
+  const handlePressIn = () => {
+    scale.value = withSpring(0.96);
+  };
+  const handlePressOut = () => {
+    scale.value = withSpring(1);
+  };
 
   return (
     <Pressable
@@ -199,30 +230,27 @@ function PrimaryButton({ onPress, label, testID }: { onPress: () => void; label:
     >
       <Animated.View
         style={[
-          animatedStyle, 
-          { 
-            minHeight: 60, 
-            width: "100%", 
+          animatedStyle,
+          {
+            minHeight: 60,
+            width: "100%",
             backgroundColor: "#2D2926",
-            borderRadius: 9999, 
-            alignItems: "center", 
+            borderRadius: 9999,
+            alignItems: "center",
             justifyContent: "center",
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 1 },
             shadowOpacity: 0.1,
             shadowRadius: 2,
-            elevation: 2
-          }
+            elevation: 2,
+          },
         ]}
       >
-        <Text className="text-white font-bold text-lg">
-          {label}
-        </Text>
+        <Text className="text-white font-bold text-lg">{label}</Text>
       </Animated.View>
     </Pressable>
   );
 }
-
 
 /* ---------- Step 1: Welcome ---------- */
 
@@ -234,7 +262,9 @@ function StepWelcome({ reducedMotion }: StepProps) {
   return (
     <Animated.View
       entering={reducedMotion ? FadeIn.duration(0) : FadeIn.duration(400)}
-      exiting={reducedMotion ? SlideOutLeft.duration(0) : SlideOutLeft.duration(300)}
+      exiting={
+        reducedMotion ? SlideOutLeft.duration(0) : SlideOutLeft.duration(300)
+      }
       className="flex-1 justify-center items-center pb-8"
     >
       <View className="items-center mb-4">
@@ -243,7 +273,8 @@ function StepWelcome({ reducedMotion }: StepProps) {
           Bienvenido a HealthBytes
         </Text>
         <Text className="text-lg text-ink opacity-70 text-center leading-relaxed px-2">
-          Encontra productos saludables adaptados a tus necesidades alimentarias. Filtramos por vos para que compres con tranquilidad.
+          Encontra productos saludables adaptados a tus necesidades
+          alimentarias. Filtramos por vos para que compres con tranquilidad.
         </Text>
       </View>
     </Animated.View>
@@ -261,11 +292,11 @@ interface StepPreferencesProps {
 function DietaryTagCard({
   item,
   isActive,
-  onPress
+  onPress,
 }: {
-  item: typeof DIETARY_OPTIONS[number],
-  isActive: boolean,
-  onPress: () => void
+  item: (typeof DIETARY_OPTIONS)[number];
+  isActive: boolean;
+  onPress: () => void;
 }) {
   const scale = useSharedValue(1);
 
@@ -273,8 +304,12 @@ function DietaryTagCard({
     transform: [{ scale: scale.value }],
   }));
 
-  const handlePressIn = () => { scale.value = withSpring(0.92); };
-  const handlePressOut = () => { scale.value = withSpring(1); };
+  const handlePressIn = () => {
+    scale.value = withSpring(0.92);
+  };
+  const handlePressOut = () => {
+    scale.value = withSpring(1);
+  };
 
   return (
     <Pressable
@@ -289,27 +324,40 @@ function DietaryTagCard({
     >
       <Animated.View
         style={[
-          animatedStyle, 
-          { 
-            flex: 1, 
+          animatedStyle,
+          {
+            flex: 1,
             elevation: isActive ? 2 : 0,
             borderRadius: 24,
             borderWidth: 2,
             padding: 16,
             justifyContent: "space-between",
             backgroundColor: isActive ? "#FFFFFF" : "transparent",
-            borderColor: isActive ? "#2E5C3A" : "#EAE5E0"
-          }
+            borderColor: isActive ? "#2E5C3A" : "#EAE5E0",
+          },
         ]}
       >
         <View style={{ alignItems: "flex-start" }}>
           <Text style={{ fontSize: 36, marginBottom: 12 }}>{item.emoji}</Text>
         </View>
         <View>
-          <Text style={{ fontSize: 16, fontWeight: "bold", color: isActive ? "#2D2926" : "#2D2926" }}>
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: "bold",
+              color: isActive ? "#2D2926" : "#2D2926",
+            }}
+          >
             {item.label}
           </Text>
-          <Text style={{ fontSize: 12, marginTop: 4, fontWeight: isActive ? "500" : "normal", color: isActive ? "#2E5C3A" : "#6B6B6B" }}>
+          <Text
+            style={{
+              fontSize: 12,
+              marginTop: 4,
+              fontWeight: isActive ? "500" : "normal",
+              color: isActive ? "#2E5C3A" : "#6B6B6B",
+            }}
+          >
             {item.description}
           </Text>
         </View>
@@ -318,12 +366,19 @@ function DietaryTagCard({
   );
 }
 
-
-function StepPreferences({ selected, toggle, reducedMotion }: StepPreferencesProps) {
+function StepPreferences({
+  selected,
+  toggle,
+  reducedMotion,
+}: StepPreferencesProps) {
   return (
     <Animated.View
-      entering={reducedMotion ? SlideInRight.duration(0) : SlideInRight.duration(400)}
-      exiting={reducedMotion ? SlideOutLeft.duration(0) : SlideOutLeft.duration(300)}
+      entering={
+        reducedMotion ? SlideInRight.duration(0) : SlideInRight.duration(400)
+      }
+      exiting={
+        reducedMotion ? SlideOutLeft.duration(0) : SlideOutLeft.duration(300)
+      }
       className="flex-1 pt-4"
     >
       <View className="my-6">
@@ -361,10 +416,15 @@ interface StepConfirmationProps {
   reducedMotion: boolean;
 }
 
-function StepConfirmation({ selectedCount, reducedMotion }: StepConfirmationProps) {
+function StepConfirmation({
+  selectedCount,
+  reducedMotion,
+}: StepConfirmationProps) {
   return (
     <Animated.View
-      entering={reducedMotion ? SlideInRight.duration(0) : SlideInRight.duration(400)}
+      entering={
+        reducedMotion ? SlideInRight.duration(0) : SlideInRight.duration(400)
+      }
       exiting={reducedMotion ? FadeOut.duration(0) : FadeOut.duration(300)}
       className="flex-1 justify-center items-center pb-12"
     >

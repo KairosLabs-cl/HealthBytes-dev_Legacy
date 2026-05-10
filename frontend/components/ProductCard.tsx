@@ -62,14 +62,22 @@ const DIETARY_ICONS: Record<
 
 const TAG_COLORS: Record<string, { bg: string; text: string; border: string }> =
   {
-    green: { bg: colors.brand.greenLight, text: colors.success, border: "#86EFAC" },
+    green: {
+      bg: colors.brand.greenLight,
+      text: colors.success,
+      border: "#86EFAC",
+    },
     blue: { bg: "#EFF6FF", text: "#1D4ED8", border: "#93C5FD" },
     orange: { bg: "#FFF7ED", text: "#C2410C", border: "#FDBA74" },
     purple: { bg: "#FAF5FF", text: "#7E22CE", border: "#D8B4FE" },
     red: { bg: "#FEF2F2", text: colors.error, border: "#FCA5A5" },
     emerald: { bg: "#ECFDF5", text: colors.success, border: "#6EE7B7" },
   };
-const DEFAULT_TAG = { bg: colors.legacy.gray[50], text: colors.legacy.gray[600], border: colors.border.default };
+const DEFAULT_TAG = {
+  bg: colors.legacy.gray[50],
+  text: colors.legacy.gray[600],
+  border: colors.border.default,
+};
 
 export type ProductCardProps = {
   product: Product;
@@ -80,7 +88,12 @@ export type ProductCardProps = {
   rating?: { avg_rating: number; review_count: number } | null;
 };
 
-function ProductCard({ product, width, onAddToCart, rating }: ProductCardProps) {
+function ProductCard({
+  product,
+  width,
+  onAddToCart,
+  rating,
+}: ProductCardProps) {
   const router = useRouter();
   const { isSignedIn } = useAuth();
   const addProduct = useCart((state) => state.addProduct);
@@ -198,7 +211,7 @@ function ProductCard({ product, width, onAddToCart, rating }: ProductCardProps) 
                   color: "#fff",
                   fontWeight: "900",
                   fontSize: 12,
-                  textAlign: "center"
+                  textAlign: "center",
                 }}
               >
                 {`-${product.discount_percentage}%`}
@@ -237,7 +250,11 @@ function ProductCard({ product, width, onAddToCart, rating }: ProductCardProps) 
                   justifyContent: "center",
                 }}
               >
-                <Package size={32} color={colors.border.default} strokeWidth={1.5} />
+                <Package
+                  size={32}
+                  color={colors.border.default}
+                  strokeWidth={1.5}
+                />
               </View>
             )}
             <StockBadge stock={product.stock} variant="overlay" />
@@ -286,7 +303,11 @@ function ProductCard({ product, width, onAddToCart, rating }: ProductCardProps) 
           {/* Vendor name */}
           {product.vendor_name && (
             <View className="flex-row items-center mb-2">
-              <Store size={12} color={colors.ink.muted} style={{ marginRight: 4 }} />
+              <Store
+                size={12}
+                color={colors.ink.muted}
+                style={{ marginRight: 4 }}
+              />
               <Text
                 numberOfLines={1}
                 style={{
@@ -359,7 +380,11 @@ function ProductCard({ product, width, onAddToCart, rating }: ProductCardProps) 
                   }}
                 >
                   <Text
-                    style={{ fontSize: 9, fontWeight: "700", color: colors.ink.muted }}
+                    style={{
+                      fontSize: 9,
+                      fontWeight: "700",
+                      color: colors.ink.muted,
+                    }}
                   >
                     +{allTags.length - 2}
                   </Text>
@@ -424,7 +449,9 @@ function ProductCard({ product, width, onAddToCart, rating }: ProductCardProps) 
                 paddingVertical: 7,
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: isOutOfStock ? colors.legacy.gray[200] : colors.ink.primary,
+                backgroundColor: isOutOfStock
+                  ? colors.legacy.gray[200]
+                  : colors.ink.primary,
                 minHeight: 36,
                 borderRadius: 999,
                 ...Platform.select<any>({

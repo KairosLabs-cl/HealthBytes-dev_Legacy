@@ -22,9 +22,7 @@ export default function RecentlyViewedScreen() {
   }) as number;
 
   const renderItem = useCallback(
-    ({ item }: { item: any }) => (
-      <ProductListItem product={item} />
-    ),
+    ({ item }: { item: any }) => <ProductListItem product={item} />,
     []
   );
 
@@ -34,7 +32,11 @@ export default function RecentlyViewedScreen() {
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
 
-        <ScreenHeader title="Recién Vistos" icon={Clock} showBackButton={true} />
+        <ScreenHeader
+          title="Recién Vistos"
+          icon={Clock}
+          showBackButton={true}
+        />
 
         <View style={{ paddingHorizontal: 16, paddingVertical: 8 }}>
           <Text style={{ fontSize: 14, color: "#6B7280", marginBottom: 16 }}>
@@ -48,7 +50,10 @@ export default function RecentlyViewedScreen() {
             renderItem={renderItem}
             keyExtractor={(item) => item.id.toString()}
             numColumns={numColumns}
-            contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 128 }}
+            contentContainerStyle={{
+              paddingHorizontal: 12,
+              paddingBottom: 128,
+            }}
             showsVerticalScrollIndicator={false}
             estimatedItemSize={280}
             ListEmptyComponent={

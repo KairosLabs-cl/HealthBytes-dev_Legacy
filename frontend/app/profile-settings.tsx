@@ -70,7 +70,11 @@ export default function ProfileSettingsScreen() {
       <View className="flex-1 bg-white">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
-        <ScreenHeader title="Ajustes de Cuenta" icon={User} showBackButton={true} />
+        <ScreenHeader
+          title="Ajustes de Cuenta"
+          icon={User}
+          showBackButton={true}
+        />
 
         <ScrollView
           className="flex-1 px-6 pt-6"

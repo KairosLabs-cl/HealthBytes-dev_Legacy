@@ -29,38 +29,39 @@ type IconProps = React.ComponentPropsWithoutRef<typeof UIIcon> &
     width?: number | string;
   };
 
-export const Icon = React.forwardRef<React.ElementRef<typeof UIIcon>, IconProps>(
-  function Icon({ size = "md", className, ...props }, ref) {
-    if (typeof size === "number") {
-      return (
-        <UIIcon
-          ref={ref as never}
-          {...props}
-          className={iconStyle({ class: className })}
-          size={size}
-        />
-      );
-    } else if (
-      (props.height !== undefined || props.width !== undefined) &&
-      size === undefined
-    ) {
-      return (
-        <UIIcon
-          ref={ref as never}
-          {...props}
-          className={iconStyle({ class: className })}
-        />
-      );
-    }
+export const Icon = React.forwardRef<
+  React.ElementRef<typeof UIIcon>,
+  IconProps
+>(function Icon({ size = "md", className, ...props }, ref) {
+  if (typeof size === "number") {
     return (
       <UIIcon
         ref={ref as never}
         {...props}
-        className={iconStyle({ size, class: className })}
+        className={iconStyle({ class: className })}
+        size={size}
+      />
+    );
+  } else if (
+    (props.height !== undefined || props.width !== undefined) &&
+    size === undefined
+  ) {
+    return (
+      <UIIcon
+        ref={ref as never}
+        {...props}
+        className={iconStyle({ class: className })}
       />
     );
   }
-);
+  return (
+    <UIIcon
+      ref={ref as never}
+      {...props}
+      className={iconStyle({ size, class: className })}
+    />
+  );
+});
 
 type ParameterTypes = Omit<Parameters<typeof createIcon>[0], "Root">;
 
@@ -72,7 +73,10 @@ const accessClassName = (style: unknown) => {
 
 const createIconUI = ({ ...props }: ParameterTypes) => {
   const NewUIIcon = createIcon({ Root: Svg, ...props });
-  return React.forwardRef(function UIIcon({ className, ...inComingprops }, ref) {
+  return React.forwardRef(function UIIcon(
+    { className, ...inComingprops },
+    ref
+  ) {
     const calculateClassName = React.useMemo(() => {
       return className === undefined
         ? accessClassName(inComingprops?.style)

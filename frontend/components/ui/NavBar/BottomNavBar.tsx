@@ -159,7 +159,9 @@ const TabItem = React.memo(
             onPressOut={handlePressOut}
             onPress={handlePress}
           >
-            <Animated.View style={[animatedStyle, { width: '100%' }]}>{innerContent}</Animated.View>
+            <Animated.View style={[animatedStyle, { width: "100%" }]}>
+              {innerContent}
+            </Animated.View>
           </Pressable>
         </Link>
       );

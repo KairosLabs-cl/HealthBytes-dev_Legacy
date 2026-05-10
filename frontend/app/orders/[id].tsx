@@ -81,17 +81,18 @@ function OrderDetailScreenContent() {
     [productMap, order?.items.length]
   );
 
-  const keyExtractor = useCallback(
-    (item: OrderItem) => String(item.id),
-    []
-  );
+  const keyExtractor = useCallback((item: OrderItem) => String(item.id), []);
 
   if (isLoading) {
     return (
       <View className="flex-1 bg-gray-50">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
-        <ScreenHeader title={`Orden #${id}`} icon={Package} showBackButton={true} />
+        <ScreenHeader
+          title={`Orden #${id}`}
+          icon={Package}
+          showBackButton={true}
+        />
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {/* Timeline Skeleton */}
@@ -153,7 +154,11 @@ function OrderDetailScreenContent() {
     return (
       <View className="flex-1 bg-gray-50">
         <Stack.Screen options={{ headerShown: false }} />
-        <ScreenHeader title={`Orden #${id}`} icon={Package} showBackButton={true} />
+        <ScreenHeader
+          title={`Orden #${id}`}
+          icon={Package}
+          showBackButton={true}
+        />
         <View className="flex-1 items-center justify-center p-6">
           <XCircle size={48} color="#EF4444" />
           <Text className="mt-4 text-lg text-gray-700">
@@ -189,7 +194,9 @@ function OrderDetailScreenContent() {
         icon={Package}
         showBackButton={true}
         rightElement={
-          <View className={`px-3 py-1 rounded-full ${STATUS_BADGE_COLORS[normalizedStatus]}`}>
+          <View
+            className={`px-3 py-1 rounded-full ${STATUS_BADGE_COLORS[normalizedStatus]}`}
+          >
             <Text className="text-xs font-medium">
               {STATUS_LABELS[normalizedStatus]}
             </Text>
@@ -216,7 +223,10 @@ function OrderDetailScreenContent() {
           ) : (
             <View className="relative">
               {/* Timeline line - centered on the icons (icon w-7 = 28px, center = 14px, minus half line width) */}
-              <View className="absolute w-0.5 bg-gray-200" style={{ left: 13, top: 14, bottom: 14 }} />
+              <View
+                className="absolute w-0.5 bg-gray-200"
+                style={{ left: 13, top: 14, bottom: 14 }}
+              />
 
               {STATUS_TIMELINE.map((step, index) => {
                 const isCompleted = index <= currentStatusIndex;
