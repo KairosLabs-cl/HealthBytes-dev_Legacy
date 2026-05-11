@@ -116,6 +116,13 @@ frontend/
 
 ---
 
+## 📊 Auditorías
+
+- [03_frontend.md](./03_frontend.md) - Auditoría de cumplimiento y performance frontend
+- [accessibility-audit-2026.md](./accessibility-audit-2026.md) - Auditoría WCAG 2.2 AA de accesibilidad
+
+---
+
 ## 👨‍💻 Desarrollo
 
 ### Scripts Disponibles

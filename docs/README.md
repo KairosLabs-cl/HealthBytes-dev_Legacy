@@ -38,6 +38,7 @@ Guías para trabajar en el código:
 ### 📱 [frontend/](./frontend/) - Auditorías Frontend
 Reportes específicos de frontend y experiencia de usuario:
 - **[03_frontend.md](./frontend/03_frontend.md)** - Auditoría de cumplimiento y performance frontend
+- **[accessibility-audit-2026.md](./frontend/accessibility-audit-2026.md)** - Auditoría WCAG 2.2 AA de accesibilidad
 
 ---
 
