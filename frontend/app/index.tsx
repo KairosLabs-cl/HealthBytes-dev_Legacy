@@ -12,6 +12,7 @@ import { useBreakpointValue } from "@/components/ui/utils/use-break-point-value"
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { usePreferencesStore } from "@/store/preferencesStore";
 import { DietaryTag, useProductFilters } from "@/store/productFiltersStore";
+import { useShallow } from "zustand/react/shallow";
 import { Product } from "@/types/product";
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import { FlashList } from "@shopify/flash-list";
@@ -238,10 +239,14 @@ HomeListHeader.displayName = "HomeListHeader";
 export default function HomeScreen() {
   // ⚡ Bolt: Use granular selectors for Zustand stores to prevent unnecessary full-screen re-renders
   // when unrelated state changes. This is critical for performance, especially with FlatLists.
-  const dietaryTags = useProductFilters((state) => state.dietaryTags);
-  const toggleDietaryTag = useProductFilters((state) => state.toggleDietaryTag);
-  const setDietaryTags = useProductFilters((state) => state.setDietaryTags);
-  const clearFilters = useProductFilters((state) => state.clearFilters);
+  const { dietaryTags, toggleDietaryTag, setDietaryTags, clearFilters } = useProductFilters(
+    useShallow((state) => ({
+      dietaryTags: state.dietaryTags,
+      toggleDietaryTag: state.toggleDietaryTag,
+      setDietaryTags: state.setDietaryTags,
+      clearFilters: state.clearFilters,
+    }))
+  );
   const { user } = useUser();
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
