@@ -57,6 +57,7 @@ export function PaymentMethodSelector({
           <Pressable
             key={method.id}
             onPress={() => !method.disabled && onSelect(method.id)}
+            disabled={method.disabled}
             style={{ minHeight: 64 }}
             className={`p-4 rounded-2xl border ${
               method.disabled
@@ -65,6 +66,19 @@ export function PaymentMethodSelector({
                   ? "border-brand-green bg-[#F0FDF4]"
                   : "border-border-subtle bg-surface-card shadow-soft-lift"
             }`}
+            accessibilityRole="radio"
+            accessibilityLabel={`${method.label}, ${method.description}${
+              method.disabled ? `, ${method.disabledLabel}` : ""
+            }`}
+            accessibilityHint={
+              method.disabled
+                ? "Este método de pago todavía no está disponible"
+                : "Selecciona este método de pago"
+            }
+            accessibilityState={{
+              selected: selected === method.id,
+              disabled: method.disabled,
+            }}
           >
             <HStack className="items-center justify-between">
               <HStack className="flex-1 items-center">

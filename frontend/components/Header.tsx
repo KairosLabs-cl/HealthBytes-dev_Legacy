@@ -83,6 +83,7 @@ export function Header({
             className="mr-2 p-1"
             accessibilityLabel="Volver"
             accessibilityRole="button"
+            hitSlop={10}
           >
             <ArrowLeft size={24} color={colors.ink.primary} />
           </Pressable>
@@ -102,6 +103,7 @@ export function Header({
           onPress={handleSearchSubmit}
           accessibilityLabel="Buscar"
           accessibilityRole="button"
+          hitSlop={12}
         >
           <Search size={20} color={colors.ink.muted} />
         </Pressable>
@@ -122,6 +124,7 @@ export function Header({
             className="ml-2"
             accessibilityLabel="Limpiar búsqueda"
             accessibilityRole="button"
+            hitSlop={12}
           >
             <X size={20} color={colors.ink.muted} />
           </Pressable>
