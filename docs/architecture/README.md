@@ -6,6 +6,7 @@ Comprende cómo está construido HealthBytes y por qué tomamos estas decisiones
 
 ### 📄 Documentos de Arquitectura
 
+- **[architecture.md](./architecture.md)** - Arquitectura del sistema, componentes y flujos principales
 - **[API_DESIGN_ANALYSIS.md](./API_DESIGN_ANALYSIS.md)** - Análisis completo del diseño REST API
   - Problemas identificados y soluciones
   - Recomendaciones prioritizadas (crítico, importante, nice-to-have)
