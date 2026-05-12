@@ -327,7 +327,7 @@ export default function ProductDetailsScreen() {
           triggerFlyAnimation(x + w / 2, y + h / 2);
         }
       );
-    } catch (err) {
+    } catch {
       Alert.alert(
         "Error",
         "No se pudo agregar al carrito. Intenta nuevamente."
@@ -580,7 +580,7 @@ export default function ProductDetailsScreen() {
                     </View>
                   </Animated.View>
                 );
-              } catch (e) {
+              } catch {
                 return null;
               }
             })()}

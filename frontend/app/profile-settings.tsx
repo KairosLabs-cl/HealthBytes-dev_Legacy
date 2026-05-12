@@ -2,10 +2,8 @@
 import { AuthGate } from "@/components/AuthGate";
 import { ScrollView, View, Image } from "react-native";
 import { Stack } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Text } from "@/components/ui/text";
-import { Icon } from "@/components/ui/icon";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Input, InputField } from "@/components/ui/input";
 import { useUser } from "@clerk/clerk-expo";

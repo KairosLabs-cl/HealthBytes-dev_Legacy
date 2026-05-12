@@ -58,9 +58,15 @@ pnpm start
 ```
 
 The frontend supports three modes:
-- **Web**: `pnpm start --web` (use localhost)
+- **Web**: `pnpm exec expo start --web --port 8083` (use localhost)
 - **Expo Go**: `pnpm start` (uses your local IP)
 - **Both**: Recommended for testing on multiple devices
+
+For Expo SDK 54, pass the web port directly to Expo. Avoid `pnpm web -- --port 8083`,
+which forwards an extra `--` and is not the intended CLI shape. In restricted
+sandboxes, local port binding can fail before Expo starts and surface as
+`ERR_SOCKET_BAD_PORT` from `freeport-async`; verify from a normal terminal before
+treating it as a project dependency issue.
 
 ### Database
 
@@ -89,7 +95,7 @@ docker run --name healthbytes-postgres \
 | Command | Description |
 |---------|-------------|
 | `pnpm start` | Start Expo dev server |
-| `pnpm start --web` | Start for web platform |
+| `pnpm exec expo start --web --port 8083` | Start for web platform |
 | `pnpm start --android` | Start for Android |
 | `pnpm start --ios` | Start for iOS |
 | `pnpm type-check` | Run TypeScript type checking |

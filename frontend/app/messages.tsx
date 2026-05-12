@@ -1,15 +1,12 @@
 import { AuthGate } from "@/components/AuthGate";
 import { View, ScrollView } from "react-native";
-import { Stack, useRouter } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Text } from "@/components/ui/text";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { MessageSquare, Inbox, Bell } from "lucide-react-native";
 
 export default function MessagesScreen() {
-  const router = useRouter();
-
   return (
     <AuthGate message="Inicia sesión para ver tus mensajes.">
       <View className="flex-1 bg-white">

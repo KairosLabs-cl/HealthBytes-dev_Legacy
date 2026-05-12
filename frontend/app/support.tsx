@@ -1,7 +1,6 @@
 import { AuthGate } from "@/components/AuthGate";
 import { View, ScrollView, Pressable, Linking } from "react-native";
-import { Stack, useRouter } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Text } from "@/components/ui/text";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
@@ -13,8 +12,6 @@ import {
 } from "lucide-react-native";
 
 export default function SupportScreen() {
-  const router = useRouter();
-
   const handleEmailPress = () => {
     Linking.openURL("mailto:healthbytes@gmail.com");
   };

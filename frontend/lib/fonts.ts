@@ -18,7 +18,7 @@ const fonts = {
 
 // Font loading - non-blocking
 export function useAppFonts() {
-  const [fontsLoaded, error] = Font.useFonts({
+  const [, error] = Font.useFonts({
     Fraunces: fonts.fraunces,
     PlusJakartaSans: fonts.plusJakarta,
   });

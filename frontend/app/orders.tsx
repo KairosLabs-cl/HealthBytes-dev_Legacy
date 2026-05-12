@@ -20,10 +20,7 @@ import {
   View,
 } from "react-native";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function OrdersScreen() {
   const router = useRouter();

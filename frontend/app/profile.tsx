@@ -19,7 +19,6 @@ import {
   User as UserIcon,
 } from "lucide-react-native";
 import { Image, Pressable, ScrollView, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 
 const orderStatuses = [
