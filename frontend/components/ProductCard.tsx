@@ -449,6 +449,7 @@ function ProductCard({
                   : `Agregar ${product.name} al carrito`
               }
               accessibilityState={{ disabled: isOutOfStock }}
+              hitSlop={4}
               style={{
                 width: "100%",
                 paddingVertical: 7,

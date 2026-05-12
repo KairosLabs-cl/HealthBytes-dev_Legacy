@@ -145,6 +145,7 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
               : `Agregar ${product.name} al carrito`
           }
           accessibilityState={{ disabled: isOutOfStock }}
+          hitSlop={4}
           style={{
             flexDirection: "row",
             alignItems: "center",

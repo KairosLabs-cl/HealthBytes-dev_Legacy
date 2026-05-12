@@ -265,9 +265,13 @@ export default function ProductDetailsScreen() {
     enabled: !!id,
   });
 
+  const [showAllReviews, setShowAllReviews] = useState(false);
+  const reviewLimit =
+    showAllReviews && rating?.review_count ? rating.review_count : 5;
+
   const { data: reviews, refetch: refetchReviews } = useQuery({
-    queryKey: ["product-reviews", id],
-    queryFn: () => getProductReviews(Number(id), 0, 5),
+    queryKey: ["product-reviews", id, reviewLimit],
+    queryFn: () => getProductReviews(Number(id), 0, reviewLimit),
     enabled: !!id,
   });
 
@@ -660,7 +664,7 @@ export default function ProductDetailsScreen() {
 
             {rating && rating.review_count > 0 ? (
               <>
-                {reviews?.slice(0, 5).map((review: Review) => (
+                {reviews?.map((review: Review) => (
                   <ReviewCard
                     key={review.id}
                     userName={review.user_name || "Usuario"}
@@ -671,8 +675,15 @@ export default function ProductDetailsScreen() {
                   />
                 ))}
 
-                {rating.review_count > 5 && (
-                  <Pressable className="mt-2 py-3">
+                {rating.review_count > 5 && !showAllReviews && (
+                  <Pressable
+                    onPress={() => setShowAllReviews(true)}
+                    className="mt-2 py-3"
+                    accessibilityRole="button"
+                    accessibilityLabel={`Ver todas las ${rating.review_count} reseñas`}
+                    accessibilityHint="Muestra todas las reseñas disponibles en esta pantalla"
+                    accessibilityState={{ expanded: false }}
+                  >
                     <Text className="text-green-600 text-center font-semibold">
                       Ver las {rating.review_count} reseñas
                     </Text>

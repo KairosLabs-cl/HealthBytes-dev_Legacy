@@ -77,7 +77,9 @@ const CartItem = ({
             onPress={() => onDecrement(item.product.id)}
             disabled={isUpdating || isRemoving}
             accessibilityRole="button"
-            accessibilityLabel="Disminuir cantidad"
+            accessibilityLabel={`Disminuir cantidad de ${item.product.name}`}
+            accessibilityState={{ disabled: isUpdating || isRemoving }}
+            hitSlop={6}
             className={`w-8 h-8 rounded-full items-center justify-center ${
               isUpdating || isRemoving
                 ? "bg-ink opacity-40"
@@ -111,7 +113,11 @@ const CartItem = ({
             onPress={() => onIncrement(item.product)}
             disabled={isAdding || isUpdating || isRemoving}
             accessibilityRole="button"
-            accessibilityLabel="Aumentar cantidad"
+            accessibilityLabel={`Aumentar cantidad de ${item.product.name}`}
+            accessibilityState={{
+              disabled: isAdding || isUpdating || isRemoving,
+            }}
+            hitSlop={6}
             className={`w-8 h-8 rounded-full items-center justify-center ${
               isAdding || isUpdating || isRemoving
                 ? "bg-ink opacity-40"
@@ -131,6 +137,10 @@ const CartItem = ({
           <Pressable
             onPress={() => onRemove(item.product.id)}
             disabled={isRemoving}
+            accessibilityRole="button"
+            accessibilityLabel={`Eliminar ${item.product.name} del carrito`}
+            accessibilityState={{ disabled: isRemoving }}
+            hitSlop={6}
             className={`w-8 h-8 rounded-full items-center justify-center transition-colors ${
               isRemoving
                 ? "bg-surface-muted opacity-40"

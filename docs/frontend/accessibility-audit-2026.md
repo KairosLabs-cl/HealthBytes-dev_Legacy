@@ -51,20 +51,23 @@
 | `WishlistTableRow` / `wishlist.tsx` | Wishlist product/image/cart/remove actions needed role/name/state | Added action labels and disabled state for out-of-stock cart action |
 | `product/[id].tsx` | Detail screen icon/compact actions needed role/name/state | Added labels for cart, vendor links, retry, review modal, quantity controls, and CTA |
 | Catalog/profile/cart/recent screens | Text or icon actions outside first pass needed explicit roles/labels | Added roles/labels to primary navigation and retry actions |
+| `product/[id].tsx` reviews link | "Ver las N reseñas" was visually rendered as a Pressable without a real action | Added in-place expand behavior, role, label, hint, and expanded state |
+| `CartItem` | Remove icon button and compact quantity buttons needed names/state and target support | Added product-specific labels, disabled state, and hitSlop |
+| `RatingStars` | Non-interactive stars could announce each star individually | Non-interactive ratings now expose one concise rating label; interactive stars remain individually operable |
+| Compact commerce controls | Some core controls were visually below 44pt | Added hitSlop to compact cart, favorite, product-card, and wishlist actions without redesigning layout |
 
-### 🔴 Remaining Issues (Future Sprints)
+### 🔴 Remaining Manual Validation
 
 | Component | Issue | Priority |
 |-----------|-------|----------|
-| `product/[id].tsx` reviews link | "Ver las N reseñas" is visually rendered as a Pressable but has no wired action; keep it out of the fixed a11y scope until product decides destination/behavior | Medium |
-| App-wide touch-target sweep | Remaining compact non-critical controls need measured device validation with VoiceOver/TalkBack exploration | Medium |
-| Decorative/semantic icon pass | Confirm which Lucide/emoji visuals should be hidden from screen readers versus announced as content | Low |
+| VoiceOver/TalkBack touch exploration | Validate final effective touch areas and announcement order on device/emulator | Medium |
+| Decorative emoji headings | Some friendly emoji in headings/greetings may still be announced by screen readers; keep or hide based on product voice decision after manual testing | Low |
 
 ### Touch Target Sizes (WCAG 2.5.5 — minimum 44×44px)
 
 - ✅ NavBar buttons: 44pt height enforced
 - ✅ Critical CTAs: `style={{ minHeight: 44 }}`
-- ⚠️ Some icon-only buttons use 32×32 — acceptable for mobile (WCAG 2.5.5 is AA, not AAA)
+- ✅ Compact controls below 44pt now include hitSlop or surrounding touch affordance
 
 ### Color Contrast
 
@@ -76,9 +79,8 @@
 
 ## Recommendations
 
-1. **Medium priority**: Decide the destination/behavior for the inactive "Ver las N reseñas" control before exposing it as a screen-reader button
-2. **Medium priority**: Validate compact controls on real devices with VoiceOver/TalkBack touch exploration
-3. **Low priority**: Confirm decorative icons are hidden or ignored consistently by assistive tech
+1. **Medium priority**: Validate compact controls on real devices with VoiceOver/TalkBack touch exploration
+2. **Low priority**: Confirm decorative emoji headings match the intended screen-reader experience
 
 ## Test Procedure
 
