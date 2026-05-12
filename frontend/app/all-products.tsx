@@ -60,7 +60,7 @@ export default function AllProductsScreen() {
         <ProductCard product={item} width="full" />
       </View>
     ),
-    [numColumns]
+    []
   );
 
   const listHeader = useMemo(

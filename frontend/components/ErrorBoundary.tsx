@@ -19,10 +19,6 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo): void {
-    if (__DEV__) {
-      console.error("[ErrorBoundary] Error no manejado:", error.message);
-      console.error("[ErrorBoundary] Stack:", info.componentStack);
-    }
     Sentry.captureException(error, {
       extra: { componentStack: info.componentStack },
     });

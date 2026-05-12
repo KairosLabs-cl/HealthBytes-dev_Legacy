@@ -78,13 +78,11 @@ export function usePushNotifications() {
         finalStatus = status;
       }
       if (finalStatus !== "granted") {
-        console.warn("Failed to get push token for push notification!");
         return;
       }
 
       const projectId = getEasProjectId();
       if (!projectId) {
-        console.warn("Missing EAS projectId; push token registration skipped.");
         return;
       }
 
@@ -95,13 +93,10 @@ export function usePushNotifications() {
       ).data;
 
       if (!EXPO_PUSH_TOKEN_PATTERN.test(token)) {
-        console.warn("Expo returned an invalid push token format.");
         return;
       }
 
       setExpoPushToken(token);
-    } else {
-      console.warn("Must use physical device for Push Notifications");
     }
 
     return token;
@@ -117,8 +112,8 @@ export function usePushNotifications() {
             if (!jwt) return;
 
             await updatePushToken(jwt, token);
-          } catch (error) {
-            console.error("Error enviando push token al backend", error);
+          } catch {
+            // Push token sync is best-effort.
           }
         }
       });

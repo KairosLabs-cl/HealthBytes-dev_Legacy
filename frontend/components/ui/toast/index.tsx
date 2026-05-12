@@ -1,13 +1,12 @@
 "use client";
 import React from "react";
 import { createToast, createToastHook } from "@gluestack-ui/toast";
-import { Text, View, Platform, Pressable } from "react-native";
+import { Text, View } from "react-native";
 import { tva } from "@gluestack-ui/nativewind-utils/tva";
 import {
   withStyleContext,
   useStyleContext,
 } from "@gluestack-ui/nativewind-utils/withStyleContext";
-import { cssInterop } from "nativewind";
 import type { VariantProps } from "@gluestack-ui/nativewind-utils";
 
 // Dummy animation components since @gluestack-ui/overlay exports were missing

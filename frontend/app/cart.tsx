@@ -12,7 +12,7 @@ import { CartItem as CartItemType } from "@/types/cart";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { Stack, useRouter } from "expo-router";
 import { ShoppingBag } from "lucide-react-native";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import { FlatList, Pressable, View } from "react-native";
 import { useShallow } from "zustand/react/shallow";
 

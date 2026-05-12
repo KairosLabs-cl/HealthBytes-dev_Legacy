@@ -1,12 +1,11 @@
 /// <reference types="nativewind/types" />
 import { AuthGate } from "@/components/AuthGate";
 import { ActivityIndicator, Pressable, ScrollView, View } from "react-native";
-import { Stack, useRouter } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Text } from "@/components/ui/text";
 import { Input, InputField } from "@/components/ui/input";
-import { useAuth, useUser } from "@clerk/clerk-expo";
+import { useAuth } from "@clerk/clerk-expo";
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
   MapPin,
@@ -26,8 +25,6 @@ import { useAddress } from "@/store/addressStore";
 import Animated, { FadeInUp, FadeIn, Layout } from "react-native-reanimated";
 
 export default function AddressesScreen() {
-  const router = useRouter();
-  const { user } = useUser();
   const { getToken } = useAuth();
   const scrollRef = useRef<ScrollView>(null);
 
@@ -38,7 +35,6 @@ export default function AddressesScreen() {
   const updateAddress = useAddress((state) => state.updateAddress);
   const deleteAddress = useAddress((state) => state.deleteAddress);
   const isStoreLoading = useAddress((state) => state.isLoading);
-  const storeError = useAddress((state) => state.error);
   const clearError = useAddress((state) => state.clearError);
 
   // Form state
@@ -62,12 +58,12 @@ export default function AddressesScreen() {
         if (token) {
           await fetchAddresses(token);
         }
-      } catch (err) {
-        if (__DEV__) console.error("Error loading addresses:", err);
+      } catch {
+        setLocalError("No se pudieron cargar las direcciones.");
       }
     };
     loadAddresses();
-  }, []);
+  }, [fetchAddresses, getToken]);
 
   const comunaSuggestions = useMemo(
     () => [
@@ -211,8 +207,8 @@ export default function AddressesScreen() {
       await deleteAddress(id, token);
       setSuccess("Dirección eliminada");
       setTimeout(() => setSuccess(null), 2000);
-    } catch (err) {
-      if (__DEV__) console.error("Delete error:", err);
+    } catch {
+      setLocalError("No se pudo eliminar la direccion.");
     }
   };
 

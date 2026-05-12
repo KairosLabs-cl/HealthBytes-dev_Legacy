@@ -37,7 +37,6 @@ export default function CheckoutV2Screen() {
 
   // Use specific selectors to prevent unnecessary re-renders when other store state changes
   const items = useCart((state) => state.items);
-  const resetCart = useCart((state) => state.resetCart);
   const subtotal = useCart(selectCartSubtotal);
 
   const addresses = useAddress((state) => state.addresses);
@@ -62,10 +61,8 @@ export default function CheckoutV2Screen() {
         if (token) {
           await fetchAddresses(token);
         }
-      } catch (error) {
-        if (__DEV__) {
-          console.error("Error cargando direcciones:", error);
-        }
+      } catch {
+        // Address list failure is surfaced by the address store.
       }
     };
     loadAddresses();
@@ -176,7 +173,6 @@ export default function CheckoutV2Screen() {
           },
         });
       } catch (error) {
-        if (__DEV__) console.error("❌ Error durante checkout:", error);
         setIsProcessing(false);
         Alert.alert(
           "Error",

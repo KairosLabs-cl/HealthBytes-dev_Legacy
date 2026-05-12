@@ -8,8 +8,7 @@ const createTokenCache = (): TokenCache => {
       try {
         const item = await SecureStore.getItemAsync(key);
         return item;
-      } catch (error) {
-        if (__DEV__) console.error("[CACHE] getToken() error:", error);
+      } catch {
         await SecureStore.deleteItemAsync(key);
         return null;
       }
@@ -19,7 +18,6 @@ const createTokenCache = (): TokenCache => {
         const result = await SecureStore.setItemAsync(key, value);
         return result;
       } catch (error) {
-        if (__DEV__) console.error("[CACHE] saveToken() error:", error);
         throw error;
       }
     },

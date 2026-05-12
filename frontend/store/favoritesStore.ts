@@ -21,8 +21,7 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
       set({ isLoading: true });
       const ids = await getFavoriteIds(token);
       set({ favoriteIds: new Set(ids), isLoading: false });
-    } catch (error) {
-      if (__DEV__) console.error("Error loading favorites:", error);
+    } catch {
       set({ isLoading: false });
     }
   },
@@ -47,8 +46,7 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
       } else {
         await addFavorite(productId, token);
       }
-    } catch (error) {
-      if (__DEV__) console.error("Error toggling favorite:", error);
+    } catch {
       // Rollback on error
       set({ favoriteIds });
     }

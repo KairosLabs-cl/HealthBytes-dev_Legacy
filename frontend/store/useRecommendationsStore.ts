@@ -19,7 +19,6 @@ export const useRecommendationsStore = create<RecommendationsState>((set) => ({
       const data = await getRecommendedProducts(token);
       set({ recommendedProducts: data, isLoading: false });
     } catch (error) {
-      console.error("Error fetching recommendations:", error);
       set({
         isLoading: false,
         error: error instanceof Error ? error.message : "Unknown error",

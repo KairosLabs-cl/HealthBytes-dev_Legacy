@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import * as cartApi from "@/api/cart";
-import { Alert } from "react-native";
 
 type Product = {
   id: string | number;
@@ -97,8 +96,7 @@ export const useCart = create<CartState>((set, get) => ({
       }));
 
       set({ items });
-    } catch (error) {
-      if (__DEV__) console.error("Failed to sync cart from server:", error);
+    } catch {
       set({ error: "No se pudo sincronizar el carrito." });
     }
   },
@@ -141,8 +139,7 @@ export const useCart = create<CartState>((set, get) => ({
         // No local items, just sync from server
         await get().syncWithServer();
       }
-    } catch (error) {
-      if (__DEV__) console.error("Failed to merge cart:", error);
+    } catch {
       set({ error: "No se pudo fusionar el carrito." });
       // Fallback: just sync from server
       await get().syncWithServer();
@@ -205,8 +202,7 @@ export const useCart = create<CartState>((set, get) => ({
     if (isAuthenticated && authToken) {
       try {
         await cartApi.addToCart(authToken, Number(product.id), 1);
-      } catch (error) {
-        if (__DEV__) console.error("Failed to sync add to server:", error);
+      } catch {
         // Rollback: re-fetch actual server state instead of restoring stale snapshot
         await get().syncWithServer();
         set({
@@ -228,7 +224,7 @@ export const useCart = create<CartState>((set, get) => ({
    * Update product quantity directly
    */
   updateQuantity: async (productId: string | number, newQuantity: number) => {
-    const { isAuthenticated, authToken, items, updatingProducts } = get();
+    const { isAuthenticated, authToken, updatingProducts } = get();
 
     // Prevent multiple simultaneous updates of the same product
     if (updatingProducts.has(productId)) {
@@ -259,9 +255,7 @@ export const useCart = create<CartState>((set, get) => ({
     if (isAuthenticated && authToken) {
       try {
         await cartApi.updateCartItem(authToken, Number(productId), newQuantity);
-      } catch (error) {
-        if (__DEV__)
-          console.error("Failed to sync quantity update to server:", error);
+      } catch {
         await get().syncWithServer();
         set({
           error:
@@ -327,9 +321,7 @@ export const useCart = create<CartState>((set, get) => ({
         } else {
           await cartApi.removeFromCart(authToken, Number(productId));
         }
-      } catch (error) {
-        if (__DEV__)
-          console.error("Failed to sync decrement to server:", error);
+      } catch {
         await get().syncWithServer();
         set({
           error:
@@ -350,12 +342,7 @@ export const useCart = create<CartState>((set, get) => ({
    * Remove product from cart
    */
   removeProduct: async (productId: string | number) => {
-    const {
-      isAuthenticated,
-      authToken,
-      items: previousItems,
-      removingProducts,
-    } = get();
+    const { isAuthenticated, authToken, removingProducts } = get();
 
     // Prevent multiple simultaneous removes of the same product
     if (removingProducts.has(productId)) {
@@ -376,8 +363,7 @@ export const useCart = create<CartState>((set, get) => ({
     if (isAuthenticated && authToken) {
       try {
         await cartApi.removeFromCart(authToken, Number(productId));
-      } catch (error) {
-        if (__DEV__) console.error("Failed to sync remove to server:", error);
+      } catch {
         await get().syncWithServer();
         set({
           error: "No se pudo eliminar el producto. Por favor intenta de nuevo.",
@@ -406,8 +392,7 @@ export const useCart = create<CartState>((set, get) => ({
     if (isAuthenticated && authToken) {
       try {
         await cartApi.clearCart(authToken);
-      } catch (error) {
-        if (__DEV__) console.error("Failed to clear cart on server:", error);
+      } catch {
         // Rollback to previous state
         set({
           items: previousItems,

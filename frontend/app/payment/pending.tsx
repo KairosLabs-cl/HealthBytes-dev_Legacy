@@ -48,10 +48,8 @@ export default function PaymentPendingScreen() {
         });
         return;
       }
-    } catch (error) {
-      if (__DEV__) {
-        console.error("Error checking order status:", error);
-      }
+    } catch {
+      // Keep polling until the payment provider reports a final state.
     } finally {
       setIsChecking(false);
     }
