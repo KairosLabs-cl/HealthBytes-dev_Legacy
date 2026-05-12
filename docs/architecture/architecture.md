@@ -71,7 +71,7 @@ graph TD
 ### Typical API Request Flow
 
 1. **Client Request**: Mobile app sends HTTP request with Authorization header
-2. **Middleware Stack**: 
+2. **Middleware Stack**:
    - CORS validation
    - Rate limiting (SlowAPI with Redis storage)
    - Body size validation
@@ -87,7 +87,7 @@ graph TD
 
 #### Product Search
 ```
-User Input → search.tsx → GET /products?search=... 
+User Input → search.tsx → GET /products?search=...
 → product_service.search_products() → PostgreSQL FTS
 → ProductResponse → Zustand store → UI Update
 ```
