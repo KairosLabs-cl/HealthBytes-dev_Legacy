@@ -5,19 +5,19 @@
 
 | Criterion | Status | Notes |
 |-----------|--------|-------|
-| 1.1.1 Non-text Content | ⚠️ Partial | Icons need alt text via accessibilityLabel |
+| 1.1.1 Non-text Content | ⚠️ Partial | Primary audited icon controls are labeled; broader app pass remains |
 | 1.3.1 Info and Relationships | ✅ Pass | Semantic roles used (button, image, etc.) |
 | 1.4.3 Contrast (Minimum) | ✅ Pass | ink-primary (#2D2926) on white: ~14:1 |
 | 1.4.4 Resize Text | ✅ Pass | Uses sp-equivalent units |
 | 2.1.1 Keyboard (Tab nav) | N/A | Mobile app — touch only |
 | 2.4.3 Focus Order | ✅ Pass | Screen reader order follows visual order |
-| 2.4.6 Headings and Labels | ⚠️ Partial | Some inputs missing accessibilityLabel |
+| 2.4.6 Headings and Labels | ✅ Pass | Audited product, checkout, and search controls have accessible labels |
 | 2.5.3 Label in Name | ✅ Pass | Buttons with text have matching accessible names |
 | 2.5.5 Target Size | ✅ Pass | Critical buttons use `minHeight: 44` |
 | 3.1.1 Language of Page | ✅ Pass | `web.lang: "es"` in app.json |
-| 4.1.2 Name, Role, Value | ⚠️ Partial | See component findings below |
+| 4.1.2 Name, Role, Value | ⚠️ Partial | Audited controls fixed; broader app pass remains |
 
-**Overall: 7/11 criteria fully met, 3 partially met, 1 N/A**
+**Overall: 8/11 criteria fully met, 2 partially met, 1 N/A**
 
 ---
 
@@ -38,17 +38,21 @@
 |-----------|-------|-------------|
 | `CartItem` | Decrement/Increment Pressables had no labels | Added `accessibilityRole="button"` + `accessibilityLabel` |
 | `CartItem` | TextInput had no `accessibilityLabel` | Added `accessibilityLabel="Cantidad"` |
+| `DiscountsBar` | "Ver mas" and product tap path needed explicit names/roles | Added section action label; shared product card now exposes role + action label |
+| `RecommendationsBar` | Product tap path needed explicit name/role | Shared horizontal product card path now exposes role + action label |
+| `HorizontalProductCard` / `ProductCard` | Tappable product wrapper lacked button role and action-oriented label | Added `accessibilityRole="button"` and stable "Ver detalles de..." label |
+| `ProductCard` | Add-to-cart control did not expose role/state consistently | Added button role and disabled state |
+| `checkout-v2.tsx` | Checkout controls needed clearer labels and selected state verification | Address radios include label/hint/state; bottom actions have step-specific labels |
+| `PaymentMethodSelector` | Payment choices needed role/label/selected and disabled state | Added radio role, label, hint, selected state, and disabled state |
+| `Header` / `search.tsx` | Search input needed hint verification and icon-only controls needed labels/touch support | Search input has label + hint; search/clear/back icon controls have labels and hitSlop; search screen actions have button labels |
 
 ### 🔴 Remaining Issues (Future Sprints)
 
 | Component | Issue | Priority |
 |-----------|-------|----------|
-| `DiscountsBar` | Product tap has no accessibilityLabel | Medium |
-| `RecommendationsBar` | Product tap has no accessibilityLabel | Medium |
-| `checkout-v2.tsx` | Form inputs lack accessibilityLabel | High |
-| `search.tsx` | Search input lacks `accessibilityHint` | Medium |
-| `HorizontalProductCard` | Pressable wrapper lacks label | Medium |
-| Various icon-only buttons | Lucide icons need aria-label equivalent | Medium |
+| App-wide icon-only button sweep | Some screens outside this scope still contain icon-only or compact Pressables that need label/state review (`orders`, `product/[id]`, wishlist/profile surfaces) | Medium |
+| App-wide touch-target sweep | Some compact non-critical controls may still be below 44×44 and need measured device validation | Medium |
+| Decorative/semantic icon pass | Confirm which Lucide/emoji visuals should be hidden from screen readers versus announced as content | Low |
 
 ### Touch Target Sizes (WCAG 2.5.5 — minimum 44×44px)
 
@@ -66,9 +70,9 @@
 
 ## Recommendations
 
-1. **High priority**: Add `accessibilityLabel` to all form inputs in checkout flow
-2. **Medium priority**: Add `accessibilityLabel` to all product card tappable areas
-3. **Low priority**: Consider `accessibilityHint` for actions that aren't self-explanatory
+1. **Medium priority**: Complete app-wide icon-only button sweep outside the audited checkout/search/product-card path
+2. **Medium priority**: Validate compact controls on real devices with VoiceOver/TalkBack touch exploration
+3. **Low priority**: Add hints only where labels do not make the result obvious
 
 ## Test Procedure
 
