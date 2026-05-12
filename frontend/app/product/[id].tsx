@@ -369,6 +369,8 @@ export default function ProductDetailsScreen() {
             onPress={() => refetch()}
             className="flex-row items-center gap-2 bg-black px-6 py-3 rounded-full"
             style={{ minHeight: 44 }}
+            accessibilityRole="button"
+            accessibilityLabel="Reintentar cargar producto"
           >
             <RefreshCw size={18} color="white" />
             <Text className="text-white font-bold">Reintentar</Text>
@@ -411,6 +413,12 @@ export default function ProductDetailsScreen() {
         <Pressable
           onPress={() => router.push("/cart")}
           className="bg-black p-3 rounded-full"
+          accessibilityRole="button"
+          accessibilityLabel={
+            cartItemCount > 0
+              ? `Ver carrito, ${cartItemCount} producto${cartItemCount !== 1 ? "s" : ""}`
+              : "Ver carrito"
+          }
           style={{
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 4 },
@@ -470,6 +478,8 @@ export default function ProductDetailsScreen() {
                   )
                 }
                 className="flex-row items-center py-1 active:opacity-70"
+                accessibilityRole="button"
+                accessibilityLabel={`Ver productos de ${product.vendor_name}`}
               >
                 <Store size={14} color="#166534" style={{ marginRight: 6 }} />
                 <Text className="text-green-800 font-semibold text-sm">
@@ -602,6 +612,8 @@ export default function ProductDetailsScreen() {
                     )
                   }
                   className="flex-row items-center bg-gray-50 px-3 py-1.5 rounded-full active:bg-gray-100"
+                  accessibilityRole="button"
+                  accessibilityLabel={`Ver tienda de ${product.vendor_name}`}
                 >
                   <Text className="text-sm font-bold text-gray-700 mr-1">
                     Ver tienda
@@ -679,6 +691,8 @@ export default function ProductDetailsScreen() {
             <Pressable
               onPress={() => setReviewModalVisible(true)}
               className="mt-4 bg-green-600 py-3.5 rounded-xl shadow-sm"
+              accessibilityRole="button"
+              accessibilityLabel={`Escribir una reseña de ${product.name}`}
             >
               <Text className="text-white text-center font-bold">
                 Escribir una reseña
@@ -721,6 +735,8 @@ export default function ProductDetailsScreen() {
                 onPress={handleDecrement}
                 className="w-11 h-12 items-center justify-center active:bg-gray-200"
                 style={{ minWidth: 44 }}
+                accessibilityRole="button"
+                accessibilityLabel={`Quitar una unidad de ${product.name}`}
               >
                 <Minus size={16} color="#111827" />
               </Pressable>
@@ -732,6 +748,9 @@ export default function ProductDetailsScreen() {
                 disabled={!canAddMore}
                 className="w-11 h-12 items-center justify-center active:bg-gray-200"
                 style={{ minWidth: 44 }}
+                accessibilityRole="button"
+                accessibilityLabel={`Agregar una unidad de ${product.name}`}
+                accessibilityState={{ disabled: !canAddMore }}
               >
                 <Plus size={16} color={canAddMore ? "#111827" : "#D1D5DB"} />
               </Pressable>
@@ -748,6 +767,13 @@ export default function ProductDetailsScreen() {
                 canAddMore ? "bg-black active:opacity-80" : "bg-gray-300"
               }`}
               style={{ minHeight: 48 }}
+              accessibilityRole="button"
+              accessibilityLabel={
+                canAddMore
+                  ? `${ctaLabel()} ${product.name}`
+                  : `${product.name}: ${ctaLabel()}`
+              }
+              accessibilityState={{ disabled: !canAddMore }}
             >
               <ShoppingCart
                 size={18}

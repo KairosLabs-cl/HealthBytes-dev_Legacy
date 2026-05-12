@@ -146,6 +146,8 @@ export default function OrdersScreen() {
           <Button
             onPress={() => router.replace("/")}
             className="bg-black rounded-full"
+            accessibilityRole="button"
+            accessibilityLabel="Ver productos"
           >
             <ButtonText className="text-white">Ver productos</ButtonText>
           </Button>
@@ -172,6 +174,9 @@ export default function OrdersScreen() {
             key={f.id}
             onPress={() => handleFilterPress(f.id as OrderStatus)}
             style={{ minHeight: 44, justifyContent: "center" }}
+            accessibilityRole="button"
+            accessibilityLabel={`Filtrar órdenes: ${f.label}`}
+            accessibilityState={{ selected: selectedFilter === f.id }}
             className={`px-4 rounded-full border ${
               selectedFilter === f.id
                 ? "bg-black border-black"
@@ -212,6 +217,8 @@ export default function OrdersScreen() {
               onPress={clearError}
               className="mt-2"
               style={{ minHeight: 44, justifyContent: "center" }}
+              accessibilityRole="button"
+              accessibilityLabel="Descartar error"
             >
               <Text className="text-red-600 font-semibold text-sm">
                 Descartar
@@ -243,6 +250,8 @@ export default function OrdersScreen() {
             onPress={() => handleFilterPress("all")}
             className="bg-black px-4 rounded-full"
             style={{ minHeight: 44, justifyContent: "center" }}
+            accessibilityRole="button"
+            accessibilityLabel="Ver todas las órdenes"
           >
             <Text className="text-white font-semibold">Ver todas</Text>
           </Pressable>
@@ -267,6 +276,11 @@ export default function OrdersScreen() {
           disabled={isLoadingMore}
           className="rounded-full border border-gray-200 items-center justify-center flex-row gap-2 active:bg-gray-50"
           style={{ minHeight: 48 }}
+          accessibilityRole="button"
+          accessibilityLabel={
+            isLoadingMore ? "Cargando más órdenes" : "Cargar más órdenes"
+          }
+          accessibilityState={{ disabled: isLoadingMore }}
         >
           {isLoadingMore ? (
             <ActivityIndicator size="small" color="#000" />

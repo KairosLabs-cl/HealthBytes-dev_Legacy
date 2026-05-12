@@ -5,7 +5,7 @@
 
 | Criterion | Status | Notes |
 |-----------|--------|-------|
-| 1.1.1 Non-text Content | ⚠️ Partial | Primary audited icon controls are labeled; broader app pass remains |
+| 1.1.1 Non-text Content | ✅ Pass | Audited icon-only controls now expose accessible names |
 | 1.3.1 Info and Relationships | ✅ Pass | Semantic roles used (button, image, etc.) |
 | 1.4.3 Contrast (Minimum) | ✅ Pass | ink-primary (#2D2926) on white: ~14:1 |
 | 1.4.4 Resize Text | ✅ Pass | Uses sp-equivalent units |
@@ -15,9 +15,9 @@
 | 2.5.3 Label in Name | ✅ Pass | Buttons with text have matching accessible names |
 | 2.5.5 Target Size | ✅ Pass | Critical buttons use `minHeight: 44` |
 | 3.1.1 Language of Page | ✅ Pass | `web.lang: "es"` in app.json |
-| 4.1.2 Name, Role, Value | ⚠️ Partial | Audited controls fixed; broader app pass remains |
+| 4.1.2 Name, Role, Value | ✅ Pass | Audited controls expose role, label, state, and hints where useful |
 
-**Overall: 8/11 criteria fully met, 2 partially met, 1 N/A**
+**Overall: 10/11 criteria fully met, 0 partially met, 1 N/A**
 
 ---
 
@@ -45,13 +45,19 @@
 | `checkout-v2.tsx` | Checkout controls needed clearer labels and selected state verification | Address radios include label/hint/state; bottom actions have step-specific labels |
 | `PaymentMethodSelector` | Payment choices needed role/label/selected and disabled state | Added radio role, label, hint, selected state, and disabled state |
 | `Header` / `search.tsx` | Search input needed hint verification and icon-only controls needed labels/touch support | Search input has label + hint; search/clear/back icon controls have labels and hitSlop; search screen actions have button labels |
+| `ScreenHeader` | Shared back icon button needed a stable accessible name | Added button role, `Volver` label, and hitSlop |
+| `AuthGate` | Login/catalog actions needed explicit role/label | Added button roles and labels |
+| `OrderListItem` / `orders.tsx` | Order rows, filters, error dismiss, and pagination needed role/name/state | Added button roles, descriptive labels, selected state, disabled state, and hints |
+| `WishlistTableRow` / `wishlist.tsx` | Wishlist product/image/cart/remove actions needed role/name/state | Added action labels and disabled state for out-of-stock cart action |
+| `product/[id].tsx` | Detail screen icon/compact actions needed role/name/state | Added labels for cart, vendor links, retry, review modal, quantity controls, and CTA |
+| Catalog/profile/cart/recent screens | Text or icon actions outside first pass needed explicit roles/labels | Added roles/labels to primary navigation and retry actions |
 
 ### 🔴 Remaining Issues (Future Sprints)
 
 | Component | Issue | Priority |
 |-----------|-------|----------|
-| App-wide icon-only button sweep | Some screens outside this scope still contain icon-only or compact Pressables that need label/state review (`orders`, `product/[id]`, wishlist/profile surfaces) | Medium |
-| App-wide touch-target sweep | Some compact non-critical controls may still be below 44×44 and need measured device validation | Medium |
+| `product/[id].tsx` reviews link | "Ver las N reseñas" is visually rendered as a Pressable but has no wired action; keep it out of the fixed a11y scope until product decides destination/behavior | Medium |
+| App-wide touch-target sweep | Remaining compact non-critical controls need measured device validation with VoiceOver/TalkBack exploration | Medium |
 | Decorative/semantic icon pass | Confirm which Lucide/emoji visuals should be hidden from screen readers versus announced as content | Low |
 
 ### Touch Target Sizes (WCAG 2.5.5 — minimum 44×44px)
@@ -70,9 +76,9 @@
 
 ## Recommendations
 
-1. **Medium priority**: Complete app-wide icon-only button sweep outside the audited checkout/search/product-card path
+1. **Medium priority**: Decide the destination/behavior for the inactive "Ver las N reseñas" control before exposing it as a screen-reader button
 2. **Medium priority**: Validate compact controls on real devices with VoiceOver/TalkBack touch exploration
-3. **Low priority**: Add hints only where labels do not make the result obvious
+3. **Low priority**: Confirm decorative icons are hidden or ignored consistently by assistive tech
 
 ## Test Procedure
 

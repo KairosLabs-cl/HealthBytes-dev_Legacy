@@ -80,6 +80,8 @@ export default function AllProductsScreen() {
             <Pressable
               onPress={clearFilters}
               style={{ minHeight: 44, justifyContent: "center" }}
+              accessibilityRole="button"
+              accessibilityLabel="Limpiar filtros"
             >
               <Text className="text-sm font-semibold text-green-600">
                 Limpiar
@@ -112,6 +114,8 @@ export default function AllProductsScreen() {
             onPress={() => refetch()}
             className="flex-row items-center gap-2 bg-black px-6 py-3 rounded-full"
             style={{ minHeight: 44 }}
+            accessibilityRole="button"
+            accessibilityLabel="Reintentar cargar productos"
           >
             <RefreshCw size={18} color="white" />
             <Text className="text-white font-bold">Reintentar</Text>
@@ -147,6 +151,8 @@ export default function AllProductsScreen() {
                       onPress={clearFilters}
                       className="mt-4 bg-black rounded-full px-6 py-3"
                       style={{ minHeight: 44 }}
+                      accessibilityRole="button"
+                      accessibilityLabel="Ver todos los productos"
                     >
                       <Text className="text-white font-semibold">
                         Ver todos
