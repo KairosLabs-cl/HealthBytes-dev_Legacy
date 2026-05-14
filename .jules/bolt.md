@@ -17,3 +17,7 @@
 ## 2026-05-05 - Zustand getState for One-Time Reads
 **Learning:** Subscribing to a Zustand store value (e.g., `usePreferencesStore((state) => state.value)`) when the value is only needed once on mount (e.g., inside an empty-dependency `useEffect`) causes the component to re-render unnecessarily on all future updates to that value.
 **Action:** Use `store.getState().value` inside the `useEffect` instead of the hook for one-time reads to prevent unnecessary component re-renders.
+
+## 2026-05-14 - Zustand useShallow batching overhead
+**Learning:** While batching Zustand selectors with `useShallow` is generally good practice to reduce subscriptions, doing it for a few primitive selectors in a top-level component (like `_layout.tsx`) is often a micro-optimization with zero measurable performance impact. In fact, the overhead of `useShallow` shallow-comparison might negate the tiny benefit of fewer hooks.
+**Action:** Avoid submitting PRs solely for micro-optimizations like grouping primitive Zustand selectors outside of heavy list renders, as it violates the 'measurable performance impact' rule.
