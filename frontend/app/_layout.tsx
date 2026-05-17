@@ -14,6 +14,7 @@ import { tokenCache } from "@/lib/cache";
 import { useAppFonts } from "@/lib/fonts";
 import { useCart } from "@/store/cartStore";
 import { useFavoritesStore } from "@/store/favoritesStore";
+import { useShallow } from "zustand/react/shallow";
 import { usePreferencesStore } from "@/store/preferencesStore";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import OnboardingModal from "@/components/OnboardingModal";
@@ -60,10 +61,14 @@ if (!publishableKey) {
 }
 
 function RootLayoutNav() {
-  const setAuth = useCart((state) => state.setAuth);
-  const mergeAndSync = useCart((state) => state.mergeAndSync);
-  const error = useCart((state) => state.error);
-  const clearError = useCart((state) => state.clearError);
+  const { setAuth, mergeAndSync, error, clearError } = useCart(
+    useShallow((state) => ({
+      setAuth: state.setAuth,
+      mergeAndSync: state.mergeAndSync,
+      error: state.error,
+      clearError: state.clearError,
+    }))
+  );
   const toast = useToast();
 
   const { isSignedIn, getToken } = useAuth();
