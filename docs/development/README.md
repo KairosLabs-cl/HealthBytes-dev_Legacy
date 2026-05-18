@@ -10,6 +10,10 @@ Documentación para el equipo de desarrollo de HealthBytes.
 - **[PROJECT_STATUS.md](./PROJECT_STATUS.md)** - Fuente de verdad unica: estado y roadmap del proyecto
 - **[HealthBytes_Architecture_Review.md](../architecture/HealthBytes_Architecture_Review.md)** - Estado técnico consolidado y plan de acción de arquitectura
 
+### Flujo de Desarrollo
+- **[development-guide.md](./development-guide.md)** - Setup local, comandos y flujo de contribución
+- **[testing.md](./testing.md)** - Infraestructura, comandos y convenciones de testing
+
 ### UI/UX
 - **[UIUX_ROADMAP.md](./UIUX_ROADMAP.md)** - Roadmap de mejoras UI/UX pendientes
 - **[UIUX_SYSTEM_OVERVIEW.md](./UIUX_SYSTEM_OVERVIEW.md)** - Overview del design system actual

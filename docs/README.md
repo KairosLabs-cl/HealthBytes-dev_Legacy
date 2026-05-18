@@ -9,10 +9,13 @@ Guías paso a paso para configurar el entorno de desarrollo:
 - **[frontend-setup.md](./setup/frontend-setup.md)** - Configuración del frontend
 - **[DOCKER_SETUP.md](./setup/DOCKER_SETUP.md)** - Configuración Docker
 - **[ANDROID_BUILD_GUIDE.md](./setup/ANDROID_BUILD_GUIDE.md)** - Build para Android
+- **[configuration.md](./setup/configuration.md)** - Variables de entorno y archivos de configuración
+- **[deployment.md](./setup/deployment.md)** - Guía de despliegue y rollback
 
 ### 🏗️ [architecture/](./architecture/) - Arquitectura y Decisiones
 Comprende cómo está construido HealthBytes:
 - **[README.md](./architecture/README.md)** - Estructura y decisiones técnicas
+- **[architecture.md](./architecture/architecture.md)** - Arquitectura del sistema y componentes
 - **[API_DESIGN_ANALYSIS.md](./architecture/API_DESIGN_ANALYSIS.md)** - Análisis completo del REST API
 - **[04_negocio.md](./architecture/04_negocio.md)** - Auditoría de lógica de negocio y resiliencia transaccional
 
@@ -30,6 +33,8 @@ Información sobre seguridad y mejoras implementadas:
 ### 👨‍💻 [development/](./development/) - Para Desarrolladores
 Guías para trabajar en el código:
 - **[PROJECT_STATUS.md](./development/PROJECT_STATUS.md)** - ⭐ Estado y roadmap centralizados (fuente de verdad)
+- **[development-guide.md](./development/development-guide.md)** - Setup, comandos y flujo de contribución
+- **[testing.md](./development/testing.md)** - Infraestructura y procedimientos de testing
 - **[UIUX_ROADMAP.md](./development/UIUX_ROADMAP.md)** - Roadmap UI/UX detallado
 - **[UIUX_SYSTEM_OVERVIEW.md](./development/UIUX_SYSTEM_OVERVIEW.md)** - Overview del design system
 - **[inspections/](./development/inspections/)** - Reportes de inspección de código
@@ -38,6 +43,7 @@ Guías para trabajar en el código:
 ### 📱 [frontend/](./frontend/) - Auditorías Frontend
 Reportes específicos de frontend y experiencia de usuario:
 - **[03_frontend.md](./frontend/03_frontend.md)** - Auditoría de cumplimiento y performance frontend
+- **[accessibility-audit-2026.md](./frontend/accessibility-audit-2026.md)** - Auditoría WCAG 2.2 AA de accesibilidad
 
 ### 🤖 [ia-tools/](./ia-tools/) - Prompts y Flujos Para Agentes
 Guías operativas para herramientas IA y revisión automatizada:

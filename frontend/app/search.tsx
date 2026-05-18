@@ -38,9 +38,7 @@ export default function SearchScreen() {
   const userName = user?.firstName || user?.fullName || "Usuario";
 
   const renderItem = useCallback(
-    ({ item }: { item: Product }) => (
-      <ProductListItem product={item} />
-    ),
+    ({ item }: { item: Product }) => <ProductListItem product={item} />,
     []
   );
 
@@ -107,40 +105,44 @@ export default function SearchScreen() {
           <ProductCardSkeleton />
         </View>
       </View>
-    </View>
+    </View>;
   }
 
   if (error) {
     return (
-    <View className="flex-1 bg-gray-50">
-      <Stack.Screen options={{ headerShown: false }} />
-      <ScreenHeader title="Búsqueda" icon={SearchIcon} showBackButton={true} />
-      <Header
-        userName={userName}
-        initialSearchTerm={searchTerm}
-        showBackButton={false}
-      />
-      <View className="flex-1 items-center justify-center px-6">
-        <Text className="text-red-500 text-base mb-4">
-          Error cargando resultados
-        </Text>
-        <Pressable
-          onPress={() => refetch()}
-          className="flex-row items-center gap-2 bg-black px-6 py-3 rounded-full mb-3"
-          style={{ minHeight: 44 }}
-        >
-          <RefreshCw size={18} color="white" />
-          <Text className="text-white font-bold">Reintentar</Text>
-        </Pressable>
-        <Pressable
-          onPress={() => router.push("/")}
-          className="px-6 py-3 rounded-full"
-          style={{ minHeight: 44 }}
-        >
-          <Text className="text-gray-600 font-bold">Volver al inicio</Text>
-        </Pressable>
+      <View className="flex-1 bg-gray-50">
+        <Stack.Screen options={{ headerShown: false }} />
+        <ScreenHeader
+          title="Búsqueda"
+          icon={SearchIcon}
+          showBackButton={true}
+        />
+        <Header
+          userName={userName}
+          initialSearchTerm={searchTerm}
+          showBackButton={false}
+        />
+        <View className="flex-1 items-center justify-center px-6">
+          <Text className="text-red-500 text-base mb-4">
+            Error cargando resultados
+          </Text>
+          <Pressable
+            onPress={() => refetch()}
+            className="flex-row items-center gap-2 bg-black px-6 py-3 rounded-full mb-3"
+            style={{ minHeight: 44 }}
+          >
+            <RefreshCw size={18} color="white" />
+            <Text className="text-white font-bold">Reintentar</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push("/")}
+            className="px-6 py-3 rounded-full"
+            style={{ minHeight: 44 }}
+          >
+            <Text className="text-gray-600 font-bold">Volver al inicio</Text>
+          </Pressable>
+        </View>
       </View>
-    </View>
     );
   }
 

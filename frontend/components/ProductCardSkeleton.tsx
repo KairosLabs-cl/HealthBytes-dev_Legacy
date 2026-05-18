@@ -27,7 +27,7 @@ function ProductCardSkeleton({ shimmerStyle }: Props) {
       -1,
       true
     );
-  }, [shimmerStyle]);
+  }, [localOpacity, shimmerStyle]);
 
   const localAnimatedStyle = useAnimatedStyle(() => ({
     opacity: localOpacity.value,
@@ -86,7 +86,7 @@ export function useShimmerStyle() {
       -1,
       true
     );
-  }, []);
+  }, [opacity]);
 
   const shimmerStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,

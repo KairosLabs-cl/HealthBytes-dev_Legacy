@@ -1,4 +1,4 @@
-# Accessibility Audit — WCAG 2.2 Level AA
+# Accessibility Audit - WCAG 2.2 Level AA
 **Date:** Mayo 2026 | **Auditor:** Automated Review
 
 ## Summary

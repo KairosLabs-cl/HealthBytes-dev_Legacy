@@ -5,9 +5,27 @@ from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security import get_password_hash, verify_password, verify_password_mock
+from app.core.security import (
+    create_access_token,
+    get_password_hash,
+    verify_password,
+    verify_password_mock,
+)
 from app.db.schemas import User
-from app.schemas.user import UserCreate
+from app.schemas.user import UserCreate, UserLogin, UserResponse, UserWithToken
+
+
+def build_user_token_response(user: User) -> UserWithToken:
+    """Build the auth response payload without exposing password data."""
+    token = create_access_token({"userId": user.id, "role": user.role})
+    user_response = UserResponse(
+        id=user.id,
+        email=user.email,
+        role=user.role,
+        name=user.name,
+        address=user.address,
+    )
+    return UserWithToken(user=user_response, token=token)
 
 
 async def register_user(db: AsyncSession, user_in: UserCreate) -> User:
@@ -36,7 +54,11 @@ async def register_user(db: AsyncSession, user_in: UserCreate) -> User:
     # Create user with hashed password
     hashed_password = get_password_hash(user_in.password)
     db_user = User(
-        email=user_in.email, password=hashed_password, role=getattr(user_in, "role", "customer")
+        email=user_in.email,
+        password=hashed_password,
+        name=user_in.name,
+        address=user_in.address,
+        role="user",
     )
 
     db.add(db_user)
@@ -71,6 +93,20 @@ async def login_user(db: AsyncSession, email: str, password: str) -> Optional[Us
         return None
 
     return user
+
+
+async def register_with_token(db: AsyncSession, user_in: UserCreate) -> UserWithToken:
+    """Register a user and return the API auth payload."""
+    user = await register_user(db, user_in)
+    return build_user_token_response(user)
+
+
+async def login_with_token(db: AsyncSession, credentials: UserLogin) -> Optional[UserWithToken]:
+    """Authenticate a user and return the API auth payload when valid."""
+    user = await login_user(db, credentials.email, credentials.password)
+    if not user:
+        return None
+    return build_user_token_response(user)
 
 
 async def get_user_by_email(db: AsyncSession, email: str) -> Optional[User]:

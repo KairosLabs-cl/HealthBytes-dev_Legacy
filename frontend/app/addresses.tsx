@@ -1,12 +1,11 @@
 /// <reference types="nativewind/types" />
 import { AuthGate } from "@/components/AuthGate";
 import { ActivityIndicator, Pressable, ScrollView, View } from "react-native";
-import { Stack, useRouter } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Text } from "@/components/ui/text";
 import { Input, InputField } from "@/components/ui/input";
-import { useAuth, useUser } from "@clerk/clerk-expo";
+import { useAuth } from "@clerk/clerk-expo";
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
   MapPin,
@@ -26,8 +25,6 @@ import { useAddress } from "@/store/addressStore";
 import Animated, { FadeInUp, FadeIn, Layout } from "react-native-reanimated";
 
 export default function AddressesScreen() {
-  const router = useRouter();
-  const { user } = useUser();
   const { getToken } = useAuth();
   const scrollRef = useRef<ScrollView>(null);
 
@@ -38,7 +35,6 @@ export default function AddressesScreen() {
   const updateAddress = useAddress((state) => state.updateAddress);
   const deleteAddress = useAddress((state) => state.deleteAddress);
   const isStoreLoading = useAddress((state) => state.isLoading);
-  const storeError = useAddress((state) => state.error);
   const clearError = useAddress((state) => state.clearError);
 
   // Form state
@@ -62,12 +58,12 @@ export default function AddressesScreen() {
         if (token) {
           await fetchAddresses(token);
         }
-      } catch (err) {
-        if (__DEV__) console.error("Error loading addresses:", err);
+      } catch {
+        setLocalError("No se pudieron cargar las direcciones.");
       }
     };
     loadAddresses();
-  }, []);
+  }, [fetchAddresses, getToken]);
 
   const comunaSuggestions = useMemo(
     () => [
@@ -194,8 +190,10 @@ export default function AddressesScreen() {
 
       resetForm();
       setTimeout(() => setSuccess(null), 3000);
-    } catch (err: any) {
-      setLocalError(err.message || "Error al guardar la dirección");
+    } catch (err: unknown) {
+      setLocalError(
+        err instanceof Error ? err.message : "Error al guardar la dirección"
+      );
     } finally {
       setIsActionLoading(false);
     }
@@ -209,8 +207,8 @@ export default function AddressesScreen() {
       await deleteAddress(id, token);
       setSuccess("Dirección eliminada");
       setTimeout(() => setSuccess(null), 2000);
-    } catch (err) {
-      if (__DEV__) console.error("Delete error:", err);
+    } catch {
+      setLocalError("No se pudo eliminar la direccion.");
     }
   };
 
@@ -229,7 +227,11 @@ export default function AddressesScreen() {
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
 
-        <ScreenHeader title="Mis Direcciones" icon={MapPin} showBackButton={true} />
+        <ScreenHeader
+          title="Mis Direcciones"
+          icon={MapPin}
+          showBackButton={true}
+        />
 
         <ScrollView
           ref={scrollRef}
@@ -488,7 +490,12 @@ export default function AddressesScreen() {
                         <View className="flex-row gap-2">
                           <Pressable
                             onPress={() => handleStartEdit(addr)}
-                            style={{ minHeight: 48, minWidth: 48, justifyContent: 'center', alignItems: 'center' }}
+                            style={{
+                              minHeight: 48,
+                              minWidth: 48,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
                             className="bg-gray-50 rounded-xl active:bg-gray-100 border border-gray-100"
                             accessibilityLabel={`Editar dirección ${addr.label}`}
                             accessibilityRole="button"
@@ -497,7 +504,12 @@ export default function AddressesScreen() {
                           </Pressable>
                           <Pressable
                             onPress={() => handleDelete(addr.id)}
-                            style={{ minHeight: 48, minWidth: 48, justifyContent: 'center', alignItems: 'center' }}
+                            style={{
+                              minHeight: 48,
+                              minWidth: 48,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
                             className="bg-red-50 rounded-xl active:bg-red-100 border border-red-100"
                             accessibilityLabel={`Eliminar dirección ${addr.label}`}
                             accessibilityRole="button"

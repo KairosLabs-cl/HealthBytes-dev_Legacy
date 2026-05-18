@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
-import { useRouter } from "expo-router";
+import { useRouter, type Href } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
+import { updatePushToken } from "@/api/users";
 import Constants from "expo-constants";
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
 const PLACEHOLDER_PROJECT_ID = "REPLACE_WITH_YOUR_EAS_PROJECT_ID";
 const EXPO_PUSH_TOKEN_PATTERN = /^(ExponentPushToken|ExpoPushToken)\[[^\]]+\]$/;
 const ALLOWED_DEEP_LINK_PATTERNS = [/^\/orders\/\d+$/, /^\/product\/\d+$/];
@@ -34,7 +34,7 @@ function getEasProjectId(): string | undefined {
   return projectId;
 }
 
-function notificationUrlToSafePath(url: unknown): string | null {
+function notificationUrlToSafePath(url: unknown): Href | null {
   if (typeof url !== "string") return null;
 
   const path = url.replace(/^healthbytes:\/\//, "/");
@@ -42,7 +42,7 @@ function notificationUrlToSafePath(url: unknown): string | null {
     return null;
   }
 
-  return path;
+  return path as Href;
 }
 
 export function usePushNotifications() {
@@ -78,13 +78,11 @@ export function usePushNotifications() {
         finalStatus = status;
       }
       if (finalStatus !== "granted") {
-        console.warn("Failed to get push token for push notification!");
         return;
       }
 
       const projectId = getEasProjectId();
       if (!projectId) {
-        console.warn("Missing EAS projectId; push token registration skipped.");
         return;
       }
 
@@ -95,13 +93,10 @@ export function usePushNotifications() {
       ).data;
 
       if (!EXPO_PUSH_TOKEN_PATTERN.test(token)) {
-        console.warn("Expo returned an invalid push token format.");
         return;
       }
 
       setExpoPushToken(token);
-    } else {
-      console.log("Must use physical device for Push Notifications");
     }
 
     return token;
@@ -116,16 +111,9 @@ export function usePushNotifications() {
             const jwt = await getToken();
             if (!jwt) return;
 
-            await fetch(`${API_URL}/users/me/push-token`, {
-              method: "PATCH",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${jwt}`,
-              },
-              body: JSON.stringify({ token }),
-            });
-          } catch (error) {
-            console.error("Error enviando push token al backend", error);
+            await updatePushToken(jwt, token);
+          } catch {
+            // Push token sync is best-effort.
           }
         }
       });
@@ -147,7 +135,7 @@ export function usePushNotifications() {
             response.notification.request.content.data?.url
           );
           if (path) {
-            router.push(path as any);
+            router.push(path);
           }
         }
       );

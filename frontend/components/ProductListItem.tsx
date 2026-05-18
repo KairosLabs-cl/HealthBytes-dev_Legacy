@@ -5,7 +5,10 @@ import ProductCard from "@/components/ProductCard";
 
 function ProductListItem({ product }: { product: Product }) {
   return (
-    <Animated.View style={{ flex: 1, padding: 6 }} entering={FadeIn.duration(200)}>
+    <Animated.View
+      style={{ flex: 1, padding: 6 }}
+      entering={FadeIn.duration(200)}
+    >
       <ProductCard product={product} width="full" />
     </Animated.View>
   );

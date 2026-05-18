@@ -78,8 +78,8 @@ export function Header({
     <View className="px-4 pt-6 pb-4 bg-surface-card">
       {showBackButton ? (
         <View className="flex-row items-center mb-1">
-          <Pressable 
-            onPress={() => router.push("/")} 
+          <Pressable
+            onPress={() => router.push("/")}
             className="mr-2 p-1"
             accessibilityLabel="Volver"
             accessibilityRole="button"
@@ -89,7 +89,8 @@ export function Header({
           <Text className="text-lg font-bold">Volver</Text>
         </View>
       ) : (
-        isLoggedIn && greeting && (
+        isLoggedIn &&
+        greeting && (
           <Text className="text-lg font-bold">
             {greeting.replace("{name}", userName)}
           </Text>
@@ -97,7 +98,7 @@ export function Header({
       )}
 
       <View className="flex-row items-center mt-3 rounded-full border border-border-subtle px-3 py-2 bg-surface-muted">
-        <Pressable 
+        <Pressable
           onPress={handleSearchSubmit}
           accessibilityLabel="Buscar"
           accessibilityRole="button"
@@ -116,8 +117,8 @@ export function Header({
           accessibilityHint="Ingresa el nombre del producto que buscas"
         />
         {searchTerm.length > 0 && (
-          <Pressable 
-            onPress={handleClear} 
+          <Pressable
+            onPress={handleClear}
             className="ml-2"
             accessibilityLabel="Limpiar búsqueda"
             accessibilityRole="button"

@@ -8,6 +8,7 @@ import { Text } from "@/components/ui/text";
 import { useBreakpointValue } from "@/components/ui/utils/use-break-point-value";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 import ProductListItem from "@/components/ProductListItem";
+import type { Product } from "@/types/product";
 import { Clock } from "lucide-react-native";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 
@@ -22,9 +23,7 @@ export default function RecentlyViewedScreen() {
   }) as number;
 
   const renderItem = useCallback(
-    ({ item }: { item: any }) => (
-      <ProductListItem product={item} />
-    ),
+    ({ item }: { item: Product }) => <ProductListItem product={item} />,
     []
   );
 
@@ -34,7 +33,11 @@ export default function RecentlyViewedScreen() {
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
 
-        <ScreenHeader title="Recién Vistos" icon={Clock} showBackButton={true} />
+        <ScreenHeader
+          title="Recién Vistos"
+          icon={Clock}
+          showBackButton={true}
+        />
 
         <View style={{ paddingHorizontal: 16, paddingVertical: 8 }}>
           <Text style={{ fontSize: 14, color: "#6B7280", marginBottom: 16 }}>
@@ -43,12 +46,15 @@ export default function RecentlyViewedScreen() {
         </View>
 
         <View key={numColumns} className="flex-1">
-          <FlashList<any>
+          <FlashList<Product>
             data={history}
             renderItem={renderItem}
             keyExtractor={(item) => item.id.toString()}
             numColumns={numColumns}
-            contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 128 }}
+            contentContainerStyle={{
+              paddingHorizontal: 12,
+              paddingBottom: 128,
+            }}
             showsVerticalScrollIndicator={false}
             estimatedItemSize={280}
             ListEmptyComponent={

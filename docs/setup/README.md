@@ -13,6 +13,12 @@ Guía de configuración Docker para el proyecto.
 ### [ANDROID_BUILD_GUIDE.md](./ANDROID_BUILD_GUIDE.md)
 Guía para compilar y desplegar en Android.
 
+### [configuration.md](./configuration.md)
+Variables de entorno y archivos de configuración.
+
+### [deployment.md](./deployment.md)
+Targets de despliegue, rollback y monitoreo.
+
 **Contiene:**
 - Requisitos previos (Node, pnpm, Expo)
 - Paso a paso de instalación
@@ -60,6 +66,8 @@ EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 Para instrucciones completas, consulta:
 - **Frontend**: [frontend-setup.md](./frontend-setup.md)
 - **Docker**: [DOCKER_SETUP.md](./DOCKER_SETUP.md)
+- **Configuración**: [configuration.md](./configuration.md)
+- **Deployment**: [deployment.md](./deployment.md)
 - **Backend**: [backend/README.md](../../backend/README.md)
 
 ## 🆘 Troubleshooting

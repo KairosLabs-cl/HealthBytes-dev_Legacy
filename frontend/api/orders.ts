@@ -25,11 +25,6 @@ export async function createOrder(
 ) {
   const token = await getToken?.();
 
-  if (__DEV__) {
-    console.log("Token obtenido:", token ? "Token presente" : "Token ausente");
-    console.log("Token length:", token?.length || 0);
-  }
-
   if (!token) {
     throw new Error(
       "No se pudo obtener el token de autenticación. Por favor, inicia sesión nuevamente."

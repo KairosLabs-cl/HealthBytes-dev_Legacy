@@ -17,7 +17,15 @@ import { Stack, useRouter } from "expo-router";
 import { MapPinIcon, PhoneIcon } from "lucide-react-native";
 import { useEffect, useRef, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { View, ScrollView, Pressable, Linking, ActivityIndicator, Alert, Text } from "react-native";
+import {
+  View,
+  ScrollView,
+  Pressable,
+  Linking,
+  ActivityIndicator,
+  Alert,
+  Text,
+} from "react-native";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { CreditCard } from "lucide-react-native";
 import { AuthGate } from "@/components/AuthGate";
@@ -29,7 +37,6 @@ export default function CheckoutV2Screen() {
 
   // Use specific selectors to prevent unnecessary re-renders when other store state changes
   const items = useCart((state) => state.items);
-  const resetCart = useCart((state) => state.resetCart);
   const subtotal = useCart(selectCartSubtotal);
 
   const addresses = useAddress((state) => state.addresses);
@@ -54,10 +61,8 @@ export default function CheckoutV2Screen() {
         if (token) {
           await fetchAddresses(token);
         }
-      } catch (error) {
-        if (__DEV__) {
-          console.error("Error cargando direcciones:", error);
-        }
+      } catch {
+        // Address list failure is surfaced by the address store.
       }
     };
     loadAddresses();
@@ -91,7 +96,7 @@ export default function CheckoutV2Screen() {
       setCurrentStep("summary");
       scrollRef.current?.scrollTo({ y: 0, animated: true });
     } else if (currentStep === "summary") {
-      // Safety net: hard auth check before any payment processing
+      // Safety net: hard auth check before payment processing
       if (!isSignedIn) {
         Alert.alert(
           "Sesion requerida",
@@ -119,7 +124,6 @@ export default function CheckoutV2Screen() {
       setIsProcessing(true);
 
       try {
-        if (__DEV__) console.log("📋 Creando orden...");
         const orderResponse = await createOrder(
           items.map((item) => ({
             productId: Number(item.product.id),
@@ -132,9 +136,7 @@ export default function CheckoutV2Screen() {
         );
 
         const orderId = orderResponse.id;
-        if (__DEV__) console.log("✅ Orden creada:", orderId);
 
-        if (__DEV__) console.log("💳 Creando preference de Mercado Pago...");
         const preference = await createMercadoPagoPreference(
           {
             order_id: Number(orderId),
@@ -144,13 +146,9 @@ export default function CheckoutV2Screen() {
           getToken
         );
 
-        if (__DEV__)
-          console.log("✅ Preference creada:", preference.preference_id);
-
         const checkoutUrl = __DEV__
           ? preference.sandbox_init_point || preference.init_point
           : preference.init_point;
-        if (__DEV__) console.log("🔗 Redirigiendo a:", checkoutUrl);
 
         const canOpen = await Linking.canOpenURL(checkoutUrl);
         if (canOpen) {
@@ -175,7 +173,6 @@ export default function CheckoutV2Screen() {
           },
         });
       } catch (error) {
-        if (__DEV__) console.error("❌ Error durante checkout:", error);
         setIsProcessing(false);
         Alert.alert(
           "Error",
@@ -202,7 +199,11 @@ export default function CheckoutV2Screen() {
       <View className="flex-1 bg-surface-warm">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
-        <ScreenHeader title="Checkout" icon={CreditCard} showBackButton={true} />
+        <ScreenHeader
+          title="Checkout"
+          icon={CreditCard}
+          showBackButton={true}
+        />
 
         <ScrollView
           ref={scrollRef}
@@ -249,7 +250,9 @@ export default function CheckoutV2Screen() {
                         }`}
                         accessibilityLabel={`Dirección: ${address.street}, ${address.city}`}
                         accessibilityRole="radio"
-                        accessibilityState={{ selected: selectedAddress?.id === address.id }}
+                        accessibilityState={{
+                          selected: selectedAddress?.id === address.id,
+                        }}
                       >
                         <HStack className="items-start justify-between">
                           <View className="flex-1">

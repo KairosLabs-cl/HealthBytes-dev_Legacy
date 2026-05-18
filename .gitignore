@@ -39,10 +39,14 @@ backend/.pytest_cache/
 .idea/
 
 # AI tool local/generated files
+.auth/
 .opencode/node_modules/
 .opencode/bun.lock
 .claude/settings.local.json
 .worktrees/
+healthbytes-ui-extraction/
+capture-auth.mjs
+capture.mjs
 
 # Frontend local artifacts
 frontend/error.log

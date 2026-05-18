@@ -30,9 +30,7 @@ export default function DiscountsBar({ limit = 8, onSeeAll }: Props) {
   return (
     <View className="mt-4 mb-4 bg-gradient-to-b from-red-50 to-transparent rounded-2xl px-4 pt-4 pb-3 mx-4">
       <View className="flex-row items-center justify-between mb-3">
-        <Text className="text-[17px] font-bold text-ink">
-          {"🛒 OFERTAS"}
-        </Text>
+        <Text className="text-[17px] font-bold text-ink">{"🛒 OFERTAS"}</Text>
         <Pressable
           onPress={onSeeAll}
           style={{ minHeight: 44, justifyContent: "center" }}
