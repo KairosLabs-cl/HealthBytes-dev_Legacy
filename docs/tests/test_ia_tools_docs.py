@@ -1009,3 +1009,579 @@ class TestRegressionAndBoundary:
     def test_agent_hive_file_has_no_trailing_null_bytes(self):
         raw_bytes = AGENT_HIVE_FILE.read_bytes()
         assert b"\x00" not in raw_bytes, "File contains null bytes"
+
+
+# ===========================================================================
+# CR Dependencias 2026-05-18 — Active Items Section (added in this PR)
+# ===========================================================================
+
+
+@pytest.mark.unit
+class TestCRDependenciasSection:
+    """Tests for the new '### Items Activos: CR Dependencias 2026-05-18' subsection
+    added under ## Tablero Kanban Recomendado."""
+
+    def _kanban_section(self) -> str:
+        """Extract the full Tablero Kanban Recomendado section."""
+        content = _read(AGENT_HIVE_FILE)
+        match = re.search(
+            r"## Tablero Kanban Recomendado\n(.*?)(?=\n## )", content, re.DOTALL
+        )
+        assert match, "Could not find Tablero Kanban Recomendado section"
+        return match.group(1)
+
+    def _cr_section(self) -> str:
+        """Extract content starting from the CR Dependencias subsection heading."""
+        content = _read(AGENT_HIVE_FILE)
+        match = re.search(
+            r"### Items Activos: CR Dependencias 2026-05-18\s*(.*?)(?=\nLabels sugeridos:|\Z)",
+            content,
+            re.DOTALL,
+        )
+        assert match, "Could not find '### Items Activos: CR Dependencias 2026-05-18' section"
+        return match.group(1)
+
+    def _cr_prompt_block(self) -> str:
+        """Extract the ```md agent prompt block from the CR section."""
+        cr_text = self._cr_section()
+        blocks = _extract_code_block(cr_text, lang="md")
+        assert blocks, "No ```md code block found in CR Dependencias section"
+        # Return the first block — the dependency CR agent prompt
+        return blocks[0]
+
+    # -----------------------------------------------------------------------
+    # Section heading and placement
+    # -----------------------------------------------------------------------
+
+    def test_cr_section_heading_exists_in_kanban_section(self):
+        section = self._kanban_section()
+        assert "### Items Activos: CR Dependencias 2026-05-18" in section, (
+            "Subsection '### Items Activos: CR Dependencias 2026-05-18' must be inside "
+            "the Tablero Kanban Recomendado section"
+        )
+
+    def test_cr_section_appears_before_labels_sugeridos(self):
+        content = _read(AGENT_HIVE_FILE)
+        cr_pos = content.find("### Items Activos: CR Dependencias 2026-05-18")
+        labels_pos = content.find("Labels sugeridos:")
+        assert cr_pos != -1, "CR section heading not found"
+        assert labels_pos != -1, "Labels sugeridos section not found"
+        assert cr_pos < labels_pos, (
+            "CR Dependencias section must appear before the 'Labels sugeridos:' block"
+        )
+
+    def test_cr_section_appears_after_kanban_column_list(self):
+        content = _read(AGENT_HIVE_FILE)
+        merged_col_pos = content.find("- Merged: integrada.")
+        cr_pos = content.find("### Items Activos: CR Dependencias 2026-05-18")
+        assert merged_col_pos != -1, "Merged column description not found"
+        assert cr_pos != -1, "CR section heading not found"
+        assert cr_pos > merged_col_pos, (
+            "CR Dependencias section must come after the kanban columns list"
+        )
+
+    # -----------------------------------------------------------------------
+    # Introductory paragraph
+    # -----------------------------------------------------------------------
+
+    def test_cr_intro_mentions_dependabot(self):
+        cr_text = self._cr_section()
+        assert "Dependabot" in cr_text, (
+            "CR section intro must reference Dependabot as origin of these PRs"
+        )
+
+    def test_cr_intro_mentions_ci_block(self):
+        cr_text = self._cr_section()
+        assert "CI" in cr_text, (
+            "CR section intro must mention the CI block"
+        )
+
+    def test_cr_intro_prohibits_direct_merge_while_ci_red(self):
+        cr_text = self._cr_section()
+        assert "mergearse directo" in cr_text or "no deben" in cr_text, (
+            "CR section must warn against direct merging while CI is failing"
+        )
+
+    def test_cr_intro_names_p2_deprecations_check(self):
+        cr_text = self._cr_section()
+        assert "P2 deprecations" in cr_text, (
+            "CR section must name the 'P2 deprecations' guard that is causing the block"
+        )
+
+    def test_cr_intro_names_no_net_increase_check(self):
+        cr_text = self._cr_section()
+        assert "no-net-increase check" in cr_text, (
+            "CR section must reference the 'no-net-increase check' by name"
+        )
+
+    def test_cr_intro_names_backend_tests(self):
+        cr_text = self._cr_section()
+        assert "Backend Tests" in cr_text, (
+            "CR section must mention that the failing job is 'Backend Tests'"
+        )
+
+    # -----------------------------------------------------------------------
+    # Active items table structure
+    # -----------------------------------------------------------------------
+
+    def test_cr_table_has_id_column(self):
+        cr_text = self._cr_section()
+        assert "| ID |" in cr_text or "| ID " in cr_text, (
+            "CR Dependencias table must have an 'ID' column"
+        )
+
+    def test_cr_table_has_pr_column(self):
+        cr_text = self._cr_section()
+        assert "| PR |" in cr_text or "| PR " in cr_text, (
+            "CR Dependencias table must have a 'PR' column"
+        )
+
+    def test_cr_table_has_columna_column(self):
+        cr_text = self._cr_section()
+        assert "Columna" in cr_text, (
+            "CR Dependencias table must have a 'Columna' column"
+        )
+
+    def test_cr_table_has_roles_asignados_column(self):
+        cr_text = self._cr_section()
+        assert "Roles asignados" in cr_text, (
+            "CR Dependencias table must have a 'Roles asignados' column"
+        )
+
+    def test_cr_table_has_seguridad_column(self):
+        cr_text = self._cr_section()
+        assert "Seguridad" in cr_text, (
+            "CR Dependencias table must include a 'Seguridad' score column"
+        )
+
+    def test_cr_table_has_calidad_column(self):
+        cr_text = self._cr_section()
+        assert "Calidad" in cr_text, (
+            "CR Dependencias table must include a 'Calidad' score column"
+        )
+
+    def test_cr_table_has_funcionalidad_column(self):
+        cr_text = self._cr_section()
+        assert "Funcionalidad" in cr_text, (
+            "CR Dependencias table must include a 'Funcionalidad' score column"
+        )
+
+    def test_cr_table_has_bloqueo_column(self):
+        cr_text = self._cr_section()
+        assert "Bloqueo" in cr_text, (
+            "CR Dependencias table must include a 'Bloqueo' column"
+        )
+
+    def test_cr_table_has_separator_row(self):
+        """The table must have a proper markdown separator (|---|...) row."""
+        cr_text = self._cr_section()
+        assert re.search(r"\|\s*---\s*\|", cr_text), (
+            "CR Dependencias table must have a markdown separator row '| --- |'"
+        )
+
+    # -----------------------------------------------------------------------
+    # CR-DEP-2026-05-18-01: brace-expansion
+    # -----------------------------------------------------------------------
+
+    def test_cr_item_01_id_present(self):
+        cr_text = self._cr_section()
+        assert "CR-DEP-2026-05-18-01" in cr_text, (
+            "Table must contain item CR-DEP-2026-05-18-01"
+        )
+
+    def test_cr_item_01_references_pr_220(self):
+        cr_text = self._cr_section()
+        assert "#220" in cr_text, (
+            "CR-DEP-2026-05-18-01 must reference PR #220"
+        )
+
+    def test_cr_item_01_package_is_brace_expansion(self):
+        cr_text = self._cr_section()
+        assert "brace-expansion" in cr_text, (
+            "CR-DEP-2026-05-18-01 must identify the updated package as 'brace-expansion'"
+        )
+
+    def test_cr_item_01_version_bump_present(self):
+        cr_text = self._cr_section()
+        assert "5.0.5" in cr_text and "5.0.6" in cr_text, (
+            "CR-DEP-2026-05-18-01 must show the version bump from 5.0.5 to 5.0.6"
+        )
+
+    def test_cr_item_01_column_is_needs_changes(self):
+        cr_text = self._cr_section()
+        # Find the row containing CR-DEP-2026-05-18-01
+        row_match = re.search(r"\|.*CR-DEP-2026-05-18-01.*\|", cr_text)
+        assert row_match, "Could not find table row for CR-DEP-2026-05-18-01"
+        assert "Needs Changes" in row_match.group(0), (
+            "CR-DEP-2026-05-18-01 must have 'Needs Changes' as its Columna value"
+        )
+
+    def test_cr_item_01_has_security_agent_assigned(self):
+        cr_text = self._cr_section()
+        row_match = re.search(r"\|.*CR-DEP-2026-05-18-01.*\|", cr_text)
+        assert row_match, "Could not find table row for CR-DEP-2026-05-18-01"
+        assert "agent:security" in row_match.group(0), (
+            "CR-DEP-2026-05-18-01 must have agent:security assigned"
+        )
+
+    def test_cr_item_01_has_architecture_agent_assigned(self):
+        cr_text = self._cr_section()
+        row_match = re.search(r"\|.*CR-DEP-2026-05-18-01.*\|", cr_text)
+        assert row_match, "Could not find table row for CR-DEP-2026-05-18-01"
+        assert "agent:architecture" in row_match.group(0), (
+            "CR-DEP-2026-05-18-01 must have agent:architecture assigned"
+        )
+
+    def test_cr_item_01_has_qa_agent_assigned(self):
+        cr_text = self._cr_section()
+        row_match = re.search(r"\|.*CR-DEP-2026-05-18-01.*\|", cr_text)
+        assert row_match, "Could not find table row for CR-DEP-2026-05-18-01"
+        assert "agent:qa" in row_match.group(0), (
+            "CR-DEP-2026-05-18-01 must have agent:qa assigned"
+        )
+
+    def test_cr_item_01_security_score(self):
+        cr_text = self._cr_section()
+        row_match = re.search(r"\|.*CR-DEP-2026-05-18-01.*\|", cr_text)
+        assert row_match, "Could not find table row for CR-DEP-2026-05-18-01"
+        assert "8/10" in row_match.group(0), (
+            "CR-DEP-2026-05-18-01 must have a security score of 8/10"
+        )
+
+    def test_cr_item_01_bloqueo_mentions_pnpm_lock(self):
+        cr_text = self._cr_section()
+        row_match = re.search(r"\|.*CR-DEP-2026-05-18-01.*\|", cr_text)
+        assert row_match, "Could not find table row for CR-DEP-2026-05-18-01"
+        assert "pnpm-lock.yaml" in row_match.group(0), (
+            "CR-DEP-2026-05-18-01 bloqueo must mention 'pnpm-lock.yaml'"
+        )
+
+    def test_cr_item_01_bloqueo_mentions_deprecated_count_increase(self):
+        cr_text = self._cr_section()
+        row_match = re.search(r"\|.*CR-DEP-2026-05-18-01.*\|", cr_text)
+        assert row_match, "Could not find table row for CR-DEP-2026-05-18-01"
+        row = row_match.group(0)
+        assert "12" in row and "14" in row, (
+            "CR-DEP-2026-05-18-01 bloqueo must show deprecated count increase from 12 to 14"
+        )
+
+    # -----------------------------------------------------------------------
+    # CR-DEP-2026-05-18-02: postcss
+    # -----------------------------------------------------------------------
+
+    def test_cr_item_02_id_present(self):
+        cr_text = self._cr_section()
+        assert "CR-DEP-2026-05-18-02" in cr_text, (
+            "Table must contain item CR-DEP-2026-05-18-02"
+        )
+
+    def test_cr_item_02_references_pr_222(self):
+        cr_text = self._cr_section()
+        assert "#222" in cr_text, (
+            "CR-DEP-2026-05-18-02 must reference PR #222"
+        )
+
+    def test_cr_item_02_package_is_postcss(self):
+        cr_text = self._cr_section()
+        assert "postcss" in cr_text, (
+            "CR-DEP-2026-05-18-02 must identify the updated package as 'postcss'"
+        )
+
+    def test_cr_item_02_version_present(self):
+        cr_text = self._cr_section()
+        assert "8.5.14" in cr_text, (
+            "CR-DEP-2026-05-18-02 must include the version 8.5.14"
+        )
+
+    def test_cr_item_02_column_is_needs_changes(self):
+        cr_text = self._cr_section()
+        row_match = re.search(r"\|.*CR-DEP-2026-05-18-02.*\|", cr_text)
+        assert row_match, "Could not find table row for CR-DEP-2026-05-18-02"
+        assert "Needs Changes" in row_match.group(0), (
+            "CR-DEP-2026-05-18-02 must have 'Needs Changes' as its Columna value"
+        )
+
+    def test_cr_item_02_security_score_is_fractional(self):
+        cr_text = self._cr_section()
+        row_match = re.search(r"\|.*CR-DEP-2026-05-18-02.*\|", cr_text)
+        assert row_match, "Could not find table row for CR-DEP-2026-05-18-02"
+        assert "8.5/10" in row_match.group(0), (
+            "CR-DEP-2026-05-18-02 must have security score of 8.5/10"
+        )
+
+    def test_cr_item_02_mentions_expo_tailwind_nativewind_compatibility(self):
+        cr_text = self._cr_section()
+        row_match = re.search(r"\|.*CR-DEP-2026-05-18-02.*\|", cr_text)
+        assert row_match, "Could not find table row for CR-DEP-2026-05-18-02"
+        row = row_match.group(0)
+        assert "Expo" in row or "Tailwind" in row or "NativeWind" in row, (
+            "CR-DEP-2026-05-18-02 bloqueo must mention Expo/Tailwind/NativeWind compatibility"
+        )
+
+    def test_cr_item_02_bloqueo_mentions_same_p2_block(self):
+        cr_text = self._cr_section()
+        row_match = re.search(r"\|.*CR-DEP-2026-05-18-02.*\|", cr_text)
+        assert row_match, "Could not find table row for CR-DEP-2026-05-18-02"
+        assert "P2" in row_match.group(0) or "CI" in row_match.group(0), (
+            "CR-DEP-2026-05-18-02 bloqueo must mention the P2 CI block"
+        )
+
+    # -----------------------------------------------------------------------
+    # Conditions to reach Ready To Merge
+    # -----------------------------------------------------------------------
+
+    def test_conditions_heading_present(self):
+        cr_text = self._cr_section()
+        assert "Condiciones para mover a" in cr_text, (
+            "CR section must list conditions for moving items to 'Ready To Merge'"
+        )
+
+    def test_conditions_target_ready_to_merge(self):
+        cr_text = self._cr_section()
+        assert "Ready To Merge" in cr_text, (
+            "Conditions heading must reference the 'Ready To Merge' kanban column"
+        )
+
+    def test_conditions_has_five_items(self):
+        cr_text = self._cr_section()
+        # Extract content between "Condiciones para mover" and the prompt block
+        match = re.search(
+            r"Condiciones para mover.*?:(.*?)Prompt para agentes",
+            cr_text,
+            re.DOTALL,
+        )
+        assert match, "Could not extract the conditions list"
+        conditions_text = match.group(1)
+        numbered = re.findall(r"^\d+\.", conditions_text, re.MULTILINE)
+        assert len(numbered) == 5, (
+            f"Expected exactly 5 conditions to reach 'Ready To Merge', found {len(numbered)}"
+        )
+
+    def test_condition_1_resolve_p2_guard(self):
+        cr_text = self._cr_section()
+        assert "Resolver la politica del guard" in cr_text or "guard" in cr_text, (
+            "Condition 1 must address resolving the P2 deprecations guard"
+        )
+
+    def test_condition_2_baseline_update(self):
+        cr_text = self._cr_section()
+        assert "baseline" in cr_text, (
+            "Condition 2 must address updating the baseline with justification"
+        )
+
+    def test_condition_3_new_deprecations_handling(self):
+        cr_text = self._cr_section()
+        assert "alternativa de version" in cr_text or "remediation" in cr_text, (
+            "Condition 3 must address handling new deprecations via version alternative or remediation"
+        )
+
+    def test_condition_4_ci_rerun_specified(self):
+        cr_text = self._cr_section()
+        assert "Re-ejecutar CI" in cr_text, (
+            "Condition 4 must require re-running CI and confirming all checks pass"
+        )
+
+    def test_condition_4_lists_required_checks(self):
+        cr_text = self._cr_section()
+        # Condition 4 should list specific CI checks
+        for check in ("backend tests", "frontend", "dependency audit", "SAST", "secret scan"):
+            assert check.lower() in cr_text.lower(), (
+                f"Condition 4 must mention CI check: {check!r}"
+            )
+
+    def test_condition_5_pr_comment_required(self):
+        cr_text = self._cr_section()
+        assert "comentario final" in cr_text or "Dejar comentario" in cr_text, (
+            "Condition 5 must require a final comment on each PR with decision and evidence"
+        )
+
+    def test_condition_5_comment_includes_riesgo_residual(self):
+        cr_text = self._cr_section()
+        assert "riesgo residual" in cr_text, (
+            "Condition 5 must require the comment to include residual risk (riesgo residual)"
+        )
+
+    # -----------------------------------------------------------------------
+    # Agent prompt block
+    # -----------------------------------------------------------------------
+
+    def test_cr_agent_prompt_block_exists(self):
+        block = self._cr_prompt_block()
+        assert len(block.strip()) > 0, "The CR agent prompt block must not be empty"
+
+    def test_cr_agent_prompt_identifies_as_healthbytes_agent(self):
+        block = self._cr_prompt_block()
+        assert "HealthBytes" in block, (
+            "CR agent prompt must identify the agent as belonging to HealthBytes"
+        )
+
+    def test_cr_agent_prompt_identifies_as_dependency_cr(self):
+        block = self._cr_prompt_block()
+        assert "CR de dependencias" in block, (
+            "CR agent prompt must state it is assigned to the 'CR de dependencias'"
+        )
+
+    def test_cr_agent_prompt_references_both_cr_item_ids(self):
+        block = self._cr_prompt_block()
+        assert "CR-DEP-2026-05-18-01" in block and "CR-DEP-2026-05-18-02" in block, (
+            "CR agent prompt must reference both CR item IDs"
+        )
+
+    def test_cr_agent_prompt_references_prs_220_and_222(self):
+        block = self._cr_prompt_block()
+        assert "#220" in block and "#222" in block, (
+            "CR agent prompt must reference both related PRs (#220 and #222)"
+        )
+
+    def test_cr_agent_prompt_initial_state_is_needs_changes(self):
+        block = self._cr_prompt_block()
+        assert "Needs Changes" in block, (
+            "CR agent prompt must state the initial state is 'Needs Changes'"
+        )
+
+    def test_cr_agent_prompt_names_blocking_condition(self):
+        block = self._cr_prompt_block()
+        assert "P2 deprecations" in block, (
+            "CR agent prompt must name the blocking condition: P2 deprecations"
+        )
+
+    def test_cr_agent_prompt_names_ci_red_block(self):
+        block = self._cr_prompt_block()
+        assert "CI rojo" in block or "CI red" in block.lower(), (
+            "CR agent prompt must mention that CI is red as the known block"
+        )
+
+    def test_cr_agent_prompt_has_tarea_section(self):
+        block = self._cr_prompt_block()
+        assert "Tu tarea" in block or "tarea:" in block.lower(), (
+            "CR agent prompt must include a 'Tu tarea' section"
+        )
+
+    def test_cr_agent_prompt_tarea_instructs_security_review(self):
+        block = self._cr_prompt_block()
+        assert "seguridad real" in block or "aporta seguridad" in block, (
+            "CR agent prompt tarea must instruct checking if the bump provides real security value"
+        )
+
+    def test_cr_agent_prompt_tarea_instructs_risk_separation(self):
+        block = self._cr_prompt_block()
+        assert "riesgo del paquete" in block or "deuda revelada" in block, (
+            "CR agent prompt tarea must instruct separating package risk from revealed lockfile debt"
+        )
+
+    def test_cr_agent_prompt_tarea_instructs_minimal_action(self):
+        block = self._cr_prompt_block()
+        assert "menor accion correcta" in block or "minima" in block.lower(), (
+            "CR agent prompt tarea must instruct proposing the minimal correct action"
+        )
+
+    def test_cr_agent_prompt_prohibits_merge_with_red_ci(self):
+        block = self._cr_prompt_block()
+        assert "No recomendar merge" in block or "no recomendar merge" in block.lower(), (
+            "CR agent prompt must explicitly prohibit recommending merge when CI is red"
+        )
+
+    def test_cr_agent_prompt_has_entrega_section(self):
+        block = self._cr_prompt_block()
+        assert "Entrega:" in block or "Entrega\n" in block, (
+            "CR agent prompt must include an 'Entrega:' (delivery) section"
+        )
+
+    def test_cr_agent_prompt_entrega_requires_canvas(self):
+        block = self._cr_prompt_block()
+        assert "Agent Review Canvas" in block, (
+            "CR agent prompt Entrega must require the Agent Review Canvas"
+        )
+
+    def test_cr_agent_prompt_entrega_requires_decision(self):
+        block = self._cr_prompt_block()
+        assert "Decision:" in block, (
+            "CR agent prompt Entrega must include a 'Decision:' field"
+        )
+
+    def test_cr_agent_prompt_decision_options_are_modify_rescue_merge(self):
+        block = self._cr_prompt_block()
+        assert "modify" in block and "rescue" in block and "merge" in block, (
+            "CR agent prompt decision options must include: modify, rescue, merge"
+        )
+
+    def test_cr_agent_prompt_entrega_requires_patch_or_instructions(self):
+        block = self._cr_prompt_block()
+        assert "Patch sugerido" in block or "instrucciones exactas" in block, (
+            "CR agent prompt Entrega must require a suggested patch or exact instructions"
+        )
+
+    def test_cr_agent_prompt_entrega_requires_checks_list(self):
+        block = self._cr_prompt_block()
+        assert "Checks" in block and "correr" in block, (
+            "CR agent prompt Entrega must specify which checks must run before merge"
+        )
+
+    def test_cr_agent_prompt_is_fenced_md_block(self):
+        cr_text = self._cr_section()
+        assert "```md" in cr_text, (
+            "The CR agent prompt must be enclosed in a ```md fenced code block"
+        )
+
+    # -----------------------------------------------------------------------
+    # Table integrity and regression
+    # -----------------------------------------------------------------------
+
+    def test_cr_table_has_exactly_two_data_rows(self):
+        cr_text = self._cr_section()
+        # Data rows contain CR-DEP IDs
+        data_rows = re.findall(r"\|\s*CR-DEP-2026-05-18-\d{2}\s*\|", cr_text)
+        assert len(data_rows) == 2, (
+            f"CR Dependencias table must have exactly 2 data rows, found {len(data_rows)}"
+        )
+
+    def test_cr_table_rows_use_pipe_delimiter(self):
+        cr_text = self._cr_section()
+        # Table rows must start with "| CR-DEP" (excludes prompt-block references)
+        table_lines = [
+            ln for ln in cr_text.splitlines()
+            if ln.strip().startswith("| CR-DEP-2026-05-18")
+        ]
+        assert len(table_lines) == 2, (
+            f"Expected exactly 2 pipe-delimited table rows starting with '| CR-DEP-2026-05-18', "
+            f"found {len(table_lines)}"
+        )
+        for line in table_lines:
+            stripped = line.strip()
+            assert stripped.startswith("|") and stripped.endswith("|"), (
+                f"Table row must be pipe-delimited: {stripped!r}"
+            )
+
+    def test_both_cr_items_have_same_column_needs_changes(self):
+        cr_text = self._cr_section()
+        for item_id in ("CR-DEP-2026-05-18-01", "CR-DEP-2026-05-18-02"):
+            row_match = re.search(rf"\|.*{re.escape(item_id)}.*\|", cr_text)
+            assert row_match, f"Could not find table row for {item_id}"
+            assert "Needs Changes" in row_match.group(0), (
+                f"{item_id} must show 'Needs Changes' column status"
+            )
+
+    def test_both_cr_items_have_three_agents_assigned(self):
+        cr_text = self._cr_section()
+        for item_id in ("CR-DEP-2026-05-18-01", "CR-DEP-2026-05-18-02"):
+            row_match = re.search(rf"\|.*{re.escape(item_id)}.*\|", cr_text)
+            assert row_match, f"Could not find table row for {item_id}"
+            row = row_match.group(0)
+            for agent in ("agent:security", "agent:architecture", "agent:qa"):
+                assert agent in row, (
+                    f"{item_id} must have {agent!r} in the Roles asignados column"
+                )
+
+    def test_date_in_section_heading_is_not_future_beyond_2030(self):
+        cr_text = self._cr_section()
+        future_years = re.findall(r"\b20[3-9]\d\b", cr_text)
+        assert not future_years, (
+            f"CR section must not contain year references beyond 2029: {future_years}"
+        )
+
+    def test_cr_section_does_not_contain_placeholder_text(self):
+        cr_text = self._cr_section()
+        for placeholder in ("TODO", "FIXME", "PLACEHOLDER", "TBD"):
+            assert placeholder not in cr_text, (
+                f"CR section must not contain placeholder text: {placeholder!r}"
+            )
