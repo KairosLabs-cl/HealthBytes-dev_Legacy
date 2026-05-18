@@ -17,6 +17,7 @@
 ## 2026-05-05 - Zustand getState for One-Time Reads
 **Learning:** Subscribing to a Zustand store value (e.g., `usePreferencesStore((state) => state.value)`) when the value is only needed once on mount (e.g., inside an empty-dependency `useEffect`) causes the component to re-render unnecessarily on all future updates to that value.
 **Action:** Use `store.getState().value` inside the `useEffect` instead of the hook for one-time reads to prevent unnecessary component re-renders.
-## 2026-06-01 - Zustand useShallow
-**Learning:** Extracting multiple primitive fields from a Zustand store using separate selector calls creates multiple subscriptions, adding overhead in lists or root layouts.
-**Action:** Group related selectors and wrap them in useShallow from zustand/react/shallow to batch renders and improve performance.
+
+## 2026-05-06 - Zustand Selector Batching in Root Layouts
+**Learning:** Extracting multiple primitive fields from a Zustand store using separate selector calls in a root layout (like `_layout.tsx`) creates multiple subscriptions, adding significant overhead that cascades app-wide.
+**Action:** Group related selectors and wrap them in `useShallow` from `zustand/react/shallow` to batch renders and eliminate subscription overhead in layouts and list components.
