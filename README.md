@@ -521,6 +521,14 @@ Si ves la URL de tu base de datos, ¡todo está bien! 🎉
 
 ## ⚙️Herramientas de Desarrollo
 
+### IDEs y Asistentes IA
+
+El equipo puede trabajar con el IDE o asistente que prefiera: VS Code, Cursor, Zed, WebStorm, Codex, OpenCode u otros flujos compatibles con el repo.
+
+**Recomendación:** usar **Hermes Agent** cuando esté disponible, especialmente para aprendizaje asistido. Hermes es útil porque acompaña mejor el proceso, ayuda a internalizar patrones del proyecto y puede convertir correcciones repetidas en mejores hábitos de desarrollo. No es obligatorio para contribuir: cualquier IDE es bienvenido siempre que respete `AGENTS.md`, `.cursorrules`, `.ai/skills/` y los checks del proyecto.
+
+Para mejoras del comportamiento interno de los asistentes, este repo usa skills versionadas en `.ai/skills/`. Las propuestas nuevas deben pasar primero por `.ai/skill-proposals/` y luego promoverse a una skill o documento después de revisión.
+
 ### VS Code Workspace (Recomendado)
 
 Este proyecto incluye un archivo de workspace multi-root (`HealthBytes.code-workspace`) que organiza el proyecto en carpetas específicas y proporciona configuraciones optimizadas.
