@@ -25,6 +25,7 @@ import { useEffect } from "react";
 import { Pressable, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Sentry from "@sentry/react-native";
+import { useShallow } from "zustand/react/shallow";
 
 // Initialize Sentry if DSN is configured
 const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN;
@@ -60,10 +61,14 @@ if (!publishableKey) {
 }
 
 function RootLayoutNav() {
-  const setAuth = useCart((state) => state.setAuth);
-  const mergeAndSync = useCart((state) => state.mergeAndSync);
-  const error = useCart((state) => state.error);
-  const clearError = useCart((state) => state.clearError);
+  const { setAuth, mergeAndSync, error, clearError } = useCart(
+    useShallow((state) => ({
+      setAuth: state.setAuth,
+      mergeAndSync: state.mergeAndSync,
+      error: state.error,
+      clearError: state.clearError,
+    }))
+  );
   const toast = useToast();
 
   const { isSignedIn, getToken } = useAuth();
@@ -73,8 +78,12 @@ function RootLayoutNav() {
   // Onboarding
   // ⚡ Bolt: Using granular Zustand selectors instead of destructuring the whole store
   // prevents full layout re-renders when unrelated preferences change
-  const hasCompletedOnboarding = usePreferencesStore((state) => state.hasCompletedOnboarding);
-  const setOnboardingComplete = usePreferencesStore((state) => state.setOnboardingComplete);
+  const { hasCompletedOnboarding, setOnboardingComplete } = usePreferencesStore(
+    useShallow((state) => ({
+      hasCompletedOnboarding: state.hasCompletedOnboarding,
+      setOnboardingComplete: state.setOnboardingComplete,
+    }))
+  );
 
   const handleOnboardingComplete = () => {
     setOnboardingComplete();
@@ -101,8 +110,12 @@ function RootLayoutNav() {
   }, [error, clearError, toast]);
 
   // Sync cart and favorites with authentication state
-  const loadFavorites = useFavoritesStore((state) => state.loadFavorites);
-  const clearFavorites = useFavoritesStore((state) => state.clearFavorites);
+  const { loadFavorites, clearFavorites } = useFavoritesStore(
+    useShallow((state) => ({
+      loadFavorites: state.loadFavorites,
+      clearFavorites: state.clearFavorites,
+    }))
+  );
 
   useEffect(() => {
     const syncCart = async () => {
