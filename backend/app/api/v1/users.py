@@ -2,10 +2,8 @@ import logging
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security import get_password_hash
 from app.db.database import get_db
 from app.db.schemas import User
 from app.middleware.auth import get_current_user, verify_admin
@@ -35,8 +33,7 @@ async def list_users(
     List all users (Admin only)
     """
     try:
-        result = await db.execute(select(User).offset(skip).limit(limit))
-        users = result.scalars().all()
+        users = await user_service.list_users(db, skip=skip, limit=limit)
 
         return [UserResponse.model_validate(user) for user in users]
     except Exception as e:
@@ -87,9 +84,7 @@ async def update_push_token(
     Store Expo push notification token for the authenticated user.
     """
     try:
-        current_user.expo_push_token = data.token
-        await db.commit()
-        await db.refresh(current_user)
+        await user_service.update_push_token(db, current_user, data.token)
 
         return {"ok": True}
     except Exception as e:
@@ -113,30 +108,19 @@ async def get_user_by_id(
     Get user by ID (Admin or Own Profile)
     """
     try:
-        # Check permissions: Admin or Own Profile
-        if current_user.role != "admin" and current_user.id != id:
-            raise HTTPException(status_code=403, detail="Not authorized to access this profile")
-
-        result = await db.execute(select(User).where(User.id == id))
-        user = result.scalar_one_or_none()
+        user = await user_service.get_user_for_profile(db, id, current_user)
 
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
 
         return UserResponse.model_validate(user)
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
     except HTTPException:
         raise
     except Exception as e:
         logger.error("Error getting user %s: %s", id, type(e).__name__)
         raise HTTPException(status_code=500, detail="Internal Server Error")
-
-
-# Allowlist of fields a regular user can modify on their own profile.
-# Admins get an extended set. Any field NOT in the allowlist is silently
-# dropped — defense-in-depth against future schema additions accidentally
-# exposing privileged fields.
-ALLOWED_USER_FIELDS = {"name", "address", "password", "dietary_preferences"}
-ALLOWED_ADMIN_FIELDS = ALLOWED_USER_FIELDS | {"email", "role"}
 
 
 @router.put("/me", response_model=UserResponse)
@@ -150,18 +134,8 @@ async def update_me(
     Update own profile (no ID needed).
     """
     try:
-        update_data = user_data.model_dump(exclude_unset=True)
-        update_data = {k: v for k, v in update_data.items() if k in ALLOWED_USER_FIELDS}
-
-        if "password" in update_data and update_data["password"]:
-            update_data["password"] = get_password_hash(update_data["password"])
-
-        for key, value in update_data.items():
-            setattr(current_user, key, value)
-
-        await db.commit()
-        await db.refresh(current_user)
-        return UserResponse.model_validate(current_user)
+        user = await user_service.update_current_user(db, current_user, user_data)
+        return UserResponse.model_validate(user)
     except Exception as e:
         await db.rollback()
         logger.error("Error updating own profile user %s: %s", current_user.id, type(e).__name__)
@@ -180,34 +154,14 @@ async def update_user(
     Update user profile (Admin or Own Profile)
     """
     try:
-        is_admin = current_user.role == "admin"
-
-        # Check permissions: Admin or Own Profile
-        if not is_admin and current_user.id != id:
-            raise HTTPException(status_code=403, detail="Not authorized to update this profile")
-
-        result = await db.execute(select(User).where(User.id == id))
-        user = result.scalar_one_or_none()
+        user = await user_service.update_user_for_request(db, id, user_data, current_user)
 
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
 
-        # Update fields — apply allowlist to prevent mass assignment
-        update_data = user_data.model_dump(exclude_unset=True)
-        allowed = ALLOWED_ADMIN_FIELDS if is_admin else ALLOWED_USER_FIELDS
-        update_data = {k: v for k, v in update_data.items() if k in allowed}
-
-        # Hash password if provided
-        if "password" in update_data and update_data["password"]:
-            update_data["password"] = get_password_hash(update_data["password"])
-
-        for key, value in update_data.items():
-            setattr(user, key, value)
-
-        await db.commit()
-        await db.refresh(user)
-
         return UserResponse.model_validate(user)
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
     except HTTPException:
         raise
     except Exception as e:
@@ -227,14 +181,9 @@ async def delete_user(
     Delete a user (Admin only)
     """
     try:
-        result = await db.execute(select(User).where(User.id == id))
-        user = result.scalar_one_or_none()
-
-        if not user:
+        deleted = await user_service.delete_user(db, id)
+        if not deleted:
             raise HTTPException(status_code=404, detail="User not found")
-
-        await db.delete(user)
-        await db.commit()
 
         return None
     except HTTPException:

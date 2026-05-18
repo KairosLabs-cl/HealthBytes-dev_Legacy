@@ -13,7 +13,7 @@ export const script = (mode: string) => {
     documentElement.classList.remove(theme === "light" ? "dark" : "light");
     documentElement.classList.add(theme);
     documentElement.style.colorScheme = theme;
-  } catch (e) {
-    if (typeof __DEV__ !== "undefined" && __DEV__) console.error(e);
+  } catch {
+    // Ignore invalid DOM/theme state during hydration.
   }
 };

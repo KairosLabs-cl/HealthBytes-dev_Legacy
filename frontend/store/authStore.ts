@@ -8,8 +8,8 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 interface AuthStoreState {
   // Additional user data not stored in Clerk
-  additionalUserData: Record<string, any> | null;
-  setAdditionalUserData: (data: Record<string, any> | null) => void;
+  additionalUserData: Record<string, unknown> | null;
+  setAdditionalUserData: (data: Record<string, unknown> | null) => void;
   clearAdditionalData: () => void;
 }
 

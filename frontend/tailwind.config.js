@@ -180,20 +180,20 @@ module.exports = {
         ink: "var(--ink)",
         "brand-green": "var(--brand-green)",
         "border-subtle": "var(--border-subtle)",
-        
+
         // Semantic tokens - Warm Earth Palette
         // Backgrounds
         "surface-warm-alt": "#FCFAF8",
-        
+
         // Text - Ink system
         "ink-primary": "#2D2926",
         "ink-muted": "#6B6B6B",
         "ink-subtle": "#9CA3AF",
-        
+
         // Borders
         "border-default": "#D1D5DB",
         "border-focus": "#2D2926",
-        
+
         // Accent
         "accent-primary": "#5C6B5A",
         "accent-hover": "#4A5649",
@@ -224,7 +224,8 @@ module.exports = {
         "soft-2": "0px 0px 20px rgba(38, 38, 38, 0.2)",
         "soft-3": "0px 0px 30px rgba(38, 38, 38, 0.1)",
         "soft-4": "0px 0px 40px rgba(38, 38, 38, 0.1)",
-        "soft-lift": "0px 2px 4px rgba(45, 41, 38, 0.04), 0px 4px 12px rgba(45, 41, 38, 0.04)",
+        "soft-lift":
+          "0px 2px 4px rgba(45, 41, 38, 0.04), 0px 4px 12px rgba(45, 41, 38, 0.04)",
       },
     },
   },

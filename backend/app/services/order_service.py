@@ -8,11 +8,24 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.db.schemas import Order, OrderItem, Product
+from app.db.models.address import Address
+from app.db.schemas import Order, OrderItem, Product, User
 from app.schemas.order import OrderCreate
 from app.services.stock_service import StockService
 
 logger = logging.getLogger(__name__)
+
+
+async def user_owns_active_address(db: AsyncSession, user_id: int, address_id: int) -> bool:
+    """Return whether an active address belongs to a user."""
+    result = await db.execute(
+        select(Address).where(
+            Address.id == address_id,
+            Address.user_id == user_id,
+            Address.is_active.is_(True),
+        )
+    )
+    return result.scalar_one_or_none() is not None
 
 
 async def create_order(db: AsyncSession, user_id: int, order_in: OrderCreate) -> Order:
@@ -156,6 +169,35 @@ async def get_user_orders(
     return result.scalars().all()
 
 
+async def list_orders_for_request(
+    db: AsyncSession,
+    current_user: User,
+    skip: int = 0,
+    limit: int = 20,
+    status_filter: str | None = None,
+) -> List[Order]:
+    """List orders with role-based filtering."""
+    if current_user.role == "admin":
+        stmt = select(Order)
+    elif current_user.role == "seller":
+        stmt = select(Order).where(Order.user_id == current_user.id)
+    else:
+        stmt = select(Order).where(Order.user_id == current_user.id)
+
+    if status_filter:
+        stmt = stmt.where(Order.status == status_filter)
+
+    stmt = (
+        stmt.options(selectinload(Order.items))
+        .order_by(Order.created_at.desc(), Order.id.desc())
+        .offset(skip)
+        .limit(limit)
+    )
+
+    result = await db.execute(stmt)
+    return result.scalars().all()
+
+
 async def get_order(db: AsyncSession, order_id: int, user_id: int) -> Optional[Order]:
     """
     Get order and verify ownership.
@@ -165,6 +207,18 @@ async def get_order(db: AsyncSession, order_id: int, user_id: int) -> Optional[O
         .where(Order.id == order_id, Order.user_id == user_id)
         .options(selectinload(Order.items))
     )
+    return result.scalar_one_or_none()
+
+
+async def get_order_for_request(
+    db: AsyncSession, order_id: int, current_user: User
+) -> Optional[Order]:
+    """Get one order when requester is admin or owns the order."""
+    stmt = select(Order).where(Order.id == order_id)
+    if current_user.role != "admin":
+        stmt = stmt.where(Order.user_id == current_user.id)
+
+    result = await db.execute(stmt.options(selectinload(Order.items)))
     return result.scalar_one_or_none()
 
 
@@ -219,3 +273,43 @@ async def update_order_status(db: AsyncSession, order_id: int, status: str) -> O
     await db.commit()
     await db.refresh(db_order)
     return db_order
+
+
+async def send_order_status_notifications(db: AsyncSession, order: Order, new_status: str) -> None:
+    """Send best-effort email and push notifications for status changes."""
+    if new_status == "shipped":
+        try:
+            from app.config import settings
+            from app.services.email_service import EmailService, build_order_email_data
+
+            email_svc = EmailService(settings)
+            email_data = await build_order_email_data(db, order.id)
+            if email_data:
+                await email_svc.send_order_shipped(email_data)
+        except Exception:
+            logger.exception("Failed to send shipped email for order %s", order.id)
+
+    if new_status in ("processing", "shipped", "delivered"):
+        try:
+            from app.services.notification_service import NotificationService
+
+            result = await db.execute(select(User).where(User.id == order.user_id))
+            order_user = result.scalar_one_or_none()
+            if order_user and order_user.expo_push_token:
+                NotificationService.send_order_status_update(
+                    order_user.expo_push_token, order.id, new_status
+                )
+        except Exception:
+            logger.exception("Failed to send push notification for order %s", order.id)
+
+
+async def delete_order(db: AsyncSession, order_id: int) -> bool:
+    """Delete an order by ID."""
+    result = await db.execute(select(Order).where(Order.id == order_id))
+    order = result.scalar_one_or_none()
+    if not order:
+        return False
+
+    await db.delete(order)
+    await db.commit()
+    return True

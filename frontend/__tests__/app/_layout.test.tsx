@@ -1,5 +1,4 @@
 import { useCart, selectCartItemCount } from "@/store/cartStore";
-import { renderHook } from "@testing-library/react-native";
 
 /**
  * Test Suite: Root Layout Performance and Functionality
@@ -129,7 +128,6 @@ describe("Root Layout (_layout.tsx) - Performance & Correctness", () => {
   test("test_cart_store_subscription_pattern_uses_granular_selectors", () => {
     // Arrange: Track which state changes
     const stateChanges: string[] = [];
-    const initialState = useCart.getState();
 
     // Set up a listener to track state changes
     const unsubscribe = useCart.subscribe((state, prevState) => {

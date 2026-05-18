@@ -15,24 +15,24 @@ export default function FavoritesBar({ products, limit = 8, onSeeAll }: Props) {
 
   const favs = useMemo(() => {
     if (!products?.length) return [];
-    return products.filter((p) => favoriteIds.has(Number(p.id))).slice(0, limit);
+    return products
+      .filter((p) => favoriteIds.has(Number(p.id)))
+      .slice(0, limit);
   }, [products, limit, favoriteIds]);
-
-  if (favs.length === 0) {
-    return null;
-  }
 
   const renderItem = useCallback(
     ({ item }: { item: Product }) => <HorizontalProductCard product={item} />,
     []
   );
 
+  if (favs.length === 0) {
+    return null;
+  }
+
   return (
     <View className="mt-4 mb-4 bg-gradient-to-b from-amber-50 to-transparent rounded-2xl px-4 pt-4 pb-3 mx-4">
       <View className="flex-row items-center justify-between mb-3">
-        <Text className="text-[17px] font-bold text-ink">
-          {"⭐ Favoritos"}
-        </Text>
+        <Text className="text-[17px] font-bold text-ink">{"⭐ Favoritos"}</Text>
         <Pressable
           onPress={onSeeAll}
           style={{ minHeight: 44, justifyContent: "center" }}

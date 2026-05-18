@@ -1,7 +1,6 @@
 import { AuthGate } from "@/components/AuthGate";
 import { FlatList, Pressable, View } from "react-native";
 import { Stack, useRouter } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Text } from "@/components/ui/text";
 import { useCallback, useMemo } from "react";

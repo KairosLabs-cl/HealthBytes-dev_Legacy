@@ -151,22 +151,25 @@ GuestBanner.displayName = "GuestBanner";
 
 // ─── HomeFavorites ────────────────────────────────────────────────────────────
 
-const HomeFavorites = React.memo(({ products, onSeeAll }: { products: Product[] | undefined, onSeeAll: () => void }) => {
-  const favoriteIds = useFavoritesStore((state) => state.favoriteIds);
-  const favoriteProducts = useMemo(() => {
-    if (!products) return [];
-    return products.filter((p: Product) => favoriteIds.has(Number(p.id)));
-  }, [products, favoriteIds]);
+const HomeFavorites = React.memo(
+  ({
+    products,
+    onSeeAll,
+  }: {
+    products: Product[] | undefined;
+    onSeeAll: () => void;
+  }) => {
+    const favoriteIds = useFavoritesStore((state) => state.favoriteIds);
+    const favoriteProducts = useMemo(() => {
+      if (!products) return [];
+      return products.filter((p: Product) => favoriteIds.has(Number(p.id)));
+    }, [products, favoriteIds]);
 
-  if (favoriteProducts.length === 0) return null;
+    if (favoriteProducts.length === 0) return null;
 
-  return (
-    <FavoritesBar
-      products={favoriteProducts}
-      onSeeAll={onSeeAll}
-    />
-  );
-});
+    return <FavoritesBar products={favoriteProducts} onSeeAll={onSeeAll} />;
+  }
+);
 HomeFavorites.displayName = "HomeFavorites";
 
 // ─── HomeListHeader ───────────────────────────────────────────────────────────
@@ -176,7 +179,7 @@ interface HomeListHeaderProps {
   dietaryTags: DietaryTag[];
   toggleDietaryTag: (tag: DietaryTag) => void;
   heroProduct: Product | undefined;
-products: Product[] | undefined;
+  products: Product[] | undefined;
   onViewAll: () => void;
   onClearFilters: () => void;
   onSeeAllFavorites: () => void;
@@ -194,7 +197,10 @@ const HomeListHeader = React.memo(
     onSeeAllFavorites,
   }: HomeListHeaderProps) => (
     <>
-      <Header userName={userName} isLoggedIn={!!userName && userName !== "Usuario"} />
+      <Header
+        userName={userName}
+        isLoggedIn={!!userName && userName !== "Usuario"}
+      />
       <GuestBanner />
       <DietaryFilterBar
         dietaryTags={dietaryTags}
@@ -251,7 +257,8 @@ export default function HomeScreen() {
     // ⚡ Bolt: Use getState() instead of the hook to avoid subscribing to dietaryPreferences.
     // Since we only use it on mount, subscribing causes unnecessary full-screen re-renders
     // if preferences change in the background.
-    const dietaryPreferences = usePreferencesStore.getState().dietaryPreferences;
+    const dietaryPreferences =
+      usePreferencesStore.getState().dietaryPreferences;
     if (dietaryPreferences.length > 0) {
       const validTags = dietaryPreferences.filter((t) =>
         VALID_DIETARY_TAGS.has(t)
@@ -298,9 +305,7 @@ export default function HomeScreen() {
   );
 
   const renderItem = useCallback(
-    ({ item }: { item: Product }) => (
-      <ProductListItem product={item} />
-    ),
+    ({ item }: { item: Product }) => <ProductListItem product={item} />,
     []
   );
 
@@ -311,7 +316,7 @@ export default function HomeScreen() {
         dietaryTags={dietaryTags}
         toggleDietaryTag={toggleDietaryTag}
         heroProduct={heroProduct}
-products={data}
+        products={data}
         onViewAll={onViewAll}
         onClearFilters={clearFilters}
         onSeeAllFavorites={onSeeAllFavorites}

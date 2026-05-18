@@ -1,4 +1,10 @@
-import { fetchProductById, getProductRating, getProductReviews, listProducts } from "@/api/products";
+import {
+  fetchProductById,
+  getProductRating,
+  getProductReviews,
+  listProducts,
+  type Review,
+} from "@/api/products";
 import { Product } from "@/types/product";
 import { DietaryBadgeList } from "@/components/DietaryBadge";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -109,9 +115,12 @@ export default function ProductDetailsScreen() {
   const insets = useSafeAreaInsets();
   const addProduct = useCart((state) => state.addProduct);
   const decrementProduct = useCart((state) => state.decrementProduct);
-  // ⚡ Bolt: Use deterministic route parameter `id` instead of asynchronous `product?.id`
+  // Use deterministic route parameter `id` instead of asynchronous `product?.id`
   // to avoid evaluating to undefined during loading state and ensure a stable selector.
-  const currentInCart = useCart((state) => state.items.find((i) => i.product.id === Number(id))?.quantity || 0);
+  const currentInCart = useCart(
+    (state) =>
+      state.items.find((i) => i.product.id === Number(id))?.quantity || 0
+  );
   const cartItemCount = useCart(selectCartItemCount);
   const ctaScale = useSharedValue(1);
 
@@ -120,7 +129,7 @@ export default function ProductDetailsScreen() {
   }));
 
   // Fly-to-cart animation
-  const ctaBtnRef = useRef<any>(null);
+  const ctaBtnRef = useRef<View>(null);
   const cartBounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flyX = useSharedValue(0);
   const flyY = useSharedValue(0);
@@ -151,7 +160,7 @@ export default function ProductDetailsScreen() {
   }));
 
   const triggerFlyAnimation = (startX: number, startY: number) => {
-    // Cancel any in-flight animations so rapid presses start clean
+    // Cancel in-flight animations so rapid presses start clean
     cancelAnimation(flyX);
     cancelAnimation(flyY);
     cancelAnimation(flyScale);
@@ -251,19 +260,19 @@ export default function ProductDetailsScreen() {
   });
 
   const { data: rating } = useQuery({
-    queryKey: ['product-rating', id],
+    queryKey: ["product-rating", id],
     queryFn: () => getProductRating(Number(id)),
     enabled: !!id,
   });
 
   const { data: reviews, refetch: refetchReviews } = useQuery({
-    queryKey: ['product-reviews', id],
+    queryKey: ["product-reviews", id],
     queryFn: () => getProductReviews(Number(id), 0, 5),
     enabled: !!id,
   });
 
   const { refetch: refetchRating } = useQuery({
-    queryKey: ['product-rating', id],
+    queryKey: ["product-rating", id],
     queryFn: () => getProductRating(Number(id)),
     enabled: false,
   });
@@ -272,7 +281,7 @@ export default function ProductDetailsScreen() {
 
   // Filter out the current product from the vendor products list
   const otherVendorProducts = useMemo(() => {
-    return vendorProducts?.filter((p: any) => p.id.toString() !== id) || [];
+    return vendorProducts?.filter((p) => p.id.toString() !== id) || [];
   }, [vendorProducts, id]);
 
   const canAddMore = product
@@ -318,7 +327,7 @@ export default function ProductDetailsScreen() {
           triggerFlyAnimation(x + w / 2, y + h / 2);
         }
       );
-    } catch (err) {
+    } catch {
       Alert.alert(
         "Error",
         "No se pudo agregar al carrito. Intenta nuevamente."
@@ -332,8 +341,9 @@ export default function ProductDetailsScreen() {
   };
 
   const ctaLabel = () => {
-    if (!product || product.stock === 0) return "Agotado";
-    if (currentInCart >= product.stock) return "Máximo alcanzado";
+    const stock = product?.stock ?? 0;
+    if (!product || stock === 0) return "Agotado";
+    if (currentInCart >= stock) return "Máximo alcanzado";
     if (currentInCart > 0) return "Agregar uno más";
     return "Agregar al carrito";
   };
@@ -367,6 +377,17 @@ export default function ProductDetailsScreen() {
       </SafeAreaView>
     );
   }
+
+  if (!product) {
+    return (
+      <>
+        <Stack.Screen options={{ headerShown: false }} />
+        <ProductDetailSkeleton />
+      </>
+    );
+  }
+
+  const productStock = product.stock ?? 0;
 
   return (
     <View className="flex-1 bg-white">
@@ -443,12 +464,17 @@ export default function ProductDetailsScreen() {
             </Text>
             {product.vendor_name && (
               <Pressable
-                onPress={() => router.push(`/search?q=${encodeURIComponent(product.vendor_name!)}`)}
+                onPress={() =>
+                  router.push(
+                    `/search?q=${encodeURIComponent(product.vendor_name!)}`
+                  )
+                }
                 className="flex-row items-center py-1 active:opacity-70"
               >
                 <Store size={14} color="#166534" style={{ marginRight: 6 }} />
                 <Text className="text-green-800 font-semibold text-sm">
-                  Vendedor: <Text className="underline">{product.vendor_name}</Text>
+                  Vendedor:{" "}
+                  <Text className="underline">{product.vendor_name}</Text>
                 </Text>
               </Pressable>
             )}
@@ -463,15 +489,15 @@ export default function ProductDetailsScreen() {
               <Text className="text-3xl font-black text-black">
                 {formatPrice(product.price)}
               </Text>
-              {product.stock === 0 ? (
+              {productStock === 0 ? (
                 <View className="flex-row items-center bg-red-50 px-3 py-1.5 rounded-full">
                   <View className="w-2 h-2 rounded-full bg-red-500 mr-1.5" />
                   <Text className="text-xs font-semibold text-red-700">
                     Agotado
                   </Text>
                 </View>
-              ) : product.stock <= 5 ? (
-                <StockBadge stock={product.stock} variant="inline" />
+              ) : productStock <= 5 ? (
+                <StockBadge stock={productStock} variant="inline" />
               ) : (
                 <View className="flex-row items-center bg-green-50 px-3 py-1.5 rounded-full">
                   <View className="w-2 h-2 rounded-full bg-green-500 mr-1.5" />
@@ -554,23 +580,32 @@ export default function ProductDetailsScreen() {
                     </View>
                   </Animated.View>
                 );
-              } catch (e) {
+              } catch {
                 return null;
               }
             })()}
 
           {/* Vendor Carousel */}
           {product.vendor_name && otherVendorProducts.length > 0 && (
-            <Animated.View entering={FadeInUp.delay(500).duration(400)} className="mt-8 mb-4">
+            <Animated.View
+              entering={FadeInUp.delay(500).duration(400)}
+              className="mt-8 mb-4"
+            >
               <View className="flex-row items-center justify-between mb-4">
                 <Text className="text-lg font-extrabold text-gray-900">
                   Más de {product.vendor_name}
                 </Text>
                 <Pressable
-                  onPress={() => router.push(`/search?q=${encodeURIComponent(product.vendor_name!)}`)}
+                  onPress={() =>
+                    router.push(
+                      `/search?q=${encodeURIComponent(product.vendor_name!)}`
+                    )
+                  }
                   className="flex-row items-center bg-gray-50 px-3 py-1.5 rounded-full active:bg-gray-100"
                 >
-                  <Text className="text-sm font-bold text-gray-700 mr-1">Ver tienda</Text>
+                  <Text className="text-sm font-bold text-gray-700 mr-1">
+                    Ver tienda
+                  </Text>
                   <ChevronRight size={14} color="#374151" />
                 </Pressable>
               </View>
@@ -591,34 +626,39 @@ export default function ProductDetailsScreen() {
           )}
 
           {/* Product Reviews */}
-          <Animated.View entering={FadeInUp.delay(550).duration(400)} className="mt-6 mb-8 px-1">
+          <Animated.View
+            entering={FadeInUp.delay(550).duration(400)}
+            className="mt-6 mb-8 px-1"
+          >
             <View className="flex-row items-center justify-between mb-4">
-              <Text className="text-xl font-black text-gray-900">
-                Reseñas
-              </Text>
+              <Text className="text-xl font-black text-gray-900">Reseñas</Text>
               {rating && rating.review_count > 0 && (
                 <View className="flex-row items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full">
-                  <RatingStars rating={rating.avg_rating} size={16} showFraction />
+                  <RatingStars
+                    rating={rating.avg_rating}
+                    size={16}
+                    showFraction
+                  />
                   <Text className="text-sm text-gray-500 font-medium">
                     ({rating.review_count})
                   </Text>
                 </View>
               )}
             </View>
-            
+
             {rating && rating.review_count > 0 ? (
               <>
-                {reviews?.slice(0, 5).map((review: any) => (
+                {reviews?.slice(0, 5).map((review: Review) => (
                   <ReviewCard
                     key={review.id}
-                    userName={review.user_name || 'Usuario'}
+                    userName={review.user_name || "Usuario"}
                     userImage={review.user_image}
                     rating={review.rating}
                     comment={review.comment}
                     createdAt={review.created_at}
                   />
                 ))}
-                
+
                 {rating.review_count > 5 && (
                   <Pressable className="mt-2 py-3">
                     <Text className="text-green-600 text-center font-semibold">
@@ -634,7 +674,7 @@ export default function ProductDetailsScreen() {
                 </Text>
               </View>
             )}
-            
+
             {/* Botón para escribir reseña */}
             <Pressable
               onPress={() => setReviewModalVisible(true)}

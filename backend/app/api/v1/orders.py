@@ -7,13 +7,10 @@ import logging
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
 from app.db.database import get_db
-from app.db.models.address import Address
-from app.db.schemas import Order, User
+from app.db.schemas import User
 from app.middleware.auth import get_current_user
 from app.schemas.error import ErrorDetail, ErrorResponse
 from app.schemas.order import OrderCreate, OrderItemResponse, OrderResponse, OrderUpdate
@@ -51,16 +48,11 @@ async def create_order(
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error.model_dump())
 
         try:
-            # Validate address ownership if provided
             if order_data.address_id:
-                addr_result = await db.execute(
-                    select(Address).where(
-                        Address.id == order_data.address_id,
-                        Address.user_id == current_user.id,
-                        Address.is_active.is_(True),
-                    )
+                owns_address = await order_service.user_owns_active_address(
+                    db, current_user.id, order_data.address_id
                 )
-                if not addr_result.scalar_one_or_none():
+                if not owns_address:
                     error = ErrorResponse.not_found(
                         message="Address not found",
                         path="/api/v1/orders",
@@ -142,29 +134,13 @@ async def list_orders(
     - status: Optional filter by order status
     """
     try:
-        if current_user.role == "admin":
-            stmt = select(Order)
-        elif current_user.role == "seller":
-            # TODO: Filter by seller's products once seller_id is added to Product schema
-            # For now, sellers only see their own orders (same as regular users)
-            stmt = select(Order).where(Order.user_id == current_user.id)
-        else:
-            stmt = select(Order).where(Order.user_id == current_user.id)
-
-        # Optional status filter
-        if status_filter:
-            stmt = stmt.where(Order.status == status_filter)
-
-        # Eager load items
-        stmt = (
-            stmt.options(selectinload(Order.items))
-            .order_by(Order.created_at.desc(), Order.id.desc())
-            .offset(skip)
-            .limit(limit)
+        orders = await order_service.list_orders_for_request(
+            db=db,
+            current_user=current_user,
+            skip=skip,
+            limit=limit,
+            status_filter=status_filter,
         )
-
-        result = await db.execute(stmt)
-        orders = result.scalars().all()
 
         # Convert to response
         orders_response = []
@@ -219,15 +195,7 @@ async def get_order(
     - User: Only their own
     """
     try:
-        stmt = select(Order).where(Order.id == id)
-
-        # Authorization: non-admin users can only see their own orders
-        if current_user.role != "admin":
-            stmt = stmt.where(Order.user_id == current_user.id)
-
-        stmt = stmt.options(selectinload(Order.items))
-        result = await db.execute(stmt)
-        order = result.scalar_one_or_none()
+        order = await order_service.get_order_for_request(db, id, current_user)
 
         if not order:
             error = ErrorResponse.not_found(
@@ -316,37 +284,7 @@ async def update_order(
             )
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.model_dump())
 
-        # Send shipped email if status changed to shipped
-        if order_data.status == "shipped":
-            try:
-                from app.config import settings
-                from app.services.email_service import EmailService, build_order_email_data
-
-                email_svc = EmailService(settings)
-                email_data = await build_order_email_data(db, order.id)
-                if email_data:
-                    await email_svc.send_order_shipped(email_data)
-            except Exception:
-                logger.exception("Failed to send shipped email for order %s", order.id)
-
-        # Send push notification for status changes (best-effort)
-        if order_data.status in ("processing", "shipped", "delivered"):
-            try:
-                from sqlalchemy import select as sa_select
-
-                from app.db.schemas import User as UserModel
-                from app.services.notification_service import NotificationService
-
-                user_result = await db.execute(
-                    sa_select(UserModel).where(UserModel.id == order.user_id)
-                )
-                order_user = user_result.scalar_one_or_none()
-                if order_user and order_user.expo_push_token:
-                    NotificationService.send_order_status_update(
-                        order_user.expo_push_token, order.id, order_data.status
-                    )
-            except Exception:
-                logger.exception("Failed to send push notification for order %s", order.id)
+        await order_service.send_order_status_notifications(db, order, order_data.status)
 
         # Build response
         items_response = [
@@ -403,18 +341,13 @@ async def delete_order(
             )
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=error.model_dump())
 
-        result = await db.execute(select(Order).where(Order.id == id))
-        order = result.scalar_one_or_none()
-
-        if not order:
+        deleted = await order_service.delete_order(db, id)
+        if not deleted:
             error = ErrorResponse.not_found(
                 message="Order not found",
                 path=f"/api/v1/orders/{id}",
             )
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error.model_dump())
-
-        await db.delete(order)
-        await db.commit()
         return None
 
     except HTTPException:

@@ -22,7 +22,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Link, Stack, useSegments } from "expo-router";
 import { User } from "lucide-react-native";
 import { useEffect } from "react";
-import { Pressable, View } from "react-native";
+import { Pressable } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Sentry from "@sentry/react-native";
 import { useShallow } from "zustand/react/shallow";

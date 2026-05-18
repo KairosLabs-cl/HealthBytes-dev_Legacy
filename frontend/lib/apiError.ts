@@ -16,7 +16,7 @@ export class ApiError extends Error {
 
 /**
  * Throws a typed ApiError if the response is not ok.
- * Call after every fetch() in api/*.ts modules.
+ * Call after every API response in api/*.ts modules.
  */
 export async function throwIfNotOk(
   res: Response,

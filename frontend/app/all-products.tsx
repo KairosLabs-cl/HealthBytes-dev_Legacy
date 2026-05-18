@@ -60,7 +60,7 @@ export default function AllProductsScreen() {
         <ProductCard product={item} width="full" />
       </View>
     ),
-    [numColumns]
+    []
   );
 
   const listHeader = useMemo(
@@ -97,7 +97,11 @@ export default function AllProductsScreen() {
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
 
-      <ScreenHeader title="Todos los productos" icon={Package} showBackButton={true} />
+      <ScreenHeader
+        title="Todos los productos"
+        icon={Package}
+        showBackButton={true}
+      />
 
       {error ? (
         <View className="flex-1 items-center justify-center px-6">
@@ -123,7 +127,10 @@ export default function AllProductsScreen() {
             ListHeaderComponent={listHeader}
             onRefresh={handleRefresh}
             refreshing={refreshing}
-            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 128 }}
+            contentContainerStyle={{
+              paddingHorizontal: 16,
+              paddingBottom: 128,
+            }}
             showsVerticalScrollIndicator={false}
             estimatedItemSize={280}
             ListEmptyComponent={
@@ -141,7 +148,9 @@ export default function AllProductsScreen() {
                       className="mt-4 bg-black rounded-full px-6 py-3"
                       style={{ minHeight: 44 }}
                     >
-                      <Text className="text-white font-semibold">Ver todos</Text>
+                      <Text className="text-white font-semibold">
+                        Ver todos
+                      </Text>
                     </Pressable>
                   )}
                 </View>

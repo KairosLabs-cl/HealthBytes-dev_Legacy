@@ -1,3 +1,4 @@
+import { getRecommendedProducts } from "@/api/products";
 import HorizontalProductCard from "@/components/HorizontalProductCard";
 import { Text } from "@/components/ui/text";
 import type { Product } from "@/types/product";
@@ -7,18 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { View } from "react-native";
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
-
 const cardKeyExtractor = (item: Product) => String(item.id);
-
-async function fetchRecommended(token: string): Promise<Product[]> {
-  const res = await fetch(`${API_URL}/products/recommended?limit=12`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) return [];
-  const data = await res.json();
-  return Array.isArray(data) ? data : [];
-}
 
 export default function RecommendationsBar() {
   const { isSignedIn, getToken } = useAuth();
@@ -28,7 +18,7 @@ export default function RecommendationsBar() {
     queryFn: async () => {
       const token = await getToken();
       if (!token) return [];
-      return fetchRecommended(token);
+      return getRecommendedProducts(token, 12);
     },
     enabled: !!isSignedIn,
     staleTime: 5 * 60 * 1000,

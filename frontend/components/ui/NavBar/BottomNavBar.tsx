@@ -16,10 +16,10 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Try to import haptics - gracefully degrade if not installed
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let Haptics: any = null;
+type HapticsModule = typeof import("expo-haptics");
+let Haptics: HapticsModule | null = null;
 try {
-  Haptics = require("expo-haptics");
+  Haptics = require("expo-haptics") as HapticsModule;
 } catch {
   // expo-haptics not installed, haptic feedback disabled
 }
@@ -159,7 +159,9 @@ const TabItem = React.memo(
             onPressOut={handlePressOut}
             onPress={handlePress}
           >
-            <Animated.View style={[animatedStyle, { width: '100%' }]}>{innerContent}</Animated.View>
+            <Animated.View style={[animatedStyle, { width: "100%" }]}>
+              {innerContent}
+            </Animated.View>
           </Pressable>
         </Link>
       );

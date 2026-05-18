@@ -2,12 +2,13 @@ import { Dimensions, useWindowDimensions } from "react-native";
 import { useEffect, useState } from "react";
 
 import resolveConfig from "tailwindcss/resolveConfig";
+import type { Config } from "tailwindcss";
 import * as tailwindConfig from "@/tailwind.config";
 
-const TailwindTheme = resolveConfig(tailwindConfig as any);
-const screenSize = TailwindTheme.theme.screens;
+const TailwindTheme = resolveConfig(tailwindConfig as unknown as Config);
+const screenSize = TailwindTheme.theme.screens as Record<string, string>;
 
-type breakpoints = keyof typeof screenSize | "default";
+type breakpoints = string;
 
 type MediaQueriesBreakpoints = {
   key: breakpoints;
@@ -18,7 +19,7 @@ type MediaQueriesBreakpoints = {
 
 type BreakPointValue = Partial<Record<breakpoints, unknown>>;
 
-const resolveScreenWidth: Record<breakpoints, number> = {
+const resolveScreenWidth: Record<string, number> = {
   default: 0,
 };
 
@@ -46,7 +47,7 @@ export const getBreakPointValue = (
     const isValid = isValidBreakpoint(resolveScreenWidth[key], width);
 
     mediaQueriesBreakpoints.push({
-      key: key,
+      key,
       breakpoint: resolveScreenWidth[key],
       isValid: isValid,
     });

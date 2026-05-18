@@ -92,7 +92,7 @@ def test_login_user_not_found(client):
 @pytest.mark.auth
 def test_login_user_not_found_calls_mock_verification(client):
     """Verify that verify_password_mock is called when the email does not exist."""
-    with patch("app.api.v1.auth.verify_password_mock") as mock_verify:
+    with patch("app.services.auth_service.verify_password_mock") as mock_verify:
         response = client.post(
             "/auth/login",
             json={"email": "nonexistent@example.com", "password": "somepassword"},
@@ -113,7 +113,7 @@ def test_login_missing_fields(client):
 @pytest.mark.auth
 def test_register_exception_logging(client, caplog):
     """Test that unexpected exceptions during registration are logged, not printed."""
-    with patch("app.api.v1.auth.get_password_hash", side_effect=RuntimeError("boom")):
+    with patch("app.services.auth_service.get_password_hash", side_effect=RuntimeError("boom")):
         with caplog.at_level(logging.ERROR, logger="app.api.v1.auth"):
             response = client.post(
                 "/auth/register",
@@ -127,7 +127,7 @@ def test_register_exception_logging(client, caplog):
 @pytest.mark.auth
 def test_login_exception_logging(client, caplog):
     """Test that unexpected exceptions during login are logged, not printed."""
-    with patch("app.api.v1.auth.verify_password_mock", side_effect=RuntimeError("boom")):
+    with patch("app.services.auth_service.verify_password_mock", side_effect=RuntimeError("boom")):
         with caplog.at_level(logging.ERROR, logger="app.api.v1.auth"):
             response = client.post(
                 "/auth/login",

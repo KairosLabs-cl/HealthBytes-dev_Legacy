@@ -1,7 +1,7 @@
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { useAuth } from "@clerk/clerk-expo";
 import { Heart } from "lucide-react-native";
-import { memo, useCallback } from "react";
+import { memo, useCallback, type MouseEvent } from "react";
 import { Alert, Platform, Pressable } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -51,7 +51,7 @@ function FavoriteButton({ productId, size = 24 }: FavoriteButtonProps) {
   const webProps =
     Platform.OS === "web"
       ? {
-          onClick: (e: any) => {
+          onClick: (e: MouseEvent) => {
             e.preventDefault();
             e.stopPropagation();
             handlePress();

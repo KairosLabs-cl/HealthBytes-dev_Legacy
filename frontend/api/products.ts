@@ -1,4 +1,5 @@
 import { throwIfNotOk } from "@/lib/apiError";
+import type { Product } from "@/types/product";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -11,7 +12,9 @@ export type ProductFilters = {
 };
 
 // Función mejorada que acepta múltiples filtros
-export async function listProducts(filters?: ProductFilters) {
+export async function listProducts(
+  filters?: ProductFilters
+): Promise<Product[]> {
   // Construir query string dinámicamente
   const params = new URLSearchParams();
 
@@ -40,13 +43,13 @@ export async function listProducts(filters?: ProductFilters) {
   return res.json();
 }
 
-export async function getFeaturedProduct() {
+export async function getFeaturedProduct(): Promise<Product> {
   const res = await fetch(`${API_URL}/products/featured`);
   await throwIfNotOk(res, "Error fetching featured product");
   return res.json();
 }
 
-export async function fetchProductById(id: number) {
+export async function fetchProductById(id: number): Promise<Product> {
   const res = await fetch(`${API_URL}/products/${id}`);
   await throwIfNotOk(res, "Error fetching product");
   return res.json();
@@ -69,22 +72,54 @@ export type Review = {
   user_image?: string | null;
 };
 
-export async function getProductRating(productId: number): Promise<ProductRating> {
+export async function getProductRating(
+  productId: number
+): Promise<ProductRating> {
   const res = await fetch(`${API_URL}/products/${productId}/rating`);
-  await throwIfNotOk(res, 'Error fetching rating');
+  await throwIfNotOk(res, "Error fetching rating");
   return res.json();
 }
 
-export async function getProductReviews(productId: number, skip = 0, limit = 20): Promise<Review[]> {
-  const res = await fetch(`${API_URL}/products/${productId}/reviews?skip=${skip}&limit=${limit}`);
-  await throwIfNotOk(res, 'Error fetching reviews');
+export async function getProductReviews(
+  productId: number,
+  skip = 0,
+  limit = 20
+): Promise<Review[]> {
+  const res = await fetch(
+    `${API_URL}/products/${productId}/reviews?skip=${skip}&limit=${limit}`
+  );
+  await throwIfNotOk(res, "Error fetching reviews");
   return res.json();
 }
 
-export async function listDiscountedProducts(skip = 0, limit = 20) {
+export async function listDiscountedProducts(
+  skip = 0,
+  limit = 20
+): Promise<Product[]> {
   const res = await fetch(
     `${API_URL}/products/discounts?skip=${skip}&limit=${limit}`
   );
   await throwIfNotOk(res, "Error fetching discounted products");
   return res.json();
+}
+
+export async function getRecommendedProducts(
+  token?: string | null,
+  limit = 12
+): Promise<Product[]> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const res = await fetch(`${API_URL}/products/recommended?limit=${limit}`, {
+    headers,
+  });
+  await throwIfNotOk(res, "Error fetching recommendations");
+
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
 }

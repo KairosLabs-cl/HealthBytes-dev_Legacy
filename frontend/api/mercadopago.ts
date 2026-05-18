@@ -65,12 +65,7 @@ export async function createMercadoPagoPreference(
 
   await throwIfNotOk(res, "Error creating Mercado Pago preference");
 
-  const data = await res.json();
-
-  if (__DEV__) {
-    console.log("MP preference created:", data.preference_id);
-  }
-  return data;
+  return res.json();
 }
 
 /**
@@ -104,10 +99,5 @@ export async function getMercadoPagoPaymentStatus(
 
   await throwIfNotOk(res, "Failed to get payment status");
 
-  const data = await res.json();
-
-  if (__DEV__) {
-    console.log("Payment status:", data.status);
-  }
-  return data;
+  return res.json();
 }

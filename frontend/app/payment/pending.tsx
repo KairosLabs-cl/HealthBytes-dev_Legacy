@@ -48,10 +48,8 @@ export default function PaymentPendingScreen() {
         });
         return;
       }
-    } catch (error) {
-      if (__DEV__) {
-        console.error("Error checking order status:", error);
-      }
+    } catch {
+      // Keep polling until the payment provider reports a final state.
     } finally {
       setIsChecking(false);
     }
@@ -80,77 +78,77 @@ export default function PaymentPendingScreen() {
 
   return (
     <AuthGate message="Inicia sesion para ver el estado de tu pago.">
-    <View className="flex-1 bg-white justify-center items-center p-6">
-      <View className="bg-yellow-100 p-6 rounded-full mb-6">
-        <ClockIcon size={64} color="#eab308" />
-      </View>
+      <View className="flex-1 bg-white justify-center items-center p-6">
+        <View className="bg-yellow-100 p-6 rounded-full mb-6">
+          <ClockIcon size={64} color="#eab308" />
+        </View>
 
-      <Text className="text-3xl font-bold text-center mb-2 text-black">
-        Pago Pendiente
-      </Text>
-
-      <Text className="text-gray-600 text-center mb-4 text-lg">
-        Tu pago aun esta siendo procesado.
-      </Text>
-
-      {orderId && (
-        <Text className="text-sm text-gray-400 text-center mb-6">
-          Orden ID: {orderId}
+        <Text className="text-3xl font-bold text-center mb-2 text-black">
+          Pago Pendiente
         </Text>
-      )}
 
-      {!maxRetriesReached ? (
-        <>
-          <View className="mb-8">
-            <ActivityIndicator size="large" color="#000" />
-          </View>
-          <Text className="text-sm text-gray-600 text-center mb-8">
-            Verificando estado del pago... ({pollCount}/{MAX_POLLS})
+        <Text className="text-gray-600 text-center mb-4 text-lg">
+          Tu pago aun esta siendo procesado.
+        </Text>
+
+        {orderId && (
+          <Text className="text-sm text-gray-400 text-center mb-6">
+            Orden ID: {orderId}
           </Text>
-        </>
-      ) : (
-        <Text className="text-sm text-orange-600 text-center mb-8">
-          No pudimos confirmar tu pago automaticamente. Puedes verificar el
-          estado en tus ordenes o intentar nuevamente.
-        </Text>
-      )}
-
-      <VStack space="md" className="w-full">
-        {checkoutUrl && (
-          <Button
-            size="lg"
-            className="bg-black"
-            onPress={() => Linking.openURL(checkoutUrl)}
-          >
-            <ButtonText className="text-white font-bold">
-              Abrir Mercado Pago
-            </ButtonText>
-          </Button>
         )}
 
-        <Button
-          size="lg"
-          className="bg-blue-600"
-          onPress={checkOrderStatus}
-          disabled={isChecking}
-        >
-          <ButtonText className="text-white font-bold">
-            {isChecking ? "Verificando..." : "Verificar estado"}
-          </ButtonText>
-        </Button>
+        {!maxRetriesReached ? (
+          <>
+            <View className="mb-8">
+              <ActivityIndicator size="large" color="#000" />
+            </View>
+            <Text className="text-sm text-gray-600 text-center mb-8">
+              Verificando estado del pago... ({pollCount}/{MAX_POLLS})
+            </Text>
+          </>
+        ) : (
+          <Text className="text-sm text-orange-600 text-center mb-8">
+            No pudimos confirmar tu pago automaticamente. Puedes verificar el
+            estado en tus ordenes o intentar nuevamente.
+          </Text>
+        )}
 
-        <Button
-          size="lg"
-          variant="outline"
-          className="border-gray-300"
-          onPress={() => router.replace("/orders")}
-        >
-          <ButtonText className="text-gray-700 font-bold">
-            Ir a mis ordenes
-          </ButtonText>
-        </Button>
-      </VStack>
-    </View>
+        <VStack space="md" className="w-full">
+          {checkoutUrl && (
+            <Button
+              size="lg"
+              className="bg-black"
+              onPress={() => Linking.openURL(checkoutUrl)}
+            >
+              <ButtonText className="text-white font-bold">
+                Abrir Mercado Pago
+              </ButtonText>
+            </Button>
+          )}
+
+          <Button
+            size="lg"
+            className="bg-blue-600"
+            onPress={checkOrderStatus}
+            disabled={isChecking}
+          >
+            <ButtonText className="text-white font-bold">
+              {isChecking ? "Verificando..." : "Verificar estado"}
+            </ButtonText>
+          </Button>
+
+          <Button
+            size="lg"
+            variant="outline"
+            className="border-gray-300"
+            onPress={() => router.replace("/orders")}
+          >
+            <ButtonText className="text-gray-700 font-bold">
+              Ir a mis ordenes
+            </ButtonText>
+          </Button>
+        </VStack>
+      </View>
     </AuthGate>
   );
 }

@@ -21,7 +21,10 @@ export async function getProductReviews(
   skip = 0,
   limit = 20
 ): Promise<Review[]> {
-  const params = new URLSearchParams({ skip: String(skip), limit: String(limit) });
+  const params = new URLSearchParams({
+    skip: String(skip),
+    limit: String(limit),
+  });
   const res = await fetch(`${API_URL}/products/${productId}/reviews?${params}`);
   await throwIfNotOk(res, "Error obteniendo reseñas");
   const data = await res.json();
@@ -46,4 +49,12 @@ export async function createReview(
   });
   await throwIfNotOk(res, "Error creando reseña");
   return res.json();
+}
+
+export async function createProductReview(
+  productId: number,
+  data: ReviewCreate,
+  token: string
+): Promise<void> {
+  await createReview(productId, data, token);
 }

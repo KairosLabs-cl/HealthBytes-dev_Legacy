@@ -27,9 +27,6 @@ export async function fetchAddresses(
   });
 
   if (res.status === 429) {
-    if (__DEV__) {
-      console.warn("fetchAddresses: rate limited (429), returning empty list");
-    }
     return {
       addresses: [],
       total: 0,
