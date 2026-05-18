@@ -39,6 +39,10 @@ Guías para trabajar en el código:
 Reportes específicos de frontend y experiencia de usuario:
 - **[03_frontend.md](./frontend/03_frontend.md)** - Auditoría de cumplimiento y performance frontend
 
+### 🤖 [ia-tools/](./ia-tools/) - Prompts y Flujos Para Agentes
+Guías operativas para herramientas IA y revisión automatizada:
+- **[agent-role-hive-prompts.md](./ia-tools/agent-role-hive-prompts.md)** - Perfiles de agentes especializados, canvas de evaluación y prompts para triage de PRs/tareas
+
 ---
 
 ## 🎯 Navegación Rápida
@@ -51,6 +55,7 @@ Reportes específicos de frontend y experiencia de usuario:
 | 🔐 Seguridad | [security/](./security/) |
 | 👨‍💻 Contribuir | [development/](./development/) |
 | 🏗️ Auditorías técnicas | [development/inspections/](./development/inspections/) |
+| 🤖 Operar agentes IA | [ia-tools/](./ia-tools/) |
 
 ---
 
