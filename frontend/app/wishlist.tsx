@@ -76,6 +76,8 @@ export default function WishlistScreen() {
           onPress={() => router.push("/")}
           className="bg-black px-6 py-3 rounded-full active:opacity-80"
           style={{ minHeight: 44 }}
+          accessibilityRole="button"
+          accessibilityLabel="Explorar productos"
         >
           <Text className="text-white font-bold text-base">
             Explorar productos
@@ -121,6 +123,8 @@ export default function WishlistScreen() {
             onPress={() => refetch()}
             className="flex-row items-center gap-2 bg-black px-6 py-3 rounded-full"
             style={{ minHeight: 44 }}
+            accessibilityRole="button"
+            accessibilityLabel="Reintentar cargar lista de deseos"
           >
             <RefreshCw size={18} color="white" />
             <Text className="text-white font-bold">Reintentar</Text>

@@ -100,6 +100,8 @@ export default function ProfileScreen() {
             <Pressable
               className="w-12 h-12 bg-black rounded-2xl items-center justify-center"
               onPress={() => router.push("/profile-settings")}
+              accessibilityRole="button"
+              accessibilityLabel="Abrir configuración de perfil"
             >
               <Icon as={Settings} color="#ffffff" size="lg" />
             </Pressable>
@@ -131,6 +133,8 @@ export default function ProfileScreen() {
                       params: { status: item.status },
                     })
                   }
+                  accessibilityRole="button"
+                  accessibilityLabel={`Ver órdenes ${item.label.toLowerCase()}`}
                 >
                   <Icon
                     as={item.icon}
@@ -156,6 +160,8 @@ export default function ProfileScreen() {
               key={item.label}
               className="bg-black rounded-3xl flex-row items-center px-4 py-4 mb-3"
               onPress={() => router.push(item.href)}
+              accessibilityRole="button"
+              accessibilityLabel={item.label}
             >
               <View className="w-12 h-12 bg-gray-200 rounded-2xl items-center justify-center mr-3">
                 <Icon as={item.icon} color="#1f2937" size="lg" />
@@ -167,6 +173,8 @@ export default function ProfileScreen() {
           <Pressable
             className="rounded-3xl overflow-hidden"
             onPress={handleLogout}
+            accessibilityRole="button"
+            accessibilityLabel="Salir de la cuenta"
           >
             <View className="bg-red-600 flex-row items-center px-4 py-4">
               <View className="w-12 h-12 bg-white rounded-2xl items-center justify-center mr-3">

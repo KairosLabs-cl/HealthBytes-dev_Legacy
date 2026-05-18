@@ -79,6 +79,7 @@ function FavoriteButton({ productId, size = 24 }: FavoriteButtonProps) {
       accessibilityLabel={
         favorited ? "Quitar de favoritos" : "Agregar a favoritos"
       }
+      hitSlop={6}
       {...webProps}
     >
       <Animated.View style={animatedStyle}>

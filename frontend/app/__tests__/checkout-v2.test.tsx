@@ -69,6 +69,9 @@ jest.mock("@/components/PaymentMethodSelector", () => ({
       <Pressable
         testID="payment-selector"
         onPress={() => onSelect("mercado_pago")}
+        accessibilityRole="radio"
+        accessibilityLabel="Mercado Pago, Billetera digital de Mercado Pago"
+        accessibilityState={{ selected: false }}
       >
         <Text>Seleccionar Mercado Pago</Text>
       </Pressable>
@@ -79,8 +82,12 @@ jest.mock("@/components/PaymentMethodSelector", () => ({
 jest.mock("@/components/ui/button", () => {
   const { TouchableOpacity, Text } = require("react-native");
   return {
-    Button: ({ onPress, disabled, children }: any) => (
-      <TouchableOpacity onPress={onPress} disabled={disabled ?? false}>
+    Button: ({ onPress, disabled, children, ...rest }: any) => (
+      <TouchableOpacity
+        onPress={onPress}
+        disabled={disabled ?? false}
+        {...rest}
+      >
         {children}
       </TouchableOpacity>
     ),
@@ -231,6 +238,15 @@ describe("CheckoutV2Screen", () => {
       expect(screen.getByText("Santiago, Metropolitana")).toBeTruthy();
     });
 
+    it("expone dirección seleccionada como radio con label estable", () => {
+      render(<CheckoutV2Screen />);
+      const address = screen.getByLabelText(
+        "Dirección: Calle Principal, Santiago"
+      );
+      expect(address.props.accessibilityRole).toBe("radio");
+      expect(address.props.accessibilityState).toEqual({ selected: true });
+    });
+
     it("muestra estado vacío cuando no hay direcciones", () => {
       setupStores({ addresses: [], defaultAddress: null });
       render(<CheckoutV2Screen />);
@@ -258,6 +274,7 @@ describe("CheckoutV2Screen", () => {
       await renderAtStep("payment");
       expect(screen.getByTestId("payment-selector")).toBeTruthy();
       expect(screen.getByText("Atrás")).toBeTruthy();
+      expect(screen.getByLabelText("Revisar orden")).toBeTruthy();
     });
 
     it("regresa al paso de dirección al presionar Atrás", async () => {

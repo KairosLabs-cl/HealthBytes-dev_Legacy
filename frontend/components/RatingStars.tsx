@@ -54,13 +54,23 @@ export function RatingStars({
         size={size}
         fill={filled || halfFilled ? "#FBBF24" : "transparent"}
         color={filled || halfFilled ? "#FBBF24" : "#9CA3AF"}
-        accessibilityLabel={`${index + 1} de ${maxStars} estrellas`}
+        accessible={false}
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
       />
     );
   };
 
   return (
-    <View className="flex-row items-center gap-1">
+    <View
+      className="flex-row items-center gap-1"
+      accessible={!interactive}
+      accessibilityLabel={
+        interactive
+          ? undefined
+          : `Calificación ${rating.toFixed(1)} de ${maxStars} estrellas`
+      }
+    >
       {Array.from({ length: maxStars }, (_, i) => renderStar(i))}
       {showFraction && (
         <Text className="text-sm font-bold text-ink-muted ml-1">

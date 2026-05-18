@@ -76,6 +76,8 @@ export default function SearchScreen() {
           onPress={() => router.push("/")}
           className="bg-black px-6 py-3 rounded-full active:opacity-80"
           style={{ minHeight: 44 }}
+          accessibilityRole="button"
+          accessibilityLabel="Volver al inicio"
         >
           <Text className="text-white font-bold text-base">
             Volver al inicio
@@ -130,6 +132,8 @@ export default function SearchScreen() {
             onPress={() => refetch()}
             className="flex-row items-center gap-2 bg-black px-6 py-3 rounded-full mb-3"
             style={{ minHeight: 44 }}
+            accessibilityRole="button"
+            accessibilityLabel="Reintentar búsqueda"
           >
             <RefreshCw size={18} color="white" />
             <Text className="text-white font-bold">Reintentar</Text>
@@ -138,6 +142,8 @@ export default function SearchScreen() {
             onPress={() => router.push("/")}
             className="px-6 py-3 rounded-full"
             style={{ minHeight: 44 }}
+            accessibilityRole="button"
+            accessibilityLabel="Volver al inicio"
           >
             <Text className="text-gray-600 font-bold">Volver al inicio</Text>
           </Pressable>
