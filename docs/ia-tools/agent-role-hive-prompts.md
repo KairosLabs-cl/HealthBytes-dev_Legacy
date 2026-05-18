@@ -84,6 +84,48 @@ Columnas:
 - Closed: cerrada con razon explicita.
 - Merged: integrada.
 
+### Items Activos: CR Dependencias 2026-05-18
+
+Estos items vienen de PRs Dependabot valiosas pero bloqueadas por CI. No deben
+mergearse directo mientras `Backend Tests` falle por `P2 deprecations
+no-net-increase check`.
+
+| ID | PR | Columna | Roles asignados | Seguridad | Calidad | Funcionalidad | Bloqueo |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| CR-DEP-2026-05-18-01 | #220 `brace-expansion` 5.0.5 -> 5.0.6 | Needs Changes | agent:security, agent:architecture, agent:qa | 8/10 | 7/10 | 2/10 | `frontend/pnpm-lock.yaml` sube `deprecated:` de 12 a 14 y supera la baseline P2. |
+| CR-DEP-2026-05-18-02 | #222 `postcss` 8.5.14 | Needs Changes | agent:security, agent:architecture, agent:qa | 8.5/10 | 7/10 | 2/10 | Mismo bloqueo P2; el cambio se ve compatible con Expo/Tailwind/NativeWind pero CI esta rojo. |
+
+Condiciones para mover a `Ready To Merge`:
+
+1. Resolver la politica del guard `P2 deprecations` sin esconder deuda real.
+2. Si las nuevas entradas `deprecated:` son deuda existente solo revelada por el lockfile, actualizar baseline con justificacion explicita o crear subtareas de remediacion.
+3. Si las deprecations son nuevas por el bump, proponer alternativa de version o remediation de dependencias transitivas.
+4. Re-ejecutar CI y confirmar verde en backend tests, frontend lint/types, frontend tests, dependency audit, SAST y secret scan.
+5. Dejar comentario final en cada PR con decision `merge` o `modify`, evidencia y riesgo residual.
+
+Prompt para agentes del CR:
+
+```md
+Eres un agente especializado de HealthBytes asignado al CR de dependencias.
+
+Item: CR-DEP-2026-05-18-01 o CR-DEP-2026-05-18-02
+PRs relacionados: #220 y #222
+Estado inicial: Needs Changes
+Bloqueo conocido: CI rojo por P2 deprecations no-net-increase check.
+
+Tu tarea:
+* Revisar si el bump aporta seguridad real y si mantiene compatibilidad.
+* Separar riesgo del paquete actualizado vs deuda revelada en el lockfile.
+* Proponer la menor accion correcta para dejar el PR mergeable.
+* No recomendar merge directo con CI rojo.
+
+Entrega:
+* Agent Review Canvas completo.
+* Decision: modify / rescue / merge.
+* Patch sugerido o instrucciones exactas para resolver el guard P2.
+* Checks que deben volver a correr antes de merge.
+```
+
 Labels sugeridos:
 
 ```txt
