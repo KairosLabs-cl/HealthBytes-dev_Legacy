@@ -5,19 +5,19 @@
 
 | Criterion | Status | Notes |
 |-----------|--------|-------|
-| 1.1.1 Non-text Content | ⚠️ Partial | Icons need alt text via accessibilityLabel |
+| 1.1.1 Non-text Content | ✅ Pass | Audited icon-only controls now expose accessible names |
 | 1.3.1 Info and Relationships | ✅ Pass | Semantic roles used (button, image, etc.) |
 | 1.4.3 Contrast (Minimum) | ✅ Pass | ink-primary (#2D2926) on white: ~14:1 |
 | 1.4.4 Resize Text | ✅ Pass | Uses sp-equivalent units |
 | 2.1.1 Keyboard (Tab nav) | N/A | Mobile app — touch only |
 | 2.4.3 Focus Order | ✅ Pass | Screen reader order follows visual order |
-| 2.4.6 Headings and Labels | ⚠️ Partial | Some inputs missing accessibilityLabel |
+| 2.4.6 Headings and Labels | ✅ Pass | Audited product, checkout, and search controls have accessible labels |
 | 2.5.3 Label in Name | ✅ Pass | Buttons with text have matching accessible names |
 | 2.5.5 Target Size | ✅ Pass | Critical buttons use `minHeight: 44` |
 | 3.1.1 Language of Page | ✅ Pass | `web.lang: "es"` in app.json |
-| 4.1.2 Name, Role, Value | ⚠️ Partial | See component findings below |
+| 4.1.2 Name, Role, Value | ✅ Pass | Audited controls expose role, label, state, and hints where useful |
 
-**Overall: 7/11 criteria fully met, 3 partially met, 1 N/A**
+**Overall: 10/11 criteria fully met, 0 partially met, 1 N/A**
 
 ---
 
@@ -38,23 +38,36 @@
 |-----------|-------|-------------|
 | `CartItem` | Decrement/Increment Pressables had no labels | Added `accessibilityRole="button"` + `accessibilityLabel` |
 | `CartItem` | TextInput had no `accessibilityLabel` | Added `accessibilityLabel="Cantidad"` |
+| `DiscountsBar` | "Ver mas" and product tap path needed explicit names/roles | Added section action label; shared product card now exposes role + action label |
+| `RecommendationsBar` | Product tap path needed explicit name/role | Shared horizontal product card path now exposes role + action label |
+| `HorizontalProductCard` / `ProductCard` | Tappable product wrapper lacked button role and action-oriented label | Added `accessibilityRole="button"` and stable "Ver detalles de..." label |
+| `ProductCard` | Add-to-cart control did not expose role/state consistently | Added button role and disabled state |
+| `checkout-v2.tsx` | Checkout controls needed clearer labels and selected state verification | Address radios include label/hint/state; bottom actions have step-specific labels |
+| `PaymentMethodSelector` | Payment choices needed role/label/selected and disabled state | Added radio role, label, hint, selected state, and disabled state |
+| `Header` / `search.tsx` | Search input needed hint verification and icon-only controls needed labels/touch support | Search input has label + hint; search/clear/back icon controls have labels and hitSlop; search screen actions have button labels |
+| `ScreenHeader` | Shared back icon button needed a stable accessible name | Added button role, `Volver` label, and hitSlop |
+| `AuthGate` | Login/catalog actions needed explicit role/label | Added button roles and labels |
+| `OrderListItem` / `orders.tsx` | Order rows, filters, error dismiss, and pagination needed role/name/state | Added button roles, descriptive labels, selected state, disabled state, and hints |
+| `WishlistTableRow` / `wishlist.tsx` | Wishlist product/image/cart/remove actions needed role/name/state | Added action labels and disabled state for out-of-stock cart action |
+| `product/[id].tsx` | Detail screen icon/compact actions needed role/name/state | Added labels for cart, vendor links, retry, review modal, quantity controls, and CTA |
+| Catalog/profile/cart/recent screens | Text or icon actions outside first pass needed explicit roles/labels | Added roles/labels to primary navigation and retry actions |
+| `product/[id].tsx` reviews link | "Ver las N reseñas" was visually rendered as a Pressable without a real action | Added in-place expand behavior, role, label, hint, and expanded state |
+| `CartItem` | Remove icon button and compact quantity buttons needed names/state and target support | Added product-specific labels, disabled state, and hitSlop |
+| `RatingStars` | Non-interactive stars could announce each star individually | Non-interactive ratings now expose one concise rating label; interactive stars remain individually operable |
+| Compact commerce controls | Some core controls were visually below 44pt | Added hitSlop to compact cart, favorite, product-card, and wishlist actions without redesigning layout |
 
-### 🔴 Remaining Issues (Future Sprints)
+### 🔴 Remaining Manual Validation
 
 | Component | Issue | Priority |
 |-----------|-------|----------|
-| `DiscountsBar` | Product tap has no accessibilityLabel | Medium |
-| `RecommendationsBar` | Product tap has no accessibilityLabel | Medium |
-| `checkout-v2.tsx` | Form inputs lack accessibilityLabel | High |
-| `search.tsx` | Search input lacks `accessibilityHint` | Medium |
-| `HorizontalProductCard` | Pressable wrapper lacks label | Medium |
-| Various icon-only buttons | Lucide icons need aria-label equivalent | Medium |
+| VoiceOver/TalkBack touch exploration | Validate final effective touch areas and announcement order on device/emulator | Medium |
+| Decorative emoji headings | Some friendly emoji in headings/greetings may still be announced by screen readers; keep or hide based on product voice decision after manual testing | Low |
 
 ### Touch Target Sizes (WCAG 2.5.5 — minimum 44×44px)
 
 - ✅ NavBar buttons: 44pt height enforced
 - ✅ Critical CTAs: `style={{ minHeight: 44 }}`
-- ⚠️ Some icon-only buttons use 32×32 — acceptable for mobile (WCAG 2.5.5 is AA, not AAA)
+- ✅ Compact controls below 44pt now include hitSlop or surrounding touch affordance
 
 ### Color Contrast
 
@@ -66,9 +79,8 @@
 
 ## Recommendations
 
-1. **High priority**: Add `accessibilityLabel` to all form inputs in checkout flow
-2. **Medium priority**: Add `accessibilityLabel` to all product card tappable areas
-3. **Low priority**: Consider `accessibilityHint` for actions that aren't self-explanatory
+1. **Medium priority**: Validate compact controls on real devices with VoiceOver/TalkBack touch exploration
+2. **Low priority**: Confirm decorative emoji headings match the intended screen-reader experience
 
 ## Test Procedure
 

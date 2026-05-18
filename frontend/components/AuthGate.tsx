@@ -46,6 +46,8 @@ export function AuthGate({
           onPress={() => router.push("/(auth)/login")}
           className="w-full h-14 bg-ink rounded-full items-center justify-center active:opacity-80 mb-6"
           style={{ minHeight: 52 }}
+          accessibilityRole="button"
+          accessibilityLabel="Iniciar sesión"
         >
           <Text className="text-white font-bold text-base">Inicia sesión</Text>
         </Pressable>
@@ -54,6 +56,8 @@ export function AuthGate({
           onPress={() => router.replace("/")}
           className="py-2 active:opacity-60"
           style={{ minHeight: 44 }}
+          accessibilityRole="button"
+          accessibilityLabel="Volver al catálogo"
         >
           <Text className="text-ink-subtle font-medium text-sm">
             Volver al catalogo

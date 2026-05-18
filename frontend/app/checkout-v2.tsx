@@ -249,6 +249,7 @@ export default function CheckoutV2Screen() {
                             : "border-border-subtle bg-surface-card shadow-soft-lift"
                         }`}
                         accessibilityLabel={`Dirección: ${address.street}, ${address.city}`}
+                        accessibilityHint="Selecciona esta dirección para el envío"
                         accessibilityRole="radio"
                         accessibilityState={{
                           selected: selectedAddress?.id === address.id,
@@ -442,6 +443,8 @@ export default function CheckoutV2Screen() {
                 style={{ minHeight: 48 }}
                 onPress={handleBack}
                 disabled={isProcessing}
+                accessibilityRole="button"
+                accessibilityLabel="Volver al paso anterior del checkout"
               >
                 <ButtonText className="text-ink font-semibold">
                   Atrás
@@ -454,6 +457,15 @@ export default function CheckoutV2Screen() {
               className="bg-ink h-16 rounded-full shadow-soft-lift"
               onPress={handleNext}
               disabled={isProcessing}
+              accessibilityRole="button"
+              accessibilityLabel={
+                currentStep === "address"
+                  ? "Continuar al método de pago"
+                  : currentStep === "payment"
+                    ? "Revisar orden"
+                    : "Confirmar orden"
+              }
+              accessibilityState={{ disabled: isProcessing }}
             >
               {isProcessing ? (
                 <HStack space="md" className="items-center">

@@ -66,6 +66,8 @@ export default function RecentlyViewedScreen() {
                 <Pressable
                   onPress={() => router.push("/")}
                   className="mt-6 bg-black px-8 py-3 rounded-full"
+                  accessibilityRole="button"
+                  accessibilityLabel="Explorar productos"
                 >
                   <Text className="text-white font-bold">Explorar ahora</Text>
                 </Pressable>

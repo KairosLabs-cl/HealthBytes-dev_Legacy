@@ -59,6 +59,8 @@ const CartFooter = React.memo<CartFooterProps>(
         <Pressable
           onPress={onCheckout}
           className="w-full h-14 bg-ink rounded-full items-center justify-center active:opacity-75"
+          accessibilityRole="button"
+          accessibilityLabel={`Proceder al pago, total ${formatPrice(subtotal)}`}
         >
           <Text className="text-white font-bold text-base">
             Proceder al pago
@@ -127,6 +129,8 @@ export default function CartScreen() {
               onPress={() => router.push("/")}
               className="px-8 py-3 bg-ink rounded-full active:opacity-75"
               style={{ minHeight: 44 }}
+              accessibilityRole="button"
+              accessibilityLabel="Explorar productos"
             >
               <Text className="text-white font-semibold text-center">
                 Explorar productos

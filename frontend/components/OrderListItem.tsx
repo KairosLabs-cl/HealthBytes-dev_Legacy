@@ -47,7 +47,12 @@ export function OrderListItem({ order, onPress }: OrderListItemProps) {
   }, [order.items]);
 
   return (
-    <Pressable onPress={() => onPress(order.id)}>
+    <Pressable
+      onPress={() => onPress(order.id)}
+      accessibilityRole="button"
+      accessibilityLabel={`Ver orden ${orderId}, ${statusLabel}, ${totalItems} producto${totalItems !== 1 ? "s" : ""}, total ${formatPrice(totalPrice)}`}
+      accessibilityHint="Abre el detalle de la orden"
+    >
       <View
         className={`${cardBgColor} border border-border-subtle rounded-lg p-4 mb-3 flex-row items-center justify-between`}
       >

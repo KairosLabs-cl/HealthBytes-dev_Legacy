@@ -58,6 +58,9 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
       {/* Product image — tappable to detail */}
       <Pressable
         onPress={() => router.push(`/product/${product.id}`)}
+        accessibilityRole="button"
+        accessibilityLabel={`Ver detalles de ${product.name}`}
+        accessibilityHint="Abre el detalle del producto"
         style={{
           width: 80,
           height: 80,
@@ -78,7 +81,12 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
 
       {/* Info + actions */}
       <View style={{ flex: 1, paddingHorizontal: 12 }}>
-        <Pressable onPress={() => router.push(`/product/${product.id}`)}>
+        <Pressable
+          onPress={() => router.push(`/product/${product.id}`)}
+          accessibilityRole="button"
+          accessibilityLabel={`Ver detalles de ${product.name}`}
+          accessibilityHint="Abre el detalle del producto"
+        >
           <Text
             numberOfLines={2}
             style={{
@@ -130,6 +138,14 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
         <Pressable
           onPress={handleAddToCart}
           disabled={isOutOfStock}
+          accessibilityRole="button"
+          accessibilityLabel={
+            isOutOfStock
+              ? `${product.name} agotado`
+              : `Agregar ${product.name} al carrito`
+          }
+          accessibilityState={{ disabled: isOutOfStock }}
+          hitSlop={4}
           style={{
             flexDirection: "row",
             alignItems: "center",
@@ -157,6 +173,8 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
       {/* Remove — 44pt touch target */}
       <Pressable
         onPress={handleRemove}
+        accessibilityRole="button"
+        accessibilityLabel={`Quitar ${product.name} de la lista de deseos`}
         hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
         style={{
           width: 44,

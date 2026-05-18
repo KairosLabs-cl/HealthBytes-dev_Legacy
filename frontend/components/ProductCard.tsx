@@ -152,7 +152,8 @@ function ProductCard({
     <Pressable
       onPress={() => router.push(`/product/${product.id}`)}
       style={containerStyle}
-      accessibilityLabel={`${product.name}, ${formatPrice(product.price)}`}
+      accessibilityRole="button"
+      accessibilityLabel={`Ver detalles de ${product.name}, ${formatPrice(product.price)}`}
       accessibilityHint="Toca para ver detalles del producto"
     >
       <View
@@ -441,11 +442,14 @@ function ProductCard({
               ref={addBtnRef}
               onPress={handleAddToCart}
               disabled={isOutOfStock}
+              accessibilityRole="button"
               accessibilityLabel={
                 isOutOfStock
                   ? `${product.name} sin stock`
                   : `Agregar ${product.name} al carrito`
               }
+              accessibilityState={{ disabled: isOutOfStock }}
+              hitSlop={4}
               style={{
                 width: "100%",
                 paddingVertical: 7,
