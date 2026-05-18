@@ -34,6 +34,8 @@ export default function DiscountsBar({ limit = 8, onSeeAll }: Props) {
         <Pressable
           onPress={onSeeAll}
           style={{ minHeight: 44, justifyContent: "center" }}
+          accessibilityRole="button"
+          accessibilityLabel="Ver todos los productos en oferta"
         >
           <Text className="text-sm font-semibold text-gray-500">Ver mas</Text>
         </Pressable>

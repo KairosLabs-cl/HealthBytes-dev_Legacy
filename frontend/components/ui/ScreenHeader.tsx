@@ -33,6 +33,9 @@ export function ScreenHeader({
           <Pressable
             onPress={() => router.back()}
             className="w-10 h-10 items-center justify-center rounded-full bg-gray-100 active:bg-gray-200"
+            accessibilityRole="button"
+            accessibilityLabel="Volver"
+            hitSlop={8}
           >
             <ArrowLeft size={24} color="#000" />
           </Pressable>
