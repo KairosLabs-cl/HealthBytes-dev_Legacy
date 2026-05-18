@@ -68,6 +68,12 @@
       "trigger": "code_review_request"
     },
     {
+      "name": "repo-self-improvement",
+      "path": ".ai/skills/repo-self-improvement/SKILL.md",
+      "description": "Use when repeated project mistakes, review feedback, failed commands, onboarding friction, or team workflow lessons should become reusable AI development behavior for this repo.",
+      "trigger": "workflow_learning"
+    },
+    {
       "name": "subagent-driven-development",
       "path": ".ai/skills/subagent-driven-development/SKILL.md",
       "description": "Use when executing implementation plans with independent tasks in the current session.",

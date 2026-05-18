@@ -55,3 +55,6 @@ frontend/.expo/
 # AI context files (degrade AI performance, increase cost, and cause errors)
 CLAUDE.md
 AGENT.md
+
+# Auth & Sessions
+.auth/
