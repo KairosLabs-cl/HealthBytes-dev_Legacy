@@ -1,0 +1,1640 @@
+[
+  {
+    "id": "home-mobile-light",
+    "screenName": "home",
+    "route": "/",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/home.png",
+    "sourceFiles": [
+      "frontend/app/index.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "home-mobile-dark",
+    "screenName": "home",
+    "route": "/",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/home.png",
+    "sourceFiles": [
+      "frontend/app/index.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "home-tablet-light",
+    "screenName": "home",
+    "route": "/",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/home.png",
+    "sourceFiles": [
+      "frontend/app/index.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "home-tablet-dark",
+    "screenName": "home",
+    "route": "/",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/home.png",
+    "sourceFiles": [
+      "frontend/app/index.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "home-desktop-light",
+    "screenName": "home",
+    "route": "/",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/home.png",
+    "sourceFiles": [
+      "frontend/app/index.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "home-desktop-dark",
+    "screenName": "home",
+    "route": "/",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/home.png",
+    "sourceFiles": [
+      "frontend/app/index.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "login-mobile-light",
+    "screenName": "login",
+    "route": "/login",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/login.png",
+    "sourceFiles": [
+      "frontend/app/(auth)/login.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "login-mobile-dark",
+    "screenName": "login",
+    "route": "/login",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/login.png",
+    "sourceFiles": [
+      "frontend/app/(auth)/login.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "login-tablet-light",
+    "screenName": "login",
+    "route": "/login",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/login.png",
+    "sourceFiles": [
+      "frontend/app/(auth)/login.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "login-tablet-dark",
+    "screenName": "login",
+    "route": "/login",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/login.png",
+    "sourceFiles": [
+      "frontend/app/(auth)/login.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "login-desktop-light",
+    "screenName": "login",
+    "route": "/login",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/login.png",
+    "sourceFiles": [
+      "frontend/app/(auth)/login.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "login-desktop-dark",
+    "screenName": "login",
+    "route": "/login",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/login.png",
+    "sourceFiles": [
+      "frontend/app/(auth)/login.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "addresses-mobile-light",
+    "screenName": "addresses",
+    "route": "/addresses",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/addresses.png",
+    "sourceFiles": [
+      "frontend/app/addresses.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "addresses-mobile-dark",
+    "screenName": "addresses",
+    "route": "/addresses",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/addresses.png",
+    "sourceFiles": [
+      "frontend/app/addresses.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "addresses-tablet-light",
+    "screenName": "addresses",
+    "route": "/addresses",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/addresses.png",
+    "sourceFiles": [
+      "frontend/app/addresses.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "addresses-tablet-dark",
+    "screenName": "addresses",
+    "route": "/addresses",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/addresses.png",
+    "sourceFiles": [
+      "frontend/app/addresses.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "addresses-desktop-light",
+    "screenName": "addresses",
+    "route": "/addresses",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/addresses.png",
+    "sourceFiles": [
+      "frontend/app/addresses.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "addresses-desktop-dark",
+    "screenName": "addresses",
+    "route": "/addresses",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/addresses.png",
+    "sourceFiles": [
+      "frontend/app/addresses.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "all-products-mobile-light",
+    "screenName": "all-products",
+    "route": "/all-products",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/all-products.png",
+    "sourceFiles": [
+      "frontend/app/all-products.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "all-products-mobile-dark",
+    "screenName": "all-products",
+    "route": "/all-products",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/all-products.png",
+    "sourceFiles": [
+      "frontend/app/all-products.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "all-products-tablet-light",
+    "screenName": "all-products",
+    "route": "/all-products",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/all-products.png",
+    "sourceFiles": [
+      "frontend/app/all-products.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "all-products-tablet-dark",
+    "screenName": "all-products",
+    "route": "/all-products",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/all-products.png",
+    "sourceFiles": [
+      "frontend/app/all-products.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "all-products-desktop-light",
+    "screenName": "all-products",
+    "route": "/all-products",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/all-products.png",
+    "sourceFiles": [
+      "frontend/app/all-products.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "all-products-desktop-dark",
+    "screenName": "all-products",
+    "route": "/all-products",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/all-products.png",
+    "sourceFiles": [
+      "frontend/app/all-products.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "cart-mobile-light",
+    "screenName": "cart",
+    "route": "/cart",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/cart.png",
+    "sourceFiles": [
+      "frontend/app/cart.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "cart-mobile-dark",
+    "screenName": "cart",
+    "route": "/cart",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/cart.png",
+    "sourceFiles": [
+      "frontend/app/cart.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "cart-tablet-light",
+    "screenName": "cart",
+    "route": "/cart",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/cart.png",
+    "sourceFiles": [
+      "frontend/app/cart.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "cart-tablet-dark",
+    "screenName": "cart",
+    "route": "/cart",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/cart.png",
+    "sourceFiles": [
+      "frontend/app/cart.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "cart-desktop-light",
+    "screenName": "cart",
+    "route": "/cart",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/cart.png",
+    "sourceFiles": [
+      "frontend/app/cart.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "cart-desktop-dark",
+    "screenName": "cart",
+    "route": "/cart",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/cart.png",
+    "sourceFiles": [
+      "frontend/app/cart.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "checkout-v2-mobile-light",
+    "screenName": "checkout-v2",
+    "route": "/checkout-v2",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/checkout-v2.png",
+    "sourceFiles": [
+      "frontend/app/checkout-v2.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "checkout-v2-mobile-dark",
+    "screenName": "checkout-v2",
+    "route": "/checkout-v2",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/checkout-v2.png",
+    "sourceFiles": [
+      "frontend/app/checkout-v2.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "checkout-v2-tablet-light",
+    "screenName": "checkout-v2",
+    "route": "/checkout-v2",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/checkout-v2.png",
+    "sourceFiles": [
+      "frontend/app/checkout-v2.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "checkout-v2-tablet-dark",
+    "screenName": "checkout-v2",
+    "route": "/checkout-v2",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/checkout-v2.png",
+    "sourceFiles": [
+      "frontend/app/checkout-v2.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "checkout-v2-desktop-light",
+    "screenName": "checkout-v2",
+    "route": "/checkout-v2",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/checkout-v2.png",
+    "sourceFiles": [
+      "frontend/app/checkout-v2.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "checkout-v2-desktop-dark",
+    "screenName": "checkout-v2",
+    "route": "/checkout-v2",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/checkout-v2.png",
+    "sourceFiles": [
+      "frontend/app/checkout-v2.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "dietary-preferences-mobile-light",
+    "screenName": "dietary-preferences",
+    "route": "/dietary-preferences",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/dietary-preferences.png",
+    "sourceFiles": [
+      "frontend/app/dietary-preferences.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "dietary-preferences-mobile-dark",
+    "screenName": "dietary-preferences",
+    "route": "/dietary-preferences",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/dietary-preferences.png",
+    "sourceFiles": [
+      "frontend/app/dietary-preferences.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "dietary-preferences-tablet-light",
+    "screenName": "dietary-preferences",
+    "route": "/dietary-preferences",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/dietary-preferences.png",
+    "sourceFiles": [
+      "frontend/app/dietary-preferences.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "dietary-preferences-tablet-dark",
+    "screenName": "dietary-preferences",
+    "route": "/dietary-preferences",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/dietary-preferences.png",
+    "sourceFiles": [
+      "frontend/app/dietary-preferences.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "dietary-preferences-desktop-light",
+    "screenName": "dietary-preferences",
+    "route": "/dietary-preferences",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/dietary-preferences.png",
+    "sourceFiles": [
+      "frontend/app/dietary-preferences.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "dietary-preferences-desktop-dark",
+    "screenName": "dietary-preferences",
+    "route": "/dietary-preferences",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/dietary-preferences.png",
+    "sourceFiles": [
+      "frontend/app/dietary-preferences.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "messages-mobile-light",
+    "screenName": "messages",
+    "route": "/messages",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/messages.png",
+    "sourceFiles": [
+      "frontend/app/messages.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "messages-mobile-dark",
+    "screenName": "messages",
+    "route": "/messages",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/messages.png",
+    "sourceFiles": [
+      "frontend/app/messages.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "messages-tablet-light",
+    "screenName": "messages",
+    "route": "/messages",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/messages.png",
+    "sourceFiles": [
+      "frontend/app/messages.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "messages-tablet-dark",
+    "screenName": "messages",
+    "route": "/messages",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/messages.png",
+    "sourceFiles": [
+      "frontend/app/messages.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "messages-desktop-light",
+    "screenName": "messages",
+    "route": "/messages",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/messages.png",
+    "sourceFiles": [
+      "frontend/app/messages.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "messages-desktop-dark",
+    "screenName": "messages",
+    "route": "/messages",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/messages.png",
+    "sourceFiles": [
+      "frontend/app/messages.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "recently-viewed-mobile-light",
+    "screenName": "recently-viewed",
+    "route": "/recently-viewed",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/recently-viewed.png",
+    "sourceFiles": [
+      "frontend/app/recently-viewed.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "recently-viewed-mobile-dark",
+    "screenName": "recently-viewed",
+    "route": "/recently-viewed",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/recently-viewed.png",
+    "sourceFiles": [
+      "frontend/app/recently-viewed.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "recently-viewed-tablet-light",
+    "screenName": "recently-viewed",
+    "route": "/recently-viewed",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/recently-viewed.png",
+    "sourceFiles": [
+      "frontend/app/recently-viewed.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "recently-viewed-tablet-dark",
+    "screenName": "recently-viewed",
+    "route": "/recently-viewed",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/recently-viewed.png",
+    "sourceFiles": [
+      "frontend/app/recently-viewed.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "recently-viewed-desktop-light",
+    "screenName": "recently-viewed",
+    "route": "/recently-viewed",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/recently-viewed.png",
+    "sourceFiles": [
+      "frontend/app/recently-viewed.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "recently-viewed-desktop-dark",
+    "screenName": "recently-viewed",
+    "route": "/recently-viewed",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/recently-viewed.png",
+    "sourceFiles": [
+      "frontend/app/recently-viewed.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "search-mobile-light",
+    "screenName": "search",
+    "route": "/search",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/search.png",
+    "sourceFiles": [
+      "frontend/app/search.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "search-mobile-dark",
+    "screenName": "search",
+    "route": "/search",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/search.png",
+    "sourceFiles": [
+      "frontend/app/search.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "search-tablet-light",
+    "screenName": "search",
+    "route": "/search",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/search.png",
+    "sourceFiles": [
+      "frontend/app/search.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "search-tablet-dark",
+    "screenName": "search",
+    "route": "/search",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/search.png",
+    "sourceFiles": [
+      "frontend/app/search.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "search-desktop-light",
+    "screenName": "search",
+    "route": "/search",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/search.png",
+    "sourceFiles": [
+      "frontend/app/search.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "search-desktop-dark",
+    "screenName": "search",
+    "route": "/search",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/search.png",
+    "sourceFiles": [
+      "frontend/app/search.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "security-mobile-light",
+    "screenName": "security",
+    "route": "/security",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/security.png",
+    "sourceFiles": [
+      "frontend/app/security.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "security-mobile-dark",
+    "screenName": "security",
+    "route": "/security",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/security.png",
+    "sourceFiles": [
+      "frontend/app/security.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "security-tablet-light",
+    "screenName": "security",
+    "route": "/security",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/security.png",
+    "sourceFiles": [
+      "frontend/app/security.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "security-tablet-dark",
+    "screenName": "security",
+    "route": "/security",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/security.png",
+    "sourceFiles": [
+      "frontend/app/security.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "security-desktop-light",
+    "screenName": "security",
+    "route": "/security",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/security.png",
+    "sourceFiles": [
+      "frontend/app/security.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "security-desktop-dark",
+    "screenName": "security",
+    "route": "/security",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/security.png",
+    "sourceFiles": [
+      "frontend/app/security.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "support-mobile-light",
+    "screenName": "support",
+    "route": "/support",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/support.png",
+    "sourceFiles": [
+      "frontend/app/support.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "support-mobile-dark",
+    "screenName": "support",
+    "route": "/support",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/support.png",
+    "sourceFiles": [
+      "frontend/app/support.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "support-tablet-light",
+    "screenName": "support",
+    "route": "/support",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/support.png",
+    "sourceFiles": [
+      "frontend/app/support.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "support-tablet-dark",
+    "screenName": "support",
+    "route": "/support",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/support.png",
+    "sourceFiles": [
+      "frontend/app/support.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "support-desktop-light",
+    "screenName": "support",
+    "route": "/support",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/support.png",
+    "sourceFiles": [
+      "frontend/app/support.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "support-desktop-dark",
+    "screenName": "support",
+    "route": "/support",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/support.png",
+    "sourceFiles": [
+      "frontend/app/support.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "wishlist-mobile-light",
+    "screenName": "wishlist",
+    "route": "/wishlist",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/wishlist.png",
+    "sourceFiles": [
+      "frontend/app/wishlist.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "wishlist-mobile-dark",
+    "screenName": "wishlist",
+    "route": "/wishlist",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/wishlist.png",
+    "sourceFiles": [
+      "frontend/app/wishlist.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "wishlist-tablet-light",
+    "screenName": "wishlist",
+    "route": "/wishlist",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/wishlist.png",
+    "sourceFiles": [
+      "frontend/app/wishlist.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "wishlist-tablet-dark",
+    "screenName": "wishlist",
+    "route": "/wishlist",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/wishlist.png",
+    "sourceFiles": [
+      "frontend/app/wishlist.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "wishlist-desktop-light",
+    "screenName": "wishlist",
+    "route": "/wishlist",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/wishlist.png",
+    "sourceFiles": [
+      "frontend/app/wishlist.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "wishlist-desktop-dark",
+    "screenName": "wishlist",
+    "route": "/wishlist",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/wishlist.png",
+    "sourceFiles": [
+      "frontend/app/wishlist.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "profile-mobile-light",
+    "screenName": "profile",
+    "route": "/profile",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/profile.png",
+    "sourceFiles": [
+      "frontend/app/profile.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "profile-mobile-dark",
+    "screenName": "profile",
+    "route": "/profile",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/profile.png",
+    "sourceFiles": [
+      "frontend/app/profile.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "profile-tablet-light",
+    "screenName": "profile",
+    "route": "/profile",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/profile.png",
+    "sourceFiles": [
+      "frontend/app/profile.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "profile-tablet-dark",
+    "screenName": "profile",
+    "route": "/profile",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/profile.png",
+    "sourceFiles": [
+      "frontend/app/profile.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "profile-desktop-light",
+    "screenName": "profile",
+    "route": "/profile",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/profile.png",
+    "sourceFiles": [
+      "frontend/app/profile.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "profile-desktop-dark",
+    "screenName": "profile",
+    "route": "/profile",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/profile.png",
+    "sourceFiles": [
+      "frontend/app/profile.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "profile-settings-mobile-light",
+    "screenName": "profile-settings",
+    "route": "/profile-settings",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/profile-settings.png",
+    "sourceFiles": [
+      "frontend/app/profile-settings.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "profile-settings-mobile-dark",
+    "screenName": "profile-settings",
+    "route": "/profile-settings",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/profile-settings.png",
+    "sourceFiles": [
+      "frontend/app/profile-settings.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "profile-settings-tablet-light",
+    "screenName": "profile-settings",
+    "route": "/profile-settings",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/profile-settings.png",
+    "sourceFiles": [
+      "frontend/app/profile-settings.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "profile-settings-tablet-dark",
+    "screenName": "profile-settings",
+    "route": "/profile-settings",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/profile-settings.png",
+    "sourceFiles": [
+      "frontend/app/profile-settings.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "profile-settings-desktop-light",
+    "screenName": "profile-settings",
+    "route": "/profile-settings",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/profile-settings.png",
+    "sourceFiles": [
+      "frontend/app/profile-settings.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "profile-settings-desktop-dark",
+    "screenName": "profile-settings",
+    "route": "/profile-settings",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/profile-settings.png",
+    "sourceFiles": [
+      "frontend/app/profile-settings.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "orders-mobile-light",
+    "screenName": "orders",
+    "route": "/orders",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/orders.png",
+    "sourceFiles": [
+      "frontend/app/orders.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "orders-mobile-dark",
+    "screenName": "orders",
+    "route": "/orders",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/orders.png",
+    "sourceFiles": [
+      "frontend/app/orders.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "orders-tablet-light",
+    "screenName": "orders",
+    "route": "/orders",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/orders.png",
+    "sourceFiles": [
+      "frontend/app/orders.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "orders-tablet-dark",
+    "screenName": "orders",
+    "route": "/orders",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/orders.png",
+    "sourceFiles": [
+      "frontend/app/orders.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "orders-desktop-light",
+    "screenName": "orders",
+    "route": "/orders",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/orders.png",
+    "sourceFiles": [
+      "frontend/app/orders.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "orders-desktop-dark",
+    "screenName": "orders",
+    "route": "/orders",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/orders.png",
+    "sourceFiles": [
+      "frontend/app/orders.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "order-detail-mobile-light",
+    "screenName": "order-detail",
+    "route": "/orders/1",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/order-detail.png",
+    "sourceFiles": [
+      "frontend/app/orders/[id].tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "order-detail-mobile-dark",
+    "screenName": "order-detail",
+    "route": "/orders/1",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/order-detail.png",
+    "sourceFiles": [
+      "frontend/app/orders/[id].tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "order-detail-tablet-light",
+    "screenName": "order-detail",
+    "route": "/orders/1",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/order-detail.png",
+    "sourceFiles": [
+      "frontend/app/orders/[id].tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "order-detail-tablet-dark",
+    "screenName": "order-detail",
+    "route": "/orders/1",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/order-detail.png",
+    "sourceFiles": [
+      "frontend/app/orders/[id].tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "order-detail-desktop-light",
+    "screenName": "order-detail",
+    "route": "/orders/1",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/order-detail.png",
+    "sourceFiles": [
+      "frontend/app/orders/[id].tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "order-detail-desktop-dark",
+    "screenName": "order-detail",
+    "route": "/orders/1",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/order-detail.png",
+    "sourceFiles": [
+      "frontend/app/orders/[id].tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "payment-failure-mobile-light",
+    "screenName": "payment-failure",
+    "route": "/payment/failure",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/payment-failure.png",
+    "sourceFiles": [
+      "frontend/app/payment/failure.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "payment-failure-mobile-dark",
+    "screenName": "payment-failure",
+    "route": "/payment/failure",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/payment-failure.png",
+    "sourceFiles": [
+      "frontend/app/payment/failure.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "payment-failure-tablet-light",
+    "screenName": "payment-failure",
+    "route": "/payment/failure",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/payment-failure.png",
+    "sourceFiles": [
+      "frontend/app/payment/failure.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "payment-failure-tablet-dark",
+    "screenName": "payment-failure",
+    "route": "/payment/failure",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/payment-failure.png",
+    "sourceFiles": [
+      "frontend/app/payment/failure.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "payment-failure-desktop-light",
+    "screenName": "payment-failure",
+    "route": "/payment/failure",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/payment-failure.png",
+    "sourceFiles": [
+      "frontend/app/payment/failure.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "payment-failure-desktop-dark",
+    "screenName": "payment-failure",
+    "route": "/payment/failure",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/payment-failure.png",
+    "sourceFiles": [
+      "frontend/app/payment/failure.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "payment-pending-mobile-light",
+    "screenName": "payment-pending",
+    "route": "/payment/pending",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/payment-pending.png",
+    "sourceFiles": [
+      "frontend/app/payment/pending.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "payment-pending-mobile-dark",
+    "screenName": "payment-pending",
+    "route": "/payment/pending",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/payment-pending.png",
+    "sourceFiles": [
+      "frontend/app/payment/pending.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "payment-pending-tablet-light",
+    "screenName": "payment-pending",
+    "route": "/payment/pending",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/payment-pending.png",
+    "sourceFiles": [
+      "frontend/app/payment/pending.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "payment-pending-tablet-dark",
+    "screenName": "payment-pending",
+    "route": "/payment/pending",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/payment-pending.png",
+    "sourceFiles": [
+      "frontend/app/payment/pending.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "payment-pending-desktop-light",
+    "screenName": "payment-pending",
+    "route": "/payment/pending",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/payment-pending.png",
+    "sourceFiles": [
+      "frontend/app/payment/pending.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "payment-pending-desktop-dark",
+    "screenName": "payment-pending",
+    "route": "/payment/pending",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/payment-pending.png",
+    "sourceFiles": [
+      "frontend/app/payment/pending.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "payment-success-mobile-light",
+    "screenName": "payment-success",
+    "route": "/payment/success",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/payment-success.png",
+    "sourceFiles": [
+      "frontend/app/payment/success.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "payment-success-mobile-dark",
+    "screenName": "payment-success",
+    "route": "/payment/success",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/payment-success.png",
+    "sourceFiles": [
+      "frontend/app/payment/success.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "payment-success-tablet-light",
+    "screenName": "payment-success",
+    "route": "/payment/success",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/payment-success.png",
+    "sourceFiles": [
+      "frontend/app/payment/success.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "payment-success-tablet-dark",
+    "screenName": "payment-success",
+    "route": "/payment/success",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/payment-success.png",
+    "sourceFiles": [
+      "frontend/app/payment/success.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "payment-success-desktop-light",
+    "screenName": "payment-success",
+    "route": "/payment/success",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/payment-success.png",
+    "sourceFiles": [
+      "frontend/app/payment/success.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "payment-success-desktop-dark",
+    "screenName": "payment-success",
+    "route": "/payment/success",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/payment-success.png",
+    "sourceFiles": [
+      "frontend/app/payment/success.tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "product-detail-mobile-light",
+    "screenName": "product-detail",
+    "route": "/product/1",
+    "viewport": "390x844",
+    "theme": "light",
+    "screenshot": "screenshots/mobile/light/product-detail.png",
+    "sourceFiles": [
+      "frontend/app/product/[id].tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "product-detail-mobile-dark",
+    "screenName": "product-detail",
+    "route": "/product/1",
+    "viewport": "390x844",
+    "theme": "dark",
+    "screenshot": "screenshots/mobile/dark/product-detail.png",
+    "sourceFiles": [
+      "frontend/app/product/[id].tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "product-detail-tablet-light",
+    "screenName": "product-detail",
+    "route": "/product/1",
+    "viewport": "768x1024",
+    "theme": "light",
+    "screenshot": "screenshots/tablet/light/product-detail.png",
+    "sourceFiles": [
+      "frontend/app/product/[id].tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "product-detail-tablet-dark",
+    "screenName": "product-detail",
+    "route": "/product/1",
+    "viewport": "768x1024",
+    "theme": "dark",
+    "screenshot": "screenshots/tablet/dark/product-detail.png",
+    "sourceFiles": [
+      "frontend/app/product/[id].tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "product-detail-desktop-light",
+    "screenName": "product-detail",
+    "route": "/product/1",
+    "viewport": "1440x900",
+    "theme": "light",
+    "screenshot": "screenshots/desktop/light/product-detail.png",
+    "sourceFiles": [
+      "frontend/app/product/[id].tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  },
+  {
+    "id": "product-detail-desktop-dark",
+    "screenName": "product-detail",
+    "route": "/product/1",
+    "viewport": "1440x900",
+    "theme": "dark",
+    "screenshot": "screenshots/desktop/dark/product-detail.png",
+    "sourceFiles": [
+      "frontend/app/product/[id].tsx"
+    ],
+    "state": "default",
+    "notes": "Captured successfully"
+  }
+]
