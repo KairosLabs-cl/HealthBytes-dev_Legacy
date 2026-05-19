@@ -12,6 +12,7 @@ import {
 import "@/global.css";
 import { tokenCache } from "@/lib/cache";
 import { useAppFonts } from "@/lib/fonts";
+import { useAuthStore } from "@/store/authStore";
 import { useCart } from "@/store/cartStore";
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { usePreferencesStore } from "@/store/preferencesStore";
@@ -61,10 +62,10 @@ if (!publishableKey) {
 }
 
 function RootLayoutNav() {
-  const { setAuth, mergeAndSync, error, clearError } = useCart(
+  const { mergeAndSync, clearLocalCart, error, clearError } = useCart(
     useShallow((state) => ({
-      setAuth: state.setAuth,
       mergeAndSync: state.mergeAndSync,
+      clearLocalCart: state.clearLocalCart,
       error: state.error,
       clearError: state.clearError,
     }))
@@ -118,26 +119,28 @@ function RootLayoutNav() {
   );
 
   useEffect(() => {
-    const syncCart = async () => {
+    const syncUserData = async () => {
       if (isSignedIn) {
-        // User logged in
+        // User logged in via Clerk
         const token = await getToken();
         if (token) {
-          setAuth(true, token);
+          // Sync Clerk token with our unified AuthStore
+          useAuthStore.getState().setTokens(token, ""); // No refresh token for Clerk
+          
           // Merge local cart with server cart
-          await mergeAndSync();
+          await mergeAndSync(getToken);
           // Load user favorites
-          await loadFavorites(token);
+          await loadFavorites(getToken);
         }
       } else {
         // User logged out
-        setAuth(false, null);
+        useAuthStore.getState().logout();
+        clearLocalCart();
         clearFavorites();
-        // Reset cart will be called by setAuth
       }
     };
 
-    syncCart();
+    syncUserData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSignedIn]);
 

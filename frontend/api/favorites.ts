@@ -1,5 +1,5 @@
 import { Product } from "@/types/product";
-import { throwIfNotOk } from "@/lib/apiError";
+import { fetchWithAuth } from "./auth";
 
 export interface Favorite {
   id: number;
@@ -8,64 +8,27 @@ export interface Favorite {
   product?: Product;
 }
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
-
-export async function addFavorite(productId: number, token: string) {
-  const res = await fetch(`${API_URL}/favorites`, {
+export async function addFavorite(productId: number, getToken?: () => Promise<string | null>) {
+  return fetchWithAuth("/favorites", {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify({ product_id: productId }),
-  });
-
-  await throwIfNotOk(res, "Error adding favorite");
-  return res.json();
+  }, getToken);
 }
 
-export async function removeFavorite(productId: number, token: string) {
-  const res = await fetch(`${API_URL}/favorites/${productId}`, {
+export async function removeFavorite(productId: number, getToken?: () => Promise<string | null>) {
+  return fetchWithAuth(`/favorites/${productId}`, {
     method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!res.ok && res.status !== 404) {
-    await throwIfNotOk(res, "Error removing favorite");
-  }
+  }, getToken);
 }
 
-export async function getUserFavorites(token: string) {
-  const res = await fetch(`${API_URL}/favorites`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  await throwIfNotOk(res, "Error fetching favorites");
-  return res.json();
+export async function getUserFavorites(getToken?: () => Promise<string | null>) {
+  return fetchWithAuth("/favorites", {}, getToken);
 }
 
-export async function checkFavorite(productId: number, token: string) {
-  const res = await fetch(`${API_URL}/favorites/check/${productId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  await throwIfNotOk(res, "Error checking favorite");
-  return res.json();
+export async function checkFavorite(productId: number, getToken?: () => Promise<string | null>) {
+  return fetchWithAuth(`/favorites/check/${productId}`, {}, getToken);
 }
 
-export async function getFavoriteIds(token: string): Promise<number[]> {
-  const res = await fetch(`${API_URL}/favorites/ids`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  await throwIfNotOk(res, "Error fetching favorite IDs");
-  return res.json();
+export async function getFavoriteIds(getToken?: () => Promise<string | null>): Promise<number[]> {
+  return fetchWithAuth("/favorites/ids", {}, getToken);
 }

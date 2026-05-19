@@ -6,8 +6,8 @@ interface FavoritesState {
   isLoading: boolean;
 
   // Actions
-  loadFavorites: (token: string) => Promise<void>;
-  toggleFavorite: (productId: number, token: string) => Promise<void>;
+  loadFavorites: (getToken?: () => Promise<string | null>) => Promise<void>;
+  toggleFavorite: (productId: number, getToken?: () => Promise<string | null>) => Promise<void>;
   isFavorite: (productId: number) => boolean;
   clearFavorites: () => void;
 }
@@ -16,17 +16,17 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
   favoriteIds: new Set<number>(),
   isLoading: false,
 
-  loadFavorites: async (token: string) => {
+  loadFavorites: async (getToken) => {
     try {
       set({ isLoading: true });
-      const ids = await getFavoriteIds(token);
+      const ids = await getFavoriteIds(getToken);
       set({ favoriteIds: new Set(ids), isLoading: false });
     } catch {
       set({ isLoading: false });
     }
   },
 
-  toggleFavorite: async (productId: number, token: string) => {
+  toggleFavorite: async (productId: number, getToken) => {
     const { favoriteIds } = get();
     const wasFavorite = favoriteIds.has(productId);
 
@@ -42,9 +42,9 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
     // API request in background
     try {
       if (wasFavorite) {
-        await removeFavorite(productId, token);
+        await removeFavorite(productId, getToken);
       } else {
-        await addFavorite(productId, token);
+        await addFavorite(productId, getToken);
       }
     } catch {
       // Rollback on error

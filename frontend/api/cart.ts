@@ -1,7 +1,5 @@
-import { getAuthHeader } from "@/lib/authHeaders";
+import { fetchWithAuth } from "./auth";
 import { throwIfNotOk } from "@/lib/apiError";
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export interface CartItem {
   id: number;
@@ -31,109 +29,71 @@ export interface CartItemCreate {
 /**
  * Get current user's cart
  */
-export async function getCart(token: string): Promise<Cart> {
-  const res = await fetch(`${API_URL}/cart`, {
-    headers: {
-      ...getAuthHeader(token),
-    },
-  });
-
-  await throwIfNotOk(res, "Failed to fetch cart");
-  return res.json();
+export async function getCart(getToken?: () => Promise<string | null>): Promise<Cart> {
+  return fetchWithAuth("/cart", {}, getToken);
 }
 
 /**
  * Add item to cart (or increment if exists)
  */
 export async function addToCart(
-  token: string,
   productId: number,
-  quantity: number = 1
+  quantity: number = 1,
+  getToken?: () => Promise<string | null>
 ): Promise<CartItem> {
-  const res = await fetch(`${API_URL}/cart/items`, {
+  return fetchWithAuth("/cart/items", {
     method: "POST",
-    headers: {
-      ...getAuthHeader(token),
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify({
       product_id: productId,
       quantity,
     }),
-  });
-
-  await throwIfNotOk(res, "Failed to add item to cart");
-  return res.json();
+  }, getToken);
 }
 
 /**
  * Update cart item quantity
  */
 export async function updateCartItem(
-  token: string,
   productId: number,
-  quantity: number
+  quantity: number,
+  getToken?: () => Promise<string | null>
 ): Promise<CartItem> {
-  const res = await fetch(`${API_URL}/cart/items/${productId}`, {
+  return fetchWithAuth(`/cart/items/${productId}`, {
     method: "PUT",
-    headers: {
-      ...getAuthHeader(token),
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify({ quantity }),
-  });
-
-  await throwIfNotOk(res, "Failed to update cart item");
-  return res.json();
+  }, getToken);
 }
 
 /**
  * Remove item from cart
  */
 export async function removeFromCart(
-  token: string,
-  productId: number
+  productId: number,
+  getToken?: () => Promise<string | null>
 ): Promise<void> {
-  const res = await fetch(`${API_URL}/cart/items/${productId}`, {
+  return fetchWithAuth(`/cart/items/${productId}`, {
     method: "DELETE",
-    headers: {
-      ...getAuthHeader(token),
-    },
-  });
-
-  await throwIfNotOk(res, "Failed to remove item from cart");
+  }, getToken);
 }
 
 /**
  * Clear entire cart
  */
-export async function clearCart(token: string): Promise<void> {
-  const res = await fetch(`${API_URL}/cart`, {
+export async function clearCart(getToken?: () => Promise<string | null>): Promise<void> {
+  return fetchWithAuth("/cart", {
     method: "DELETE",
-    headers: {
-      ...getAuthHeader(token),
-    },
-  });
-
-  await throwIfNotOk(res, "Failed to clear cart");
+  }, getToken);
 }
 
 /**
  * Merge local cart with server cart (on login)
  */
 export async function mergeCart(
-  token: string,
-  localItems: CartItemCreate[]
+  localItems: CartItemCreate[],
+  getToken?: () => Promise<string | null>
 ): Promise<Cart> {
-  const res = await fetch(`${API_URL}/cart/merge`, {
+  return fetchWithAuth("/cart/merge", {
     method: "POST",
-    headers: {
-      ...getAuthHeader(token),
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify({ items: localItems }),
-  });
-
-  await throwIfNotOk(res, "Failed to merge cart");
-  return res.json();
+  }, getToken);
 }

@@ -52,8 +52,18 @@ def get_identifier(request: Request) -> str:
     return client.host if client else "unknown"
 
 
+storage_uri = settings.REDIS_URL if settings.REDIS_URL else "memory://"
+
+# Enforce Redis in production for persistent rate limiting
+if settings.ENVIRONMENT == "production":
+    if not settings.REDIS_URL or settings.REDIS_URL.startswith("memory://"):
+        raise RuntimeError(
+            "Production environment requires a valid REDIS_URL for rate limiting. "
+            "In-memory storage is not supported for production deployments."
+        )
+
 limiter = Limiter(
     key_func=get_identifier,
     default_limits=["300/minute"],
-    storage_uri=settings.REDIS_URL if settings.REDIS_URL else "memory://",
+    storage_uri=storage_uri,
 )

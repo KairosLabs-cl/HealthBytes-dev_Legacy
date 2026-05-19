@@ -20,6 +20,7 @@ from app.db.models.address import Address  # noqa: F401 - ensures Address regist
 from app.db.models.payment import (  # noqa: F401
     Payment,
 )
+from app.db.models.refresh_token import RefreshToken  # noqa: F401
 
 
 # Custom type that works with both PostgreSQL and SQLite

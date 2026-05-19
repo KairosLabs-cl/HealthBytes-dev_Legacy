@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.limiter import limiter
 from app.db.database import get_db
-from app.schemas.user import UserCreate, UserLogin, UserWithToken
+from app.schemas.user import TokenRefresh, UserCreate, UserLogin, UserWithToken
 from app.services import auth_service
 
 logger = logging.getLogger(__name__)
@@ -53,4 +53,27 @@ async def login(request: Request, credentials: UserLogin, db: AsyncSession = Dep
         raise
     except Exception as e:
         logger.error("Login failed: %s", type(e).__name__)
+        raise HTTPException(status_code=500, detail="Something went wrong")
+
+
+@router.post("/refresh", response_model=UserWithToken)
+@limiter.limit("5/minute")
+async def refresh(
+    request: Request, refresh_data: TokenRefresh, db: AsyncSession = Depends(get_db)
+):
+    """
+    POST /auth/refresh
+    Refresh access token using a refresh token
+    """
+    try:
+        payload = await auth_service.refresh_access_token(db, refresh_data.refresh_token)
+        if not payload:
+            raise HTTPException(status_code=401, detail="Invalid refresh token")
+
+        return payload
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error("Token refresh failed: %s", type(e).__name__)
         raise HTTPException(status_code=500, detail="Something went wrong")

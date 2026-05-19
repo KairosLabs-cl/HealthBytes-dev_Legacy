@@ -81,6 +81,13 @@ class Token(BaseModel):
     """Token response"""
 
     token: str
+    refresh_token: str
+
+
+class TokenRefresh(BaseModel):
+    """Schema for token refresh request"""
+
+    refresh_token: str
 
 
 class UserWithToken(BaseModel):
@@ -88,3 +95,4 @@ class UserWithToken(BaseModel):
 
     user: UserResponse
     token: str
+    refresh_token: str

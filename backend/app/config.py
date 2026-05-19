@@ -19,7 +19,8 @@ class Settings(BaseSettings):
     # JWT (Legacy - for backwards compatibility)
     JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 43200  # 30 days like Node.js
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 30
 
     # Clerk Authentication
     CLERK_PUBLISHABLE_KEY: Optional[str] = None
