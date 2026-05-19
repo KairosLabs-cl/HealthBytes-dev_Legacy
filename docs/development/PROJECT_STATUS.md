@@ -10,15 +10,15 @@
 
 - **Estado general:** MVP en cierre técnico, foco en release readiness y calidad.
 - **Métricas Clave:**
-  - **Tests:** 580+ (Backend 40% coverage, Frontend High).
-  - **Calidad:** 14+ PRs abiertos, 5+ concerns de seguridad identificados.
-- **Riesgo principal:** Divergencia documental (En proceso de resolución vía Cleanup Plan).
+  - **Tests:** 600+ (Backend coverage improved, Frontend High).
+  - **Calidad:** 14+ PRs abiertos.
+- **Riesgo principal:** Ninguno crítico (Cleanup y Hardening completados).
 
 ## Hitos Principales
 
 | Milestone | Target | Estado | Progreso |
 | --- | --- | --- | --- |
-| MVP Launch | Abril 2026 | En progreso | 90% |
+| MVP Launch | Abril 2026 | En progreso | 95% |
 | Payment Integration | Febrero 2026 | Completado | 100% |
 | App Store Release | Mayo 2026 | Planeado | 0% |
 | 100 Beta Users | Abril 2026 | Planeado | 0% |
@@ -33,7 +33,8 @@
 - Webhooks de pago y confirmación.
 - Gestión de stock con enfoque atómico.
 - Docker, CI/CD y scripts base de infraestructura.
-- Hardening de seguridad inicial (Sentinel/Security reviews).
+- Hardening de seguridad completo (Refresh Tokens, Redis Auth, CI Gating).
+- Unificación de IA y Limpieza de Repositorio.
 
 ### P1 - Pendiente (Abril 2026)
 
