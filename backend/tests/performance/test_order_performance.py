@@ -10,7 +10,7 @@ from typing import List
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from sqlalchemy import event, select
+from sqlalchemy import event
 
 from app.db.schemas import Product, User
 from app.schemas.order import OrderCreate, OrderItemCreate

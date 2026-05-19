@@ -51,7 +51,7 @@ class TestSecurityHeaders:
         # Check dev mode (HSTS should not be present in dev)
         if settings.ENVIRONMENT == "dev":
             response = client.get("/")
-            hsts_header = response.headers.get("strict-transport-security")
+            response.headers.get("strict-transport-security")
             # In dev mode, HSTS can be present or absent depending on config
             # Just verify it doesn't break anything
             assert response.status_code == 200

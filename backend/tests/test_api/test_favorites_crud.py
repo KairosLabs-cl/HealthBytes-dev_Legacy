@@ -8,7 +8,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from app.db.schemas import Product, User
+from app.db.schemas import Product
 from app.main import app
 from app.middleware.auth import get_current_user
 from tests.conftest import create_test_user

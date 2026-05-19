@@ -41,8 +41,6 @@ class AddressBase(BaseModel):
 class AddressCreate(AddressBase):
     """Schema for creating new address"""
 
-    pass
-
 
 class AddressUpdate(BaseModel):
     """Schema for updating address (all fields optional)"""

@@ -1,9 +1,8 @@
 from decimal import Decimal
-from unittest.mock import MagicMock, patch
 
 import pytest
 
-from app.db.schemas import Order, OrderItem, Product, Review, User
+from app.db.schemas import Order, OrderItem, Product, User
 from app.schemas.review import ReviewCreate
 from app.services.review_service import create_review, get_product_reviews
 from tests.conftest import MockAsyncSession
@@ -56,14 +55,18 @@ async def test_create_review_no_purchase(db_session, review_user, review_product
     db = MockAsyncSession(db_session)
     review_in = ReviewCreate(rating=4)
     with pytest.raises(ValueError, match="purchase"):
-        await create_review(db, user_id=review_user.id, product_id=review_product.id, review_in=review_in)
+        await create_review(
+            db, user_id=review_user.id, product_id=review_product.id, review_in=review_in
+        )
 
 
 @pytest.mark.asyncio
 async def test_create_review_success(db_session, review_user, review_product, purchased_order):
     db = MockAsyncSession(db_session)
     review_in = ReviewCreate(rating=5, comment="Muy bueno")
-    result = await create_review(db, user_id=review_user.id, product_id=review_product.id, review_in=review_in)
+    result = await create_review(
+        db, user_id=review_user.id, product_id=review_product.id, review_in=review_in
+    )
     assert result is not None
     assert result.rating == 5
     assert result.comment == "Muy bueno"
@@ -74,9 +77,13 @@ async def test_create_review_success(db_session, review_user, review_product, pu
 async def test_create_review_duplicate(db_session, review_user, review_product, purchased_order):
     db = MockAsyncSession(db_session)
     review_in = ReviewCreate(rating=3)
-    await create_review(db, user_id=review_user.id, product_id=review_product.id, review_in=review_in)
+    await create_review(
+        db, user_id=review_user.id, product_id=review_product.id, review_in=review_in
+    )
     with pytest.raises(ValueError, match="already reviewed"):
-        await create_review(db, user_id=review_user.id, product_id=review_product.id, review_in=review_in)
+        await create_review(
+            db, user_id=review_user.id, product_id=review_product.id, review_in=review_in
+        )
 
 
 @pytest.mark.asyncio
@@ -87,10 +94,14 @@ async def test_get_product_reviews_empty(db_session, review_product):
 
 
 @pytest.mark.asyncio
-async def test_get_product_reviews_with_data(db_session, review_user, review_product, purchased_order):
+async def test_get_product_reviews_with_data(
+    db_session, review_user, review_product, purchased_order
+):
     db = MockAsyncSession(db_session)
     review_in = ReviewCreate(rating=4, comment="Buen producto")
-    await create_review(db, user_id=review_user.id, product_id=review_product.id, review_in=review_in)
+    await create_review(
+        db, user_id=review_user.id, product_id=review_product.id, review_in=review_in
+    )
     reviews = await get_product_reviews(db, product_id=review_product.id)
     assert len(reviews) == 1
     assert reviews[0].rating == 4

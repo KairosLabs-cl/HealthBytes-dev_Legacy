@@ -7,8 +7,6 @@ from sqlalchemy import select
 
 from app.db.schemas import Order, Product, User
 from app.schemas.order import OrderCreate, OrderItemCreate
-from app.schemas.user import UserCreate
-from app.services.auth_service import register_user
 from app.services.order_service import (
     create_order,
     get_order,

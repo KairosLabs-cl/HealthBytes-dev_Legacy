@@ -108,7 +108,6 @@ def verify_clerk_token(token: str) -> Optional[dict]:
                     return payload
                 except Exception:
                     logger.exception("Clerk token retry verification failed")
-                    pass
 
         if "Signature has expired" not in message:
             if not _jwks_verify_warned:

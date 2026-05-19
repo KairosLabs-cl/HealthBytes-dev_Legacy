@@ -158,7 +158,6 @@ async def attach_user_for_rate_limiting(request: Request, call_next):
         except Exception:
             # Rate limiting will use IP fallback, but log the error
             logging.exception("Token extraction failed for rate limiting")
-            pass
 
     return await call_next(request)
 

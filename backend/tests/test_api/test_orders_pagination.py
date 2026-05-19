@@ -2,8 +2,6 @@
 Test for order pagination.
 """
 
-import time
-
 import pytest
 
 from app.db.schemas import Order
