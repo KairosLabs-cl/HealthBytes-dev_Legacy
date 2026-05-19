@@ -1,4 +1,5 @@
 from datetime import UTC, datetime, timedelta
+from typing import Optional
 
 import bcrypt
 from jose import JWTError, jwt
@@ -34,34 +35,68 @@ def get_password_hash(password: str) -> str:
     return bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode("utf-8")
 
 
+import uuid
+
 def create_access_token(data: dict) -> str:
     """
     Create JWT access token
     Replica of generateUserToken from Node.js
-    Uses same secret 'your-secret' and 30d expiration
+    Uses same secret 'your-secret' and 60m expiration
     """
     to_encode = data.copy()
-    expire = datetime.now(UTC) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
+    now = datetime.now(UTC)
+    expire = now + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({
+        "exp": expire,
+        "iat": now,
+        "jti": str(uuid.uuid4())
+    })
 
-    # Use 'your-secret' to match Node.js JWT_SECRET
-    # In production, should use settings.JWT_SECRET
     encoded_jwt = jwt.encode(
         to_encode,
-        settings.JWT_SECRET,  # Using 'your-secret' like Node.js
+        settings.JWT_SECRET,
+        algorithm=settings.JWT_ALGORITHM,
+    )
+    return encoded_jwt
+
+
+def create_refresh_token(data: dict) -> str:
+    """
+    Create JWT refresh token with longer expiration (30 days)
+    """
+    to_encode = data.copy()
+    now = datetime.now(UTC)
+    expire = now + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+    to_encode.update({
+        "exp": expire,
+        "iat": now,
+        "jti": str(uuid.uuid4())
+    })
+
+    encoded_jwt = jwt.encode(
+        to_encode,
+        settings.JWT_SECRET,
         algorithm=settings.JWT_ALGORITHM,
     )
     return encoded_jwt
 
 
 def decode_token(token: str) -> dict:
-    """Decode JWT token"""
+    """Decode JWT token (Access or Refresh)"""
     try:
         payload = jwt.decode(
             token,
-            settings.JWT_SECRET,  # Using 'your-secret' like Node.js
+            settings.JWT_SECRET,
             algorithms=[settings.JWT_ALGORITHM],
         )
         return payload
     except JWTError:
         return None
+
+
+def verify_refresh_token(token: str) -> Optional[dict]:
+    """
+    Verify a JWT refresh token signature and expiration.
+    Returns decoded payload if valid.
+    """
+    return decode_token(token)

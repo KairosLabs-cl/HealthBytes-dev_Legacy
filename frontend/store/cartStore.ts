@@ -17,23 +17,22 @@ type CartItem = {
 
 type CartState = {
   items: CartItem[];
-  isAuthenticated: boolean;
-  authToken: string | null;
 
   // Original functions (work locally)
-  addProduct: (product: Product) => Promise<void>;
-  decrementProduct: (productId: string | number) => Promise<void>;
+  addProduct: (product: Product, getToken?: () => Promise<string | null>) => Promise<void>;
+  decrementProduct: (productId: string | number, getToken?: () => Promise<string | null>) => Promise<void>;
   updateQuantity: (
     productId: string | number,
-    quantity: number
+    quantity: number,
+    getToken?: () => Promise<string | null>
   ) => Promise<void>;
-  removeProduct: (productId: string | number) => Promise<void>;
-  resetCart: () => Promise<void>;
+  removeProduct: (productId: string | number, getToken?: () => Promise<string | null>) => Promise<void>;
+  resetCart: (getToken?: () => Promise<string | null>) => Promise<void>;
 
   // New auth/sync functions
-  setAuth: (isAuth: boolean, token: string | null) => void;
-  syncWithServer: () => Promise<void>;
-  mergeAndSync: () => Promise<void>;
+  syncWithServer: (getToken?: () => Promise<string | null>) => Promise<void>;
+  mergeAndSync: (getToken?: () => Promise<string | null>) => Promise<void>;
+  clearLocalCart: () => void;
 
   // Error handling
   error: string | null;
@@ -48,8 +47,6 @@ type CartState = {
 
 export const useCart = create<CartState>((set, get) => ({
   items: [],
-  isAuthenticated: false,
-  authToken: null,
   error: null,
   addingProducts: new Set(),
   updatingProducts: new Set(),
@@ -58,29 +55,18 @@ export const useCart = create<CartState>((set, get) => ({
   clearError: () => set({ error: null }),
 
   /**
-   * Set authentication state
+   * Clear only local state (used on logout)
    */
-  setAuth: (isAuth: boolean, token: string | null) => {
-    set({ isAuthenticated: isAuth, authToken: token });
-
-    // If logging out, clear cart
-    if (!isAuth) {
-      set({ items: [] });
-    }
+  clearLocalCart: () => {
+    set({ items: [] });
   },
 
   /**
    * Sync cart from server (when authenticated)
    */
-  syncWithServer: async () => {
-    const { isAuthenticated, authToken } = get();
-
-    if (!isAuthenticated || !authToken) {
-      return;
-    }
-
+  syncWithServer: async (getToken) => {
     try {
-      const cart = await cartApi.getCart(authToken);
+      const cart = await cartApi.getCart(getToken);
 
       // Convert API response to local format
       const items: CartItem[] = cart.items.map((item) => ({
@@ -104,12 +90,8 @@ export const useCart = create<CartState>((set, get) => ({
   /**
    * Merge local cart with server and sync (on login)
    */
-  mergeAndSync: async () => {
-    const { isAuthenticated, authToken, items } = get();
-
-    if (!isAuthenticated || !authToken) {
-      return;
-    }
+  mergeAndSync: async (getToken) => {
+    const { items } = get();
 
     try {
       // If there are local items, merge them with server
@@ -119,7 +101,7 @@ export const useCart = create<CartState>((set, get) => ({
           quantity: item.quantity,
         }));
 
-        const mergedCart = await cartApi.mergeCart(authToken, localItems);
+        const mergedCart = await cartApi.mergeCart(localItems, getToken);
 
         // Update local state with merged cart
         const mergedItems: CartItem[] = mergedCart.items.map((item) => ({
@@ -137,22 +119,20 @@ export const useCart = create<CartState>((set, get) => ({
         set({ items: mergedItems });
       } else {
         // No local items, just sync from server
-        await get().syncWithServer();
+        await get().syncWithServer(getToken);
       }
     } catch {
       set({ error: "No se pudo fusionar el carrito." });
       // Fallback: just sync from server
-      await get().syncWithServer();
+      await get().syncWithServer(getToken);
     }
   },
 
   /**
    * Add product to cart
    */
-  addProduct: async (product: Product) => {
+  addProduct: async (product: Product, getToken) => {
     const {
-      isAuthenticated,
-      authToken,
       items: previousItems,
       addingProducts,
     } = get();
@@ -198,18 +178,16 @@ export const useCart = create<CartState>((set, get) => ({
       };
     });
 
-    // Sync with server if authenticated
-    if (isAuthenticated && authToken) {
-      try {
-        await cartApi.addToCart(authToken, Number(product.id), 1);
-      } catch {
-        // Rollback: re-fetch actual server state instead of restoring stale snapshot
-        await get().syncWithServer();
-        set({
-          error:
-            "No se pudo agregar el producto al carrito. Por favor intenta de nuevo.",
-        });
-      }
+    // Sync with server if we have a token (either legacy or Clerk)
+    try {
+      await cartApi.addToCart(Number(product.id), 1, getToken);
+    } catch {
+      // Rollback: re-fetch actual server state instead of restoring stale snapshot
+      await get().syncWithServer(getToken);
+      set({
+        error:
+          "No se pudo agregar el producto al carrito. Por favor intenta de nuevo.",
+      });
     }
 
     // Remove from adding set
@@ -223,8 +201,8 @@ export const useCart = create<CartState>((set, get) => ({
   /**
    * Update product quantity directly
    */
-  updateQuantity: async (productId: string | number, newQuantity: number) => {
-    const { isAuthenticated, authToken, updatingProducts } = get();
+  updateQuantity: async (productId: string | number, newQuantity: number, getToken) => {
+    const { updatingProducts } = get();
 
     // Prevent multiple simultaneous updates of the same product
     if (updatingProducts.has(productId)) {
@@ -252,16 +230,14 @@ export const useCart = create<CartState>((set, get) => ({
     }));
 
     // Sync with server
-    if (isAuthenticated && authToken) {
-      try {
-        await cartApi.updateCartItem(authToken, Number(productId), newQuantity);
-      } catch {
-        await get().syncWithServer();
-        set({
-          error:
-            "No se pudo actualizar la cantidad. Por favor intenta de nuevo.",
-        });
-      }
+    try {
+      await cartApi.updateCartItem(Number(productId), newQuantity, getToken);
+    } catch {
+      await get().syncWithServer(getToken);
+      set({
+        error:
+          "No se pudo actualizar la cantidad. Por favor intenta de nuevo.",
+      });
     }
 
     // Remove from updating set
@@ -275,8 +251,8 @@ export const useCart = create<CartState>((set, get) => ({
   /**
    * Decrement product quantity
    */
-  decrementProduct: async (productId: string | number) => {
-    const { isAuthenticated, authToken, items, updatingProducts } = get();
+  decrementProduct: async (productId: string | number, getToken) => {
+    const { items, updatingProducts } = get();
 
     const existingItem = items.find((item) => item.product.id === productId);
 
@@ -310,24 +286,22 @@ export const useCart = create<CartState>((set, get) => ({
     }
 
     // Sync with server
-    if (isAuthenticated && authToken) {
-      try {
-        if (newQuantity > 0) {
-          await cartApi.updateCartItem(
-            authToken,
-            Number(productId),
-            newQuantity
-          );
-        } else {
-          await cartApi.removeFromCart(authToken, Number(productId));
-        }
-      } catch {
-        await get().syncWithServer();
-        set({
-          error:
-            "No se pudo actualizar el carrito. Por favor intenta de nuevo.",
-        });
+    try {
+      if (newQuantity > 0) {
+        await cartApi.updateCartItem(
+          Number(productId),
+          newQuantity,
+          getToken
+        );
+      } else {
+        await cartApi.removeFromCart(Number(productId), getToken);
       }
+    } catch {
+      await get().syncWithServer(getToken);
+      set({
+        error:
+          "No se pudo actualizar el carrito. Por favor intenta de nuevo.",
+      });
     }
 
     // Remove from updating set
@@ -341,8 +315,8 @@ export const useCart = create<CartState>((set, get) => ({
   /**
    * Remove product from cart
    */
-  removeProduct: async (productId: string | number) => {
-    const { isAuthenticated, authToken, removingProducts } = get();
+  removeProduct: async (productId: string | number, getToken) => {
+    const { removingProducts } = get();
 
     // Prevent multiple simultaneous removes of the same product
     if (removingProducts.has(productId)) {
@@ -359,16 +333,14 @@ export const useCart = create<CartState>((set, get) => ({
       items: state.items.filter((item) => item.product.id !== productId),
     }));
 
-    // Sync with server if authenticated
-    if (isAuthenticated && authToken) {
-      try {
-        await cartApi.removeFromCart(authToken, Number(productId));
-      } catch {
-        await get().syncWithServer();
-        set({
-          error: "No se pudo eliminar el producto. Por favor intenta de nuevo.",
-        });
-      }
+    // Sync with server
+    try {
+      await cartApi.removeFromCart(Number(productId), getToken);
+    } catch {
+      await get().syncWithServer(getToken);
+      set({
+        error: "No se pudo eliminar el producto. Por favor intenta de nuevo.",
+      });
     }
 
     // Remove from removing set
@@ -382,23 +354,21 @@ export const useCart = create<CartState>((set, get) => ({
   /**
    * Reset/clear entire cart
    */
-  resetCart: async () => {
-    const { isAuthenticated, authToken, items: previousItems } = get();
+  resetCart: async (getToken) => {
+    const { items: previousItems } = get();
 
     // Clear local state
     set({ items: [] });
 
     // Clear on server
-    if (isAuthenticated && authToken) {
-      try {
-        await cartApi.clearCart(authToken);
-      } catch {
-        // Rollback to previous state
-        set({
-          items: previousItems,
-          error: "No se pudo vaciar el carrito. Por favor intenta de nuevo.",
-        });
-      }
+    try {
+      await cartApi.clearCart(getToken);
+    } catch {
+      // Rollback to previous state
+      set({
+        items: previousItems,
+        error: "No se pudo vaciar el carrito. Por favor intenta de nuevo.",
+      });
     }
   },
 }));
