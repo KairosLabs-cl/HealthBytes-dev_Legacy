@@ -17,8 +17,6 @@ class ProductBase(BaseModel):
 class ProductCreate(ProductBase):
     """Schema for creating a product - Replica of createProductSchema"""
 
-    pass
-
 
 class ProductUpdate(BaseModel):
     """Schema for updating a product - Replica of updateProductSchema (partial)"""

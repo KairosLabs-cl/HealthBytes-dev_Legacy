@@ -20,7 +20,7 @@ from sqlalchemy import select as sql_select
 
 from app.config import settings
 from app.db.models.payment import Payment, PaymentProvider, PaymentStatus
-from app.db.schemas import Order, Product
+from app.db.schemas import Product
 from app.main import app
 from app.middleware.auth import get_current_user
 from tests.conftest import create_test_user

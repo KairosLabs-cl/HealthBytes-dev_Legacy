@@ -11,7 +11,7 @@ from decimal import Decimal
 
 import pytest
 
-from app.db.models.payment import Payment, PaymentProvider, PaymentStatus
+from app.db.models.payment import PaymentProvider, PaymentStatus
 from app.services.payment_service import PaymentService
 from tests.conftest import MockAsyncSession
 

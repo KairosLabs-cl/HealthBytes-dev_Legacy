@@ -2,7 +2,7 @@
 E2E test — Email service: graceful degradation when RESEND_API_KEY is absent.
 """
 
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import pytest
 

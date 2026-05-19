@@ -1,7 +1,6 @@
 """Unit tests for auth_service"""
 
 import pytest
-from sqlalchemy import select
 
 from app.db.schemas import User
 from app.schemas.user import UserCreate

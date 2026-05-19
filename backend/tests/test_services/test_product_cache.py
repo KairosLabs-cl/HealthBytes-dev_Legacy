@@ -158,7 +158,7 @@ async def test_cache_miss_writes_to_redis(db_session):
     with patch("app.services.product_service.get_redis", new_callable=AsyncMock) as mock_redis:
         mock_redis.return_value = mock_redis_client
 
-        results = await get_products_cached(mock_db)
+        await get_products_cached(mock_db)
 
     # setex must have been called exactly once
     mock_redis_client.setex.assert_called_once()

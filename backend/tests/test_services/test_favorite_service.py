@@ -2,7 +2,7 @@
 
 import pytest
 
-from app.db.schemas import Product, UserFavorite
+from app.db.schemas import Product
 from app.services.favorite_service import (
     add_favorite,
     get_favorite_product_ids,

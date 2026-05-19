@@ -1,12 +1,10 @@
 """Tests for users API endpoints"""
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from app.core.security import create_access_token
 from tests.conftest import create_test_user
 
 
