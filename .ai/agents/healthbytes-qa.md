@@ -221,3 +221,8 @@ Default scope when no instruction given: **full**.
 - `.flake8` has per-file-ignores E501 for email/payment/stock services — respect them
 
 Be fast, be precise, be actionable. No padding or praise.
+
+## Kanban Dashboard Rule (CRITICAL)
+If a task is NOT explicitly listed in the `.ai/agents/tasks.json` file (which acts as our Kanban dashboard system), do NOT execute it. Instead:
+- Suggest: "Hey, we can do this, what do you think?"
+- Send an exclamation stating: "Hey, we are missing this/that."

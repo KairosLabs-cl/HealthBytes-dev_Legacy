@@ -1,0 +1,25 @@
+import { NextResponse } from 'next/server';
+import fs from 'fs/promises';
+import path from 'path';
+
+const getAgentsDir = () => path.join(process.cwd(), '../../../.ai/agents');
+
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const { id } = await params;
+    const body = await request.json();
+    const { content } = body;
+    
+    if (typeof content !== 'string') {
+      return NextResponse.json({ error: 'Content must be a string' }, { status: 400 });
+    }
+    
+    const filePath = path.join(getAgentsDir(), `${id}.md`);
+    await fs.writeFile(filePath, content, 'utf-8');
+    
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error updating agent:', error);
+    return NextResponse.json({ error: 'Failed to update agent' }, { status: 500 });
+  }
+}
