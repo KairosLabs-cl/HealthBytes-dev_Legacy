@@ -44,7 +44,7 @@ function FavoriteButton({ productId, size = 24 }: FavoriteButtonProps) {
       );
     }
 
-    await toggleFavorite(productId, token);
+    await toggleFavorite(productId, getToken);
   }, [getToken, toggleFavorite, productId, scale, reducedMotion]);
 
   // For web, we use onClick directly on the element
