@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Plus, GripVertical, Bot, Trash2 } from 'lucide-react';
+import { Plus, GripVertical, Bot, Trash2, CheckCircle, Trash, Pencil } from 'lucide-react';
 
 // Types
 interface Task {
@@ -26,28 +26,34 @@ interface BoardData {
 const initialData: BoardData = {
   tasks: {},
   columns: {
+    'periodic': { id: 'periodic', title: 'Periódicas', taskIds: [] },
     'todo': { id: 'todo', title: 'To Do', taskIds: [] },
     'in-progress': { id: 'in-progress', title: 'In Progress', taskIds: [] },
     'done': { id: 'done', title: 'Done', taskIds: [] }
   },
-  columnOrder: ['todo', 'in-progress', 'done']
+  columnOrder: ['periodic', 'todo', 'in-progress', 'done']
 };
 
 export default function KanbanClient() {
   const [data, setData] = useState<BoardData>(initialData);
   const [agents, setAgents] = useState<{id: string, name: string}[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [julesSessions, setJulesSessions] = useState<any[]>([]);
 
   useEffect(() => {
     Promise.all([
       fetch('/api/tasks').then(res => res.json()),
-      fetch('/api/agents').then(res => res.json())
-    ]).then(([tasksData, agentsData]) => {
+      fetch('/api/agents').then(res => res.json()),
+      fetch('/api/jules/status').then(res => res.json().catch(() => ({})))
+    ]).then(([tasksData, agentsData, julesData]) => {
       if (tasksData && tasksData.columns) {
         setData(tasksData);
       }
       if (agentsData && agentsData.agents) {
         setAgents(agentsData.agents);
+      }
+      if (julesData && julesData.sessions) {
+        setJulesSessions(julesData.sessions);
       }
       setIsLoaded(true);
     });
@@ -147,6 +153,74 @@ export default function KanbanClient() {
     saveToAPI(newState);
   };
 
+  const editTask = (taskId: string) => {
+    const task = data.tasks[taskId];
+    const newContent = prompt('Editar descripción de la tarea:', task.content);
+    if (!newContent || newContent === task.content) return;
+
+    const newState = {
+      ...data,
+      tasks: {
+        ...data.tasks,
+        [taskId]: { ...task, content: newContent }
+      }
+    };
+
+    setData(newState);
+    saveToAPI(newState);
+  };
+
+  const moveToDone = (taskId: string, currentColumnId: string) => {
+    if (currentColumnId === 'done') return;
+    
+    const start = data.columns[currentColumnId];
+    const finish = data.columns['done'];
+    
+    const startTaskIds = Array.from(start.taskIds);
+    startTaskIds.splice(startTaskIds.indexOf(taskId), 1);
+    
+    const finishTaskIds = Array.from(finish.taskIds);
+    finishTaskIds.push(taskId); // move to bottom of done
+    
+    const newState = {
+      ...data,
+      columns: {
+        ...data.columns,
+        [start.id]: { ...start, taskIds: startTaskIds },
+        [finish.id]: { ...finish, taskIds: finishTaskIds }
+      }
+    };
+    
+    setData(newState);
+    saveToAPI(newState);
+  };
+
+  const clearDoneTasks = () => {
+    if (!confirm('¿Eliminar permanentemente todas las tareas completadas?')) return;
+    
+    const doneColumn = data.columns['done'];
+    const tasksToDelete = doneColumn.taskIds;
+    
+    if (tasksToDelete.length === 0) return;
+    
+    const newTasks = { ...data.tasks };
+    tasksToDelete.forEach(id => {
+      delete newTasks[id];
+    });
+    
+    const newState = {
+      ...data,
+      tasks: newTasks,
+      columns: {
+        ...data.columns,
+        'done': { ...doneColumn, taskIds: [] }
+      }
+    };
+    
+    setData(newState);
+    saveToAPI(newState);
+  };
+
   const assignAgent = (taskId: string, agentId: string) => {
     const newState = {
       ...data,
@@ -157,6 +231,23 @@ export default function KanbanClient() {
     };
     setData(newState);
     saveToAPI(newState);
+  };
+
+  const getTaskSessions = (taskContent: string) => {
+    // Hacemos fuzzy match buscando palabras clave o los primeros 15 caracteres
+    const taskWords = taskContent.toLowerCase().split(' ').filter(w => w.length > 4);
+    const prefix = taskContent.substring(0, 15).toLowerCase();
+
+    return julesSessions.filter(s => {
+      const desc = s.description.toLowerCase();
+      const matchCount = taskWords.filter(w => desc.includes(w)).length;
+      return matchCount >= 2 || desc.includes(prefix);
+    }).sort((a, b) => {
+      // Poner "Awaiting" primero
+      const aAwaiting = a.status.toLowerCase().includes('awaiting') ? -1 : 1;
+      const bAwaiting = b.status.toLowerCase().includes('awaiting') ? -1 : 1;
+      return aAwaiting - bAwaiting;
+    });
   };
 
   if (!isLoaded) return <div className="flex h-64 items-center justify-center text-gray-500">Cargando tablero...</div>;
@@ -171,8 +262,19 @@ export default function KanbanClient() {
           return (
             <div key={column.id} className="w-80 flex-shrink-0 flex flex-col bg-gray-900/30 border border-white/5 rounded-2xl overflow-hidden backdrop-blur-xl">
               <div className="p-4 border-b border-white/5 bg-white/5 flex items-center justify-between">
-                <h3 className="font-semibold text-white">{column.title}</h3>
-                <span className="bg-white/10 text-xs px-2.5 py-1 rounded-full text-gray-300">{tasks.length}</span>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-white">{column.title}</h3>
+                  <span className="bg-white/10 text-xs px-2.5 py-1 rounded-full text-gray-300">{tasks.length}</span>
+                </div>
+                {column.id === 'done' && tasks.length > 0 && (
+                  <button 
+                    onClick={clearDoneTasks}
+                    className="text-xs text-gray-500 hover:text-red-400 transition-colors flex items-center gap-1"
+                    title="Limpiar tareas completadas"
+                  >
+                    <Trash className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
               
               <Droppable droppableId={column.id}>
@@ -188,27 +290,79 @@ export default function KanbanClient() {
                           <div
                             ref={provided.innerRef}
                             {...provided.draggableProps}
-                            className={`group p-4 rounded-xl border transition-all ${
+                            className={`group p-4 rounded-xl border transition-all relative ${
                               snapshot.isDragging 
                                 ? 'bg-gray-800 border-indigo-500 shadow-xl shadow-indigo-500/20 rotate-2' 
                                 : 'bg-gray-800/80 border-white/5 hover:border-white/10 shadow-lg'
                             }`}
                           >
-                            <div className="flex gap-2 relative">
+                            <div className="absolute top-2 right-2 flex opacity-0 group-hover:opacity-100 transition-all gap-1">
+                              {column.id !== 'done' && (
+                                <button 
+                                  onClick={() => moveToDone(task.id, column.id)}
+                                  className="p-1.5 text-gray-500 hover:text-green-400 hover:bg-white/5 rounded-md transition-all"
+                                  title="Completar tarea"
+                                >
+                                  <CheckCircle className="w-4 h-4" />
+                                </button>
+                              )}
+                              <button 
+                                onClick={() => editTask(task.id)}
+                                className="p-1.5 text-gray-500 hover:text-indigo-400 hover:bg-white/5 rounded-md transition-all"
+                                title="Editar tarea"
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </button>
+                              <button 
+                                onClick={() => deleteTask(task.id, column.id)}
+                                className="p-1.5 text-gray-500 hover:text-red-400 hover:bg-white/5 rounded-md transition-all"
+                                title="Eliminar tarea"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+
+                            <div className="flex gap-2 relative mt-2">
                               <div {...provided.dragHandleProps} className="mt-1 text-gray-600 hover:text-gray-400 cursor-grab active:cursor-grabbing">
                                 <GripVertical className="w-4 h-4" />
                               </div>
                               <div className="flex-1">
                                 <p className="text-sm text-gray-200">{task.content}</p>
                                 
-                                <button 
-                                  onClick={() => deleteTask(task.id, column.id)}
-                                  className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 p-1 text-gray-500 hover:text-red-400 transition-all"
-                                  title="Eliminar tarea"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
-                                
+                                {/* Jules Sessions Mini Panel */}
+                                {(() => {
+                                  const matchedSessions = getTaskSessions(task.content);
+                                  if (matchedSessions.length === 0) return null;
+                                  
+                                  return (
+                                    <div className="mt-3 flex flex-col gap-2">
+                                      {matchedSessions.map((session, idx) => {
+                                        const isAwaiting = session.status.toLowerCase().includes('awaiting');
+                                        return (
+                                          <div key={idx} className="bg-black/40 border border-white/5 rounded-lg p-2 flex items-center justify-between">
+                                            <div>
+                                              <span className="text-[10px] text-gray-500 font-mono block">Jules ID: {session.id}</span>
+                                              <span className={`text-xs font-semibold ${isAwaiting ? 'text-amber-400' : 'text-green-400'}`}>
+                                                {session.status || 'Active'}
+                                              </span>
+                                            </div>
+                                            {isAwaiting && (
+                                              <a 
+                                                href={`https://jules.google/session/${session.id}`}
+                                                target="_blank" 
+                                                rel="noreferrer"
+                                                className="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-1 rounded hover:bg-amber-500/40 transition-colors"
+                                              >
+                                                Resolver
+                                              </a>
+                                            )}
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  );
+                                })()}
+
                                 <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
                                   <div className="flex items-center gap-2">
                                     <Bot className={`w-4 h-4 ${task.agent ? 'text-indigo-400' : 'text-gray-600'}`} />

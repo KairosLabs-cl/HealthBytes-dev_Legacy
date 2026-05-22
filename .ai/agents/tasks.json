@@ -1,10 +1,19 @@
 {
   "columns": {
+    "periodic": {
+      "id": "periodic",
+      "title": "Periódicas",
+      "taskIds": [
+        "task-1779486907711",
+        "task-1779486907706"
+      ]
+    },
     "todo": {
       "id": "todo",
       "title": "To Do",
       "taskIds": [
-        "task-1779486907706"
+        "task-1779486907707",
+        "task-1779486907708"
       ]
     },
     "in-progress": {
@@ -21,11 +30,27 @@
   "tasks": {
     "task-1779486907706": {
       "id": "task-1779486907706",
-      "content": "Realizar una auditoria de docs personalizados",
-      "agent": ""
+      "content": "Realizar una auditoría de docs personalizados tanto readmes como contextos",
+      "agent": "hermes-verifier"
+    },
+    "task-1779486907707": {
+      "id": "task-1779486907707",
+      "content": "Auditoría UX y Accesibilidad Frontend",
+      "agent": "frontend-dev"
+    },
+    "task-1779486907708": {
+      "id": "task-1779486907708",
+      "content": "Aumentar coverage de pruebas backend al 85%",
+      "agent": "healthbytes-qa"
+    },
+    "task-1779486907711": {
+      "id": "task-1779486907711",
+      "content": "Ejecutar tests End-to-End de flujos críticos",
+      "agent": "healthbytes-qa"
     }
   },
   "columnOrder": [
+    "periodic",
     "todo",
     "in-progress",
     "done"
