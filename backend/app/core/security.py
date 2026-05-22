@@ -1,3 +1,4 @@
+import uuid
 from datetime import UTC, datetime, timedelta
 from typing import Optional
 
@@ -35,8 +36,6 @@ def get_password_hash(password: str) -> str:
     return bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode("utf-8")
 
 
-import uuid
-
 def create_access_token(data: dict) -> str:
     """
     Create JWT access token
@@ -46,11 +45,7 @@ def create_access_token(data: dict) -> str:
     to_encode = data.copy()
     now = datetime.now(UTC)
     expire = now + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({
-        "exp": expire,
-        "iat": now,
-        "jti": str(uuid.uuid4())
-    })
+    to_encode.update({"exp": expire, "iat": now, "jti": str(uuid.uuid4())})
 
     encoded_jwt = jwt.encode(
         to_encode,
@@ -67,11 +62,7 @@ def create_refresh_token(data: dict) -> str:
     to_encode = data.copy()
     now = datetime.now(UTC)
     expire = now + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
-    to_encode.update({
-        "exp": expire,
-        "iat": now,
-        "jti": str(uuid.uuid4())
-    })
+    to_encode.update({"exp": expire, "iat": now, "jti": str(uuid.uuid4())})
 
     encoded_jwt = jwt.encode(
         to_encode,
