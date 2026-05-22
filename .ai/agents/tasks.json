@@ -1,0 +1,33 @@
+{
+  "columns": {
+    "todo": {
+      "id": "todo",
+      "title": "To Do",
+      "taskIds": [
+        "task-1779486907706"
+      ]
+    },
+    "in-progress": {
+      "id": "in-progress",
+      "title": "In Progress",
+      "taskIds": []
+    },
+    "done": {
+      "id": "done",
+      "title": "Done",
+      "taskIds": []
+    }
+  },
+  "tasks": {
+    "task-1779486907706": {
+      "id": "task-1779486907706",
+      "content": "Realizar una auditoria de docs personalizados",
+      "agent": ""
+    }
+  },
+  "columnOrder": [
+    "todo",
+    "in-progress",
+    "done"
+  ]
+}

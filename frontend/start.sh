@@ -157,4 +157,7 @@ validate_environment() {
 validate_environment
 ensure_frontend_env
 normalize_expo_args "$@"
+# Disable unbound variable check right before array expansion
+# because an empty array in bash with set -u throws an error
+set +u
 exec pnpm exec expo start "${EXPO_ARGS[@]}"

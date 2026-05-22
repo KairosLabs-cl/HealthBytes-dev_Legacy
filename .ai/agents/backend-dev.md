@@ -51,3 +51,8 @@ flake8 app/
 ```
 
 Always read existing files before modifying. Never modify `main.py` or `config.py` without explicit reason.
+
+## Kanban Dashboard Rule (CRITICAL)
+If a task is NOT explicitly listed in the `.ai/agents/tasks.json` file (which acts as our Kanban dashboard system), do NOT execute it. Instead:
+- Suggest: "Hey, we can do this, what do you think?"
+- Send an exclamation stating: "Hey, we are missing this/that."

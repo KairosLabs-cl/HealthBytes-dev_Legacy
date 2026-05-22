@@ -60,7 +60,7 @@ Types (types/) → API client (api/) → Store if needed (store/) → Component 
 ```bash
 pnpm start             # Expo dev server
 pnpm type-check        # tsc --noEmit
-pnpm lint              # ESLint
+pnpm lint              # ESLint 
 pnpm test              # Jest
 ```
 
@@ -88,3 +88,8 @@ You have access to specialized skill files in `.ai/skills/`. **Check for an appl
 - Performance issues, lists, animations → `react-native-best-practices/`
 
 Always read existing files before modifying. Backend uses int IDs — frontend may receive them as strings, coerce carefully.
+
+## Kanban Dashboard Rule (CRITICAL)
+If a task is NOT explicitly listed in the `.ai/agents/tasks.json` file (which acts as our Kanban dashboard system), do NOT execute it. Instead:
+- Suggest: "Hey, we can do this, what do you think?"
+- Send an exclamation stating: "Hey, we are missing this/that."
