@@ -51,7 +51,7 @@ describe("removeFavorite", () => {
     expect(options.method).toBe("DELETE");
   });
 
-  test("does not throw on 404", async () => {
+  test("throws on 404", async () => {
     mockFetch.mockResolvedValue({ ok: false, status: 404 });
     await expect(removeFavorite(5, getToken)).rejects.toThrow("API request failed");
   });
