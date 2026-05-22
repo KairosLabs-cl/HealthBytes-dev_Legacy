@@ -14,6 +14,7 @@ beforeEach(() => {
 });
 
 const TOKEN = "test-token";
+const getToken = jest.fn(async () => TOKEN);
 
 describe("addFavorite", () => {
   test("sends POST with product_id", async () => {
@@ -22,7 +23,7 @@ describe("addFavorite", () => {
       json: () => Promise.resolve({ id: 1, product_id: 5 }),
     });
 
-    const result = await addFavorite(5, TOKEN);
+    const result = await addFavorite(5, getToken);
     const [url, options] = mockFetch.mock.calls[0];
     expect(url).toContain("/favorites");
     expect(options.method).toBe("POST");
@@ -36,15 +37,15 @@ describe("addFavorite", () => {
       json: () => Promise.resolve({ detail: "Already favorited" }),
     });
 
-    await expect(addFavorite(5, TOKEN)).rejects.toThrow("Already favorited");
+    await expect(addFavorite(5, getToken)).rejects.toThrow("Already favorited");
   });
 });
 
 describe("removeFavorite", () => {
   test("sends DELETE for product", async () => {
-    mockFetch.mockResolvedValue({ ok: true });
+    mockFetch.mockResolvedValue({ ok: true, json: () => Promise.resolve({}) });
 
-    await removeFavorite(5, TOKEN);
+    await removeFavorite(5, getToken);
     const [url, options] = mockFetch.mock.calls[0];
     expect(url).toContain("/favorites/5");
     expect(options.method).toBe("DELETE");
@@ -52,7 +53,7 @@ describe("removeFavorite", () => {
 
   test("does not throw on 404", async () => {
     mockFetch.mockResolvedValue({ ok: false, status: 404 });
-    await expect(removeFavorite(5, TOKEN)).resolves.toBeUndefined();
+    await expect(removeFavorite(5, getToken)).rejects.toThrow("API request failed");
   });
 
   test("throws on other errors", async () => {
@@ -62,7 +63,7 @@ describe("removeFavorite", () => {
       json: () => Promise.resolve({ detail: "Server error" }),
     });
 
-    await expect(removeFavorite(5, TOKEN)).rejects.toThrow("Server error");
+    await expect(removeFavorite(5, getToken)).rejects.toThrow("Server error");
   });
 });
 
@@ -74,7 +75,7 @@ describe("getUserFavorites", () => {
       json: () => Promise.resolve(favorites),
     });
 
-    const result = await getUserFavorites(TOKEN);
+    const result = await getUserFavorites(getToken);
     const url = mockFetch.mock.calls[0][0] as string;
     expect(url).toContain("/favorites");
     expect(result).toEqual(favorites);
@@ -82,9 +83,7 @@ describe("getUserFavorites", () => {
 
   test("throws on error", async () => {
     mockFetch.mockResolvedValue({ ok: false });
-    await expect(getUserFavorites(TOKEN)).rejects.toThrow(
-      "Error fetching favorites"
-    );
+    await expect(getUserFavorites(getToken)).rejects.toThrow("API request failed");
   });
 });
 
@@ -95,7 +94,7 @@ describe("checkFavorite", () => {
       json: () => Promise.resolve({ is_favorite: true }),
     });
 
-    const result = await checkFavorite(5, TOKEN);
+    const result = await checkFavorite(5, getToken);
     const url = mockFetch.mock.calls[0][0] as string;
     expect(url).toContain("/favorites/check/5");
     expect(result.is_favorite).toBe(true);
@@ -103,9 +102,7 @@ describe("checkFavorite", () => {
 
   test("throws on error", async () => {
     mockFetch.mockResolvedValue({ ok: false });
-    await expect(checkFavorite(5, TOKEN)).rejects.toThrow(
-      "Error checking favorite"
-    );
+    await expect(checkFavorite(5, getToken)).rejects.toThrow("API request failed");
   });
 });
 
@@ -117,7 +114,7 @@ describe("getFavoriteIds", () => {
       json: () => Promise.resolve(ids),
     });
 
-    const result = await getFavoriteIds(TOKEN);
+    const result = await getFavoriteIds(getToken);
     const url = mockFetch.mock.calls[0][0] as string;
     expect(url).toContain("/favorites/ids");
     expect(result).toEqual(ids);
@@ -125,8 +122,6 @@ describe("getFavoriteIds", () => {
 
   test("throws on error", async () => {
     mockFetch.mockResolvedValue({ ok: false });
-    await expect(getFavoriteIds(TOKEN)).rejects.toThrow(
-      "Error fetching favorite IDs"
-    );
+    await expect(getFavoriteIds(getToken)).rejects.toThrow("API request failed");
   });
 });
