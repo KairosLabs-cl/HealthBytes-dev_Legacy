@@ -8,6 +8,7 @@ jest.mock("@/api/favorites", () => ({
 }));
 
 const TOKEN = "test-token";
+const getToken = jest.fn(async () => TOKEN);
 
 describe("Favorites Store", () => {
   const initialState = useFavoritesStore.getState();
@@ -25,7 +26,7 @@ describe("Favorites Store", () => {
     test("loads favorite IDs from API", async () => {
       (favoritesApi.getFavoriteIds as jest.Mock).mockResolvedValue([1, 5, 10]);
 
-      await useFavoritesStore.getState().loadFavorites(TOKEN);
+      await useFavoritesStore.getState().loadFavorites(getToken);
 
       const ids = useFavoritesStore.getState().favoriteIds;
       expect(ids.has(1)).toBe(true);
@@ -40,7 +41,7 @@ describe("Favorites Store", () => {
         new Error("Network error")
       );
 
-      await useFavoritesStore.getState().loadFavorites(TOKEN);
+      await useFavoritesStore.getState().loadFavorites(getToken);
 
       expect(useFavoritesStore.getState().favoriteIds.size).toBe(0);
       expect(useFavoritesStore.getState().isLoading).toBe(false);
@@ -51,21 +52,21 @@ describe("Favorites Store", () => {
     test("adds favorite optimistically", async () => {
       (favoritesApi.addFavorite as jest.Mock).mockResolvedValue({});
 
-      await useFavoritesStore.getState().toggleFavorite(5, TOKEN);
+      await useFavoritesStore.getState().toggleFavorite(5, getToken);
 
       expect(useFavoritesStore.getState().favoriteIds.has(5)).toBe(true);
-      expect(favoritesApi.addFavorite).toHaveBeenCalledWith(5, TOKEN);
+      expect(favoritesApi.addFavorite).toHaveBeenCalledWith(5, getToken);
     });
 
     test("removes favorite optimistically", async () => {
       useFavoritesStore.setState({ favoriteIds: new Set([5, 10]) });
       (favoritesApi.removeFavorite as jest.Mock).mockResolvedValue(undefined);
 
-      await useFavoritesStore.getState().toggleFavorite(5, TOKEN);
+      await useFavoritesStore.getState().toggleFavorite(5, getToken);
 
       expect(useFavoritesStore.getState().favoriteIds.has(5)).toBe(false);
       expect(useFavoritesStore.getState().favoriteIds.has(10)).toBe(true);
-      expect(favoritesApi.removeFavorite).toHaveBeenCalledWith(5, TOKEN);
+      expect(favoritesApi.removeFavorite).toHaveBeenCalledWith(5, getToken);
     });
 
     test("rolls back on add failure", async () => {
@@ -73,7 +74,7 @@ describe("Favorites Store", () => {
         new Error("API Error")
       );
 
-      await useFavoritesStore.getState().toggleFavorite(5, TOKEN);
+      await useFavoritesStore.getState().toggleFavorite(5, getToken);
 
       expect(useFavoritesStore.getState().favoriteIds.has(5)).toBe(false);
     });
@@ -84,7 +85,7 @@ describe("Favorites Store", () => {
         new Error("API Error")
       );
 
-      await useFavoritesStore.getState().toggleFavorite(5, TOKEN);
+      await useFavoritesStore.getState().toggleFavorite(5, getToken);
 
       expect(useFavoritesStore.getState().favoriteIds.has(5)).toBe(true);
     });

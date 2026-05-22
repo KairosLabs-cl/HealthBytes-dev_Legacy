@@ -15,6 +15,7 @@ beforeEach(() => {
 });
 
 const TOKEN = "test-token";
+const getToken = jest.fn(async () => TOKEN);
 
 describe("getCart", () => {
   test("fetches cart with auth header", async () => {
@@ -24,7 +25,7 @@ describe("getCart", () => {
       json: () => Promise.resolve(cart),
     });
 
-    const result = await getCart(TOKEN);
+    const result = await getCart(getToken);
     const [url, options] = mockFetch.mock.calls[0];
     expect(url).toContain("/cart");
     expect(options.headers.Authorization).toBe(`Bearer ${TOKEN}`);
@@ -33,7 +34,7 @@ describe("getCart", () => {
 
   test("throws on error", async () => {
     mockFetch.mockResolvedValue({ ok: false });
-    await expect(getCart(TOKEN)).rejects.toThrow("Failed to fetch cart");
+    await expect(getCart(getToken)).rejects.toThrow("API request failed");
   });
 });
 
@@ -45,7 +46,7 @@ describe("addToCart", () => {
       json: () => Promise.resolve(item),
     });
 
-    const result = await addToCart(TOKEN, 5, 2);
+    const result = await addToCart(5, 2, getToken);
     const [url, options] = mockFetch.mock.calls[0];
     expect(url).toContain("/cart/items");
     expect(options.method).toBe("POST");
@@ -62,16 +63,14 @@ describe("addToCart", () => {
       json: () => Promise.resolve({}),
     });
 
-    await addToCart(TOKEN, 3);
+    await addToCart(3, undefined, getToken);
     const body = JSON.parse(mockFetch.mock.calls[0][1].body);
     expect(body.quantity).toBe(1);
   });
 
   test("throws on error", async () => {
     mockFetch.mockResolvedValue({ ok: false });
-    await expect(addToCart(TOKEN, 1)).rejects.toThrow(
-      "Failed to add item to cart"
-    );
+    await expect(addToCart(1, 1, getToken)).rejects.toThrow("API request failed");
   });
 });
 
@@ -82,7 +81,7 @@ describe("updateCartItem", () => {
       json: () => Promise.resolve({ quantity: 3 }),
     });
 
-    await updateCartItem(TOKEN, 5, 3);
+    await updateCartItem(5, 3, getToken);
     const [url, options] = mockFetch.mock.calls[0];
     expect(url).toContain("/cart/items/5");
     expect(options.method).toBe("PUT");
@@ -92,17 +91,15 @@ describe("updateCartItem", () => {
 
   test("throws on error", async () => {
     mockFetch.mockResolvedValue({ ok: false });
-    await expect(updateCartItem(TOKEN, 1, 2)).rejects.toThrow(
-      "Failed to update cart item"
-    );
+    await expect(updateCartItem(1, 2, getToken)).rejects.toThrow("API request failed");
   });
 });
 
 describe("removeFromCart", () => {
   test("sends DELETE for product", async () => {
-    mockFetch.mockResolvedValue({ ok: true });
+    mockFetch.mockResolvedValue({ ok: true, json: () => Promise.resolve({}) });
 
-    await removeFromCart(TOKEN, 5);
+    await removeFromCart(5, getToken);
     const [url, options] = mockFetch.mock.calls[0];
     expect(url).toContain("/cart/items/5");
     expect(options.method).toBe("DELETE");
@@ -110,17 +107,15 @@ describe("removeFromCart", () => {
 
   test("throws on error", async () => {
     mockFetch.mockResolvedValue({ ok: false });
-    await expect(removeFromCart(TOKEN, 1)).rejects.toThrow(
-      "Failed to remove item from cart"
-    );
+    await expect(removeFromCart(1, getToken)).rejects.toThrow("API request failed");
   });
 });
 
 describe("clearCart", () => {
   test("sends DELETE to cart endpoint", async () => {
-    mockFetch.mockResolvedValue({ ok: true });
+    mockFetch.mockResolvedValue({ ok: true, json: () => Promise.resolve({}) });
 
-    await clearCart(TOKEN);
+    await clearCart(getToken);
     const [url, options] = mockFetch.mock.calls[0];
     expect(url).toContain("/cart");
     expect(options.method).toBe("DELETE");
@@ -128,7 +123,7 @@ describe("clearCart", () => {
 
   test("throws on error", async () => {
     mockFetch.mockResolvedValue({ ok: false });
-    await expect(clearCart(TOKEN)).rejects.toThrow("Failed to clear cart");
+    await expect(clearCart(getToken)).rejects.toThrow("API request failed");
   });
 });
 
@@ -141,7 +136,7 @@ describe("mergeCart", () => {
       json: () => Promise.resolve(mergedCart),
     });
 
-    const result = await mergeCart(TOKEN, localItems);
+    const result = await mergeCart(localItems, getToken);
     const [url, options] = mockFetch.mock.calls[0];
     expect(url).toContain("/cart/merge");
     expect(options.method).toBe("POST");
@@ -152,6 +147,6 @@ describe("mergeCart", () => {
 
   test("throws on error", async () => {
     mockFetch.mockResolvedValue({ ok: false });
-    await expect(mergeCart(TOKEN, [])).rejects.toThrow("Failed to merge cart");
+    await expect(mergeCart([], getToken)).rejects.toThrow("API request failed");
   });
 });

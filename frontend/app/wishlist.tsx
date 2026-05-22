@@ -29,8 +29,7 @@ export default function WishlistScreen() {
   } = useQuery<Favorite[]>({
     queryKey: ["favorites"],
     queryFn: async () => {
-      const token = await getToken();
-      return getUserFavorites(token || "");
+      return getUserFavorites(getToken);
     },
     enabled: isSignedIn,
   });

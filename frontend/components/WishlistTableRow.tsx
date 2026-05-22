@@ -25,7 +25,7 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
   const handleRemove = async () => {
     const token = await getToken();
     if (!token) return;
-    await toggleFavorite(Number(product.id), token);
+    await toggleFavorite(Number(product.id), getToken);
   };
 
   const handleAddToCart = () => {

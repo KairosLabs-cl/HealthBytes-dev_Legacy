@@ -4,11 +4,13 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 interface PreferencesState {
   dietaryPreferences: string[];
+  themePreference: "light" | "dark" | "system";
   hasSeenOnboarding: boolean;
   hasCompletedOnboarding: boolean;
   setDietaryPreferences: (tags: string[]) => void;
   togglePreference: (id: string) => void;
   updateDietaryPreferences: (tags: string[]) => Promise<void>;
+  setThemePreference: (theme: "light" | "dark" | "system") => void;
   markOnboardingComplete: () => void;
   setOnboardingComplete: () => void;
   reset: () => void;
@@ -18,6 +20,7 @@ export const usePreferencesStore = create(
   persist<PreferencesState>(
     (set) => ({
       dietaryPreferences: [],
+      themePreference: "system",
       hasSeenOnboarding: false,
       hasCompletedOnboarding: false,
       setDietaryPreferences: (tags) => set({ dietaryPreferences: tags }),
@@ -31,6 +34,7 @@ export const usePreferencesStore = create(
         set({ dietaryPreferences: tags });
         // Simular llamada a API si fuera necesario
       },
+      setThemePreference: (theme) => set({ themePreference: theme }),
       markOnboardingComplete: () =>
         set({ hasSeenOnboarding: true, hasCompletedOnboarding: true }),
       setOnboardingComplete: () =>
@@ -38,6 +42,7 @@ export const usePreferencesStore = create(
       reset: () =>
         set({
           dietaryPreferences: [],
+          themePreference: "system",
           hasSeenOnboarding: false,
           hasCompletedOnboarding: false,
         }),

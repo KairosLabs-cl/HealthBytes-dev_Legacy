@@ -17,8 +17,6 @@ describe("Cart Store Logic", () => {
     useCart.setState({
       ...initialState,
       items: [],
-      isAuthenticated: true,
-      authToken: "fake-token",
     });
     jest.clearAllMocks();
     jest.spyOn(console, "error").mockImplementation(() => {});
@@ -48,7 +46,7 @@ describe("Cart Store Logic", () => {
     // Expectation:
     // 1. Optimistic update happened (we can't easily check 'during' without async hacks,
     //    but we check that it TRIED to call API)
-    expect(cartApi.addToCart).toHaveBeenCalledWith("fake-token", 1, 1);
+    expect(cartApi.addToCart).toHaveBeenCalledWith(1, 1, undefined);
 
     // 2. Final state should be empty (synced from server)
     expect(useCart.getState().items).toHaveLength(0);
@@ -81,7 +79,7 @@ describe("Cart Store Logic", () => {
     await useCart.getState().removeProduct(product.id);
 
     // Expectation:
-    expect(cartApi.removeFromCart).toHaveBeenCalledWith("fake-token", 1);
+    expect(cartApi.removeFromCart).toHaveBeenCalledWith(1, undefined);
 
     // Final state should still have the item (synced from server)
     expect(useCart.getState().items).toHaveLength(1);
@@ -115,7 +113,7 @@ describe("Cart Store Logic", () => {
     await useCart.getState().decrementProduct(product.id);
 
     // Expectation:
-    expect(cartApi.updateCartItem).toHaveBeenCalledWith("fake-token", 1, 1);
+    expect(cartApi.updateCartItem).toHaveBeenCalledWith(1, 1, undefined);
 
     // Final state should still have quantity 2 (synced from server)
     expect(useCart.getState().items[0].quantity).toBe(2);
@@ -148,7 +146,7 @@ describe("Cart Store Logic", () => {
     await useCart.getState().decrementProduct(product.id);
 
     // Expectation:
-    expect(cartApi.removeFromCart).toHaveBeenCalledWith("fake-token", 1);
+    expect(cartApi.removeFromCart).toHaveBeenCalledWith(1, undefined);
 
     // Final state should still have item (synced from server)
     expect(useCart.getState().items).toHaveLength(1);
@@ -167,7 +165,7 @@ describe("Cart Store Logic", () => {
     await useCart.getState().resetCart();
 
     // Expectation:
-    expect(cartApi.clearCart).toHaveBeenCalledWith("fake-token");
+    expect(cartApi.clearCart).toHaveBeenCalledWith(undefined);
 
     // Final state should still have items (rolled back)
     expect(useCart.getState().items).toHaveLength(1);
