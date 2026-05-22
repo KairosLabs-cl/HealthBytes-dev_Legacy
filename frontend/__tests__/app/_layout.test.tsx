@@ -16,8 +16,6 @@ describe("Root Layout (_layout.tsx) - Performance & Correctness", () => {
     // Reset Zustand store state
     useCart.setState({
       items: [],
-      isAuthenticated: false,
-      authToken: null,
       error: null,
       addingProducts: new Set(),
       updatingProducts: new Set(),
@@ -73,24 +71,19 @@ describe("Root Layout (_layout.tsx) - Performance & Correctness", () => {
    * Purpose: Ensure the setAuth function is still working correctly
    * since it's one of the active Zustand selections in RootLayoutNav
    */
-  test("test_cart_store_set_auth_clears_items_on_logout", () => {
+  test("test_cart_store_clear_local_cart_clears_items", () => {
     // Arrange: Add items to cart and set auth
     useCart.setState({
       items: [{ product: { id: 1, name: "Item", price: 100 }, quantity: 1 }],
-      isAuthenticated: true,
-      authToken: "test-token",
     });
 
     // Verify items are there
     expect(useCart.getState().items).toHaveLength(1);
 
-    // Act: Log out using setAuth
-    const setAuth = useCart.getState().setAuth;
-    setAuth(false, null);
+    // Act: Clear local cart
+    useCart.getState().clearLocalCart();
 
-    // Assert: Items should be cleared, auth should be reset
-    expect(useCart.getState().isAuthenticated).toBe(false);
-    expect(useCart.getState().authToken).toBeNull();
+    // Assert: Items should be cleared
     expect(useCart.getState().items).toHaveLength(0);
   });
 
@@ -206,10 +199,8 @@ describe("Root Layout (_layout.tsx) - Performance & Correctness", () => {
 
     // Assert: All required properties exist
     expect(state).toHaveProperty("items");
-    expect(state).toHaveProperty("isAuthenticated");
-    expect(state).toHaveProperty("authToken");
     expect(state).toHaveProperty("error");
-    expect(state).toHaveProperty("setAuth");
+    expect(state).toHaveProperty("clearLocalCart");
     expect(state).toHaveProperty("mergeAndSync");
     expect(state).toHaveProperty("clearError");
 
