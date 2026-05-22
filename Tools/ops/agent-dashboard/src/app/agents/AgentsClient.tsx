@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Bot, Save, Copy, Check, FileText, AlertCircle } from 'lucide-react';
+import { Bot, Save, Copy, Check, FileText, AlertCircle, Plus } from 'lucide-react';
 
 interface Agent {
   id: string;
@@ -63,6 +63,35 @@ export default function AgentsClient() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleCreateAgent = async () => {
+    const id = prompt('Ingresa el ID del nuevo especialista (ej. qa-tester, frontend-dev):');
+    if (!id) return;
+    
+    if (!/^[a-zA-Z0-9-]+$/.test(id)) {
+      alert('El ID solo puede contener letras, números y guiones.');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/agents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      const data = await res.json();
+      
+      if (res.ok && data.agent) {
+        setAgents([...agents, data.agent]);
+        handleSelectAgent(data.agent);
+      } else {
+        alert(data.error || 'Error al crear el agente');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error de conexión');
+    }
+  };
+
   const selectedAgent = agents.find(a => a.id === selectedAgentId);
 
   return (
@@ -90,6 +119,12 @@ export default function AgentsClient() {
             </div>
           </button>
         ))}
+        <button
+          onClick={handleCreateAgent}
+          className="flex items-center justify-center gap-2 p-3 mt-2 rounded-xl border border-dashed border-white/20 text-gray-400 hover:text-white hover:border-white/40 hover:bg-white/5 transition-all"
+        >
+          <Plus className="w-4 h-4" /> Nuevo Especialista
+        </button>
       </div>
 
       {/* Editor */}

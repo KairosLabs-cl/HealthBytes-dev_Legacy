@@ -18,9 +18,18 @@ export default function Sidebar() {
           <LayoutDashboard className="w-5 h-5 group-hover:text-indigo-400 transition-colors" />
           <span className="font-medium">Kanban Board</span>
         </Link>
+
+        <div className="pt-4 pb-2 px-3">
+          <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Agentes</p>
+        </div>
+
         <Link href="/agents" className="flex items-center gap-3 px-3 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all group">
           <Bot className="w-5 h-5 group-hover:text-purple-400 transition-colors" />
           <span className="font-medium">Especialistas</span>
+        </Link>
+        <Link href="/jules" className="flex items-center gap-3 px-3 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all group">
+          <Sparkles className="w-5 h-5 group-hover:text-amber-400 transition-colors" />
+          <span className="font-medium">Jules AI</span>
         </Link>
       </nav>
       
