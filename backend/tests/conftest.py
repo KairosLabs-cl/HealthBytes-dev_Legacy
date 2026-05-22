@@ -17,6 +17,15 @@ from app.main import app
 DATABASE_URL = "sqlite:///:memory:"
 
 
+@pytest.fixture(scope="session", autouse=True)
+def disable_rate_limits():
+    """Disable rate limiting for the test suite."""
+    from app.core.limiter import limiter
+    limiter.enabled = False
+    yield
+
+
+
 @pytest.fixture(scope="session")
 def engine():
     """Create test database engine using SQLite in-memory."""
