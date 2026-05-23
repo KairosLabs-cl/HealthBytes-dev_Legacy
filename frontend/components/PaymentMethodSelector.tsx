@@ -76,8 +76,8 @@ export function PaymentMethodSelector({
                 : "Selecciona este método de pago"
             }
             accessibilityState={{
-              selected: selected === method.id,
-              disabled: method.disabled,
+              checked: selected === method.id,
+              disabled: !!method.disabled,
             }}
           >
             <HStack className="items-center justify-between">
