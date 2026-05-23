@@ -61,27 +61,28 @@ export default function WishlistScreen() {
   const renderEmpty = useMemo(
     () => (
       <View className="flex-1 items-center justify-center p-8 mt-10">
-        <View className="bg-gray-100 p-6 rounded-full mb-6">
-          <HeartOff size={48} color="#9CA3AF" />
-        </View>
-        <Text className="text-xl font-bold text-gray-900 mb-2">
-          Lista vacía
-        </Text>
-        <Text className="text-center text-gray-500 mb-6">
-          Aún no tienes productos en tu lista de deseos. Explora y guarda tus
-          favoritos.
-        </Text>
-        <Pressable
-          onPress={() => router.push("/")}
-          className="bg-black px-6 py-3 rounded-full active:opacity-80"
-          style={{ minHeight: 44 }}
-          accessibilityRole="button"
-          accessibilityLabel="Explorar productos"
-        >
-          <Text className="text-white font-bold text-base">
-            Explorar productos
+        <View className="items-start rounded-[28px] border border-slate-200/70 bg-white p-6">
+          <View className="mb-6 h-16 w-16 items-center justify-center rounded-[24px] bg-rose-50">
+            <HeartOff size={32} color="#e11d48" />
+          </View>
+          <Text className="mb-2 text-xl font-black tracking-[-0.3px] text-[#09090b]">
+            Lista vacía
           </Text>
-        </Pressable>
+          <Text className="mb-6 text-base leading-6 text-zinc-600">
+            Guarda productos para volver rápido a tus favoritos.
+          </Text>
+          <Pressable
+            onPress={() => router.push("/")}
+            className="rounded-2xl bg-[#09090b] px-6 py-3 active:opacity-80"
+            style={{ minHeight: 48 }}
+            accessibilityRole="button"
+            accessibilityLabel="Explorar productos"
+          >
+            <Text className="text-base font-bold text-white">
+              Explorar productos
+            </Text>
+          </Pressable>
+        </View>
       </View>
     ),
     [router]
@@ -89,7 +90,7 @@ export default function WishlistScreen() {
 
   if (!isLoaded || isLoading) {
     return (
-      <View className="flex-1 bg-gray-50">
+      <View className="flex-1 bg-[#fafafa]">
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
           title="Lista de deseos"
@@ -107,7 +108,7 @@ export default function WishlistScreen() {
 
   if (error) {
     return (
-      <View className="flex-1 bg-gray-50">
+      <View className="flex-1 bg-[#fafafa]">
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
           title="Lista de deseos"
@@ -120,8 +121,8 @@ export default function WishlistScreen() {
           </Text>
           <Pressable
             onPress={() => refetch()}
-            className="flex-row items-center gap-2 bg-black px-6 py-3 rounded-full"
-            style={{ minHeight: 44 }}
+            className="flex-row items-center gap-2 rounded-2xl bg-[#09090b] px-6 py-3"
+            style={{ minHeight: 48 }}
             accessibilityRole="button"
             accessibilityLabel="Reintentar cargar lista de deseos"
           >
@@ -135,12 +136,12 @@ export default function WishlistScreen() {
 
   return (
     <AuthGate message="Inicia sesión para ver tu lista de deseos.">
-      <View className="flex-1 bg-gray-50">
+      <View className="flex-1 bg-[#fafafa]">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
 
         <FlatList
-          className="flex-1 bg-gray-50"
+          className="flex-1 bg-[#fafafa]"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 120, paddingTop: 8 }}
           ListHeaderComponent={listHeader}

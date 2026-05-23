@@ -1,6 +1,7 @@
 import React from "react";
 import { Pressable, Text, View } from "react-native";
 import * as Sentry from "@sentry/react-native";
+import { AlertTriangle } from "lucide-react-native";
 
 interface Props {
   children: React.ReactNode;
@@ -40,10 +41,22 @@ export class ErrorBoundary extends React.Component<Props, State> {
           justifyContent: "center",
           alignItems: "center",
           padding: 24,
-          backgroundColor: "#ffffff",
+          backgroundColor: "#fafafa",
         }}
       >
-        <Text style={{ fontSize: 52, marginBottom: 16 }}>😕</Text>
+        <View
+          style={{
+            width: 72,
+            height: 72,
+            borderRadius: 24,
+            backgroundColor: "#fef2f2",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 16,
+          }}
+        >
+          <AlertTriangle size={34} color="#dc2626" strokeWidth={2.2} />
+        </View>
 
         <Text
           style={{
@@ -51,7 +64,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
             fontWeight: "700",
             textAlign: "center",
             marginBottom: 8,
-            color: "#000000",
+            color: "#09090b",
           }}
         >
           Algo salió mal
@@ -94,7 +107,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
         <Pressable
           onPress={this.reset}
           style={({ pressed }) => ({
-            backgroundColor: "#000000",
+            backgroundColor: "#09090b",
             paddingHorizontal: 28,
             paddingVertical: 14,
             borderRadius: 12,

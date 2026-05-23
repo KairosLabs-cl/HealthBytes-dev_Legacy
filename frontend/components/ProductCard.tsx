@@ -159,22 +159,21 @@ function ProductCard({
       <View
         style={{
           ...containerStyle,
-          backgroundColor: colors.surface.card,
-          borderRadius: 12,
-          overflow: "hidden",
+          backgroundColor: "#ffffff",
+          borderRadius: 24,
           borderWidth: 1,
-          borderColor: colors.border.subtle,
+          borderColor: "rgba(226, 232, 240, 0.5)",
           ...Platform.select<CrossPlatformViewStyle>({
             web: {
-              boxShadow: shadows.lift,
+              boxShadow: "0 20px 40px -15px rgba(0,0,0,0.05)",
             },
             ios: {
-              shadowColor: colors.legacy.black,
-              shadowOpacity: 0.1,
-              shadowRadius: 12,
-              shadowOffset: { width: 0, height: 3 },
+              shadowColor: "#000",
+              shadowOpacity: 0.05,
+              shadowRadius: 20,
+              shadowOffset: { width: 0, height: 10 },
             },
-            android: { elevation: 3 },
+            android: { elevation: 2 },
             default: {},
           }),
         }}
@@ -224,9 +223,10 @@ function ProductCard({
           <View
             style={{
               position: "relative",
-              aspectRatio: 4 / 3,
-              borderRadius: 8,
+              aspectRatio: 1,
+              borderRadius: 16,
               overflow: "hidden",
+              backgroundColor: "#f9fafb",
             }}
           >
             {!imgError && product.image ? (
@@ -271,7 +271,7 @@ function ProductCard({
 
         {/* Content */}
         <View
-          style={{ paddingHorizontal: 10, paddingTop: 4, paddingBottom: 12 }}
+          style={{ paddingHorizontal: 12, paddingTop: 8, paddingBottom: 16 }}
         >
           {/* Category */}
           {categoryLabel && (
@@ -294,9 +294,10 @@ function ProductCard({
           <Text
             numberOfLines={1}
             style={{
-              fontSize: 13,
-              fontWeight: "700",
+              fontSize: 14,
+              fontWeight: "800",
               color: colors.ink.primary,
+              letterSpacing: -0.3,
               marginBottom: 2,
             }}
           >
@@ -410,13 +411,13 @@ function ProductCard({
             <View>
               <Text
                 style={{
-                  fontSize: 17,
-                  fontWeight: "800",
+                  fontSize: 18,
+                  fontWeight: "900",
                   color: colors.ink.primary,
-                  letterSpacing: -0.3,
+                  letterSpacing: -0.5,
                 }}
               >
-                <Text style={{ fontSize: 11, fontWeight: "700" }}>$</Text>
+                <Text style={{ fontSize: 12, fontWeight: "800" }}>$</Text>
                 {formatPrice(product.price).replace("$", "")}
               </Text>
               {product.original_price ? (
@@ -452,28 +453,28 @@ function ProductCard({
               hitSlop={4}
               style={{
                 width: "100%",
-                paddingVertical: 7,
+                paddingVertical: 10,
                 alignItems: "center",
                 justifyContent: "center",
                 backgroundColor: isOutOfStock
                   ? colors.legacy.gray[200]
-                  : colors.ink.primary,
-                minHeight: 36,
-                borderRadius: 999,
+                  : "#09090b", // zinc-950 for pure contrast
+                minHeight: 40,
+                borderRadius: 16,
                 ...Platform.select<CrossPlatformViewStyle>({
                   web: {
                     boxShadow: isOutOfStock
                       ? "none"
-                      : "0px 2px 6px rgba(0,0,0,0.18)",
+                      : "0px 4px 10px rgba(0,0,0,0.1)",
                   },
                   default: isOutOfStock
                     ? {}
                     : {
                         shadowColor: colors.legacy.black,
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.18,
-                        shadowRadius: 4,
-                        elevation: 3,
+                        shadowOffset: { width: 0, height: 4 },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 10,
+                        elevation: 2,
                       },
                 }),
               }}

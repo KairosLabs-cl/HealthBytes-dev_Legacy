@@ -12,7 +12,6 @@ import { StatusBar } from "expo-status-bar";
 import { AlertCircle, Package } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   Pressable,
   RefreshControl,
@@ -126,7 +125,7 @@ export default function OrdersScreen() {
 
   if (!isLoading && selectedFilter === "all" && orders.length === 0) {
     return (
-      <View className="flex-1 bg-white">
+      <View className="flex-1 bg-[#fafafa]">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
@@ -134,23 +133,27 @@ export default function OrdersScreen() {
           icon={Package}
           showBackButton={true}
         />
-        <View className="flex-1 items-center justify-center px-6">
-          <Icon as={Package} size="xl" className="text-gray-300 mb-4" />
-          <Text className="text-xl font-semibold text-black mb-2">
+        <View className="flex-1 justify-center px-6">
+          <View className="items-start rounded-[28px] border border-slate-200/70 bg-white p-6">
+          <View className="mb-5 h-16 w-16 items-center justify-center rounded-[24px] bg-slate-100">
+            <Icon as={Package} size="xl" className="text-[#09090b]" />
+          </View>
+          <Text className="mb-2 text-xl font-black tracking-[-0.3px] text-[#09090b]">
             No hay órdenes todavía
           </Text>
-          <Text className="text-center text-gray-600 mb-6">
+          <Text className="mb-6 text-base leading-6 text-zinc-600">
             Cuando hagas tu primera compra, aparecerá aquí el historial de todos
             tus pedidos.
           </Text>
           <Button
             onPress={() => router.replace("/")}
-            className="bg-black rounded-full"
+            className="rounded-2xl bg-[#09090b]"
             accessibilityRole="button"
             accessibilityLabel="Ver productos"
           >
             <ButtonText className="text-white">Ver productos</ButtonText>
           </Button>
+          </View>
         </View>
       </View>
     );
@@ -177,10 +180,10 @@ export default function OrdersScreen() {
             accessibilityRole="button"
             accessibilityLabel={`Filtrar órdenes: ${f.label}`}
             accessibilityState={{ selected: selectedFilter === f.id }}
-            className={`px-4 rounded-full border ${
+            className={`rounded-2xl border px-4 ${
               selectedFilter === f.id
-                ? "bg-black border-black"
-                : "bg-white border-gray-300"
+                ? "border-[#09090b] bg-[#09090b]"
+                : "border-slate-200 bg-white"
             }`}
           >
             <Text
@@ -204,7 +207,7 @@ export default function OrdersScreen() {
 
       {/* Error */}
       {error && (
-        <View className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4 flex-row items-start">
+        <View className="mb-4 flex-row items-start rounded-2xl border border-red-200 bg-red-50 p-4">
           <Icon
             as={AlertCircle}
             size="md"
@@ -231,25 +234,31 @@ export default function OrdersScreen() {
       {/* Loading */}
       {isLoading && (
         <View className="flex-1 items-center justify-center py-12">
-          <ActivityIndicator size="large" color="#000000" />
+          <View className="flex-row gap-2">
+            <View className="h-3 w-3 rounded-full bg-[#22c55e]" />
+            <View className="h-3 w-3 rounded-full bg-slate-300" />
+            <View className="h-3 w-3 rounded-full bg-slate-400" />
+          </View>
           <Text className="text-gray-500 mt-4">Cargando órdenes...</Text>
         </View>
       )}
 
       {/* Empty filter */}
       {showEmptyFilter && (
-        <View className="items-center justify-center py-12">
-          <Icon as={Package} size="xl" className="text-gray-300 mb-4" />
-          <Text className="text-lg font-semibold text-black mb-2">
+        <View className="items-start rounded-[28px] border border-slate-200/70 bg-white p-6">
+          <View className="mb-5 h-14 w-14 items-center justify-center rounded-[22px] bg-slate-100">
+            <Icon as={Package} size="xl" className="text-[#09090b]" />
+          </View>
+          <Text className="mb-2 text-lg font-black text-[#09090b]">
             No se encontraron órdenes
           </Text>
-          <Text className="text-center text-gray-600 mb-4">
+          <Text className="mb-4 text-sm text-zinc-600">
             No hay órdenes con este estado
           </Text>
           <Pressable
             onPress={() => handleFilterPress("all")}
-            className="bg-black px-4 rounded-full"
-            style={{ minHeight: 44, justifyContent: "center" }}
+            className="rounded-2xl bg-[#09090b] px-4"
+            style={{ minHeight: 48, justifyContent: "center" }}
             accessibilityRole="button"
             accessibilityLabel="Ver todas las órdenes"
           >
@@ -274,7 +283,7 @@ export default function OrdersScreen() {
             if (token) await loadMoreOrders(token);
           }}
           disabled={isLoadingMore}
-          className="rounded-full border border-gray-200 items-center justify-center flex-row gap-2 active:bg-gray-50"
+          className="flex-row items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white active:bg-slate-50"
           style={{ minHeight: 48 }}
           accessibilityRole="button"
           accessibilityLabel={
@@ -283,7 +292,11 @@ export default function OrdersScreen() {
           accessibilityState={{ disabled: isLoadingMore }}
         >
           {isLoadingMore ? (
-            <ActivityIndicator size="small" color="#000" />
+            <View className="flex-row gap-1">
+              <View className="h-2 w-2 rounded-full bg-[#22c55e]" />
+              <View className="h-2 w-2 rounded-full bg-slate-300" />
+              <View className="h-2 w-2 rounded-full bg-slate-400" />
+            </View>
           ) : (
             <Text className="text-sm font-semibold text-gray-700">
               Cargar más órdenes
@@ -295,7 +308,7 @@ export default function OrdersScreen() {
 
   return (
     <AuthGate message="Inicia sesion para ver el historial de tus pedidos.">
-      <View className="flex-1 bg-white">
+      <View className="flex-1 bg-[#fafafa]">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
@@ -305,7 +318,7 @@ export default function OrdersScreen() {
         />
 
         <FlatList
-          className="flex-1 bg-white"
+          className="flex-1 bg-[#fafafa]"
           data={!isLoading ? filteredOrders : []}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (

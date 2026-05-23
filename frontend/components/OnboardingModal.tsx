@@ -14,45 +14,40 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { Check, CheckCircle2, Salad } from "lucide-react-native";
 
 const DIETARY_OPTIONS = [
   {
     slug: "sin-gluten",
     label: "Sin Gluten",
-    emoji: "🌾",
     description: "Apto para celíacos",
     testID: "tag-celiac",
   },
   {
     slug: "para-diabeticos",
     label: "Para diabéticos",
-    emoji: "🩺",
     description: "Bajo índice glucémico",
     testID: "tag-diabetic",
   },
   {
     slug: "vegano",
     label: "Vegano",
-    emoji: "🌱",
     description: "Sin productos de origen animal",
     testID: "tag-vegan",
   },
   {
     slug: "sin-lactosa",
     label: "Sin Lactosa",
-    emoji: "🥛",
     description: "Apto para intolerantes",
   },
   {
     slug: "bajo-en-azucar",
     label: "Bajo en azúcar",
-    emoji: "🍬",
     description: "Reducido en azúcares",
   },
   {
     slug: "alto-en-proteina",
     label: "Alto en proteína",
-    emoji: "💪",
     description: "Ideal para deportistas",
   },
 ] as const;
@@ -233,15 +228,10 @@ function PrimaryButton({
           {
             minHeight: 60,
             width: "100%",
-            backgroundColor: "#2D2926",
-            borderRadius: 9999,
+            backgroundColor: "#09090b",
+            borderRadius: 16,
             alignItems: "center",
             justifyContent: "center",
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.1,
-            shadowRadius: 2,
-            elevation: 2,
           },
         ]}
       >
@@ -267,7 +257,9 @@ function StepWelcome({ reducedMotion }: StepProps) {
       className="flex-1 justify-center items-center pb-8"
     >
       <View className="items-center mb-4">
-        <Text className="text-[80px] mb-6">🥗</Text>
+        <View className="mb-6 h-20 w-20 items-center justify-center rounded-[28px] bg-emerald-50">
+          <Salad size={42} color="#22c55e" strokeWidth={2.2} />
+        </View>
         <Text className="text-4xl font-extrabold text-ink text-center mb-4 leading-tight">
           Bienvenido a HealthBytes
         </Text>
@@ -337,7 +329,23 @@ function DietaryTagCard({
         ]}
       >
         <View style={{ alignItems: "flex-start" }}>
-          <Text style={{ fontSize: 36, marginBottom: 12 }}>{item.emoji}</Text>
+          <View
+            style={{
+              width: 36,
+              height: 36,
+              marginBottom: 12,
+              borderRadius: 14,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: isActive ? "#22c55e" : "#f1f5f9",
+            }}
+          >
+            {isActive ? (
+              <Check size={18} color="#ffffff" strokeWidth={2.8} />
+            ) : (
+              <Salad size={18} color="#09090b" strokeWidth={2.2} />
+            )}
+          </View>
         </View>
         <View>
           <Text
@@ -428,7 +436,9 @@ function StepConfirmation({
       className="flex-1 justify-center items-center pb-12"
     >
       <View className="items-center mb-8">
-        <Text className="text-[80px] mb-6">🎉</Text>
+        <View className="mb-6 h-20 w-20 items-center justify-center rounded-[28px] bg-emerald-50">
+          <CheckCircle2 size={42} color="#22c55e" strokeWidth={2.2} />
+        </View>
         <Text className="text-4xl font-extrabold text-ink text-center mb-4 px-2">
           ¡Todo listo!
         </Text>

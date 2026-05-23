@@ -1,6 +1,6 @@
 /// <reference types="nativewind/types" />
 import { AuthGate } from "@/components/AuthGate";
-import { ActivityIndicator, Pressable, ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Text } from "@/components/ui/text";
@@ -223,7 +223,7 @@ export default function AddressesScreen() {
 
   return (
     <AuthGate message="Inicia sesión para gestionar tus direcciones.">
-      <View className="flex-1 bg-white">
+      <View className="flex-1 bg-[#fafafa]">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
 
@@ -242,7 +242,7 @@ export default function AddressesScreen() {
           <View className="max-w-[800px] mx-auto w-full">
             {/* Hero Section */}
             <View className="px-5 mt-4">
-              <View className="rounded-3xl bg-black px-6 py-8 overflow-hidden relative">
+              <View className="relative overflow-hidden rounded-[28px] bg-[#09090b] px-6 py-8">
                 <View className="z-10">
                   <Text className="text-[11px] uppercase text-gray-400 tracking-[1.5px] font-bold mb-1">
                     Configuración
@@ -273,7 +273,7 @@ export default function AddressesScreen() {
                   <Pressable
                     onPress={handleCancelEdit}
                     style={{ minHeight: 48 }}
-                    className="flex-row items-center justify-center gap-1.5 px-4 bg-gray-100 rounded-full active:bg-gray-200"
+                    className="flex-row items-center justify-center gap-1.5 rounded-2xl bg-slate-100 px-4 active:bg-slate-200"
                     accessibilityLabel="Cancelar edición"
                     accessibilityRole="button"
                   >
@@ -286,7 +286,7 @@ export default function AddressesScreen() {
               </View>
 
               <View
-                className={`rounded-3xl p-6 border shadow-sm ${editingId !== null ? "bg-blue-50 border-blue-100" : "bg-gray-50 border-gray-100"}`}
+                className="rounded-[28px] border border-slate-200/70 bg-white p-6"
               >
                 {/* Label */}
                 <View className="mb-4">
@@ -296,7 +296,7 @@ export default function AddressesScreen() {
                   <Input
                     variant="outline"
                     size="lg"
-                    className="bg-white border-gray-100 rounded-2xl h-14"
+                    className="h-14 rounded-2xl border-slate-200 bg-white"
                   >
                     <InputField
                       placeholder="Nombre de esta dirección"
@@ -315,7 +315,7 @@ export default function AddressesScreen() {
                   <Input
                     variant="outline"
                     size="lg"
-                    className="bg-white border-gray-100 rounded-2xl h-14"
+                    className="h-14 rounded-2xl border-slate-200 bg-white"
                   >
                     <InputField
                       placeholder="Calle, número, depto..."
@@ -334,7 +334,7 @@ export default function AddressesScreen() {
                   <Input
                     variant="outline"
                     size="lg"
-                    className="bg-white border-gray-100 rounded-2xl h-14"
+                    className="h-14 rounded-2xl border-slate-200 bg-white"
                   >
                     <InputField
                       placeholder="Ej: 7500000"
@@ -355,7 +355,7 @@ export default function AddressesScreen() {
                   <Input
                     variant="outline"
                     size="lg"
-                    className="bg-white border-gray-100 rounded-2xl h-14"
+                    className="h-14 rounded-2xl border-slate-200 bg-white"
                   >
                     <InputField
                       placeholder="Escribe tu comuna..."
@@ -374,7 +374,7 @@ export default function AddressesScreen() {
 
                   {showComunaSuggestions && filteredComunas.length > 0 && (
                     <Animated.View entering={FadeIn} className="mt-2">
-                      <View className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                      <View className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
                         <ScrollView
                           nestedScrollEnabled
                           style={{ maxHeight: 220 }}
@@ -382,7 +382,7 @@ export default function AddressesScreen() {
                           {filteredComunas.map((comuna) => (
                             <Pressable
                               key={comuna}
-                              className="p-4 border-b border-gray-50 active:bg-gray-50"
+                              className="border-b border-slate-100 p-4 active:bg-slate-50"
                               onPress={() => {
                                 setAddressComuna(comuna);
                                 setShowComunaSuggestions(false);
@@ -420,10 +420,16 @@ export default function AddressesScreen() {
                 <Pressable
                   onPress={handleSubmit}
                   disabled={isActionLoading}
-                  className={`h-14 rounded-full items-center justify-center flex-row gap-2 active:opacity-90 ${isActionLoading ? "bg-gray-200" : "bg-black"}`}
+                  className={`h-14 flex-row items-center justify-center gap-2 rounded-2xl active:opacity-90 ${isActionLoading ? "bg-slate-300" : "bg-[#09090b]"}`}
+                  accessibilityRole="button"
+                  accessibilityState={{ disabled: isActionLoading }}
                 >
                   {isActionLoading ? (
-                    <ActivityIndicator color="white" />
+                    <>
+                      <View className="h-2 w-2 rounded-full bg-[#4ade80]" />
+                      <View className="h-2 w-2 rounded-full bg-zinc-400" />
+                      <View className="h-2 w-2 rounded-full bg-zinc-500" />
+                    </>
                   ) : editingId !== null ? (
                     <>
                       <Pencil size={18} color="white" />
@@ -445,12 +451,16 @@ export default function AddressesScreen() {
 
             {/* List Section */}
             <View className="px-5 mt-10">
-              <Text className="text-lg font-bold text-gray-900 mb-5">
+              <Text className="mb-5 text-lg font-black tracking-[-0.2px] text-[#09090b]">
                 Tus direcciones guardadas
               </Text>
 
               {isStoreLoading && addresses.length === 0 ? (
-                <ActivityIndicator color="black" className="my-10" />
+                <View className="my-10 flex-row justify-center gap-2">
+                  <View className="h-3 w-3 rounded-full bg-[#22c55e]" />
+                  <View className="h-3 w-3 rounded-full bg-slate-300" />
+                  <View className="h-3 w-3 rounded-full bg-slate-400" />
+                </View>
               ) : addresses.length > 0 ? (
                 <View className="gap-4">
                   {addresses.map((addr, index) => (
@@ -460,9 +470,15 @@ export default function AddressesScreen() {
                       layout={Layout.springify()}
                     >
                       <View
-                        className={`bg-white border rounded-3xl p-5 shadow-sm flex-row items-center ${editingId === addr.id ? "border-blue-300" : "border-gray-100"}`}
+                        className="flex-row items-center rounded-[24px] border bg-white p-5"
+                        style={{
+                          borderColor:
+                            editingId === addr.id
+                              ? "#22c55e"
+                              : "rgba(226,232,240,0.9)",
+                        }}
                       >
-                        <View className="w-12 h-12 bg-green-50 rounded-2xl items-center justify-center">
+                          <View className="h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50">
                           {getLabelIcon(addr.label || "")}
                         </View>
 
@@ -472,9 +488,9 @@ export default function AddressesScreen() {
                               {addr.label}
                             </Text>
                             {addr.is_default && (
-                              <View className="bg-green-100 px-2 py-0.5 rounded-md">
-                                <Text className="text-[9px] font-bold text-green-700">
-                                  DEFAULT
+                              <View className="rounded-md bg-emerald-100 px-2 py-0.5">
+                                <Text className="text-[9px] font-bold text-emerald-700">
+                                  Principal
                                 </Text>
                               </View>
                             )}
@@ -522,10 +538,15 @@ export default function AddressesScreen() {
                   ))}
                 </View>
               ) : (
-                <View className="items-center py-10 bg-gray-50 rounded-3xl border border-gray-100 border-dashed">
-                  <MapPin size={40} color="#D1D5DB" />
-                  <Text className="text-gray-400 text-sm mt-3">
+                <View className="items-start rounded-[28px] border border-dashed border-slate-200 bg-white p-6">
+                  <View className="mb-5 h-14 w-14 items-center justify-center rounded-[22px] bg-slate-100">
+                    <MapPin size={28} color="#09090b" />
+                  </View>
+                  <Text className="mb-2 text-xl font-black tracking-[-0.3px] text-[#09090b]">
                     No hay direcciones guardadas
+                  </Text>
+                  <Text className="text-sm leading-5 text-zinc-600">
+                    Guarda una dirección para acelerar tus próximos pedidos.
                   </Text>
                 </View>
               )}

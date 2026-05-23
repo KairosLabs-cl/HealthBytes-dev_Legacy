@@ -4,7 +4,6 @@ import { formatPrice } from "@/lib/formatPrice";
 import {
   Order,
   STATUS_BADGE_COLORS,
-  STATUS_COLORS,
   STATUS_LABELS,
   normalizeStatus,
 } from "@/types/order";
@@ -22,7 +21,6 @@ export function OrderListItem({ order, onPress }: OrderListItemProps) {
   const normalizedStatus = normalizeStatus(order.status as unknown as string);
   const statusLabel = STATUS_LABELS[normalizedStatus];
   const statusBadgeColor = STATUS_BADGE_COLORS[normalizedStatus];
-  const cardBgColor = STATUS_COLORS[normalizedStatus];
 
   const formattedDate = useMemo(() => {
     const date = new Date(order.created_at);
@@ -53,21 +51,19 @@ export function OrderListItem({ order, onPress }: OrderListItemProps) {
       accessibilityLabel={`Ver orden ${orderId}, ${statusLabel}, ${totalItems} producto${totalItems !== 1 ? "s" : ""}, total ${formatPrice(totalPrice)}`}
       accessibilityHint="Abre el detalle de la orden"
     >
-      <View
-        className={`${cardBgColor} border border-border-subtle rounded-lg p-4 mb-3 flex-row items-center justify-between`}
-      >
+      <View className="mb-3 flex-row items-center justify-between rounded-[24px] border border-slate-200/70 bg-white p-4">
         <View className="flex-1">
           {/* Order ID and Date */}
           <View className="flex-row items-center justify-between mb-2">
-            <Text className="font-semibold text-ink">Orden #{orderId}</Text>
+            <Text className="font-black text-[#09090b]">Orden #{orderId}</Text>
             <Text className="text-xs text-ink-subtle">{formattedDate}</Text>
           </View>
 
           {/* Status Badge */}
           <View
-            className={`${statusBadgeColor} self-start rounded-full px-3 py-1 mb-2`}
+            className={`${statusBadgeColor} mb-2 self-start rounded-2xl px-3 py-1`}
           >
-            <Text className="text-xs font-medium">{statusLabel}</Text>
+            <Text className="text-xs font-bold">{statusLabel}</Text>
           </View>
 
           {/* Items and Total */}
@@ -75,7 +71,7 @@ export function OrderListItem({ order, onPress }: OrderListItemProps) {
             <Text className="text-sm text-ink-muted">
               {totalItems} producto{totalItems !== 1 ? "s" : ""}
             </Text>
-            <Text className="font-bold text-ink">
+            <Text className="font-black text-[#09090b]">
               {formatPrice(totalPrice)}
             </Text>
           </View>

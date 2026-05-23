@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Pressable, Platform } from "react-native";
+import { View, Pressable } from "react-native";
 import { Image } from "@/components/ui/image";
 import { Text } from "@/components/ui/text";
 import { ShoppingCart, X } from "lucide-react-native";
@@ -37,22 +37,14 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
     <View
       style={{
         backgroundColor: "white",
-        borderRadius: 16,
+        borderRadius: 24,
+        borderWidth: 1,
+        borderColor: "rgba(226,232,240,0.7)",
         marginHorizontal: 16,
         marginBottom: 10,
         flexDirection: "row",
         alignItems: "center",
         padding: 12,
-        ...Platform.select({
-          ios: {
-            shadowColor: "#000",
-            shadowOpacity: 0.05,
-            shadowRadius: 8,
-            shadowOffset: { width: 0, height: 2 },
-          },
-          android: { elevation: 2 },
-          web: { boxShadow: "0 2px 8px rgba(0,0,0,0.05)" },
-        }),
       }}
     >
       {/* Product image — tappable to detail */}
@@ -64,8 +56,8 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
         style={{
           width: 80,
           height: 80,
-          borderRadius: 12,
-          backgroundColor: "#F9FAFB",
+          borderRadius: 18,
+          backgroundColor: "#f1f5f9",
           overflow: "hidden",
           flexShrink: 0,
           opacity: isOutOfStock ? 0.5 : 1,
@@ -91,8 +83,8 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
             numberOfLines={2}
             style={{
               fontSize: 13,
-              fontWeight: "700",
-              color: "#111827",
+              fontWeight: "900",
+              color: "#09090b",
               marginBottom: 4,
               lineHeight: 18,
             }}
@@ -104,8 +96,8 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
         <Text
           style={{
             fontSize: 16,
-            fontWeight: "800",
-            color: "#111827",
+            fontWeight: "900",
+            color: "#09090b",
             marginBottom: 8,
           }}
         >
@@ -116,10 +108,10 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
         <View
           style={{
             alignSelf: "flex-start",
-            backgroundColor: isOutOfStock ? "#FEF2F2" : "#ECFDF5",
+            backgroundColor: isOutOfStock ? "#fef2f2" : "#ecfdf5",
             paddingHorizontal: 8,
             paddingVertical: 3,
-            borderRadius: 6,
+            borderRadius: 12,
             marginBottom: 8,
           }}
         >
@@ -150,10 +142,10 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: isOutOfStock ? "#E5E7EB" : "#000000",
-            borderRadius: 10,
+            backgroundColor: isOutOfStock ? "#e2e8f0" : "#09090b",
+            borderRadius: 16,
             paddingVertical: 8,
-            minHeight: 36,
+            minHeight: 44,
           }}
         >
           <ShoppingCart size={12} color={isOutOfStock ? "#9CA3AF" : "white"} />

@@ -2,7 +2,7 @@ import { useAuth } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { Lock } from "lucide-react-native";
 import React from "react";
-import { ActivityIndicator, Pressable, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
 
@@ -20,8 +20,12 @@ export function AuthGate({
 
   if (!isLoaded) {
     return (
-      <SafeAreaView className="flex-1 bg-surface-card items-center justify-center">
-        <ActivityIndicator size="large" color="#2D2926" />
+      <SafeAreaView className="flex-1 items-center justify-center bg-[#fafafa]">
+        <View className="flex-row gap-2">
+          <View className="h-3 w-3 rounded-full bg-[#22c55e]" />
+          <View className="h-3 w-3 rounded-full bg-slate-300" />
+          <View className="h-3 w-3 rounded-full bg-slate-400" />
+        </View>
         <Text className="mt-4 text-ink-subtle">Cargando...</Text>
       </SafeAreaView>
     );
@@ -29,40 +33,47 @@ export function AuthGate({
 
   if (!isSignedIn) {
     return (
-      <SafeAreaView className="flex-1 bg-surface-card items-center justify-center px-8">
-        <View className="w-20 h-20 rounded-full bg-surface-muted items-center justify-center mb-6">
-          <Lock size={36} color="#6B7280" />
-        </View>
+      <SafeAreaView
+        className="flex-1 items-center justify-center bg-[#fafafa]"
+        style={{ paddingHorizontal: 32 }}
+      >
+        <View style={{ width: "100%", maxWidth: 260, alignItems: "center" }}>
+          <View className="mb-6 h-20 w-20 items-center justify-center rounded-[28px] bg-slate-100">
+            <Lock size={36} color="#09090b" />
+          </View>
 
-        <Text className="text-2xl font-extrabold text-ink mb-3 text-center">
-          Inicia sesion para continuar
-        </Text>
-
-        <Text className="text-base text-ink-subtle text-center mb-8 leading-6">
-          {message}
-        </Text>
-
-        <Pressable
-          onPress={() => router.push("/(auth)/login")}
-          className="w-full h-14 bg-ink rounded-full items-center justify-center active:opacity-80 mb-6"
-          style={{ minHeight: 52 }}
-          accessibilityRole="button"
-          accessibilityLabel="Iniciar sesión"
-        >
-          <Text className="text-white font-bold text-base">Inicia sesión</Text>
-        </Pressable>
-
-        <Pressable
-          onPress={() => router.replace("/")}
-          className="py-2 active:opacity-60"
-          style={{ minHeight: 44 }}
-          accessibilityRole="button"
-          accessibilityLabel="Volver al catálogo"
-        >
-          <Text className="text-ink-subtle font-medium text-sm">
-            Volver al catalogo
+          <Text className="mb-3 text-center text-2xl font-black text-[#09090b]">
+            Inicia sesión
           </Text>
-        </Pressable>
+
+          <Text className="mb-8 text-center text-base leading-6 text-zinc-500">
+            {message}
+          </Text>
+
+          <Pressable
+            onPress={() => router.push("/(auth)/login")}
+            className="mb-6 h-14 items-center justify-center rounded-2xl bg-[#09090b] active:opacity-80"
+            style={{ minHeight: 52, alignSelf: "stretch" }}
+            accessibilityRole="button"
+            accessibilityLabel="Iniciar sesión"
+          >
+            <Text className="text-white font-bold text-base">
+              Inicia sesión
+            </Text>
+          </Pressable>
+
+          <Pressable
+            onPress={() => router.replace("/")}
+            className="py-2 active:opacity-60"
+            style={{ minHeight: 44 }}
+            accessibilityRole="button"
+            accessibilityLabel="Volver al catálogo"
+          >
+            <Text className="text-sm font-medium text-zinc-500">
+              Volver al catalogo
+            </Text>
+          </Pressable>
+        </View>
       </SafeAreaView>
     );
   }

@@ -25,18 +25,13 @@ export function Header({
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const router = useRouter();
 
-  const [greeting, setGreeting] = useState<string>("");
+  const [salutation, setSalutation] = useState<string>("");
 
   useEffect(() => {
-    const templates = [
-      "👋 Hola, {name}!",
-      "✨ ¡Qué lindo volverte a ver, {name}!",
-      "🎉 ¡Volviste, {name}!",
-      "🙌 ¡Bienvenido de nuevo, {name}!",
-      "🥗 ¿Listo para comer sano, {name}?",
-      "💚 ¡Hola de nuevo, {name}!",
-    ];
-    setGreeting(templates[Math.floor(Math.random() * templates.length)]);
+    const hour = new Date().getHours();
+    if (hour < 12) setSalutation("Buenos días,");
+    else if (hour < 19) setSalutation("Buenas tardes,");
+    else setSalutation("Buenas noches,");
   }, []);
 
   // Sync internal state if prop changes (e.g. navigation back/forward)
@@ -68,48 +63,93 @@ export function Header({
     // For a smoother UX, clear should probably not force navigate unless submitted,
     // but user requested "Que vuelva al home al limpiar".
     // We can interpret this as "when X is pressed" or "when submitted empty".
-    // Let's make X clear text, and if on search page possibly navigate?
     // Actually simplicity: Clear text -> Focus -> Wait for user.
     // BUT user said: "Que vuelva al home al limpiar". Let's do that for the X button.
     router.push("/");
   };
 
   return (
-    <View className="px-4 pt-6 pb-4 bg-surface-card">
+    <View
+      style={{
+        paddingHorizontal: 20,
+        paddingTop: 20,
+        paddingBottom: 12,
+        backgroundColor: "#fafafa",
+      }}
+    >
       {showBackButton ? (
-        <View className="flex-row items-center mb-1">
+        <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
           <Pressable
             onPress={() => router.push("/")}
-            className="mr-2 p-1"
+            style={{ marginRight: 8, padding: 4 }}
             accessibilityLabel="Volver"
             accessibilityRole="button"
             hitSlop={10}
           >
             <ArrowLeft size={24} color={colors.ink.primary} />
           </Pressable>
-          <Text className="text-lg font-bold">Volver</Text>
+          <Text style={{ fontSize: 18, fontWeight: "700", color: colors.ink.primary }}>
+            Volver
+          </Text>
         </View>
       ) : (
-        isLoggedIn &&
-        greeting && (
-          <Text className="text-lg font-bold">
-            {greeting.replace("{name}", userName)}
-          </Text>
+        isLoggedIn && salutation && (
+          <View style={{ marginBottom: 14 }}>
+            <Text
+              style={{
+                fontSize: 13,
+                color: colors.ink.muted,
+                fontWeight: "400",
+                letterSpacing: 0.1,
+                marginBottom: 2,
+              }}
+            >
+              {salutation}
+            </Text>
+            <Text
+              style={{
+                fontSize: 24,
+                fontWeight: "900",
+                color: "#09090b",
+                letterSpacing: -0.8,
+                lineHeight: 28,
+              }}
+            >
+              {userName}
+            </Text>
+          </View>
         )
       )}
 
-      <View className="flex-row items-center mt-3 rounded-full border border-border-subtle px-3 py-2 bg-surface-muted">
+      {/* Search bar */}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          borderRadius: 16,
+          backgroundColor: "#f1f5f9",
+          paddingHorizontal: 14,
+          paddingVertical: 10,
+          borderWidth: 1,
+          borderColor: "rgba(226,232,240,0.8)",
+        }}
+      >
         <Pressable
           onPress={handleSearchSubmit}
           accessibilityLabel="Buscar"
           accessibilityRole="button"
           hitSlop={12}
         >
-          <Search size={20} color={colors.ink.muted} />
+          <Search size={18} color={colors.ink.muted} />
         </Pressable>
         <TextInput
-          placeholder="¿Qué podemos encontrar por ti?"
-          className="flex-1 ml-2 text-base"
+          placeholder="¿Qué buscas hoy?"
+          style={{
+            flex: 1,
+            marginLeft: 10,
+            fontSize: 15,
+            color: colors.ink.primary,
+          }}
           placeholderTextColor={colors.ink.muted}
           value={searchTerm}
           onChangeText={setSearchTerm}
@@ -121,12 +161,12 @@ export function Header({
         {searchTerm.length > 0 && (
           <Pressable
             onPress={handleClear}
-            className="ml-2"
+            style={{ marginLeft: 8 }}
             accessibilityLabel="Limpiar búsqueda"
             accessibilityRole="button"
             hitSlop={12}
           >
-            <X size={20} color={colors.ink.muted} />
+            <X size={18} color={colors.ink.muted} />
           </Pressable>
         )}
       </View>

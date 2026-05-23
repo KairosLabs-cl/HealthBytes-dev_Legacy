@@ -50,9 +50,9 @@ const CartItem = ({
     [item.product.id, onRemove]
   );
   return (
-    <View className="bg-surface-card p-4 rounded-2xl flex-row gap-3 border border-border-subtle">
+    <View className="flex-row gap-3 rounded-[24px] border border-slate-200/70 bg-white p-4">
       {/* Product Image */}
-      <View className="w-24 h-24 bg-surface-muted rounded-xl overflow-hidden">
+      <View className="h-24 w-24 overflow-hidden rounded-2xl bg-slate-100">
         <ExpoImage
           source={{ uri: item.product.image }}
           style={{ width: "100%", height: "100%" }}
@@ -64,10 +64,10 @@ const CartItem = ({
 
       {/* Product Info */}
       <View className="flex-1">
-        <Text className="font-bold text-sm text-ink mb-1 leading-snug">
+        <Text className="mb-1 text-sm font-black leading-snug text-[#09090b]">
           {item.product.name}
         </Text>
-        <Text className="text-lg font-black text-ink mb-4">
+        <Text className="mb-4 text-lg font-black tracking-[-0.2px] text-[#09090b]">
           {formatPrice(item.product.price * item.quantity)}
         </Text>
 
@@ -79,11 +79,10 @@ const CartItem = ({
             accessibilityRole="button"
             accessibilityLabel={`Disminuir cantidad de ${item.product.name}`}
             accessibilityState={{ disabled: isUpdating || isRemoving }}
-            hitSlop={6}
-            className={`w-8 h-8 rounded-full items-center justify-center ${
+            className={`h-11 w-11 items-center justify-center rounded-2xl ${
               isUpdating || isRemoving
-                ? "bg-ink opacity-40"
-                : "bg-ink active:bg-ink"
+                ? "bg-slate-300 opacity-60"
+                : "bg-[#09090b] active:opacity-85"
             }`}
           >
             <Minus
@@ -105,7 +104,7 @@ const CartItem = ({
             }}
             keyboardType="numeric"
             accessibilityLabel="Cantidad"
-            className="px-3 py-1 bg-surface-muted rounded-lg min-w-[36px] text-center font-semibold text-ink text-sm"
+            className="min-h-11 min-w-11 rounded-2xl bg-slate-100 px-3 py-2 text-center text-sm font-bold text-[#09090b]"
             editable={!isUpdating && !isRemoving}
           />
 
@@ -117,11 +116,10 @@ const CartItem = ({
             accessibilityState={{
               disabled: isAdding || isUpdating || isRemoving,
             }}
-            hitSlop={6}
-            className={`w-8 h-8 rounded-full items-center justify-center ${
+            className={`h-11 w-11 items-center justify-center rounded-2xl ${
               isAdding || isUpdating || isRemoving
-                ? "bg-ink opacity-40"
-                : "bg-ink active:bg-ink"
+                ? "bg-slate-300 opacity-60"
+                : "bg-[#09090b] active:opacity-85"
             }`}
           >
             <Plus
@@ -140,10 +138,9 @@ const CartItem = ({
             accessibilityRole="button"
             accessibilityLabel={`Eliminar ${item.product.name} del carrito`}
             accessibilityState={{ disabled: isRemoving }}
-            hitSlop={6}
-            className={`w-8 h-8 rounded-full items-center justify-center transition-colors ${
+            className={`h-11 w-11 items-center justify-center rounded-2xl transition-colors ${
               isRemoving
-                ? "bg-surface-muted opacity-40"
+                ? "bg-slate-100 opacity-40"
                 : "bg-red-50 active:bg-red-100"
             }`}
           >

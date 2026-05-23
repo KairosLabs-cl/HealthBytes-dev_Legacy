@@ -5,7 +5,7 @@ import { useCart } from "@/store/cartStore";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { CheckCircleIcon } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 export default function PaymentSuccessScreen() {
   const router = useRouter();
@@ -27,13 +27,13 @@ export default function PaymentSuccessScreen() {
 
   return (
     <AuthGate message="Inicia sesion para ver el resultado de tu pago.">
-      <View className="flex-1 bg-white justify-center items-center p-6">
-        <View className="bg-green-100 p-6 rounded-full mb-6">
+      <View className="flex-1 items-center justify-center bg-[#fafafa] p-6">
+        <View className="mb-6 rounded-[28px] bg-emerald-50 p-6">
           <CheckCircleIcon size={64} color="#16a34a" />
         </View>
 
-        <Text className="text-3xl font-bold text-center mb-2 text-black">
-          ¡Pago Exitoso!
+        <Text className="mb-2 text-center text-3xl font-black tracking-[-0.5px] text-[#09090b]">
+          Pago exitoso
         </Text>
 
         <Text className="text-gray-600 text-center mb-4 text-lg">
@@ -51,15 +51,17 @@ export default function PaymentSuccessScreen() {
         </Text>
 
         {isRedirecting && (
-          <View className="mb-6">
-            <ActivityIndicator size="large" color="#000" />
+          <View className="mb-6 flex-row gap-2">
+            <View className="h-3 w-3 rounded-full bg-[#22c55e]" />
+            <View className="h-3 w-3 rounded-full bg-slate-300" />
+            <View className="h-3 w-3 rounded-full bg-slate-400" />
           </View>
         )}
 
         <VStack space="md" className="w-full">
           <Button
             size="lg"
-            className="bg-blue-600"
+            className="rounded-2xl bg-[#09090b]"
             onPress={() => {
               setIsRedirecting(true);
               resetCart();
@@ -75,7 +77,7 @@ export default function PaymentSuccessScreen() {
           <Button
             size="lg"
             variant="outline"
-            className="border-gray-300"
+            className="rounded-2xl border-gray-300"
             onPress={() => {
               resetCart();
               router.replace("/");

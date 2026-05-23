@@ -7,20 +7,20 @@ import { Text } from "@/components/ui/text";
 import { Button, ButtonText } from "@/components/ui/button";
 import { useAuth } from "@clerk/clerk-expo";
 import { useEffect, useState } from "react";
-import { Salad } from "lucide-react-native";
+import { Check, Salad } from "lucide-react-native";
 import { usePreferencesStore } from "@/store/preferencesStore";
 import { updateDietaryPreferences } from "@/api/preferences";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 
 const DIETARY_OPTIONS = [
-  { slug: "sin-gluten", label: "Sin Gluten", emoji: "🌾" },
-  { slug: "vegano", label: "Vegano", emoji: "🌱" },
-  { slug: "sin-lactosa", label: "Sin Lactosa", emoji: "🥛" },
-  { slug: "bajo-en-azucar", label: "Bajo en azúcar", emoji: "🍬" },
-  { slug: "alto-en-proteina", label: "Alto en proteína", emoji: "💪" },
-  { slug: "para-diabeticos", label: "Para diabéticos", emoji: "🩺" },
-  { slug: "sin-nueces", label: "Sin Nueces", emoji: "🥜" },
-  { slug: "sin-mariscos", label: "Sin Mariscos", emoji: "🦐" },
+  { slug: "sin-gluten", label: "Sin Gluten" },
+  { slug: "vegano", label: "Vegano" },
+  { slug: "sin-lactosa", label: "Sin Lactosa" },
+  { slug: "bajo-en-azucar", label: "Bajo en azúcar" },
+  { slug: "alto-en-proteina", label: "Alto en proteína" },
+  { slug: "para-diabeticos", label: "Para diabéticos" },
+  { slug: "sin-nueces", label: "Sin Nueces" },
+  { slug: "sin-mariscos", label: "Sin Mariscos" },
 ] as const;
 
 export default function DietaryPreferencesScreen() {
@@ -57,12 +57,10 @@ export default function DietaryPreferencesScreen() {
         await updateDietaryPreferences(selectedTags, token);
       }
       setDietaryPreferences(selectedTags);
-      setSuccess("✓ Preferencias guardadas");
+      setSuccess("Preferencias guardadas");
       setTimeout(() => setSuccess(null), 3000);
     } catch {
-      setError(
-        "❌ No se pudieron guardar las preferencias. Intenta nuevamente."
-      );
+      setError("No se pudieron guardar las preferencias. Intenta nuevamente.");
     } finally {
       setIsSaving(false);
     }
@@ -70,7 +68,7 @@ export default function DietaryPreferencesScreen() {
 
   return (
     <AuthGate message="Inicia sesión para configurar tus preferencias dietéticas.">
-      <View className="flex-1 bg-white">
+      <View className="flex-1 bg-[#fafafa]">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
@@ -90,23 +88,33 @@ export default function DietaryPreferencesScreen() {
           </Text>
 
           <View className="flex-row flex-wrap gap-3 mb-4">
-            {DIETARY_OPTIONS.map(({ slug, label, emoji }) => {
+            {DIETARY_OPTIONS.map(({ slug, label }) => {
               const isActive = selectedTags.includes(slug);
               return (
                 <Pressable
                   key={slug}
                   onPress={() => toggleTag(slug)}
-                  style={{ minHeight: 44 }}
-                  className={`flex-row items-center gap-2 px-4 py-3 rounded-full border-2 ${
+                  style={{ minHeight: 48 }}
+                  className={`flex-row items-center gap-2 rounded-2xl border px-4 py-3 ${
                     isActive
-                      ? "bg-green-50 border-green-500"
-                      : "bg-gray-50 border-gray-200"
+                      ? "border-[#09090b] bg-[#09090b]"
+                      : "border-slate-200 bg-white"
                   }`}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: isActive }}
                 >
-                  <Text className="text-base">{emoji}</Text>
+                  <View
+                    className={`h-5 w-5 items-center justify-center rounded-lg ${
+                      isActive ? "bg-[#22c55e]" : "bg-slate-100"
+                    }`}
+                  >
+                    {isActive && (
+                      <Check size={13} color="#ffffff" strokeWidth={2.8} />
+                    )}
+                  </View>
                   <Text
                     className={`text-sm font-semibold ${
-                      isActive ? "text-green-700" : "text-gray-700"
+                      isActive ? "text-white" : "text-gray-700"
                     }`}
                   >
                     {label}
@@ -117,19 +125,19 @@ export default function DietaryPreferencesScreen() {
           </View>
 
           {error && (
-            <View className="bg-red-50 border border-red-300 rounded-lg p-3 mb-4">
+            <View className="mb-4 rounded-2xl border border-red-200 bg-red-50 p-3">
               <Text className="text-red-700 text-sm">{error}</Text>
             </View>
           )}
           {success && (
-            <View className="bg-green-50 border border-green-300 rounded-lg p-3 mb-4">
-              <Text className="text-green-700 text-sm">{success}</Text>
+            <View className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-3">
+              <Text className="text-sm text-emerald-700">{success}</Text>
             </View>
           )}
 
           <Button
             onPress={handleSave}
-            className="bg-black rounded-full min-h-[52px] flex-row items-center justify-center"
+            className="min-h-[52px] flex-row items-center justify-center rounded-2xl bg-[#09090b]"
             disabled={isSaving}
           >
             <ButtonText className="text-white font-semibold text-base text-center leading-5">

@@ -35,6 +35,16 @@ export default function ProfileSettingsScreen() {
     if (user?.fullName) return user.fullName;
     return `${firstName} ${lastName}`.trim() || "Usuario";
   }, [firstName, lastName, user?.fullName]);
+  const initials = useMemo(
+    () =>
+      displayName
+        .split(" ")
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0]?.toUpperCase())
+        .join("") || "HB",
+    [displayName]
+  );
 
   const handleSaveProfile = async () => {
     if (!user) return;
@@ -46,10 +56,10 @@ export default function ProfileSettingsScreen() {
         firstName: firstName.trim() || undefined,
         lastName: lastName.trim() || undefined,
       });
-      setSuccess("✓ Cambios guardados exitosamente");
+      setSuccess("Cambios guardados exitosamente");
       setTimeout(() => setSuccess(null), 3000);
     } catch {
-      setError("❌ No se pudieron guardar los cambios. Intenta nuevamente.");
+      setError("No se pudieron guardar los cambios. Intenta nuevamente.");
     } finally {
       setIsSaving(false);
     }
@@ -65,7 +75,7 @@ export default function ProfileSettingsScreen() {
 
   return (
     <AuthGate message="Inicia sesión para acceder a la configuración.">
-      <View className="flex-1 bg-white">
+      <View className="flex-1 bg-[#fafafa]">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
@@ -84,15 +94,20 @@ export default function ProfileSettingsScreen() {
               Actualiza tu nombre, email y foto de perfil.
             </Text>
 
-            {/* Foto de perfil */}
-            <View className="bg-gray-100 rounded-2xl p-4 mb-6 flex-row items-center">
-              <Image
-                source={{
-                  uri: user?.imageUrl || "https://via.placeholder.com/80",
-                }}
-                className="w-16 h-16 rounded-full mr-4"
-                alt="Foto de perfil"
-              />
+            <View className="mb-6 flex-row items-center rounded-[24px] border border-slate-200/70 bg-white p-4">
+              {user?.imageUrl ? (
+                <Image
+                  source={{ uri: user.imageUrl }}
+                  className="mr-4 h-16 w-16 rounded-2xl"
+                  alt="Foto de perfil"
+                />
+              ) : (
+                <View className="mr-4 h-16 w-16 items-center justify-center rounded-2xl bg-[#09090b]">
+                  <Text className="text-xl font-black text-white">
+                    {initials}
+                  </Text>
+                </View>
+              )}
               <View className="flex-1">
                 <Text className="text-base text-black font-semibold">
                   {displayName}
@@ -103,7 +118,7 @@ export default function ProfileSettingsScreen() {
               </View>
               <Button
                 size="sm"
-                className="bg-black rounded-full"
+                className="rounded-2xl bg-[#09090b]"
                 onPress={() =>
                   setError(
                     "Para cambiar la foto necesitamos habilitar selección de imágenes."
@@ -117,7 +132,7 @@ export default function ProfileSettingsScreen() {
             </View>
 
             {/* Email (solo lectura) */}
-            <View className="bg-gray-50 rounded-2xl p-4 mb-6">
+            <View className="mb-6 rounded-[24px] border border-slate-200/70 bg-white p-4">
               <Text className="text-sm text-gray-500 mb-2">Email</Text>
               <Text className="text-base text-black font-semibold">
                 {primaryEmail}
@@ -133,7 +148,7 @@ export default function ProfileSettingsScreen() {
               <Text className="text-sm font-semibold text-gray-800 mb-2">
                 Nombre
               </Text>
-              <Input className="bg-white border-gray-200">
+              <Input className="rounded-2xl border-slate-200 bg-white">
                 <InputField
                   value={firstName}
                   onChangeText={setFirstName}
@@ -150,7 +165,7 @@ export default function ProfileSettingsScreen() {
               <Text className="text-sm font-semibold text-gray-800 mb-2">
                 Apellido
               </Text>
-              <Input className="bg-white border-gray-200">
+              <Input className="rounded-2xl border-slate-200 bg-white">
                 <InputField
                   value={lastName}
                   onChangeText={setLastName}
@@ -163,19 +178,19 @@ export default function ProfileSettingsScreen() {
             </View>
 
             {error && (
-              <View className="bg-red-50 border border-red-300 rounded-lg p-3 mb-4">
+              <View className="mb-4 rounded-2xl border border-red-200 bg-red-50 p-3">
                 <Text className="text-red-700 text-sm">{error}</Text>
               </View>
             )}
             {success && (
-              <View className="bg-green-50 border border-green-300 rounded-lg p-3 mb-4">
-                <Text className="text-green-700 text-sm">{success}</Text>
+              <View className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-3">
+                <Text className="text-sm text-emerald-700">{success}</Text>
               </View>
             )}
 
             <Button
               onPress={handleSaveProfile}
-              className="bg-black rounded-full min-h-[52px] flex-row items-center justify-center"
+              className="min-h-[52px] flex-row items-center justify-center rounded-2xl bg-[#09090b]"
               disabled={!isLoaded || isSaving}
             >
               <ButtonText className="text-white font-semibold text-base text-center leading-5">

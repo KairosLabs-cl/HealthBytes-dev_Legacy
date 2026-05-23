@@ -29,7 +29,7 @@ export default function RecentlyViewedScreen() {
 
   return (
     <AuthGate message="Inicia sesión para ver tus productos visitados.">
-      <View className="flex-1 bg-white">
+      <View className="flex-1 bg-[#fafafa]">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
 
@@ -40,7 +40,7 @@ export default function RecentlyViewedScreen() {
         />
 
         <View style={{ paddingHorizontal: 16, paddingVertical: 8 }}>
-          <Text style={{ fontSize: 14, color: "#6B7280", marginBottom: 16 }}>
+          <Text style={{ fontSize: 14, color: "#52525b", marginBottom: 16 }}>
             Tu historial de navegación reciente.
           </Text>
         </View>
@@ -58,19 +58,24 @@ export default function RecentlyViewedScreen() {
             showsVerticalScrollIndicator={false}
             estimatedItemSize={280}
             ListEmptyComponent={
-              <View className="items-center justify-center py-40 px-6">
-                <Clock size={48} color="#D1D5DB" />
-                <Text className="text-gray-400 mt-4 text-center">
-                  Aún no has visto ningún producto. ¡Empieza a explorar!
+              <View className="px-6 py-28">
+                <View className="items-start rounded-[28px] border border-slate-200/70 bg-white p-6">
+                <View className="mb-5 h-14 w-14 items-center justify-center rounded-[22px] bg-slate-100">
+                  <Clock size={28} color="#09090b" />
+                </View>
+                <Text className="text-base leading-6 text-zinc-600">
+                  Aún no has visto ningún producto. Empieza a explorar.
                 </Text>
                 <Pressable
                   onPress={() => router.push("/")}
-                  className="mt-6 bg-black px-8 py-3 rounded-full"
+                  className="mt-6 rounded-2xl bg-[#09090b] px-8 py-3"
+                  style={{ minHeight: 48 }}
                   accessibilityRole="button"
                   accessibilityLabel="Explorar productos"
                 >
                   <Text className="text-white font-bold">Explorar ahora</Text>
                 </Pressable>
+                </View>
               </View>
             }
           />

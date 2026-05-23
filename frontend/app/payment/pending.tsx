@@ -6,7 +6,7 @@ import { useAuth } from "@clerk/clerk-expo";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ClockIcon } from "lucide-react-native";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Linking, Text, View } from "react-native";
+import { Linking, Text, View } from "react-native";
 
 const POLL_INTERVAL_MS = 5000;
 const MAX_POLLS = 12;
@@ -78,13 +78,13 @@ export default function PaymentPendingScreen() {
 
   return (
     <AuthGate message="Inicia sesion para ver el estado de tu pago.">
-      <View className="flex-1 bg-white justify-center items-center p-6">
-        <View className="bg-yellow-100 p-6 rounded-full mb-6">
+      <View className="flex-1 items-center justify-center bg-[#fafafa] p-6">
+        <View className="mb-6 rounded-[28px] bg-amber-50 p-6">
           <ClockIcon size={64} color="#eab308" />
         </View>
 
-        <Text className="text-3xl font-bold text-center mb-2 text-black">
-          Pago Pendiente
+        <Text className="mb-2 text-center text-3xl font-black tracking-[-0.5px] text-[#09090b]">
+          Pago pendiente
         </Text>
 
         <Text className="text-gray-600 text-center mb-4 text-lg">
@@ -100,7 +100,11 @@ export default function PaymentPendingScreen() {
         {!maxRetriesReached ? (
           <>
             <View className="mb-8">
-              <ActivityIndicator size="large" color="#000" />
+              <View className="flex-row gap-2">
+                <View className="h-3 w-3 rounded-full bg-[#22c55e]" />
+                <View className="h-3 w-3 rounded-full bg-slate-300" />
+                <View className="h-3 w-3 rounded-full bg-slate-400" />
+              </View>
             </View>
             <Text className="text-sm text-gray-600 text-center mb-8">
               Verificando estado del pago... ({pollCount}/{MAX_POLLS})
@@ -117,7 +121,7 @@ export default function PaymentPendingScreen() {
           {checkoutUrl && (
             <Button
               size="lg"
-              className="bg-black"
+              className="rounded-2xl bg-[#09090b]"
               onPress={() => Linking.openURL(checkoutUrl)}
             >
               <ButtonText className="text-white font-bold">
@@ -128,7 +132,7 @@ export default function PaymentPendingScreen() {
 
           <Button
             size="lg"
-            className="bg-blue-600"
+            className="rounded-2xl bg-[#09090b]"
             onPress={checkOrderStatus}
             disabled={isChecking}
           >
@@ -140,7 +144,7 @@ export default function PaymentPendingScreen() {
           <Button
             size="lg"
             variant="outline"
-            className="border-gray-300"
+            className="rounded-2xl border-gray-300"
             onPress={() => router.replace("/orders")}
           >
             <ButtonText className="text-gray-700 font-bold">

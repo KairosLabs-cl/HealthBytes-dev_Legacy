@@ -50,12 +50,20 @@ function AnimatedFilterChip({
     <Animated.View style={animatedStyle}>
       <Pressable
         onPress={handlePress}
-        className={`px-4 py-3 rounded-full border ${isActive ? "bg-brand-green border-brand-green shadow-soft-lift" : "bg-surface-warm border-border-subtle"}`}
-        style={{ minHeight: 48, justifyContent: "center" }}
+        className="rounded-2xl border px-4 py-3"
+        style={{
+          minHeight: 48,
+          justifyContent: "center",
+          backgroundColor: isActive ? "#09090b" : "#ffffff",
+          borderColor: isActive ? "#09090b" : "rgba(226,232,240,0.8)",
+          boxShadow: isActive
+            ? "0 14px 30px -18px rgba(9,9,11,0.5)"
+            : "0 1px 2px rgba(15,23,42,0.03)",
+        }}
+        accessibilityRole="button"
+        accessibilityState={{ selected: isActive }}
       >
-        <Text
-          className={`text-sm font-bold ${isActive ? "text-white" : "text-ink"}`}
-        >
+        <Text className={`text-sm font-bold ${isActive ? "text-white" : "text-[#09090b]"}`}>
           {label}
         </Text>
       </Pressable>
@@ -73,7 +81,7 @@ export default React.memo(function DietaryFilterBar({
   toggleDietaryTag,
 }: DietaryFilterBarProps) {
   return (
-    <View className="bg-surface-card pb-3">
+    <View className="bg-[#fafafa] pb-3">
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}

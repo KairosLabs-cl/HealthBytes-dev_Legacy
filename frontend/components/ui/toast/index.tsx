@@ -31,16 +31,16 @@ const toastStyle = tva({
   base: "flex-row items-center p-4 gap-3 bg-background-0 shadow-soft-1 rounded-md border-outline-100 border-none sm:shadow-hard-5 sm:border bg-white shadow-xl elevation-5",
   variants: {
     action: {
-      success: "border-l-4 border-l-success-500 bg-success-50",
-      error: "border-l-4 border-l-error-500 bg-error-50",
-      warning: "border-l-4 border-l-warning-500 bg-warning-50",
-      info: "border-l-4 border-l-info-500 bg-info-50",
-      attention: "border-l-4 border-l-background-500 bg-background-50",
+      success: "border border-success-200 bg-success-50",
+      error: "border border-error-200 bg-error-50",
+      warning: "border border-warning-200 bg-warning-50",
+      info: "border border-info-200 bg-info-50",
+      attention: "border border-background-200 bg-background-50",
     },
     variant: {
       solid: "",
       outline: "border border-outline-200",
-      accent: "border-l-4",
+      accent: "border",
     },
   },
 });

@@ -61,6 +61,13 @@ export default function ProfileScreen() {
   const { signOut } = useClerk();
 
   const { user } = useUser();
+  const displayName = user?.fullName || user?.firstName || "Usuario";
+  const initials = displayName
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
 
   const handleLogout = async () => {
     await signOut();
@@ -69,36 +76,41 @@ export default function ProfileScreen() {
 
   return (
     <AuthGate message="Inicia sesion para ver tu perfil.">
-      <View className="flex-1 bg-white">
+      <View className="flex-1 bg-[#fafafa]">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader title="Perfil" icon={UserIcon} />
 
         <ScrollView
-          className="flex-1 bg-white px-4"
+          className="flex-1 bg-[#fafafa] px-4"
           contentContainerStyle={{ paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
         >
           {/* Perfil del usuario */}
-          <View className="rounded-3xl bg-gray-100 flex-row items-center p-4 mb-4">
-            <Image
-              source={{
-                uri: user?.imageUrl || "https://via.placeholder.com/80",
-              }}
-              className="w-20 h-20 rounded-full"
-              alt="Foto de perfil"
-            />
+          <View className="mb-4 flex-row items-center rounded-[28px] border border-slate-200/70 bg-white p-4">
+            {user?.imageUrl ? (
+              <Image
+                source={{ uri: user.imageUrl }}
+                className="h-20 w-20 rounded-[24px]"
+                alt="Foto de perfil"
+              />
+            ) : (
+              <View className="h-20 w-20 items-center justify-center rounded-[24px] bg-[#09090b]">
+                <Text className="text-2xl font-black text-white">
+                  {initials || "HB"}
+                </Text>
+              </View>
+            )}
             <View className="ml-4 flex-1">
-              <Text className="text-xl font-bold text-black">
-                {user?.fullName || "Usuario"}
+              <Text className="text-xl font-black tracking-[-0.3px] text-[#09090b]">
+                {displayName}
               </Text>
-              <Text className="text-sm text-gray-700">
+              <Text className="text-sm text-zinc-600">
                 {user?.primaryEmailAddress?.emailAddress || "Sin email"}
               </Text>
             </View>
-            {/* Botón de Settings - para futuro uso */}
             <Pressable
-              className="w-12 h-12 bg-black rounded-2xl items-center justify-center"
+              className="h-12 w-12 items-center justify-center rounded-2xl bg-[#09090b]"
               onPress={() => router.push("/profile-settings")}
               accessibilityRole="button"
               accessibilityLabel="Abrir configuración de perfil"
@@ -107,7 +119,7 @@ export default function ProfileScreen() {
             </Pressable>
           </View>
 
-          <View className="bg-[#303030] rounded-3xl p-4 mb-4">
+          <View className="mb-4 rounded-[28px] bg-[#09090b] p-4">
             <View className="flex-row items-center mb-1">
               <Icon as={PackageOpen} color="#ffffff" size="lg" />
               <Text className="text-white text-lg font-semibold ml-2">
@@ -125,8 +137,8 @@ export default function ProfileScreen() {
               {orderStatuses.map((item) => (
                 <Pressable
                   key={item.label}
-                  className="bg-white rounded-2xl px-3 py-2 items-center justify-center"
-                  style={{ minWidth: 88 }}
+                  className="items-center justify-center rounded-2xl bg-white px-3 py-2"
+                  style={{ minHeight: 56, minWidth: 88 }}
                   onPress={() =>
                     router.push({
                       pathname: "/orders",
@@ -152,31 +164,40 @@ export default function ProfileScreen() {
 
           <View className="mb-3 flex-row items-center">
             <Icon as={Settings} color="#000000" size="lg" className="mr-2" />
-            <Text className="text-xl font-bold text-black">General</Text>
+            <Text className="text-xl font-black tracking-[-0.2px] text-[#09090b]">General</Text>
           </View>
 
-          {options.map((item) => (
-            <Pressable
-              key={item.label}
-              className="bg-black rounded-3xl flex-row items-center px-4 py-4 mb-3"
-              onPress={() => router.push(item.href)}
-              accessibilityRole="button"
-              accessibilityLabel={item.label}
-            >
-              <View className="w-12 h-12 bg-gray-200 rounded-2xl items-center justify-center mr-3">
-                <Icon as={item.icon} color="#1f2937" size="lg" />
-              </View>
-              <Text className="text-white text-lg font-bold">{item.label}</Text>
-            </Pressable>
-          ))}
+          <View className="mb-3 overflow-hidden rounded-[24px] border border-slate-200/70 bg-white">
+            {options.map((item, index) => (
+              <Pressable
+                key={item.label}
+                className="flex-row items-center px-4 py-4"
+                style={{
+                  minHeight: 64,
+                  borderTopWidth: index === 0 ? 0 : 1,
+                  borderTopColor: "rgba(226,232,240,0.8)",
+                }}
+                onPress={() => router.push(item.href)}
+                accessibilityRole="button"
+                accessibilityLabel={item.label}
+              >
+                <View className="mr-3 h-11 w-11 items-center justify-center rounded-2xl bg-slate-100">
+                  <Icon as={item.icon} color="#09090b" size="lg" />
+                </View>
+                <Text className="text-base font-bold text-[#09090b]">
+                  {item.label}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
 
           <Pressable
-            className="rounded-3xl overflow-hidden"
+            className="overflow-hidden rounded-[24px]"
             onPress={handleLogout}
             accessibilityRole="button"
             accessibilityLabel="Salir de la cuenta"
           >
-            <View className="bg-red-600 flex-row items-center px-4 py-4">
+            <View className="flex-row items-center bg-red-600 px-4 py-4">
               <View className="w-12 h-12 bg-white rounded-2xl items-center justify-center mr-3">
                 <Icon as={LogOut} color="#d12d2d" size="lg" />
               </View>
@@ -190,7 +211,7 @@ export default function ProfileScreen() {
           <View className="mt-16 mb-8 items-center">
             <Text className="text-xs text-gray-400 mb-2">Versión 1.0.0</Text>
             <Text className="text-xs text-gray-500">
-              Hecho con ❤️ por el equipo de HealthBytes
+              Hecho por el equipo de HealthBytes
             </Text>
           </View>
         </ScrollView>

@@ -20,7 +20,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Image as ExpoImage } from "expo-image";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { RefreshCw } from "lucide-react-native";
+import { LogIn, RefreshCw, SearchX, Utensils } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -83,37 +83,158 @@ const HeroBanner = React.memo(
     const content = (firstTag && HERO_CONTENT[firstTag]) || HERO_DEFAULT;
 
     return (
-      <View className="px-4 mt-4">
-        <View className="rounded-3xl bg-ink flex-row items-center px-5 py-5 overflow-hidden">
-          <View className="flex-1 pr-3">
-            <Text className="text-[11px] uppercase text-gray-300 tracking-[1px]">
-              Especial para ti
-            </Text>
-            <Text className="text-2xl font-extrabold text-white mt-1">
+      <View style={{ paddingHorizontal: 16, marginTop: 12, marginBottom: 4 }}>
+        <View
+          style={{
+            borderRadius: 28,
+            backgroundColor: "#09090b",
+            overflow: "hidden",
+            minHeight: 170,
+          }}
+        >
+          {/* Accent geometric shape — top-right corner decoration */}
+          <View
+            style={{
+              position: "absolute",
+              top: -30,
+              right: -30,
+              width: 160,
+              height: 160,
+              borderRadius: 80,
+              backgroundColor: "rgba(34,197,94,0.12)",
+            }}
+          />
+          <View
+            style={{
+              position: "absolute",
+              top: 10,
+              right: 10,
+              width: 100,
+              height: 100,
+              borderRadius: 50,
+              backgroundColor: "rgba(34,197,94,0.07)",
+            }}
+          />
+
+          {/* Left: text stack */}
+          <View
+            style={{
+              paddingHorizontal: 22,
+              paddingTop: 20,
+              paddingBottom: 20,
+              flex: 1,
+              maxWidth: "65%",
+            }}
+          >
+            {/* Eyebrow label */}
+            <View
+              style={{
+                alignSelf: "flex-start",
+                backgroundColor: "rgba(34,197,94,0.18)",
+                borderRadius: 99,
+                paddingHorizontal: 10,
+                paddingVertical: 3,
+                marginBottom: 10,
+                borderWidth: 1,
+                borderColor: "rgba(34,197,94,0.3)",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 10,
+                  fontWeight: "700",
+                  color: "#4ade80",
+                  letterSpacing: 0.8,
+                  textTransform: "uppercase",
+                }}
+              >
+                Especial para ti
+              </Text>
+            </View>
+
+            {/* Headline — aggressive scale */}
+            <Text
+              style={{
+                fontSize: 22,
+                fontWeight: "900",
+                color: "#fafafa",
+                letterSpacing: -0.8,
+                lineHeight: 26,
+                marginBottom: 6,
+              }}
+              numberOfLines={2}
+            >
               {content.headline}
             </Text>
-            <Text className="text-sm text-gray-200 mt-2">
+
+            {/* Subtitle */}
+            <Text
+              style={{
+                fontSize: 12,
+                color: "rgba(250,250,250,0.5)",
+                marginBottom: 16,
+                fontWeight: "400",
+              }}
+            >
               {content.subtitle}
             </Text>
+
+            {/* Ghost CTA */}
             <Pressable
               onPress={onViewAll}
-              className="mt-3 self-start bg-surface-card rounded-full px-5 py-3"
-              style={{ minHeight: 44 }}
+              style={{
+                alignSelf: "flex-start",
+                borderRadius: 99,
+                borderWidth: 1,
+                borderColor: "rgba(250,250,250,0.2)",
+                paddingHorizontal: 16,
+                paddingVertical: 8,
+                minHeight: 36,
+                justifyContent: "center",
+              }}
             >
-              <Text className="font-semibold text-ink">Ver coleccion</Text>
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: "700",
+                  color: "#fafafa",
+                  letterSpacing: 0.2,
+                }}
+              >
+                Ver colección
+              </Text>
             </Pressable>
           </View>
-          <View className="w-28 h-28 rounded-2xl bg-white/10 border border-white/10 items-center justify-center">
+
+          {/* Right: floating product image */}
+          <View
+            style={{
+              position: "absolute",
+              right: 16,
+              bottom: 16,
+              top: 16,
+              width: 110,
+              borderRadius: 20,
+              backgroundColor: "rgba(255,255,255,0.07)",
+              borderWidth: 1,
+              borderColor: "rgba(255,255,255,0.1)",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+            }}
+          >
             {heroProduct ? (
               <ExpoImage
                 source={{ uri: heroProduct.image }}
-                style={{ width: "100%", height: "100%" }}
+                style={{ width: "90%", height: "90%" }}
                 contentFit="contain"
                 alt={`Imagen de ${heroProduct.name}`}
-                transition={300}
+                transition={400}
               />
             ) : (
-              <Text className="text-white text-sm">Snacks</Text>
+              <Text style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>
+                Snacks
+              </Text>
             )}
           </View>
         </View>
@@ -122,6 +243,7 @@ const HeroBanner = React.memo(
   }
 );
 HeroBanner.displayName = "HeroBanner";
+
 
 // ─── GuestBanner ─────────────────────────────────────────────────────────────
 
@@ -132,18 +254,20 @@ const GuestBanner = React.memo(() => {
   if (isSignedIn) return null;
 
   return (
-    <View className="mx-4 mt-3 bg-green-50 border border-green-100 rounded-2xl px-4 py-3 flex-row items-center gap-3">
-      <Text className="text-2xl">{"\u{1F957}"}</Text>
-      <Text className="text-xs font-medium text-green-900 flex-1">
+    <View className="mx-4 mt-3 flex-row items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3">
+      <View className="h-11 w-11 items-center justify-center rounded-2xl bg-white">
+        <Utensils size={20} color="#22c55e" strokeWidth={2.3} />
+      </View>
+      <Text className="flex-1 text-xs font-semibold leading-5 text-emerald-950">
         Inicia sesión para ver productos personalizados
       </Text>
       <Pressable
         onPress={() => router.push("/(auth)/login")}
-        style={{ minHeight: 44, justifyContent: "center" }}
+        className="h-11 min-w-11 items-center justify-center rounded-2xl bg-[#09090b] px-3"
+        accessibilityRole="button"
+        accessibilityLabel="Entrar a HealthBytes"
       >
-        <Text className="text-xs font-bold text-green-700">
-          {"Entrar \u2192"}
-        </Text>
+        <LogIn size={16} color="#ffffff" strokeWidth={2.5} />
       </Pressable>
     </View>
   );
@@ -218,8 +342,8 @@ const HomeListHeader = React.memo(
       <RecommendationsBar />
       <HomeFavorites products={products} onSeeAll={onSeeAllFavorites} />
 
-      <View className="px-4 flex-row items-center justify-between mt-4 mb-2">
-        <Text className="text-lg font-bold text-gray-900">
+      <View className="mt-5 mb-3 flex-row items-center justify-between px-4">
+        <Text className="text-[19px] font-black tracking-[-0.3px] text-[#09090b]">
           {dietaryTags.length > 0
             ? "Productos filtrados"
             : "Todos los productos"}
@@ -229,7 +353,7 @@ const HomeListHeader = React.memo(
             onPress={onClearFilters}
             style={{ minHeight: 44, justifyContent: "center" }}
           >
-            <Text className="text-sm font-semibold text-green-600">
+            <Text className="text-sm font-bold text-emerald-600">
               Limpiar
             </Text>
           </Pressable>
@@ -310,7 +434,9 @@ export default function HomeScreen() {
   );
 
   const renderItem = useCallback(
-    ({ item }: { item: Product }) => <ProductListItem product={item} />,
+    ({ item, index }: { item: Product; index: number }) => (
+      <ProductListItem product={item} index={index} />
+    ),
     []
   );
 
@@ -352,14 +478,15 @@ export default function HomeScreen() {
     return (
       <>
         <Stack.Screen options={{ headerShown: false }} />
-        <View className="flex-1 items-center justify-center bg-surface-warm px-6">
-          <Text className="text-red-500 text-base mb-4">
+        <View className="flex-1 items-center justify-center bg-[#fafafa] px-6">
+          <Text className="mb-4 text-base font-semibold text-red-700">
             Error cargando productos
           </Text>
           <Pressable
             onPress={() => refetch()}
-            className="flex-row items-center gap-2 bg-ink px-6 py-3 rounded-full"
-            style={{ minHeight: 44 }}
+            className="flex-row items-center gap-2 rounded-2xl bg-[#09090b] px-6 py-3"
+            style={{ minHeight: 48 }}
+            accessibilityRole="button"
           >
             <RefreshCw size={18} color="white" />
             <Text className="text-white font-bold">Reintentar</Text>
@@ -370,7 +497,7 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-surface-warm" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-[#fafafa]" edges={["top"]}>
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
 
@@ -380,32 +507,47 @@ export default function HomeScreen() {
 
       <View key={numColumns} className="flex-1">
         <FlashList<Product>
-          className="flex-1 bg-surface-warm"
+          className="flex-1 bg-[#fafafa]"
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={renderListHeader}
           onRefresh={handleRefresh}
           refreshing={refreshing}
           ListEmptyComponent={
-            <View className="flex-1 items-center justify-center p-8">
+            <View className="flex-1 px-6 py-12">
               {dietaryTags.length > 0 ? (
-                <>
-                  <Text className="text-center text-ink-muted mb-4 text-base">
+                <View className="items-start rounded-[24px] border border-slate-200/70 bg-white p-5">
+                  <View className="mb-5 h-12 w-12 items-center justify-center rounded-2xl bg-slate-100">
+                    <SearchX size={23} color="#09090b" strokeWidth={2.4} />
+                  </View>
+                  <Text className="mb-2 text-xl font-black tracking-[-0.3px] text-[#09090b]">
+                    Sin resultados
+                  </Text>
+                  <Text className="mb-5 text-base leading-6 text-zinc-600">
                     No hay productos para estos filtros
                   </Text>
                   <Pressable
                     onPress={clearFilters}
-                    className="bg-ink rounded-full px-6 py-3"
-                    style={{ minHeight: 44 }}
+                    className="rounded-2xl bg-[#09090b] px-5 py-3"
+                    style={{ minHeight: 48 }}
+                    accessibilityRole="button"
                   >
                     <Text className="text-white font-semibold">
                       Ver todos los productos
                     </Text>
                   </Pressable>
-                </>
+                </View>
               ) : (
-                <Text className="text-center text-ink-subtle text-base">
-                  No hay productos disponibles
-                </Text>
+                <View className="items-start rounded-[24px] border border-slate-200/70 bg-white p-5">
+                  <View className="mb-5 h-12 w-12 items-center justify-center rounded-2xl bg-slate-100">
+                    <Utensils size={23} color="#09090b" strokeWidth={2.4} />
+                  </View>
+                  <Text className="mb-2 text-xl font-black tracking-[-0.3px] text-[#09090b]">
+                    Catálogo en preparación
+                  </Text>
+                  <Text className="text-base leading-6 text-zinc-600">
+                    Pronto aparecerán productos disponibles.
+                  </Text>
+                </View>
               )}
             </View>
           }

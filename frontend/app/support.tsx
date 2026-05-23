@@ -18,7 +18,7 @@ export default function SupportScreen() {
 
   return (
     <AuthGate message="Inicia sesión para contactar soporte.">
-      <View className="flex-1 bg-white">
+      <View className="flex-1 bg-[#fafafa]">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
 
@@ -36,7 +36,7 @@ export default function SupportScreen() {
           <View className="max-w-[800px] mx-auto w-full">
             {/* Hero Section */}
             <View className="px-5 mt-4">
-              <View className="rounded-3xl bg-black px-6 py-8 overflow-hidden relative">
+              <View className="relative overflow-hidden rounded-[28px] bg-[#09090b] px-6 py-8">
                 <View className="z-10">
                   <Text className="text-[11px] uppercase text-gray-400 tracking-[1.5px] font-bold mb-1">
                     Centro de Ayuda
@@ -49,11 +49,6 @@ export default function SupportScreen() {
                   </Text>
                 </View>
 
-                {/* Abstract decoration */}
-                <View
-                  className="absolute -right-10 -bottom-10 w-44 h-44 bg-green-500/20 rounded-full"
-                  style={{ transform: [{ scale: 1.5 }] }}
-                />
                 <View className="absolute right-6 top-8">
                   <HelpCircle size={80} color="rgba(255,255,255,0.05)" />
                 </View>
@@ -62,16 +57,16 @@ export default function SupportScreen() {
 
             {/* Contact Methods */}
             <View className="px-5 mt-8">
-              <Text className="text-lg font-bold text-gray-900 mb-4 px-1">
+              <Text className="mb-4 px-1 text-lg font-black tracking-[-0.2px] text-[#09090b]">
                 Canales de contacto
               </Text>
 
               {/* Email Card */}
               <Pressable
                 onPress={handleEmailPress}
-                className="bg-gray-50 rounded-2xl p-5 flex-row items-center border border-gray-100 mb-4 active:bg-gray-100"
+                className="mb-4 flex-row items-center rounded-[24px] border border-slate-200/70 bg-white p-5 active:bg-slate-50"
               >
-                <View className="w-12 h-12 bg-white rounded-full items-center justify-center shadow-sm border border-gray-100">
+                <View className="h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50">
                   <Mail size={24} color="#16A34A" />
                 </View>
                 <View className="flex-1 ml-4">
@@ -86,8 +81,8 @@ export default function SupportScreen() {
               </Pressable>
 
               {/* Chat Card (Coming Soon) */}
-              <View className="bg-gray-50 rounded-2xl p-5 flex-row items-center border border-gray-100 opacity-60">
-                <View className="w-12 h-12 bg-white rounded-full items-center justify-center border border-gray-100">
+              <View className="flex-row items-center rounded-[24px] border border-slate-200/70 bg-white p-5 opacity-60">
+                <View className="h-12 w-12 items-center justify-center rounded-2xl bg-slate-100">
                   <MessageCircle size={24} color="#6B7280" />
                 </View>
                 <View className="flex-1 ml-4">
@@ -95,7 +90,7 @@ export default function SupportScreen() {
                     <Text className="text-sm font-bold text-gray-900">
                       Chat en vivo
                     </Text>
-                    <View className="ml-2 bg-gray-200 px-2 py-0.5 rounded-md">
+                    <View className="ml-2 rounded-md bg-slate-200 px-2 py-0.5">
                       <Text className="text-[9px] font-bold text-gray-500">
                         PRÓXIMAMENTE
                       </Text>
@@ -110,7 +105,7 @@ export default function SupportScreen() {
 
             {/* Additional Info */}
             <View className="px-5 mt-10">
-              <View className="bg-green-50 rounded-3xl p-6 border border-green-100">
+              <View className="rounded-[24px] border border-emerald-100 bg-emerald-50 p-6">
                 <Text className="text-sm font-semibold text-green-800 mb-2">
                   ¿Tienes dudas sobre un producto?
                 </Text>

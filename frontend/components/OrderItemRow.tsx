@@ -20,7 +20,7 @@ function OrderItemRowInner({ item, product, isLast }: OrderItemRowProps) {
   return (
     <Pressable
       onPress={() => router.push(`/product/${item.product_id}`)}
-      className={`flex-row items-center py-3 active:bg-surface-muted rounded-lg ${
+      className={`flex-row items-center rounded-2xl py-3 active:bg-slate-50 ${
         !isLast ? "border-b border-border-subtle" : ""
       }`}
       style={{ minHeight: 64 }}
@@ -29,24 +29,24 @@ function OrderItemRowInner({ item, product, isLast }: OrderItemRowProps) {
     >
       {/* Product Image or Fallback */}
       {product?.image ? (
-        <View className="w-12 h-12 rounded-lg overflow-hidden mr-3 bg-surface-muted">
+        <View className="mr-3 h-12 w-12 overflow-hidden rounded-2xl bg-slate-100">
           <Image
             source={{ uri: product.image }}
             alt={`Imagen de ${product.name ?? "Producto"}`}
             size="none"
-            className="w-12 h-12"
+            className="h-12 w-12"
             resizeMode="cover"
           />
         </View>
       ) : (
-        <View className="w-12 h-12 bg-surface-muted rounded-lg items-center justify-center mr-3">
+        <View className="mr-3 h-12 w-12 items-center justify-center rounded-2xl bg-slate-100">
           <Package size={20} color="#6B7280" />
         </View>
       )}
 
       {/* Product Info */}
       <View className="flex-1 mr-2">
-        <Text className="text-ink font-medium" numberOfLines={2}>
+        <Text className="font-bold text-[#09090b]" numberOfLines={2}>
           {product?.name ?? `Producto #${item.product_id}`}
         </Text>
         <Text className="text-sm text-ink-subtle">
@@ -56,7 +56,7 @@ function OrderItemRowInner({ item, product, isLast }: OrderItemRowProps) {
 
       {/* Price + Chevron */}
       <View className="flex-row items-center">
-        <Text className="font-semibold text-ink mr-1">
+        <Text className="mr-1 font-black text-[#09090b]">
           {formatPrice(item.price * item.quantity)}
         </Text>
         <ChevronRight size={16} color="#9CA3AF" />

@@ -70,8 +70,8 @@ export default function AllProductsScreen() {
           dietaryTags={dietaryTags}
           toggleDietaryTag={toggleDietaryTag}
         />
-        <View className="px-4 flex-row items-center justify-between mt-4 mb-2">
-          <Text className="text-lg font-bold text-gray-900">
+        <View className="mt-4 mb-3 flex-row items-center justify-between px-4">
+          <Text className="text-lg font-black tracking-[-0.2px] text-[#09090b]">
             {dietaryTags.length > 0
               ? "Productos filtrados"
               : "Todo el catalogo"}
@@ -83,7 +83,7 @@ export default function AllProductsScreen() {
               accessibilityRole="button"
               accessibilityLabel="Limpiar filtros"
             >
-              <Text className="text-sm font-semibold text-green-600">
+              <Text className="text-sm font-bold text-emerald-600">
                 Limpiar
               </Text>
             </Pressable>
@@ -95,7 +95,7 @@ export default function AllProductsScreen() {
   );
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-[#fafafa]">
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
 
@@ -112,8 +112,8 @@ export default function AllProductsScreen() {
           </Text>
           <Pressable
             onPress={() => refetch()}
-            className="flex-row items-center gap-2 bg-black px-6 py-3 rounded-full"
-            style={{ minHeight: 44 }}
+            className="flex-row items-center gap-2 rounded-2xl bg-[#09090b] px-6 py-3"
+            style={{ minHeight: 48 }}
             accessibilityRole="button"
             accessibilityLabel="Reintentar cargar productos"
           >
@@ -139,9 +139,11 @@ export default function AllProductsScreen() {
             estimatedItemSize={280}
             ListEmptyComponent={
               isLoading ? null : (
-                <View className="items-center justify-center py-20">
-                  <Package size={48} color="#D1D5DB" />
-                  <Text className="text-gray-400 mt-4 text-center">
+                <View className="items-start rounded-[28px] border border-slate-200/70 bg-white p-6">
+                  <View className="mb-5 h-14 w-14 items-center justify-center rounded-[22px] bg-slate-100">
+                    <Package size={28} color="#09090b" />
+                  </View>
+                  <Text className="text-base leading-6 text-zinc-600">
                     {dietaryTags.length > 0
                       ? "No hay productos para estos filtros"
                       : "No hay productos disponibles por ahora."}
@@ -149,8 +151,8 @@ export default function AllProductsScreen() {
                   {dietaryTags.length > 0 && (
                     <Pressable
                       onPress={clearFilters}
-                      className="mt-4 bg-black rounded-full px-6 py-3"
-                      style={{ minHeight: 44 }}
+                      className="mt-4 rounded-2xl bg-[#09090b] px-6 py-3"
+                      style={{ minHeight: 48 }}
                       accessibilityRole="button"
                       accessibilityLabel="Ver todos los productos"
                     >

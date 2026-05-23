@@ -65,17 +65,21 @@ export default function SearchScreen() {
 
   const renderEmpty = useMemo(
     () => (
-      <View className="flex-1 items-center justify-center p-8 mt-10">
-        <Text className="text-center text-gray-500 text-lg mb-6">
+      <View className="mt-10 flex-1 justify-center p-8">
+        <View className="items-start rounded-[28px] border border-slate-200/70 bg-white p-6">
+        <View className="mb-5 h-14 w-14 items-center justify-center rounded-[22px] bg-slate-100">
+          <SearchIcon size={26} color="#09090b" />
+        </View>
+        <Text className="mb-6 text-base leading-6 text-zinc-600">
           {searchTerm
             ? `No se encontraron resultados para "${searchTerm}"`
-            : "Ingresa un termino para buscar"}
+            : "Ingresa un término para buscar productos."}
         </Text>
 
         <Pressable
           onPress={() => router.push("/")}
-          className="bg-black px-6 py-3 rounded-full active:opacity-80"
-          style={{ minHeight: 44 }}
+          className="rounded-2xl bg-[#09090b] px-6 py-3 active:opacity-80"
+          style={{ minHeight: 48 }}
           accessibilityRole="button"
           accessibilityLabel="Volver al inicio"
         >
@@ -83,13 +87,15 @@ export default function SearchScreen() {
             Volver al inicio
           </Text>
         </Pressable>
+        </View>
       </View>
     ),
     [searchTerm, router]
   );
 
   if (isLoading) {
-    <View className="flex-1 bg-gray-50">
+    return (
+    <View className="flex-1 bg-[#fafafa]">
       <Stack.Screen options={{ headerShown: false }} />
       <ScreenHeader title="Búsqueda" icon={SearchIcon} showBackButton={true} />
       <Header
@@ -107,12 +113,13 @@ export default function SearchScreen() {
           <ProductCardSkeleton />
         </View>
       </View>
-    </View>;
+    </View>
+    );
   }
 
   if (error) {
     return (
-      <View className="flex-1 bg-gray-50">
+      <View className="flex-1 bg-[#fafafa]">
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
           title="Búsqueda"
@@ -130,8 +137,8 @@ export default function SearchScreen() {
           </Text>
           <Pressable
             onPress={() => refetch()}
-            className="flex-row items-center gap-2 bg-black px-6 py-3 rounded-full mb-3"
-            style={{ minHeight: 44 }}
+            className="mb-3 flex-row items-center gap-2 rounded-2xl bg-[#09090b] px-6 py-3"
+            style={{ minHeight: 48 }}
             accessibilityRole="button"
             accessibilityLabel="Reintentar búsqueda"
           >
@@ -140,8 +147,8 @@ export default function SearchScreen() {
           </Pressable>
           <Pressable
             onPress={() => router.push("/")}
-            className="px-6 py-3 rounded-full"
-            style={{ minHeight: 44 }}
+            className="rounded-2xl px-6 py-3"
+            style={{ minHeight: 48 }}
             accessibilityRole="button"
             accessibilityLabel="Volver al inicio"
           >
@@ -153,13 +160,13 @@ export default function SearchScreen() {
   }
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-[#fafafa]">
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
 
       <View key={numColumns} className="flex-1">
         <FlashList<Product>
-          className="flex-1 bg-gray-50"
+          className="flex-1 bg-[#fafafa]"
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={renderHeader}
           ListEmptyComponent={renderEmpty}

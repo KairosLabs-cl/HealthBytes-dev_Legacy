@@ -1,6 +1,6 @@
 import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
-import { CreditCardIcon } from "lucide-react-native";
+import { Check, CreditCardIcon, Landmark, WalletCards } from "lucide-react-native";
 import { Pressable, Text, View } from "react-native";
 
 export type PaymentMethod = "venti" | "mercado_pago";
@@ -14,7 +14,6 @@ const PAYMENT_METHODS: Array<{
   id: PaymentMethod;
   label: string;
   description: string;
-  icon: string;
   disabled?: boolean;
   disabledLabel?: string;
 }> = [
@@ -22,7 +21,6 @@ const PAYMENT_METHODS: Array<{
     id: "venti",
     label: "Venti",
     description: "Transferencia bancaria segura",
-    icon: "💳",
     disabled: true,
     disabledLabel: "Próximamente",
   },
@@ -30,7 +28,6 @@ const PAYMENT_METHODS: Array<{
     id: "mercado_pago",
     label: "Mercado Pago",
     description: "Billetera digital de Mercado Pago",
-    icon: "🏦",
   },
 ];
 
@@ -43,7 +40,7 @@ export function PaymentMethodSelector({
       <View>
         <HStack className="items-center mb-2">
           <CreditCardIcon size={24} color="#2D2926" />
-          <Text className="text-xl font-bold text-ink ml-2">
+          <Text className="ml-2 text-xl font-black tracking-[-0.2px] text-[#09090b]">
             Método de Pago
           </Text>
         </HStack>
@@ -58,14 +55,17 @@ export function PaymentMethodSelector({
             key={method.id}
             onPress={() => !method.disabled && onSelect(method.id)}
             disabled={method.disabled}
-            style={{ minHeight: 64 }}
-            className={`p-4 rounded-2xl border ${
-              method.disabled
-                ? "border-border-subtle bg-surface-warm opacity-60"
-                : selected === method.id
-                  ? "border-brand-green bg-[#F0FDF4]"
-                  : "border-border-subtle bg-surface-card shadow-soft-lift"
-            }`}
+            style={{
+              minHeight: 72,
+              backgroundColor:
+                selected === method.id ? "#f0fdf4" : "#ffffff",
+              borderColor:
+                selected === method.id
+                  ? "#22c55e"
+                  : "rgba(226,232,240,0.9)",
+              opacity: method.disabled ? 0.62 : 1,
+            }}
+            className="rounded-[24px] border p-4"
             accessibilityRole="radio"
             accessibilityLabel={`${method.label}, ${method.description}${
               method.disabled ? `, ${method.disabledLabel}` : ""
@@ -82,15 +82,25 @@ export function PaymentMethodSelector({
           >
             <HStack className="items-center justify-between">
               <HStack className="flex-1 items-center">
-                <Text className="text-3xl mr-3">{method.icon}</Text>
+                <View
+                  className={`mr-3 h-11 w-11 items-center justify-center rounded-2xl ${
+                    selected === method.id ? "bg-white" : "bg-slate-100"
+                  }`}
+                >
+                  {method.id === "venti" ? (
+                    <Landmark size={20} color="#09090b" strokeWidth={2.3} />
+                  ) : (
+                    <WalletCards size={20} color="#09090b" strokeWidth={2.3} />
+                  )}
+                </View>
                 <View className="flex-1">
                   <HStack className="items-center">
-                    <Text className="text-lg font-bold text-ink">
+                    <Text className="text-lg font-black text-[#09090b]">
                       {method.label}
                     </Text>
                     {method.disabled && method.disabledLabel && (
-                      <View className="ml-2 px-2 py-0.5 bg-surface-warm border border-border-subtle rounded-full">
-                        <Text className="text-xs text-ink-subtle">
+                      <View className="ml-2 rounded-xl border border-slate-200 bg-slate-50 px-2 py-0.5">
+                        <Text className="text-xs font-semibold text-zinc-500">
                           {method.disabledLabel}
                         </Text>
                       </View>
@@ -105,14 +115,14 @@ export function PaymentMethodSelector({
               {/* Radio button - hidden for disabled methods */}
               {!method.disabled && (
                 <View
-                  className={`w-6 h-6 rounded-full border items-center justify-center ${
+                  className={`h-7 w-7 items-center justify-center rounded-xl border ${
                     selected === method.id
-                      ? "border-brand-green bg-brand-green"
+                      ? "border-[#22c55e] bg-[#22c55e]"
                       : "border-border-subtle bg-surface-card"
                   }`}
                 >
                   {selected === method.id && (
-                    <Text className="text-white font-bold text-sm">✓</Text>
+                    <Check size={16} color="#ffffff" strokeWidth={2.8} />
                   )}
                 </View>
               )}

@@ -24,13 +24,13 @@ export default function PaymentFailureScreen() {
 
   return (
     <AuthGate message="Inicia sesion para ver el resultado de tu pago.">
-      <View className="flex-1 bg-white justify-center items-center p-6">
-        <View className="bg-red-100 p-6 rounded-full mb-6">
+      <View className="flex-1 items-center justify-center bg-[#fafafa] p-6">
+        <View className="mb-6 rounded-[28px] bg-red-50 p-6">
           <AlertCircleIcon size={64} color="#dc2626" />
         </View>
 
-        <Text className="text-3xl font-bold text-center mb-2 text-black">
-          Pago Rechazado
+        <Text className="mb-2 text-center text-3xl font-black tracking-[-0.5px] text-[#09090b]">
+          Pago rechazado
         </Text>
 
         <Text className="text-gray-600 text-center mb-4 text-lg">
@@ -50,7 +50,7 @@ export default function PaymentFailureScreen() {
         <VStack space="md" className="w-full">
           <Button
             size="lg"
-            className="bg-orange-600"
+            className="rounded-2xl bg-[#09090b]"
             onPress={() => {
               router.replace("/checkout-v2");
             }}
@@ -63,7 +63,7 @@ export default function PaymentFailureScreen() {
           <Button
             size="lg"
             variant="outline"
-            className="border-gray-300"
+            className="rounded-2xl border-gray-300"
             onPress={() => {
               resetCart();
               router.replace("/");

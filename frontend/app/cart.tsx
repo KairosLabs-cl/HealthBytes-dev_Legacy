@@ -25,8 +25,8 @@ interface CartFooterProps {
 const CartFooter = React.memo<CartFooterProps>(
   ({ itemCount, subtotal, onCheckout }) => {
     return (
-      <View className="mt-2 bg-surface-card p-5 rounded-2xl border border-border-subtle">
-        <Text className="font-extrabold text-lg mb-4 text-ink uppercase tracking-wider">
+      <View className="mt-2 rounded-[24px] border border-slate-200/70 bg-white p-5">
+        <Text className="mb-4 text-lg font-black tracking-[-0.2px] text-[#09090b]">
           Resumen de compra
         </Text>
 
@@ -34,23 +34,23 @@ const CartFooter = React.memo<CartFooterProps>(
           <Text className="text-sm text-ink-muted font-medium">
             Subtotal ({itemCount} {itemCount === 1 ? "producto" : "productos"})
           </Text>
-          <Text className="font-semibold text-ink">
+          <Text className="font-bold text-[#09090b]">
             {formatPrice(subtotal)}
           </Text>
         </View>
 
         <View className="flex-row justify-between mb-4">
           <Text className="text-sm text-ink-muted font-medium">Envío</Text>
-          <Text className="font-semibold text-brand-green">Gratis</Text>
+          <Text className="font-bold text-emerald-600">Gratis</Text>
         </View>
 
-        <View className="h-0.5 bg-border-subtle my-4" />
+        <View className="my-4 h-px bg-slate-200/80" />
 
-        <View className="flex-row justify-between items-center mb-5">
-          <Text className="font-black text-2xl text-ink uppercase tracking-wider">
+        <View className="mb-5 flex-row items-center justify-between">
+          <Text className="text-xl font-black text-[#09090b]">
             Total
           </Text>
-          <Text className="font-black text-3xl text-ink">
+          <Text className="text-2xl font-black tracking-[-0.3px] text-[#09090b]">
             {formatPrice(subtotal)}
           </Text>
         </View>
@@ -58,7 +58,7 @@ const CartFooter = React.memo<CartFooterProps>(
         {/* Checkout Button */}
         <Pressable
           onPress={onCheckout}
-          className="w-full h-14 bg-ink rounded-full items-center justify-center active:opacity-75"
+          className="h-14 w-full items-center justify-center rounded-2xl bg-[#09090b] active:opacity-75"
           accessibilityRole="button"
           accessibilityLabel={`Proceder al pago, total ${formatPrice(subtotal)}`}
         >
@@ -115,20 +115,21 @@ export default function CartScreen() {
         <>
           <Stack.Screen options={{ headerShown: false }} />
           <ScreenHeader title="Carrito de compras" icon={ShoppingBag} />
-          <View className="flex-1 items-center justify-center bg-surface-warm px-6">
-            <View className="w-20 h-20 rounded-full bg-surface-muted items-center justify-center mb-6">
-              <ShoppingBag size={40} color="#9CA3AF" strokeWidth={1.5} />
+          <View className="flex-1 justify-center bg-[#fafafa] px-6">
+            <View className="items-start rounded-[28px] border border-slate-200/70 bg-white p-6">
+            <View className="mb-6 h-16 w-16 items-center justify-center rounded-[24px] bg-slate-100">
+              <ShoppingBag size={32} color="#09090b" strokeWidth={1.8} />
             </View>
-            <Text className="text-2xl font-black text-ink mb-2 text-center">
+            <Text className="mb-2 text-2xl font-black tracking-[-0.4px] text-[#09090b]">
               Tu carrito está vacío
             </Text>
-            <Text className="text-center text-ink-subtle mb-8 leading-relaxed">
+            <Text className="mb-8 text-base leading-6 text-zinc-600">
               Agrega productos para comenzar tu compra
             </Text>
             <Pressable
               onPress={() => router.push("/")}
-              className="px-8 py-3 bg-ink rounded-full active:opacity-75"
-              style={{ minHeight: 44 }}
+              className="rounded-2xl bg-[#09090b] px-6 py-3 active:opacity-75"
+              style={{ minHeight: 48 }}
               accessibilityRole="button"
               accessibilityLabel="Explorar productos"
             >
@@ -136,13 +137,14 @@ export default function CartScreen() {
                 Explorar productos
               </Text>
             </Pressable>
+            </View>
           </View>
         </>
       ) : (
         <>
           <Stack.Screen options={{ headerShown: false }} />
           <ScreenHeader title="Carrito de compras" icon={ShoppingBag} />
-          <View className="flex-1 bg-surface-warm">
+          <View className="flex-1 bg-[#fafafa]">
             <FlatList
               data={items}
               contentContainerClassName="gap-3 p-4 pb-8"

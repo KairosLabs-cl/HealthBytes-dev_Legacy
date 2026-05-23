@@ -85,7 +85,7 @@ function OrderDetailScreenContent() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-gray-50">
+      <View className="flex-1 bg-[#fafafa]">
         <StatusBar style="dark" />
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
@@ -96,7 +96,7 @@ function OrderDetailScreenContent() {
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {/* Timeline Skeleton */}
-          <View className="bg-white mx-4 mt-4 rounded-2xl p-4">
+          <View className="mx-4 mt-4 rounded-[24px] border border-slate-200/70 bg-white p-4">
             <View className="h-4 w-32 bg-gray-200 rounded mb-4 animate-pulse" />
             <View className="pl-8">
               {[1, 2, 3, 4].map((i) => (
@@ -111,7 +111,7 @@ function OrderDetailScreenContent() {
           </View>
 
           {/* Products Skeleton */}
-          <View className="bg-white mx-4 mt-4 rounded-2xl p-4">
+          <View className="mx-4 mt-4 rounded-[24px] border border-slate-200/70 bg-white p-4">
             <View className="h-4 w-28 bg-gray-200 rounded mb-4 animate-pulse" />
             {[1, 2, 3].map((i) => (
               <View
@@ -134,7 +134,7 @@ function OrderDetailScreenContent() {
           </View>
 
           {/* Info Skeleton */}
-          <View className="bg-white mx-4 mt-4 rounded-2xl p-4">
+          <View className="mx-4 mt-4 rounded-[24px] border border-slate-200/70 bg-white p-4">
             <View className="h-4 w-24 bg-gray-200 rounded mb-3 animate-pulse" />
             <View className="flex-row justify-between py-2">
               <View className="h-4 w-16 bg-gray-200 rounded animate-pulse" />
@@ -152,7 +152,7 @@ function OrderDetailScreenContent() {
 
   if (error || !order) {
     return (
-      <View className="flex-1 bg-gray-50">
+      <View className="flex-1 bg-[#fafafa]">
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
           title={`Orden #${id}`}
@@ -166,7 +166,7 @@ function OrderDetailScreenContent() {
           </Text>
           <Pressable
             onPress={() => router.back()}
-            className="mt-6 bg-gray-900 rounded-full px-6 py-3"
+            className="mt-6 rounded-2xl bg-[#09090b] px-6 py-3"
           >
             <Text className="text-white font-medium">Volver</Text>
           </Pressable>
@@ -186,7 +186,7 @@ function OrderDetailScreenContent() {
   );
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-[#fafafa]">
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
       <ScreenHeader
@@ -195,7 +195,7 @@ function OrderDetailScreenContent() {
         showBackButton={true}
         rightElement={
           <View
-            className={`px-3 py-1 rounded-full ${STATUS_BADGE_COLORS[normalizedStatus]}`}
+            className={`rounded-2xl px-3 py-1 ${STATUS_BADGE_COLORS[normalizedStatus]}`}
           >
             <Text className="text-xs font-medium">
               {STATUS_LABELS[normalizedStatus]}
@@ -210,13 +210,13 @@ function OrderDetailScreenContent() {
         contentContainerStyle={{ paddingBottom: 100 }}
       >
         {/* Timeline Section */}
-        <View className="bg-white mx-4 mt-4 rounded-2xl p-4">
-          <Text className="text-sm font-semibold text-gray-700 mb-4">
+        <View className="mx-4 mt-4 rounded-[24px] border border-slate-200/70 bg-white p-4">
+          <Text className="mb-4 text-sm font-black text-[#09090b]">
             Estado del pedido
           </Text>
 
           {isCancelled ? (
-            <View className="flex-row items-center gap-3 p-4 bg-red-50 rounded-xl">
+            <View className="flex-row items-center gap-3 rounded-2xl bg-red-50 p-4">
               <XCircle size={24} color="#EF4444" />
               <Text className="text-red-700 font-medium">Orden cancelada</Text>
             </View>
@@ -241,7 +241,7 @@ function OrderDetailScreenContent() {
                     {/* Circle indicator */}
                     <View
                       className={`w-7 h-7 rounded-full items-center justify-center z-10 ${
-                        isCompleted ? "bg-green-500" : "bg-gray-300"
+                        isCompleted ? "bg-[#22c55e]" : "bg-slate-300"
                       }`}
                     >
                       <StepIcon size={14} color="white" />
@@ -270,8 +270,8 @@ function OrderDetailScreenContent() {
         </View>
 
         {/* Order Items */}
-        <View className="bg-white mx-4 mt-4 rounded-2xl p-4">
-          <Text className="text-sm font-semibold text-gray-700 mb-2">
+        <View className="mx-4 mt-4 rounded-[24px] border border-slate-200/70 bg-white p-4">
+          <Text className="mb-2 text-sm font-black text-[#09090b]">
             Productos ({order.items.length})
           </Text>
 
@@ -285,16 +285,16 @@ function OrderDetailScreenContent() {
 
           {/* Total */}
           <View className="flex-row justify-between items-center pt-4 mt-2 border-t border-gray-200">
-            <Text className="text-base font-semibold text-gray-700">Total</Text>
-            <Text className="text-xl font-bold text-gray-900">
+            <Text className="text-base font-bold text-zinc-700">Total</Text>
+            <Text className="text-xl font-black tracking-[-0.2px] text-[#09090b]">
               {formatPrice(total)}
             </Text>
           </View>
         </View>
 
         {/* Order Info */}
-        <View className="bg-white mx-4 mt-4 rounded-2xl p-4">
-          <Text className="text-sm font-semibold text-gray-700 mb-3">
+        <View className="mx-4 mt-4 rounded-[24px] border border-slate-200/70 bg-white p-4">
+          <Text className="mb-3 text-sm font-black text-[#09090b]">
             Información
           </Text>
           <View className="flex-row justify-between py-2">
@@ -321,7 +321,7 @@ function OrderDetailScreenContent() {
         {/* Reorder Button */}
         {normalizedStatus === "delivered" && (
           <View className="px-4 mt-6">
-            <Pressable className="bg-green-600 rounded-2xl py-4 flex-row items-center justify-center active:bg-green-700">
+            <Pressable className="flex-row items-center justify-center rounded-2xl bg-[#09090b] py-4 active:opacity-85">
               <RefreshCcw size={20} color="white" />
               <Text className="text-white font-semibold ml-2">
                 Volver a pedir
