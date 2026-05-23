@@ -47,6 +47,7 @@ export default function AddressesScreen() {
   const [success, setSuccess] = useState<string | null>(null);
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const isSubmittingRef = useRef(false);
 
   const addressRegion = "Metropolitana de Santiago";
 
@@ -159,9 +160,15 @@ export default function AddressesScreen() {
   };
 
   const handleSubmit = async () => {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+    
     setLocalError(null);
     clearError();
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      isSubmittingRef.current = false;
+      return;
+    }
 
     setIsActionLoading(true);
     try {
@@ -196,6 +203,7 @@ export default function AddressesScreen() {
       );
     } finally {
       setIsActionLoading(false);
+      isSubmittingRef.current = false;
     }
   };
 

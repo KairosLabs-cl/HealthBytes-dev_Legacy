@@ -18,7 +18,8 @@ import {
   Truck,
   User as UserIcon,
 } from "lucide-react-native";
-import { Image, Pressable, ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
+import { Image } from "expo-image";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 
 const orderStatuses = [
@@ -82,8 +83,8 @@ export default function ProfileScreen() {
         <ScreenHeader title="Perfil" icon={UserIcon} />
 
         <ScrollView
-          className="flex-1 bg-[#fafafa] px-4"
-          contentContainerStyle={{ paddingBottom: 100 }}
+          className="flex-1 bg-[#fafafa]"
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
         >
           {/* Perfil del usuario */}
@@ -91,8 +92,9 @@ export default function ProfileScreen() {
             {user?.imageUrl ? (
               <Image
                 source={{ uri: user.imageUrl }}
-                className="h-20 w-20 rounded-[24px]"
+                style={{ width: 80, height: 80, borderRadius: 24 }}
                 alt="Foto de perfil"
+                cachePolicy="disk"
               />
             ) : (
               <View className="h-20 w-20 items-center justify-center rounded-[24px] bg-[#09090b]">

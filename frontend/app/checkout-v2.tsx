@@ -6,6 +6,7 @@ import {
 } from "@/components/PaymentMethodSelector";
 import { StepIndicator } from "@/components/StepIndicator";
 import { Button, ButtonText } from "@/components/ui/button";
+import { LoadingDots } from "@/components/ui/LoadingDots";
 import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
 import { formatPrice } from "@/lib/formatPrice";
@@ -17,6 +18,7 @@ import { Stack, useRouter } from "expo-router";
 import { MapPinIcon, PhoneIcon } from "lucide-react-native";
 import { useEffect, useRef, useState } from "react";
 import { StatusBar } from "expo-status-bar";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import {
   View,
   ScrollView,
@@ -222,6 +224,7 @@ export default function CheckoutV2Screen() {
           <View className="mb-8">
             {/* Step 1: Address Selection */}
             {currentStep === "address" && (
+              <Animated.View entering={FadeIn.duration(250)} exiting={FadeOut.duration(200)}>
               <VStack space="lg">
                 <View>
                   <HStack className="items-center mb-3">
@@ -327,21 +330,23 @@ export default function CheckoutV2Screen() {
                   </Button>
                 )}
               </VStack>
+              </Animated.View>
             )}
 
             {/* Step 2: Payment Method */}
             {currentStep === "payment" && (
-              <View>
+              <Animated.View entering={FadeIn.duration(250)} exiting={FadeOut.duration(200)}>
                 <PaymentMethodSelector
                   selected={selectedPayment}
                   onSelect={setSelectedPayment}
                 />
-              </View>
+              </Animated.View>
             )}
 
             {/* Step 3: Order Summary */}
             {currentStep === "summary" && (
-              <VStack space="lg">
+              <Animated.View entering={FadeIn.duration(250)} exiting={FadeOut.duration(200)}>
+                <VStack space="lg">
                 {/* Address Summary */}
                 {selectedAddress && (
                   <View className="rounded-[24px] border border-slate-200/70 bg-white p-4">
@@ -432,6 +437,7 @@ export default function CheckoutV2Screen() {
                   </HStack>
                 </View>
               </VStack>
+              </Animated.View>
             )}
           </View>
         </ScrollView>
@@ -473,11 +479,7 @@ export default function CheckoutV2Screen() {
             >
               {isProcessing ? (
                 <HStack space="md" className="items-center">
-                  <View className="flex-row gap-1">
-                    <View className="h-2 w-2 rounded-full bg-[#4ade80]" />
-                    <View className="h-2 w-2 rounded-full bg-zinc-400" />
-                    <View className="h-2 w-2 rounded-full bg-zinc-500" />
-                  </View>
+                  <LoadingDots color="#4ade80" size={8} />
                   <ButtonText className="text-white font-semibold text-lg">
                     {currentStep === "summary"
                       ? "Confirmando..."

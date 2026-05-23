@@ -256,8 +256,9 @@ export default function ProductDetailsScreen() {
 
   const { data: vendorProducts } = useQuery({
     queryKey: ["products", "vendor", product?.vendor_name],
-    queryFn: () => listProducts({ search: product?.vendor_name }),
+    queryFn: () => listProducts({ search: product?.vendor_name, limit: 6 }),
     enabled: !!product?.vendor_name,
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: rating } = useQuery({
@@ -289,6 +290,16 @@ export default function ProductDetailsScreen() {
   const otherVendorProducts = useMemo(() => {
     return vendorProducts?.filter((p) => p.id.toString() !== id) || [];
   }, [vendorProducts, id]);
+
+  // Memoize nutritional info parsing — previously re-parsed on every render
+  const nutritionData = useMemo(() => {
+    if (!product?.nutritional_info) return null;
+    try {
+      return JSON.parse(product.nutritional_info);
+    } catch {
+      return null;
+    }
+  }, [product?.nutritional_info]);
 
   const canAddMore = product
     ? (product.stock ?? 0) > 0 && currentInCart < (product.stock ?? 0)
@@ -523,10 +534,7 @@ export default function ProductDetailsScreen() {
           <View className="mb-6 h-px bg-slate-200/70" />
 
           {/* Description */}
-          <Animated.View
-            entering={FadeInUp.delay(340).duration(400)}
-            className="mb-6"
-          >
+          <View className="mb-6">
             <Text className="mb-2 text-xs font-black uppercase tracking-[1px] text-zinc-500">
               Descripción
             </Text>
@@ -534,73 +542,46 @@ export default function ProductDetailsScreen() {
               {product.description ||
                 "Producto de alta calidad especialmente seleccionado para personas con restricciones alimentarias. Ingredientes cuidadosamente verificados para garantizar su seguridad."}
             </Text>
-          </Animated.View>
+          </View>
 
           {/* Separator */}
           <View className="mb-6 h-px bg-slate-200/70" />
 
           {/* Nutritional Info */}
-          {product.nutritional_info &&
-            (() => {
-              try {
-                const nutrition = JSON.parse(product.nutritional_info);
-                return (
-                  <Animated.View entering={FadeInUp.delay(400).duration(400)}>
-                    <Text className="mb-3 text-xs font-black uppercase tracking-[1px] text-zinc-500">
-                      Información nutricional
-                    </Text>
-                    <View className="rounded-[24px] border border-slate-200/70 bg-white p-4">
-                      <View className="gap-3">
-                        <View className="flex-row justify-between py-2">
-                          <Text className="text-sm text-gray-600 font-medium">
-                            Calorías
-                          </Text>
-                          <Text className="text-sm font-bold text-gray-900">
-                            {nutrition.calories} kcal
-                          </Text>
-                        </View>
-                        <View className="h-px bg-gray-200" />
-                        <View className="flex-row justify-between py-2">
-                          <Text className="text-sm text-gray-600 font-medium">
-                            Proteínas
-                          </Text>
-                          <Text className="text-sm font-bold text-gray-900">
-                            {nutrition.protein}g
-                          </Text>
-                        </View>
-                        <View className="h-px bg-gray-200" />
-                        <View className="flex-row justify-between py-2">
-                          <Text className="text-sm text-gray-600 font-medium">
-                            Carbohidratos
-                          </Text>
-                          <Text className="text-sm font-bold text-gray-900">
-                            {nutrition.carbs}g
-                          </Text>
-                        </View>
-                        <View className="h-px bg-gray-200" />
-                        <View className="flex-row justify-between py-2">
-                          <Text className="text-sm text-gray-600 font-medium">
-                            Grasas
-                          </Text>
-                          <Text className="text-sm font-bold text-gray-900">
-                            {nutrition.fat}g
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  </Animated.View>
-                );
-              } catch {
-                return null;
-              }
-            })()}
+          {nutritionData && (
+            <View className="mb-6">
+              <Text className="mb-3 text-xs font-black uppercase tracking-[1px] text-zinc-500">
+                Información nutricional
+              </Text>
+              <View className="rounded-[24px] border border-slate-200/70 bg-white p-4">
+                <View className="gap-3">
+                  <View className="flex-row justify-between py-2">
+                    <Text className="text-sm text-gray-600 font-medium">Calorías</Text>
+                    <Text className="text-sm font-bold text-gray-900">{nutritionData.calories} kcal</Text>
+                  </View>
+                  <View className="h-px bg-gray-200" />
+                  <View className="flex-row justify-between py-2">
+                    <Text className="text-sm text-gray-600 font-medium">Proteínas</Text>
+                    <Text className="text-sm font-bold text-gray-900">{nutritionData.protein}g</Text>
+                  </View>
+                  <View className="h-px bg-gray-200" />
+                  <View className="flex-row justify-between py-2">
+                    <Text className="text-sm text-gray-600 font-medium">Carbohidratos</Text>
+                    <Text className="text-sm font-bold text-gray-900">{nutritionData.carbs}g</Text>
+                  </View>
+                  <View className="h-px bg-gray-200" />
+                  <View className="flex-row justify-between py-2">
+                    <Text className="text-sm text-gray-600 font-medium">Grasas</Text>
+                    <Text className="text-sm font-bold text-gray-900">{nutritionData.fat}g</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+          )}
 
           {/* Vendor Carousel */}
           {product.vendor_name && otherVendorProducts.length > 0 && (
-            <Animated.View
-              entering={FadeInUp.delay(500).duration(400)}
-              className="mt-8 mb-4"
-            >
+            <View className="mt-8 mb-4">
               <View className="flex-row items-center justify-between mb-4">
                 <Text className="text-lg font-black tracking-[-0.2px] text-[#09090b]">
                   Más de {product.vendor_name}
@@ -634,14 +615,11 @@ export default function ProductDetailsScreen() {
                   estimatedItemSize={172}
                 />
               </View>
-            </Animated.View>
+            </View>
           )}
 
           {/* Product Reviews */}
-          <Animated.View
-            entering={FadeInUp.delay(550).duration(400)}
-            className="mt-6 mb-8 px-1"
-          >
+          <View className="mt-6 mb-8 px-1">
             <View className="mb-4 flex-row items-center justify-between">
               <Text className="text-xl font-black tracking-[-0.2px] text-[#09090b]">
                 Reseñas
@@ -707,7 +685,7 @@ export default function ProductDetailsScreen() {
                 Escribir una reseña
               </Text>
             </Pressable>
-          </Animated.View>
+          </View>
 
           {/* Review Modal */}
           <ReviewModal

@@ -9,9 +9,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Heart, HeartOff, RefreshCw } from "lucide-react-native";
 import WishlistTableRow from "@/components/WishlistTableRow";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
-import ProductCardSkeleton, {
-  useShimmerStyle,
-} from "@/components/ProductCardSkeleton";
+import { ListEmptyState } from "@/components/ui/ListEmptyState";
+import WishlistSkeletonRow from "@/components/WishlistSkeletonRow";
+import { useShimmerStyle } from "@/components/ProductCardSkeleton";
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { Product } from "@/types/product";
 import { Favorite, getUserFavorites } from "@/api/favorites";
@@ -32,6 +32,7 @@ export default function WishlistScreen() {
       return getUserFavorites(getToken);
     },
     enabled: isSignedIn,
+    staleTime: 2 * 60 * 1000, // 2 minutes
   });
 
   // Granular selector for favoriteIds to avoid re-renders on other store updates
@@ -60,30 +61,16 @@ export default function WishlistScreen() {
 
   const renderEmpty = useMemo(
     () => (
-      <View className="flex-1 items-center justify-center p-8 mt-10">
-        <View className="items-start rounded-[28px] border border-slate-200/70 bg-white p-6">
-          <View className="mb-6 h-16 w-16 items-center justify-center rounded-[24px] bg-rose-50">
-            <HeartOff size={32} color="#e11d48" />
-          </View>
-          <Text className="mb-2 text-xl font-black tracking-[-0.3px] text-[#09090b]">
-            Lista vacía
-          </Text>
-          <Text className="mb-6 text-base leading-6 text-zinc-600">
-            Guarda productos para volver rápido a tus favoritos.
-          </Text>
-          <Pressable
-            onPress={() => router.push("/")}
-            className="rounded-2xl bg-[#09090b] px-6 py-3 active:opacity-80"
-            style={{ minHeight: 48 }}
-            accessibilityRole="button"
-            accessibilityLabel="Explorar productos"
-          >
-            <Text className="text-base font-bold text-white">
-              Explorar productos
-            </Text>
-          </Pressable>
-        </View>
-      </View>
+      <ListEmptyState
+        icon={HeartOff}
+        iconColor="#e11d48"
+        iconBgColor="#fff1f2"
+        title="Lista vacía"
+        description="Guarda productos para volver rápido a tus favoritos."
+        actionLabel="Explorar productos"
+        onActionPress={() => router.push("/")}
+        style={{ marginTop: 40 }}
+      />
     ),
     [router]
   );
@@ -97,10 +84,12 @@ export default function WishlistScreen() {
           icon={Heart}
           showBackButton={true}
         />
-        <View className="px-4 mt-4 gap-3">
-          <ProductCardSkeleton shimmerStyle={shimmerStyle} />
-          <ProductCardSkeleton shimmerStyle={shimmerStyle} />
-          <ProductCardSkeleton shimmerStyle={shimmerStyle} />
+        <View className="mt-4 flex-1">
+          <WishlistSkeletonRow shimmerStyle={shimmerStyle} />
+          <WishlistSkeletonRow shimmerStyle={shimmerStyle} />
+          <WishlistSkeletonRow shimmerStyle={shimmerStyle} />
+          <WishlistSkeletonRow shimmerStyle={shimmerStyle} />
+          <WishlistSkeletonRow shimmerStyle={shimmerStyle} />
         </View>
       </View>
     );

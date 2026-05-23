@@ -11,9 +11,11 @@ import {
 import { CartItem as CartItemType } from "@/types/cart";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { Stack, useRouter } from "expo-router";
+import { ListEmptyState } from "@/components/ui/ListEmptyState";
 import { ShoppingBag } from "lucide-react-native";
 import React, { useCallback } from "react";
-import { FlatList, Pressable, View } from "react-native";
+import { Pressable, View } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import { useShallow } from "zustand/react/shallow";
 
 interface CartFooterProps {
@@ -115,45 +117,28 @@ export default function CartScreen() {
         <>
           <Stack.Screen options={{ headerShown: false }} />
           <ScreenHeader title="Carrito de compras" icon={ShoppingBag} />
-          <View className="flex-1 justify-center bg-[#fafafa] px-6">
-            <View className="items-start rounded-[28px] border border-slate-200/70 bg-white p-6">
-            <View className="mb-6 h-16 w-16 items-center justify-center rounded-[24px] bg-slate-100">
-              <ShoppingBag size={32} color="#09090b" strokeWidth={1.8} />
-            </View>
-            <Text className="mb-2 text-2xl font-black tracking-[-0.4px] text-[#09090b]">
-              Tu carrito está vacío
-            </Text>
-            <Text className="mb-8 text-base leading-6 text-zinc-600">
-              Agrega productos para comenzar tu compra
-            </Text>
-            <Pressable
-              onPress={() => router.push("/")}
-              className="rounded-2xl bg-[#09090b] px-6 py-3 active:opacity-75"
-              style={{ minHeight: 48 }}
-              accessibilityRole="button"
-              accessibilityLabel="Explorar productos"
-            >
-              <Text className="text-white font-semibold text-center">
-                Explorar productos
-              </Text>
-            </Pressable>
-            </View>
-          </View>
+          <ListEmptyState
+            icon={ShoppingBag}
+            title="Tu carrito está vacío"
+            description="Agrega productos para comenzar tu compra"
+            actionLabel="Explorar productos"
+            onActionPress={() => router.push("/")}
+            style={{ paddingHorizontal: 24 }}
+          />
         </>
       ) : (
         <>
           <Stack.Screen options={{ headerShown: false }} />
           <ScreenHeader title="Carrito de compras" icon={ShoppingBag} />
           <View className="flex-1 bg-[#fafafa]">
-            <FlatList
+            <FlashList
               data={items}
-              contentContainerClassName="gap-3 p-4 pb-8"
+              contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
               showsVerticalScrollIndicator={false}
               renderItem={renderItem}
               keyExtractor={(item) => item.product.id.toString()}
-              initialNumToRender={8}
-              windowSize={5}
-              maxToRenderPerBatch={5}
+              estimatedItemSize={116}
+              ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
               ListFooterComponent={
                 <View className="mt-2 pb-16">
                   <CartFooter

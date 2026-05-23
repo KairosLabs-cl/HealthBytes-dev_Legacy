@@ -1,5 +1,5 @@
 import { FlashList } from "@shopify/flash-list";
-import { useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import { View, Pressable } from "react-native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -9,12 +9,34 @@ import { useQuery } from "@tanstack/react-query";
 import { listProducts } from "@/api/products";
 import ProductCard from "@/components/ProductCard";
 import DietaryFilterBar from "@/components/DietaryFilterBar";
+import ProductCardSkeleton, { useShimmerStyle } from "@/components/ProductCardSkeleton";
 import { RefreshCw, Package } from "lucide-react-native";
 import { useProductFilters } from "@/store/productFiltersStore";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { Product } from "@/types/product";
 
-const keyExtractor = (item: Product) => item.id.toString();
+// Stable memoized cell wrapper to prevent FlashList from re-creating the row
+// wrapper on every render. Previously the inline renderItem created a new View
+// on every call, breaking recycling.
+const ProductCardCell = memo(function ProductCardCell({ product }: { product: Product }) {
+  return (
+    <View style={{ flex: 1, padding: 6 }}>
+      <ProductCard product={product} width="full" />
+    </View>
+  );
+});
+ProductCardCell.displayName = "ProductCardCell";
+
+const SkeletonCell = memo(function SkeletonCell({ shimmerStyle }: { shimmerStyle: any }) {
+  return (
+    <View style={{ flex: 1, padding: 6 }}>
+      <ProductCardSkeleton shimmerStyle={shimmerStyle} />
+    </View>
+  );
+});
+SkeletonCell.displayName = "SkeletonCell";
+
+const keyExtractor = (item: any) => item.id.toString();
 
 export default function AllProductsScreen() {
   // ⚡ Bolt: Granular selectors to prevent re-renders when other filter state changes
@@ -46,20 +68,24 @@ export default function AllProductsScreen() {
   const numColumns = useBreakpointValue({
     default: 2,
     sm: 3,
-    xl: 4,
+    md: 4,
+    lg: 5,
   }) as number;
 
+  const shimmerStyle = useShimmerStyle();
+
   const renderItem = useCallback(
-    ({ item }: { item: Product }) => (
-      <View
-        style={{
-          flex: 1,
-          padding: 4,
-        }}
-      >
-        <ProductCard product={item} width="full" />
-      </View>
-    ),
+    ({ item }: { item: any }) => {
+      if (item._isSkeleton) {
+        return <SkeletonCell shimmerStyle={shimmerStyle} />;
+      }
+      return <ProductCardCell product={item as Product} />;
+    },
+    [shimmerStyle]
+  );
+
+  const skeletonData = useMemo(
+    () => Array.from({ length: 12 }).map((_, i) => ({ id: `skeleton-${i}`, _isSkeleton: true })),
     []
   );
 
@@ -122,9 +148,9 @@ export default function AllProductsScreen() {
           </Pressable>
         </View>
       ) : (
-        <View key={numColumns} className="flex-1">
-          <FlashList<Product>
-            data={isLoading ? [] : products}
+        <View className="flex-1">
+          <FlashList<any>
+            data={isLoading ? skeletonData : products}
             renderItem={renderItem}
             keyExtractor={keyExtractor}
             numColumns={numColumns}

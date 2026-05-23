@@ -17,16 +17,20 @@ import { useCart } from "@/store/cartStore";
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { usePreferencesStore } from "@/store/preferencesStore";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
-import OnboardingModal from "@/components/OnboardingModal";
 import { ClerkLoaded, ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Link, Stack, useSegments } from "expo-router";
 import { User } from "lucide-react-native";
-import { useEffect } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Pressable } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Sentry from "@sentry/react-native";
 import { useShallow } from "zustand/react/shallow";
+
+// Lazy-load OnboardingModal — it's only shown once per device and adds unnecessary
+// bundle weight to every app cold start. Loading it lazily defers the JS parsing
+// until the first time it's actually needed.
+const OnboardingModal = lazy(() => import("@/components/OnboardingModal"));
 
 // Initialize Sentry if DSN is configured
 const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN;
@@ -196,10 +200,12 @@ function RootLayoutNav() {
       {!hideNavBar && <BottomNavBar />}
       <CartFlyOverlay />
 
-      <OnboardingModal
-        visible={!!(isSignedIn && !hasCompletedOnboarding)}
-        onComplete={handleOnboardingComplete}
-      />
+      <Suspense fallback={null}>
+        <OnboardingModal
+          visible={!!(isSignedIn && !hasCompletedOnboarding)}
+          onComplete={handleOnboardingComplete}
+        />
+      </Suspense>
     </>
   );
 }

@@ -14,6 +14,7 @@ import { Product } from "@/types/product";
 import { useCallback, useMemo } from "react";
 import { RefreshCw, Search as SearchIcon } from "lucide-react-native";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { useShimmerStyle } from "@/components/ProductCardSkeleton";
 
 const keyExtractor = (item: Product) => item.id.toString();
 
@@ -35,11 +36,27 @@ export default function SearchScreen() {
     xl: 4,
   }) as number;
 
+  const shimmerStyle = useShimmerStyle();
+
   const userName = user?.firstName || user?.fullName || "Usuario";
 
   const renderItem = useCallback(
-    ({ item }: { item: Product }) => <ProductListItem product={item} />,
-    []
+    ({ item }: { item: any }) => {
+      if (item._isSkeleton) {
+        return (
+          <View style={{ flex: 1, padding: 4 }}>
+            <ProductCardSkeleton shimmerStyle={shimmerStyle} />
+          </View>
+        );
+      }
+      return <ProductListItem product={item as Product} />;
+    },
+    [shimmerStyle]
+  );
+
+  const skeletonData = useMemo(
+    () => Array.from({ length: numColumns * 3 }).map((_, i) => ({ id: `skeleton-${i}`, _isSkeleton: true })),
+    [numColumns]
   );
 
   const renderHeader = useMemo(
@@ -93,45 +110,10 @@ export default function SearchScreen() {
     [searchTerm, router]
   );
 
-  if (isLoading) {
-    return (
-    <View className="flex-1 bg-[#fafafa]">
-      <Stack.Screen options={{ headerShown: false }} />
-      <ScreenHeader title="Búsqueda" icon={SearchIcon} showBackButton={true} />
-      <Header
-        userName={userName}
-        initialSearchTerm={searchTerm}
-        showBackButton={false}
-      />
-      <View className="px-3 mt-4">
-        <View className="flex-row gap-2 mb-2">
-          <ProductCardSkeleton />
-          <ProductCardSkeleton />
-        </View>
-        <View className="flex-row gap-2">
-          <ProductCardSkeleton />
-          <ProductCardSkeleton />
-        </View>
-      </View>
-    </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View className="flex-1 bg-[#fafafa]">
-        <Stack.Screen options={{ headerShown: false }} />
-        <ScreenHeader
-          title="Búsqueda"
-          icon={SearchIcon}
-          showBackButton={true}
-        />
-        <Header
-          userName={userName}
-          initialSearchTerm={searchTerm}
-          showBackButton={false}
-        />
-        <View className="flex-1 items-center justify-center px-6">
+  const renderEmptyState = useMemo(() => {
+    if (error) {
+      return (
+        <View className="flex-1 items-center justify-center px-6 mt-10">
           <Text className="text-red-500 text-base mb-4">
             Error cargando resultados
           </Text>
@@ -155,9 +137,11 @@ export default function SearchScreen() {
             <Text className="text-gray-600 font-bold">Volver al inicio</Text>
           </Pressable>
         </View>
-      </View>
-    );
-  }
+      );
+    }
+    
+    return renderEmpty;
+  }, [error, refetch, router, renderEmpty]);
 
   return (
     <View className="flex-1 bg-[#fafafa]">
@@ -165,13 +149,13 @@ export default function SearchScreen() {
       <Stack.Screen options={{ headerShown: false }} />
 
       <View key={numColumns} className="flex-1">
-        <FlashList<Product>
+        <FlashList<any>
           className="flex-1 bg-[#fafafa]"
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={renderHeader}
-          ListEmptyComponent={renderEmpty}
-          keyExtractor={keyExtractor}
-          data={data || []}
+          ListEmptyComponent={renderEmptyState}
+          keyExtractor={(item) => item.id.toString()}
+          data={isLoading ? skeletonData : (data || [])}
           numColumns={numColumns}
           contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 128 }}
           renderItem={renderItem}

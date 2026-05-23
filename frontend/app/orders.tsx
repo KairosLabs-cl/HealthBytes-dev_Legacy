@@ -2,15 +2,18 @@ import { AuthGate } from "@/components/AuthGate";
 import { OrderListItem } from "@/components/OrderListItem";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
+import { ListEmptyState } from "@/components/ui/ListEmptyState";
+import { LoadingDots } from "@/components/ui/LoadingDots";
 import { Text } from "@/components/ui/text";
 import { useOrders } from "@/store/orderStore";
 import { useShallow } from "zustand/react/shallow";
 import { OrderStatus } from "@/types/order";
+import type { Order } from "@/types/order";
 import { useAuth } from "@clerk/clerk-expo";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { AlertCircle, Package } from "lucide-react-native";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   FlatList,
   Pressable,
@@ -20,6 +23,118 @@ import {
 } from "react-native";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+// ─── OrdersListHeader ────────────────────────────────────────────────────────
+// Memoized to prevent FlatList from remounting the header on every filter/state
+// change. Previously it was an inline JSX literal, causing full remounts.
+type Filter = { id: string; label: string };
+type OrdersListHeaderProps = {
+  filters: readonly Filter[];
+  selectedFilter: string;
+  onFilterPress: (id: "all" | OrderStatus) => void;
+  filteredOrderCount: number;
+  error: string | null;
+  isLoading: boolean;
+  showEmptyFilter: boolean;
+  onClearError: () => void;
+  onShowAll: () => void;
+};
+const OrdersListHeader = React.memo(function OrdersListHeader({
+  filters,
+  selectedFilter,
+  onFilterPress,
+  filteredOrderCount,
+  error,
+  isLoading,
+  showEmptyFilter,
+  onClearError,
+  onShowAll,
+}: OrdersListHeaderProps) {
+  return (
+    <View className="px-4 pt-4">
+      {/* Filter chips */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        className="flex-row gap-2"
+        contentContainerStyle={{ paddingRight: 16, gap: 8 }}
+      >
+        {filters.map((f) => (
+          <Pressable
+            key={f.id}
+            onPress={() => onFilterPress(f.id as "all" | OrderStatus)}
+            style={{ minHeight: 44, justifyContent: "center" }}
+            accessibilityRole="button"
+            accessibilityLabel={`Filtrar órdenes: ${f.label}`}
+            accessibilityState={{ selected: selectedFilter === f.id }}
+            className={`rounded-2xl border px-4 transition-colors duration-200 ${
+              selectedFilter === f.id
+                ? "border-[#09090b] bg-[#09090b]"
+                : "border-slate-200 bg-white"
+            }`}
+          >
+            <Text
+              className={`font-semibold transition-colors duration-200 ${
+                selectedFilter === f.id ? "text-white" : "text-gray-700"
+              }`}
+            >
+              {f.label}
+            </Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+
+      {/* Result count */}
+      <View className="mb-4 mt-3">
+        <Text className="text-gray-600">
+          {filteredOrderCount} orden{filteredOrderCount !== 1 ? "es" : ""}
+          {selectedFilter !== "all" && " encontradas"}
+        </Text>
+      </View>
+
+      {/* Error */}
+      {error && (
+        <View className="mb-4 flex-row items-start rounded-2xl border border-red-200 bg-red-50 p-4">
+          <Icon as={AlertCircle} size="md" className="text-red-600 mr-3 mt-0.5" />
+          <View className="flex-1">
+            <Text className="text-red-800 font-semibold mb-1">Error</Text>
+            <Text className="text-red-700 text-sm">{error}</Text>
+            <Pressable
+              onPress={onClearError}
+              className="mt-2"
+              style={{ minHeight: 44, justifyContent: "center" }}
+              accessibilityRole="button"
+              accessibilityLabel="Descartar error"
+            >
+              <Text className="text-red-600 font-semibold text-sm">Descartar</Text>
+            </Pressable>
+          </View>
+        </View>
+      )}
+
+      {/* Loading */}
+      {isLoading && (
+        <View className="flex-1 items-center justify-center py-12">
+          <LoadingDots color="#22c55e" size={12} />
+          <Text className="text-gray-500 mt-4">Cargando órdenes...</Text>
+        </View>
+      )}
+
+      {/* Empty filter */}
+      {showEmptyFilter && (
+        <ListEmptyState
+          icon={Package}
+          title="No se encontraron órdenes"
+          description="No hay órdenes con este estado"
+          actionLabel="Ver todas"
+          onActionPress={onShowAll}
+          style={{ padding: 16 }}
+        />
+      )}
+    </View>
+  );
+});
+OrdersListHeader.displayName = "OrdersListHeader";
 
 export default function OrdersScreen() {
   const router = useRouter();
@@ -134,26 +249,14 @@ export default function OrdersScreen() {
           showBackButton={true}
         />
         <View className="flex-1 justify-center px-6">
-          <View className="items-start rounded-[28px] border border-slate-200/70 bg-white p-6">
-          <View className="mb-5 h-16 w-16 items-center justify-center rounded-[24px] bg-slate-100">
-            <Icon as={Package} size="xl" className="text-[#09090b]" />
-          </View>
-          <Text className="mb-2 text-xl font-black tracking-[-0.3px] text-[#09090b]">
-            No hay órdenes todavía
-          </Text>
-          <Text className="mb-6 text-base leading-6 text-zinc-600">
-            Cuando hagas tu primera compra, aparecerá aquí el historial de todos
-            tus pedidos.
-          </Text>
-          <Button
-            onPress={() => router.replace("/")}
-            className="rounded-2xl bg-[#09090b]"
-            accessibilityRole="button"
-            accessibilityLabel="Ver productos"
-          >
-            <ButtonText className="text-white">Ver productos</ButtonText>
-          </Button>
-          </View>
+          <ListEmptyState
+            icon={Package}
+            title="No hay órdenes todavía"
+            description="Cuando hagas tu primera compra, aparecerá aquí el historial de todos tus pedidos."
+            actionLabel="Ver productos"
+            onActionPress={() => router.replace("/")}
+            style={{ padding: 0 }}
+          />
         </View>
       </View>
     );
@@ -162,112 +265,35 @@ export default function OrdersScreen() {
   const showEmptyFilter =
     !isLoading && orders.length === 0 && selectedFilter !== "all";
 
-  // Defined outside render to avoid remounting the header on every state change
-  const listHeader = (
-    <View className="px-4 pt-4">
-      {/* Filter chips */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        className="flex-row gap-2"
-        contentContainerStyle={{ paddingRight: 16, gap: 8 }}
-      >
-        {filters.map((f) => (
-          <Pressable
-            key={f.id}
-            onPress={() => handleFilterPress(f.id as OrderStatus)}
-            style={{ minHeight: 44, justifyContent: "center" }}
-            accessibilityRole="button"
-            accessibilityLabel={`Filtrar órdenes: ${f.label}`}
-            accessibilityState={{ selected: selectedFilter === f.id }}
-            className={`rounded-2xl border px-4 ${
-              selectedFilter === f.id
-                ? "border-[#09090b] bg-[#09090b]"
-                : "border-slate-200 bg-white"
-            }`}
-          >
-            <Text
-              className={`font-semibold ${
-                selectedFilter === f.id ? "text-white" : "text-gray-700"
-              }`}
-            >
-              {f.label}
-            </Text>
-          </Pressable>
-        ))}
-      </ScrollView>
-
-      {/* Result count */}
-      <View className="mb-4">
-        <Text className="text-gray-600">
-          {filteredOrders.length} orden{filteredOrders.length !== 1 ? "es" : ""}
-          {selectedFilter !== "all" && " encontradas"}
-        </Text>
+  // Memoized renderItem — prevents FlatList from re-creating the row wrapper on
+  // every state update. The inline version was creating a new function reference
+  // on every render, defeating FlatList's row recycling.
+  const renderOrderItem = useCallback(
+    ({ item }: { item: Order }) => (
+      <View className="px-4">
+        <OrderListItem order={item} onPress={() => handleOrderPress(item.id)} />
       </View>
-
-      {/* Error */}
-      {error && (
-        <View className="mb-4 flex-row items-start rounded-2xl border border-red-200 bg-red-50 p-4">
-          <Icon
-            as={AlertCircle}
-            size="md"
-            className="text-red-600 mr-3 mt-0.5"
-          />
-          <View className="flex-1">
-            <Text className="text-red-800 font-semibold mb-1">Error</Text>
-            <Text className="text-red-700 text-sm">{error}</Text>
-            <Pressable
-              onPress={clearError}
-              className="mt-2"
-              style={{ minHeight: 44, justifyContent: "center" }}
-              accessibilityRole="button"
-              accessibilityLabel="Descartar error"
-            >
-              <Text className="text-red-600 font-semibold text-sm">
-                Descartar
-              </Text>
-            </Pressable>
-          </View>
-        </View>
-      )}
-
-      {/* Loading */}
-      {isLoading && (
-        <View className="flex-1 items-center justify-center py-12">
-          <View className="flex-row gap-2">
-            <View className="h-3 w-3 rounded-full bg-[#22c55e]" />
-            <View className="h-3 w-3 rounded-full bg-slate-300" />
-            <View className="h-3 w-3 rounded-full bg-slate-400" />
-          </View>
-          <Text className="text-gray-500 mt-4">Cargando órdenes...</Text>
-        </View>
-      )}
-
-      {/* Empty filter */}
-      {showEmptyFilter && (
-        <View className="items-start rounded-[28px] border border-slate-200/70 bg-white p-6">
-          <View className="mb-5 h-14 w-14 items-center justify-center rounded-[22px] bg-slate-100">
-            <Icon as={Package} size="xl" className="text-[#09090b]" />
-          </View>
-          <Text className="mb-2 text-lg font-black text-[#09090b]">
-            No se encontraron órdenes
-          </Text>
-          <Text className="mb-4 text-sm text-zinc-600">
-            No hay órdenes con este estado
-          </Text>
-          <Pressable
-            onPress={() => handleFilterPress("all")}
-            className="rounded-2xl bg-[#09090b] px-4"
-            style={{ minHeight: 48, justifyContent: "center" }}
-            accessibilityRole="button"
-            accessibilityLabel="Ver todas las órdenes"
-          >
-            <Text className="text-white font-semibold">Ver todas</Text>
-          </Pressable>
-        </View>
-      )}
-    </View>
+    ),
+    [handleOrderPress]
   );
+
+  // ─── Memoized list header ─────────────────────────────────────────────────
+  // Previously a JSX literal that remounted on every state change — now a stable
+  // memo component to prevent the FlatList from unmounting the header.
+  const listHeader = (
+    <OrdersListHeader
+      filters={filters}
+      selectedFilter={selectedFilter}
+      onFilterPress={handleFilterPress}
+      filteredOrderCount={filteredOrders.length}
+      error={error}
+      isLoading={isLoading}
+      showEmptyFilter={showEmptyFilter}
+      onClearError={clearError}
+      onShowAll={() => handleFilterPress("all")}
+    />
+  );
+
 
   const listFooter =
     !isLoading && hasMore ? (
@@ -292,11 +318,7 @@ export default function OrdersScreen() {
           accessibilityState={{ disabled: isLoadingMore }}
         >
           {isLoadingMore ? (
-            <View className="flex-row gap-1">
-              <View className="h-2 w-2 rounded-full bg-[#22c55e]" />
-              <View className="h-2 w-2 rounded-full bg-slate-300" />
-              <View className="h-2 w-2 rounded-full bg-slate-400" />
-            </View>
+            <LoadingDots color="#09090b" size={8} />
           ) : (
             <Text className="text-sm font-semibold text-gray-700">
               Cargar más órdenes
@@ -321,14 +343,7 @@ export default function OrdersScreen() {
           className="flex-1 bg-[#fafafa]"
           data={!isLoading ? filteredOrders : []}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <View className="px-4">
-              <OrderListItem
-                order={item}
-                onPress={() => handleOrderPress(item.id)}
-              />
-            </View>
-          )}
+          renderItem={renderOrderItem}
           ListHeaderComponent={listHeader}
           ListFooterComponent={listFooter}
           refreshControl={

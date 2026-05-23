@@ -132,15 +132,14 @@ const TabItem = React.memo(
         <View className="relative">
           <Icon
             as={icon}
-            color={isActive ? "#000" : "#fff"}
+            color={isActive ? "#000" : "#cbd5e1"}
             size={isMobile ? "lg" : "md"}
           />
           {badge !== undefined && <AnimatedBadge count={badge} />}
         </View>
         <Text
-          className={`${isMobile ? "text-xs" : "text-[10px]"} font-bold ${
-            isActive ? "text-black" : "text-white"
-          }`}
+          className={`${isMobile ? "text-xs" : "text-[10px]"} font-bold`}
+          style={{ color: isActive ? "#000" : "#cbd5e1" }}
         >
           {label}
         </Text>

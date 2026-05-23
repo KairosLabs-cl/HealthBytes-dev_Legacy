@@ -1,7 +1,7 @@
 import { View, TextInput, Pressable } from "react-native";
 import { Text } from "./ui/text";
 import { Search, ArrowLeft, X } from "lucide-react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "expo-router";
 import { theme } from "@/lib/theme";
 
@@ -39,7 +39,7 @@ export function Header({
     setSearchTerm(initialSearchTerm);
   }, [initialSearchTerm]);
 
-  const handleSearchSubmit = () => {
+  const handleSearchSubmit = useCallback(() => {
     // Accessibility improvement: Only search on explicit submit
     const text = searchTerm;
 
@@ -53,20 +53,15 @@ export function Header({
       // If search is cleared and submitted, go back home
       router.push("/");
     }
-  };
+  }, [searchTerm, onSearchChange, router]);
 
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     setSearchTerm("");
     if (onSearchChange) {
       onSearchChange("");
     }
-    // For a smoother UX, clear should probably not force navigate unless submitted,
-    // but user requested "Que vuelva al home al limpiar".
-    // We can interpret this as "when X is pressed" or "when submitted empty".
-    // Actually simplicity: Clear text -> Focus -> Wait for user.
-    // BUT user said: "Que vuelva al home al limpiar". Let's do that for the X button.
     router.push("/");
-  };
+  }, [onSearchChange, router]);
 
   return (
     <View

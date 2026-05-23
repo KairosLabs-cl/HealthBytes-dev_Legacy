@@ -57,51 +57,38 @@ export default function CartFlyOverlay() {
     flyOpacity.value = 0;
     flyRotate.value = 0;
 
-    // ─── Phase 1 (0–500ms): pop in + jiggle ──────────────────────────────
+    // ─── Simplified Animation Phase ──────────────────────────────
+    // Reduced from complex 6-part sequence to simple pop and fly to save frames
+
+    // Pop in and shrink as it flies
     flyScale.value = withSequence(
-      withTiming(1.35, { duration: 180, easing: Easing.out(Easing.back(2.5)) }),
-      withTiming(1.05, { duration: 120 }),
-      withTiming(1.18, { duration: 100, easing: Easing.inOut(Easing.ease) }),
-      withTiming(1.0, { duration: 100, easing: Easing.inOut(Easing.ease) }),
-      // ─── Phase 2 (500–1000ms): fly + shrink ──────────────────────────
-      withTiming(0.5, { duration: 350, easing: Easing.in(Easing.cubic) }),
-      withTiming(0, { duration: 150 })
-    ); // 1000ms
+      withTiming(1.2, { duration: 200, easing: Easing.out(Easing.back(2)) }),
+      withTiming(1, { duration: 150 }),
+      withDelay(150, withTiming(0.4, { duration: 400, easing: Easing.in(Easing.cubic) })),
+      withTiming(0, { duration: 100 })
+    );
 
+    // Fade in, hold, fade out
     flyOpacity.value = withSequence(
-      withTiming(1, { duration: 80 }),
-      withDelay(770, withTiming(0, { duration: 150 }))
+      withTiming(1, { duration: 100 }),
+      withDelay(600, withTiming(0, { duration: 200 }))
     );
 
-    // Jiggle then spin
+    // Simple single rotation
     flyRotate.value = withSequence(
-      withTiming(-22, { duration: 130 }),
-      withTiming(22, { duration: 130 }),
-      withTiming(-12, { duration: 90 }),
-      withTiming(12, { duration: 90 }),
-      withTiming(0, { duration: 60 }),
-      withTiming(360, { duration: 500, easing: Easing.linear })
-    ); // 1000ms
-
-    // Y: hover up, then fly down to nav bar cart
-    flyY.value = withSequence(
-      withTiming(startY - 52, {
-        duration: 500,
-        easing: Easing.out(Easing.ease),
-      }),
-      withTiming(targetY - 22, {
-        duration: 500,
-        easing: Easing.bezier(0.4, 0, 0.2, 1),
-      })
+      withTiming(-15, { duration: 200 }),
+      withTiming(360, { duration: 600, easing: Easing.inOut(Easing.ease) })
     );
 
-    // X: hold while jiggling, then glide to cart center
+    // Arching path using bezier
+    flyY.value = withSequence(
+      withTiming(startY - 40, { duration: 300, easing: Easing.out(Easing.quad) }),
+      withTiming(targetY - 22, { duration: 500, easing: Easing.in(Easing.quad) })
+    );
+
     flyX.value = withDelay(
-      500,
-      withTiming(targetX - 22, {
-        duration: 500,
-        easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
-      })
+      300,
+      withTiming(targetX - 22, { duration: 500, easing: Easing.inOut(Easing.quad) })
     );
   }, [pending]); // eslint-disable-line react-hooks/exhaustive-deps
 
