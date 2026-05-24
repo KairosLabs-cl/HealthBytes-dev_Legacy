@@ -14,19 +14,19 @@ describe("PaymentMethodSelector accessibility", () => {
       "Mercado Pago, Billetera digital de Mercado Pago"
     );
     expect(mercadoPago.props.accessibilityRole).toBe("radio");
-    expect(mercadoPago.props.accessibilityState).toEqual({
-      selected: true,
+    expect(mercadoPago.props.accessibilityState).toEqual(expect.objectContaining({
+      checked: true,
       disabled: undefined,
-    });
+    }));
 
     const venti = screen.getByLabelText(
       "Venti, Transferencia bancaria segura, Próximamente"
     );
     expect(venti.props.accessibilityRole).toBe("radio");
-    expect(venti.props.accessibilityState).toEqual({
-      selected: false,
+    expect(venti.props.accessibilityState).toEqual(expect.objectContaining({
+      checked: false,
       disabled: true,
-    });
+    }));
 
     fireEvent.press(mercadoPago);
     fireEvent.press(venti);

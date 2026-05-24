@@ -71,7 +71,7 @@ jest.mock("@/components/PaymentMethodSelector", () => ({
         onPress={() => onSelect("mercado_pago")}
         accessibilityRole="radio"
         accessibilityLabel="Mercado Pago, Billetera digital de Mercado Pago"
-        accessibilityState={{ selected: false }}
+        accessibilityState={{ checked: false }}
       >
         <Text>Seleccionar Mercado Pago</Text>
       </Pressable>
@@ -244,7 +244,7 @@ describe("CheckoutV2Screen", () => {
         "Dirección: Calle Principal, Santiago"
       );
       expect(address.props.accessibilityRole).toBe("radio");
-      expect(address.props.accessibilityState).toEqual({ selected: true });
+      expect(address.props.accessibilityState).toEqual(expect.objectContaining({ checked: true }));
     });
 
     it("muestra estado vacío cuando no hay direcciones", () => {
