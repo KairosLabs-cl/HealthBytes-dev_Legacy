@@ -337,7 +337,7 @@ function DietaryTagCard({
         ]}
       >
         <View style={{ alignItems: "flex-start" }}>
-          <Text style={{ fontSize: 36, marginBottom: 12 }}>{item.emoji}</Text>
+          <Text style={{ fontSize: 36, marginBottom: 12 }} accessibilityElementsHidden>{item.emoji}</Text>
         </View>
         <View>
           <Text

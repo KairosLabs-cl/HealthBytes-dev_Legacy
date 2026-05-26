@@ -76,7 +76,7 @@ export function PaymentMethodSelector({
                 : "Selecciona este método de pago"
             }
             accessibilityState={{
-              selected: selected === method.id,
+              checked: selected === method.id,
               disabled: method.disabled,
             }}
           >
