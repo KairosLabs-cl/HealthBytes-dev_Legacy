@@ -10,7 +10,7 @@ import { useAuth } from "@clerk/clerk-expo";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { AlertCircle, Package } from "lucide-react-native";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -21,6 +21,15 @@ import {
 } from "react-native";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+const FILTERS = [
+  { id: "all", label: "Todas" },
+  { id: "unpaid", label: "Sin pagar" },
+  { id: "processing", label: "En proceso" },
+  { id: "shipped", label: "Enviado" },
+  { id: "delivered", label: "Entregado" },
+  { id: "returns", label: "Devolución" },
+] as const;
 
 export default function OrdersScreen() {
   const router = useRouter();
@@ -76,14 +85,7 @@ export default function OrdersScreen() {
     }
   );
 
-  const filters = [
-    { id: "all", label: "Todas" },
-    { id: "unpaid", label: "Sin pagar" },
-    { id: "processing", label: "En proceso" },
-    { id: "shipped", label: "Enviado" },
-    { id: "delivered", label: "Entregado" },
-    { id: "returns", label: "Devolución" },
-  ] as const;
+  // FILTERS is now defined statically outside the component to prevent recreation on every render
 
   useEffect(() => {
     if (!isSignedIn || !isLoaded) return;
@@ -124,43 +126,11 @@ export default function OrdersScreen() {
     [router]
   );
 
-  if (!isLoading && selectedFilter === "all" && orders.length === 0) {
-    return (
-      <View className="flex-1 bg-white">
-        <StatusBar style="dark" />
-        <Stack.Screen options={{ headerShown: false }} />
-        <ScreenHeader
-          title="Mis órdenes"
-          icon={Package}
-          showBackButton={true}
-        />
-        <View className="flex-1 items-center justify-center px-6">
-          <Icon as={Package} size="xl" className="text-gray-300 mb-4" />
-          <Text className="text-xl font-semibold text-black mb-2">
-            No hay órdenes todavía
-          </Text>
-          <Text className="text-center text-gray-600 mb-6">
-            Cuando hagas tu primera compra, aparecerá aquí el historial de todos
-            tus pedidos.
-          </Text>
-          <Button
-            onPress={() => router.replace("/")}
-            className="bg-black rounded-full"
-            accessibilityRole="button"
-            accessibilityLabel="Ver productos"
-          >
-            <ButtonText className="text-white">Ver productos</ButtonText>
-          </Button>
-        </View>
-      </View>
-    );
-  }
-
   const showEmptyFilter =
     !isLoading && orders.length === 0 && selectedFilter !== "all";
 
-  // Defined outside render to avoid remounting the header on every state change
-  const listHeader = (
+  // Memoized to avoid remounting the header on every state change
+  const listHeader = useMemo(() => (
     <View className="px-4 pt-4">
       {/* Filter chips */}
       <ScrollView
@@ -169,7 +139,7 @@ export default function OrdersScreen() {
         className="flex-row gap-2"
         contentContainerStyle={{ paddingRight: 16, gap: 8 }}
       >
-        {filters.map((f) => (
+        {FILTERS.map((f) => (
           <Pressable
             key={f.id}
             onPress={() => handleFilterPress(f.id as OrderStatus)}
@@ -258,10 +228,11 @@ export default function OrdersScreen() {
         </View>
       )}
     </View>
-  );
+  ), [selectedFilter, filteredOrders.length, error, isLoading, showEmptyFilter, handleFilterPress, clearError]);
 
-  const listFooter =
-    !isLoading && hasMore ? (
+  const listFooter = useMemo(() => {
+    if (isLoading || !hasMore) return null;
+    return (
       <View className="mx-4 mt-4 mb-2">
         {selectedFilter !== "all" && (
           <Text className="text-center text-gray-400 text-xs mb-3">
@@ -291,7 +262,40 @@ export default function OrdersScreen() {
           )}
         </Pressable>
       </View>
-    ) : null;
+    );
+  }, [isLoading, hasMore, selectedFilter, isLoadingMore, getToken, loadMoreOrders]);
+
+  if (!isLoading && selectedFilter === "all" && orders.length === 0) {
+    return (
+      <View className="flex-1 bg-white">
+        <StatusBar style="dark" />
+        <Stack.Screen options={{ headerShown: false }} />
+        <ScreenHeader
+          title="Mis órdenes"
+          icon={Package}
+          showBackButton={true}
+        />
+        <View className="flex-1 items-center justify-center px-6">
+          <Icon as={Package} size="xl" className="text-gray-300 mb-4" />
+          <Text className="text-xl font-semibold text-black mb-2">
+            No hay órdenes todavía
+          </Text>
+          <Text className="text-center text-gray-600 mb-6">
+            Cuando hagas tu primera compra, aparecerá aquí el historial de todos
+            tus pedidos.
+          </Text>
+          <Button
+            onPress={() => router.replace("/")}
+            className="bg-black rounded-full"
+            accessibilityRole="button"
+            accessibilityLabel="Ver productos"
+          >
+            <ButtonText className="text-white">Ver productos</ButtonText>
+          </Button>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <AuthGate message="Inicia sesion para ver el historial de tus pedidos.">
