@@ -238,30 +238,6 @@ export default function OrdersScreen() {
     [router]
   );
 
-  if (!isLoading && selectedFilter === "all" && orders.length === 0) {
-    return (
-      <View className="flex-1 bg-[#fafafa]">
-        <StatusBar style="dark" />
-        <Stack.Screen options={{ headerShown: false }} />
-        <ScreenHeader
-          title="Mis órdenes"
-          icon={Package}
-          showBackButton={true}
-        />
-        <View className="flex-1 justify-center px-6">
-          <ListEmptyState
-            icon={Package}
-            title="No hay órdenes todavía"
-            description="Cuando hagas tu primera compra, aparecerá aquí el historial de todos tus pedidos."
-            actionLabel="Ver productos"
-            onActionPress={() => router.replace("/")}
-            style={{ padding: 0 }}
-          />
-        </View>
-      </View>
-    );
-  }
-
   const showEmptyFilter =
     !isLoading && orders.length === 0 && selectedFilter !== "all";
 
@@ -327,6 +303,30 @@ export default function OrdersScreen() {
         </Pressable>
       </View>
     ) : null;
+
+  if (!isLoading && selectedFilter === "all" && orders.length === 0) {
+    return (
+      <View className="flex-1 bg-[#fafafa]">
+        <StatusBar style="dark" />
+        <Stack.Screen options={{ headerShown: false }} />
+        <ScreenHeader
+          title="Mis órdenes"
+          icon={Package}
+          showBackButton={true}
+        />
+        <View className="flex-1 justify-center px-6">
+          <ListEmptyState
+            icon={Package}
+            title="No hay órdenes todavía"
+            description="Cuando hagas tu primera compra, aparecerá aquí el historial de todos tus pedidos."
+            actionLabel="Ver productos"
+            onActionPress={() => router.replace("/")}
+            style={{ padding: 0 }}
+          />
+        </View>
+      </View>
+    );
+  }
 
   return (
     <AuthGate message="Inicia sesion para ver el historial de tus pedidos.">

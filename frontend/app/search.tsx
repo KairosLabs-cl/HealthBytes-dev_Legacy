@@ -16,7 +16,13 @@ import { RefreshCw, Search as SearchIcon } from "lucide-react-native";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { useShimmerStyle } from "@/components/ProductCardSkeleton";
 
-const keyExtractor = (item: Product) => item.id.toString();
+type SkeletonSearchItem = { id: string; _isSkeleton: true };
+type SearchListItem = Product | SkeletonSearchItem;
+
+const isSkeletonSearchItem = (item: SearchListItem): item is SkeletonSearchItem =>
+  "_isSkeleton" in item;
+
+const keyExtractor = (item: SearchListItem) => item.id.toString();
 
 export default function SearchScreen() {
   const { q } = useLocalSearchParams<{ q: string }>();
@@ -24,7 +30,7 @@ export default function SearchScreen() {
   const { user } = useUser();
   const router = useRouter();
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery<Product[]>({
     queryKey: ["products", searchTerm],
     queryFn: () => listProducts({ search: searchTerm }),
     enabled: !!searchTerm,
@@ -41,20 +47,20 @@ export default function SearchScreen() {
   const userName = user?.firstName || user?.fullName || "Usuario";
 
   const renderItem = useCallback(
-    ({ item }: { item: any }) => {
-      if (item._isSkeleton) {
+    ({ item }: { item: SearchListItem }) => {
+      if (isSkeletonSearchItem(item)) {
         return (
           <View style={{ flex: 1, padding: 4 }}>
             <ProductCardSkeleton shimmerStyle={shimmerStyle} />
           </View>
         );
       }
-      return <ProductListItem product={item as Product} />;
+      return <ProductListItem product={item} />;
     },
     [shimmerStyle]
   );
 
-  const skeletonData = useMemo(
+  const skeletonData = useMemo<SkeletonSearchItem[]>(
     () => Array.from({ length: numColumns * 3 }).map((_, i) => ({ id: `skeleton-${i}`, _isSkeleton: true })),
     [numColumns]
   );
@@ -149,12 +155,12 @@ export default function SearchScreen() {
       <Stack.Screen options={{ headerShown: false }} />
 
       <View key={numColumns} className="flex-1">
-        <FlashList<any>
+        <FlashList<SearchListItem>
           className="flex-1 bg-[#fafafa]"
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={renderHeader}
           ListEmptyComponent={renderEmptyState}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={keyExtractor}
           data={isLoading ? skeletonData : (data || [])}
           numColumns={numColumns}
           contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 128 }}

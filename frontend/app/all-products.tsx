@@ -15,6 +15,12 @@ import { useProductFilters } from "@/store/productFiltersStore";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { Product } from "@/types/product";
 
+type SkeletonProductItem = { id: string; _isSkeleton: true };
+type ProductListItem = Product | SkeletonProductItem;
+
+const isSkeletonProductItem = (item: ProductListItem): item is SkeletonProductItem =>
+  "_isSkeleton" in item;
+
 // Stable memoized cell wrapper to prevent FlashList from re-creating the row
 // wrapper on every render. Previously the inline renderItem created a new View
 // on every call, breaking recycling.
@@ -27,7 +33,11 @@ const ProductCardCell = memo(function ProductCardCell({ product }: { product: Pr
 });
 ProductCardCell.displayName = "ProductCardCell";
 
-const SkeletonCell = memo(function SkeletonCell({ shimmerStyle }: { shimmerStyle: any }) {
+const SkeletonCell = memo(function SkeletonCell({
+  shimmerStyle,
+}: {
+  shimmerStyle: ReturnType<typeof useShimmerStyle>;
+}) {
   return (
     <View style={{ flex: 1, padding: 6 }}>
       <ProductCardSkeleton shimmerStyle={shimmerStyle} />
@@ -36,7 +46,7 @@ const SkeletonCell = memo(function SkeletonCell({ shimmerStyle }: { shimmerStyle
 });
 SkeletonCell.displayName = "SkeletonCell";
 
-const keyExtractor = (item: any) => item.id.toString();
+const keyExtractor = (item: ProductListItem) => item.id.toString();
 
 export default function AllProductsScreen() {
   // ⚡ Bolt: Granular selectors to prevent re-renders when other filter state changes
@@ -75,16 +85,16 @@ export default function AllProductsScreen() {
   const shimmerStyle = useShimmerStyle();
 
   const renderItem = useCallback(
-    ({ item }: { item: any }) => {
-      if (item._isSkeleton) {
+    ({ item }: { item: ProductListItem }) => {
+      if (isSkeletonProductItem(item)) {
         return <SkeletonCell shimmerStyle={shimmerStyle} />;
       }
-      return <ProductCardCell product={item as Product} />;
+      return <ProductCardCell product={item} />;
     },
     [shimmerStyle]
   );
 
-  const skeletonData = useMemo(
+  const skeletonData = useMemo<SkeletonProductItem[]>(
     () => Array.from({ length: 12 }).map((_, i) => ({ id: `skeleton-${i}`, _isSkeleton: true })),
     []
   );
@@ -149,7 +159,7 @@ export default function AllProductsScreen() {
         </View>
       ) : (
         <View className="flex-1">
-          <FlashList<any>
+          <FlashList<ProductListItem>
             data={isLoading ? skeletonData : products}
             renderItem={renderItem}
             keyExtractor={keyExtractor}

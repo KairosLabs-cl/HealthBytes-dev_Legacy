@@ -255,14 +255,15 @@ describe("CheckoutV2Screen", () => {
       ).toBeTruthy();
     });
 
-    it("lanza alerta si se intenta continuar sin seleccionar dirección", () => {
+    it("muestra error inline si se intenta continuar sin seleccionar dirección", async () => {
       setupStores({ addresses: [mockAddress], defaultAddress: null });
       render(<CheckoutV2Screen />);
       fireEvent.press(screen.getByText("Continuar"));
-      expect(alertMock).toHaveBeenCalledWith(
-        "Dirección requerida",
-        "Por favor selecciona una dirección de envío"
-      );
+      await waitFor(() => {
+        expect(
+          screen.getByText("Selecciona una dirección de envío para continuar.")
+        ).toBeTruthy();
+      });
     });
   });
 
@@ -285,13 +286,14 @@ describe("CheckoutV2Screen", () => {
       });
     });
 
-    it("lanza alerta si se intenta continuar sin método de pago", async () => {
+    it("muestra error inline si se intenta continuar sin método de pago", async () => {
       await renderAtStep("payment");
       fireEvent.press(screen.getByText("Revisar Orden"));
-      expect(alertMock).toHaveBeenCalledWith(
-        "Método de pago requerido",
-        "Por favor selecciona un método de pago"
-      );
+      await waitFor(() => {
+        expect(
+          screen.getByText("Selecciona un método de pago para continuar.")
+        ).toBeTruthy();
+      });
     });
   });
 
@@ -393,18 +395,18 @@ describe("CheckoutV2Screen", () => {
   // Error paths
   // =========================================================================
   describe("Error paths", () => {
-    it("muestra alerta cuando createOrder falla", async () => {
+    it("muestra error inline cuando createOrder falla", async () => {
       (createOrder as jest.Mock).mockRejectedValue(
         new Error("Stock insuficiente")
       );
       await renderAtStep("summary");
       fireEvent.press(screen.getByText("Confirmar Orden"));
       await waitFor(() => {
-        expect(alertMock).toHaveBeenCalledWith("Error", "Stock insuficiente");
+        expect(screen.getByText("Stock insuficiente")).toBeTruthy();
       });
     });
 
-    it("muestra alerta cuando createMercadoPagoPreference falla", async () => {
+    it("muestra error inline cuando createMercadoPagoPreference falla", async () => {
       (createOrder as jest.Mock).mockResolvedValue({ id: 1 });
       (createMercadoPagoPreference as jest.Mock).mockRejectedValue(
         new Error("Error al crear preferencia")
@@ -412,17 +414,14 @@ describe("CheckoutV2Screen", () => {
       await renderAtStep("summary");
       fireEvent.press(screen.getByText("Confirmar Orden"));
       await waitFor(() => {
-        expect(alertMock).toHaveBeenCalledWith(
-          "Error",
-          "Error al crear preferencia"
-        );
+        expect(screen.getByText("Error al crear preferencia")).toBeTruthy();
       });
     });
 
     it("muestra AuthGate si el usuario no está autenticado", () => {
       setupAuth(false);
       render(<CheckoutV2Screen />);
-      expect(screen.getByText("Inicia sesion para continuar")).toBeTruthy();
+      expect(screen.getByText("Inicia sesion para completar tu compra.")).toBeTruthy();
     });
   });
 });
