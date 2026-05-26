@@ -17,18 +17,8 @@ logger = logging.getLogger(__name__)
 
 
 async def _get_available_stock(db: AsyncSession, product: Product) -> int:
-    """Calculate available stock by subtracting reserved stock from pending orders."""
-    from app.db.schemas import Order
-
-    result = await db.execute(
-        select(func.coalesce(func.sum(OrderItem.quantity), 0)).where(
-            OrderItem.product_id == product.id,
-            OrderItem.order_id == Order.id,
-            Order.status.in_(["unpaid", "processing", "shipped"]),
-        )
-    )
-    reserved = result.scalar()
-    return max(0, product.stock - reserved)
+    """Calculate available stock directly from product database value."""
+    return product.stock
 
 
 async def get_cart(user_id: int, db: AsyncSession) -> CartResponse:
