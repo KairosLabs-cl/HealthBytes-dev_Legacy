@@ -252,7 +252,7 @@ export default function CheckoutV2Screen() {
                         accessibilityHint="Selecciona esta dirección para el envío"
                         accessibilityRole="radio"
                         accessibilityState={{
-                          selected: selectedAddress?.id === address.id,
+                          checked: selectedAddress?.id === address.id,
                         }}
                       >
                         <HStack className="items-start justify-between">
@@ -373,9 +373,15 @@ export default function CheckoutV2Screen() {
                     Método de Pago
                   </Text>
                   <Text className="text-sm text-gray-700">
-                    {selectedPayment === "venti"
-                      ? "💳 Venti - Transferencia Bancaria"
-                      : "🏦 Mercado Pago - Billetera Digital"}
+                    {selectedPayment === "venti" ? (
+                      <Text>
+                        <Text accessibilityElementsHidden>💳</Text> Venti - Transferencia Bancaria
+                      </Text>
+                    ) : (
+                      <Text>
+                        <Text accessibilityElementsHidden>🏦</Text> Mercado Pago - Billetera Digital
+                      </Text>
+                    )}
                   </Text>
                 </View>
 

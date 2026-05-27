@@ -15,7 +15,7 @@ describe("PaymentMethodSelector accessibility", () => {
     );
     expect(mercadoPago.props.accessibilityRole).toBe("radio");
     expect(mercadoPago.props.accessibilityState).toEqual({
-      selected: true,
+      checked: true,
       disabled: undefined,
     });
 
@@ -24,7 +24,7 @@ describe("PaymentMethodSelector accessibility", () => {
     );
     expect(venti.props.accessibilityRole).toBe("radio");
     expect(venti.props.accessibilityState).toEqual({
-      selected: false,
+      checked: false,
       disabled: true,
     });
 
