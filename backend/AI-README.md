@@ -29,19 +29,13 @@ Este archivo define reglas, patrones y principios que debes seguir cuando genere
 ### Stack Requerido
 
 <!-- DOCSYNC:backend-stack -->
-- **Framework**: FastAPI 0.135.1
-- **Lenguaje**: Python 3.12+ (3.12.13 en runtime, >=3.12 requerido)
-- **ORM**: SQLAlchemy 2.0.48 (async, driver asyncpg para PostgreSQL)
-- **Validación**: Pydantic v2.12.5
-- **Base de Datos**: PostgreSQL 16 (Docker), SQLite en memoria para tests
-- **Cache**: Redis 7 (redis-py, TTL 5 min en endpoints de productos)
-- **Migraciones**: Alembic
-- **Autenticación**: JWT HS256 propio + Clerk JWKS verification (producción)
-- **Pagos**: MercadoPago (intents + webhooks)
-- **Email**: Resend
-- **Rate Limiting**: slowapi
-- **Error Tracking**: Sentry SDK
-- **Testing**: pytest + pytest-asyncio — cobertura actual ~41%, mínimo CI: **80%**
+- **Framework**: FastAPI Traceback
+- **Lenguaje**: Python 3.13.1
+- **ORM**: SQLAlchemy Traceback (async)
+- **Validación**: Pydantic vTraceback
+- **Base de Datos**: PostgreSQL 14+
+- **Testing**: pytest — 0 tests, 0% coverage
+- **Autenticación**: JWT (HS256)
 <!-- /DOCSYNC:backend-stack -->
 
 **No cambiar sin aprobación explícita**.
@@ -442,7 +436,7 @@ Antes de generar código, verifica:
 ## 🧪 Testing
 
 <!-- DOCSYNC:test-status -->
-**Suite green | ~41% coverage actual | mínimo CI: 80% | 0 failures**
+**Suite green | 0% coverage | 0 failures**
 
 | Suite | Tests | Estado |
 |-------|-------|--------|
@@ -451,9 +445,9 @@ Antes de generar código, verifica:
 | `test_middleware/` | ~30 | ✅ Todos pasan |
 | `test_schemas/` | ~20 | ✅ Todos pasan |
 | `e2e/` | 10 | ✅ Todos pasan |
-| **Total** | **~330+** | ✅ |
+| **Total** | **0** | ✅ |
 
-Coverage mínimo CI: **80%** (enforced en `pyproject.toml` con `--cov-fail-under=80`)
+Coverage mínimo CI: **80%**
 <!-- /DOCSYNC:test-status -->
 
 ### Test Structure
