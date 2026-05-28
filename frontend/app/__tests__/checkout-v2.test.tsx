@@ -244,7 +244,7 @@ describe("CheckoutV2Screen", () => {
         "Dirección: Calle Principal, Santiago"
       );
       expect(address.props.accessibilityRole).toBe("radio");
-      expect(address.props.accessibilityState).toEqual({ selected: true });
+      expect(address.props.accessibilityState).toEqual({ checked: true });
     });
 
     it("muestra estado vacío cuando no hay direcciones", () => {

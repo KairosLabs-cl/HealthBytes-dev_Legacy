@@ -103,7 +103,7 @@ export default function DietaryPreferencesScreen() {
                       : "bg-gray-50 border-gray-200"
                   }`}
                 >
-                  <Text className="text-base">{emoji}</Text>
+                  <Text className="text-base" accessibilityElementsHidden>{emoji}</Text>
                   <Text
                     className={`text-sm font-semibold ${
                       isActive ? "text-green-700" : "text-gray-700"
