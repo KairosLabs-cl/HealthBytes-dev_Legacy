@@ -14,6 +14,12 @@
       "trigger": "on_demand"
     },
     {
+      "name": "version-bump",
+      "path": ".agents/skills/version-bump/SKILL.md",
+      "description": "Use when the user needs to change, update, or bump the app version of HealthBytes — mentions versión, version bump, subir versión, cambiar versión, release, or nueva versión.",
+      "trigger": "on_demand"
+    },
+    {
       "name": "dispatching-parallel-agents",
       "path": ".ai/skills/dispatching-parallel-agents/SKILL.md",
       "description": "Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies.",

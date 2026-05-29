@@ -3,7 +3,7 @@
     "name": "HealthBytes",
     "slug": "healthbytes",
     "scheme": "healthbytes",
-    "version": "1.0.0",
+    "version": "0.4.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",

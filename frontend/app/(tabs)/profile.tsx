@@ -2,6 +2,7 @@ import { AuthGate } from "@/components/AuthGate";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { useClerk, useUser } from "@clerk/clerk-expo";
+import Constants from "expo-constants";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import {
@@ -211,7 +212,7 @@ export default function ProfileScreen() {
 
           {/* Footer simple y limpio */}
           <View className="mt-16 mb-8 items-center">
-            <Text className="text-xs text-gray-400 mb-2">Versión 1.0.0</Text>
+            <Text className="text-xs text-gray-400 mb-2">Versión {Constants.expoConfig?.version ?? "0.4.0"}</Text>
             <Text className="text-xs text-gray-500">
               Hecho por el equipo de HealthBytes
             </Text>
