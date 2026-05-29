@@ -52,17 +52,11 @@ Si una decisión técnica complica estos puntos → **debe justificarse o descar
 
 <!-- DOCSYNC:frontend-stack -->
 - **Framework**: React Native 0.81.5
-- **Runtime**: React 19.1.0
-- **Tooling**: Expo ~54.0.33
-- **Lenguaje**: TypeScript ~5.9.2
-- **Estado local**: Zustand ^5.0.10
-- **Server state / data fetching**: TanStack React Query ^5.90.19
-- **Autenticación**: @clerk/clerk-expo ^2.19.26 (Clerk maneja tokens vía expo-secure-store)
-- **UI**: Gluestack UI (paquetes individuales @gluestack-ui/*)
-- **Theming**: NativeWind ^4.2.1 (Tailwind para React Native)
-- **Navegación**: Expo Router ~6.0.23 (file-based)
-- **Error Tracking**: @sentry/react-native ^7.2.0
-- **Testing**: Jest + RNTL — 130/130 tests, 14 suites
+- **Tooling**: Expo 54.0.33
+- **Lenguaje**: TypeScript 5.x
+- **Estado**: Zustand 5.0.10
+- **UI**: Gluestack UI
+- **Testing**: Jest — 130/130 tests, 14 suites
 <!-- /DOCSYNC:frontend-stack -->
 
 - **Fetching**: TanStack Query + fetch nativo (no axios sin permiso explícito)

@@ -267,7 +267,7 @@ function StepWelcome({ reducedMotion }: StepProps) {
       className="flex-1 justify-center items-center pb-8"
     >
       <View className="items-center mb-4">
-        <Text className="text-[80px] mb-6">🥗</Text>
+        <Text className="text-[80px] mb-6" accessibilityElementsHidden>🥗</Text>
         <Text className="text-4xl font-extrabold text-ink text-center mb-4 leading-tight">
           Bienvenido a HealthBytes
         </Text>
@@ -337,7 +337,7 @@ function DietaryTagCard({
         ]}
       >
         <View style={{ alignItems: "flex-start" }}>
-          <Text style={{ fontSize: 36, marginBottom: 12 }}>{item.emoji}</Text>
+          <Text style={{ fontSize: 36, marginBottom: 12 }} accessibilityElementsHidden>{item.emoji}</Text>
         </View>
         <View>
           <Text
@@ -428,7 +428,7 @@ function StepConfirmation({
       className="flex-1 justify-center items-center pb-12"
     >
       <View className="items-center mb-8">
-        <Text className="text-[80px] mb-6">🎉</Text>
+        <Text className="text-[80px] mb-6" accessibilityElementsHidden>🎉</Text>
         <Text className="text-4xl font-extrabold text-ink text-center mb-4 px-2">
           ¡Todo listo!
         </Text>
