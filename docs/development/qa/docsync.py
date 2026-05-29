@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Optional
 
 # ── Repo root ──────────────────────────────────────────────────────────────────
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 AUTOMATION_DIR = Path(__file__).resolve().parent
 
 

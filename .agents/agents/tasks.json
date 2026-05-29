@@ -25,12 +25,18 @@
       "id": "done",
       "title": "Done",
       "taskIds": [
+        "task-20260529-changelog-cleanup",
         "task-20260529-agent-role-routing",
         "task-20260529-product-safety-agents"
       ]
     }
   },
   "tasks": {
+    "task-20260529-changelog-cleanup": {
+      "id": "task-20260529-changelog-cleanup",
+      "content": "Limpiar duplicaciones en CHANGELOG.md y actualizar cronología de releases con versión 0.4.0",
+      "agent": "hermes-verifier"
+    },
     "task-1779486907706": {
       "id": "task-1779486907706",
       "content": "Realizar una auditoría de docs personalizados tanto readmes como contextos",
