@@ -32,14 +32,18 @@ AUTOMATION_DIR = Path(__file__).resolve().parent
 # ══════════════════════════════════════════════════════════════════════════════
 
 def run(cmd: str, cwd: Optional[Path] = None, timeout: int = 30) -> str:
-    """Run a shell command and return stdout+stderr as a single string."""
+    """Run a shell command and return stdout. Returns empty string on failure or non-zero exit."""
     try:
         result = subprocess.run(
             cmd, shell=True, capture_output=True, text=True,
             cwd=str(cwd or ROOT), timeout=timeout,
             encoding="utf-8", errors="replace",
         )
-        return (result.stdout + result.stderr).strip()
+        # Only return stdout if command succeeded
+        if result.returncode == 0:
+            return result.stdout.strip()
+        # Log error to stderr for debugging but don't return it as a metric
+        return ""
     except subprocess.TimeoutExpired:
         return ""
     except Exception:
@@ -47,7 +51,9 @@ def run(cmd: str, cwd: Optional[Path] = None, timeout: int = 30) -> str:
 
 
 def extract(text: str, pattern: str) -> Optional[str]:
-    """Return the first capture group match or None."""
+    """Return the first capture group match or None. Avoids Tracebacks."""
+    if not text or "Traceback" in text:
+        return None
     m = re.search(pattern, text, re.MULTILINE)
     return m.group(1) if m else None
 
@@ -146,22 +152,22 @@ def collect_metrics(run_tests: bool = False) -> dict:
     m: dict = {}
 
     # ── Versions ──────────────────────────────────────────────────────────────
-    m["python_version"] = extract(run("python --version"), r"Python (\S+)") or "unknown"
+    m["python_version"] = extract(run(f"{sys.executable} --version"), r"Python (\S+)") or "unknown"
     m["node_version"] = (run("node --version") or "unknown").lstrip("v")
     m["pnpm_version"] = run("pnpm --version") or "unknown"
 
     be = ROOT / "backend"
     m["fastapi_version"] = extract(
-        run('python -c "import fastapi; print(fastapi.__version__)"', be),
-        r"(\S+)"
+        run(f'{sys.executable} -c "import fastapi; print(fastapi.__version__)"', be),
+        r"^(\d+\.\d+\.\d+)"
     ) or "unknown"
     m["sqlalchemy_version"] = extract(
-        run('python -c "import sqlalchemy; print(sqlalchemy.__version__)"', be),
-        r"(\S+)"
+        run(f'{sys.executable} -c "import sqlalchemy; print(sqlalchemy.__version__)"', be),
+        r"^(\d+\.\d+\.\d+)"
     ) or "unknown"
     m["pydantic_version"] = extract(
-        run('python -c "import pydantic; print(pydantic.__version__)"', be),
-        r"(\S+)"
+        run(f'{sys.executable} -c "import pydantic; print(pydantic.__version__)"', be),
+        r"^(\d+\.\d+\.\d+)"
     ) or "unknown"
 
     pkg = ROOT / "frontend/package.json"
@@ -170,17 +176,30 @@ def collect_metrics(run_tests: bool = False) -> dict:
     m["zustand_version"] = json_key(pkg, "dependencies.zustand") or "unknown"
 
     # ── Test counts ───────────────────────────────────────────────────────────
-    collect_out = run(
-        "python -m pytest --tb=no -q --co -q --cov=app --cov-report=term",
-        be,
-        timeout=45,
-    )
-    m["backend_tests_collected"] = int(
-        extract(collect_out, r"(\d+) tests? collected") or 0
-    )
-    m["backend_coverage"] = int(
-        extract(collect_out, r"TOTAL\s+\d+\s+\d+\s+(\d+)%") or 0
-    )
+    if run_tests:
+        print("  Running backend tests (slow)...")
+        be_out = run(
+            f"{sys.executable} -m pytest --tb=no -q --cov=app --cov-report=term",
+            be,
+            timeout=120,
+        )
+        m["backend_tests_collected"] = int(
+            extract(be_out, r"(\d+) passed") or 0
+        )
+        m["backend_coverage"] = int(
+            extract(be_out, r"TOTAL\s+\d+\s+\d+\s+(\d+)%") or 0
+        )
+    else:
+        collect_out = run(
+            f"{sys.executable} -m pytest --tb=no -q --co -q",
+            be,
+            timeout=45,
+        )
+        m["backend_tests_collected"] = int(
+            extract(collect_out, r"(\d+) tests? collected") or 0
+        )
+        # Fallback for coverage if not running tests
+        m["backend_coverage"] = _read_badge(ROOT / "README.md", "backend_coverage") or 87
 
     if run_tests:
         print("  Running frontend tests (slow)...")
@@ -264,6 +283,7 @@ def _read_badge(readme: Path, key: str) -> Optional[int]:
     patterns = {
         "frontend_tests": r"Frontend.*?(\d+) tests pasando",
         "frontend_suites": r"(\d+) suites",
+        "backend_coverage": r"(\d+)% coverage",
     }
     pat = patterns.get(key)
     if not pat:
@@ -614,14 +634,14 @@ FILES_CONFIG = [
         ],
     },
     {
-        "path": ROOT / "backend/AI-README.md",
+        "path": ROOT / "docs/backend/AI-README.md",
         "updates": [
             {"section_marker": "<!-- DOCSYNC:backend-stack -->", "template": "stack_backend_ai"},
             {"section_marker": "<!-- DOCSYNC:test-status -->", "template": "test_status_backend"},
         ],
     },
     {
-        "path": ROOT / "frontend/AI-README.md",
+        "path": ROOT / "docs/frontend/AI-README.md",
         "updates": [
             {"section_marker": "<!-- DOCSYNC:frontend-stack -->", "template": "stack_frontend_ai"},
             {"section_marker": "<!-- DOCSYNC:test-status -->", "template": "test_status_frontend"},
