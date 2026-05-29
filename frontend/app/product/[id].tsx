@@ -261,7 +261,7 @@ export default function ProductDetailsScreen() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const { data: rating } = useQuery({
+  const { data: rating, refetch: refetchRating } = useQuery({
     queryKey: ["product-rating", id],
     queryFn: () => getProductRating(Number(id)),
     enabled: !!id,
@@ -277,11 +277,7 @@ export default function ProductDetailsScreen() {
     enabled: !!id,
   });
 
-  const { refetch: refetchRating } = useQuery({
-    queryKey: ["product-rating", id],
-    queryFn: () => getProductRating(Number(id)),
-    enabled: false,
-  });
+  // Duplicate product-rating query removed to prevent redundant cache observers and double re-renders
 
   const [reviewModalVisible, setReviewModalVisible] = useState(false);
   const [cartFeedback, setCartFeedback] = useState<string | null>(null);

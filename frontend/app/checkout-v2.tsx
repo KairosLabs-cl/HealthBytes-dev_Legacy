@@ -259,7 +259,7 @@ export default function CheckoutV2Screen() {
                         accessibilityHint="Selecciona esta dirección para el envío"
                         accessibilityRole="radio"
                         accessibilityState={{
-                          selected: selectedAddress?.id === address.id,
+                          checked: selectedAddress?.id === address.id,
                         }}
                       >
                         <HStack className="items-start justify-between">

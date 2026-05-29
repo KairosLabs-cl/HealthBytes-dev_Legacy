@@ -31,6 +31,13 @@ api/v1/ (routers)  →  services/  →  db/models/
 - Never hardcode credentials or URLs — use `app/config.py` (Pydantic BaseSettings)
 - Never trust client-provided prices — always fetch from DB
 
+## Product and food-safety rules
+- Treat dietary restrictions, allergies, intolerances, diagnoses, minutas, and meal-plan notes as sensitive data.
+- Product eligibility must come from authoritative backend data: ingredients, nutrition facts, labels, restriction tags, or reviewed sources.
+- Never infer "safe", "compatible", or "recommended" from missing or client-provided data.
+- Services must preserve why a product matches or is excluded when building recommendations, filters, carts, or meal-plan support.
+- Any health or nutrition claim stored or returned by the API must have a clear source field or be marked as unverified.
+
 ## Testing
 - Tests live in `backend/tests/`
 - Use SQLite in-memory (MockAsyncSession in `tests/conftest.py`)
@@ -56,3 +63,5 @@ Always read existing files before modifying. Never modify `main.py` or `config.p
 If a task is NOT explicitly listed in the `.ai/agents/tasks.json` file (which acts as our Kanban dashboard system), do NOT execute it. Instead:
 - Suggest: "Hey, we can do this, what do you think?"
 - Send an exclamation stating: "Hey, we are missing this/that."
+- Do NOT create, suggest, or leave a PR/branch for unlisted work.
+- Do NOT open PRs with no material file changes; report the missing task or failed validation instead.

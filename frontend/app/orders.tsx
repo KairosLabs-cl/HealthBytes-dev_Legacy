@@ -13,7 +13,7 @@ import { useAuth } from "@clerk/clerk-expo";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { AlertCircle, Package } from "lucide-react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import {
   FlatList,
   Pressable,
@@ -135,6 +135,14 @@ const OrdersListHeader = React.memo(function OrdersListHeader({
   );
 });
 OrdersListHeader.displayName = "OrdersListHeader";
+const FILTERS = [
+  { id: "all", label: "Todas" },
+  { id: "unpaid", label: "Sin pagar" },
+  { id: "processing", label: "En proceso" },
+  { id: "shipped", label: "Enviado" },
+  { id: "delivered", label: "Entregado" },
+  { id: "returns", label: "Devolución" },
+] as const;
 
 export default function OrdersScreen() {
   const router = useRouter();
@@ -190,14 +198,7 @@ export default function OrdersScreen() {
     }
   );
 
-  const filters = [
-    { id: "all", label: "Todas" },
-    { id: "unpaid", label: "Sin pagar" },
-    { id: "processing", label: "En proceso" },
-    { id: "shipped", label: "Enviado" },
-    { id: "delivered", label: "Entregado" },
-    { id: "returns", label: "Devolución" },
-  ] as const;
+  // FILTERS is now defined statically outside the component to prevent recreation on every render
 
   useEffect(() => {
     if (!isSignedIn || !isLoaded) return;
@@ -282,7 +283,7 @@ export default function OrdersScreen() {
   // memo component to prevent the FlatList from unmounting the header.
   const listHeader = (
     <OrdersListHeader
-      filters={filters}
+      filters={FILTERS}
       selectedFilter={selectedFilter}
       onFilterPress={handleFilterPress}
       filteredOrderCount={filteredOrders.length}
@@ -326,7 +327,40 @@ export default function OrdersScreen() {
           )}
         </Pressable>
       </View>
-    ) : null;
+    );
+  }, [isLoading, hasMore, selectedFilter, isLoadingMore, getToken, loadMoreOrders]);
+
+  if (!isLoading && selectedFilter === "all" && orders.length === 0) {
+    return (
+      <View className="flex-1 bg-white">
+        <StatusBar style="dark" />
+        <Stack.Screen options={{ headerShown: false }} />
+        <ScreenHeader
+          title="Mis órdenes"
+          icon={Package}
+          showBackButton={true}
+        />
+        <View className="flex-1 items-center justify-center px-6">
+          <Icon as={Package} size="xl" className="text-gray-300 mb-4" />
+          <Text className="text-xl font-semibold text-black mb-2">
+            No hay órdenes todavía
+          </Text>
+          <Text className="text-center text-gray-600 mb-6">
+            Cuando hagas tu primera compra, aparecerá aquí el historial de todos
+            tus pedidos.
+          </Text>
+          <Button
+            onPress={() => router.replace("/")}
+            className="bg-black rounded-full"
+            accessibilityRole="button"
+            accessibilityLabel="Ver productos"
+          >
+            <ButtonText className="text-white">Ver productos</ButtonText>
+          </Button>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <AuthGate message="Inicia sesion para ver el historial de tus pedidos.">

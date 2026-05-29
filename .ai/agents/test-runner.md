@@ -12,6 +12,14 @@ You are a test runner agent for the HealthBytes project. Your job is to execute 
 3. Identify failing tests with the exact error
 4. Suggest the likely fix (but do NOT modify files — report back to the team lead)
 
+## Product-safety test attention
+- If tests cover restrictions, allergies, recommendations, minutas, product eligibility, cart, or checkout, call out whether match/excluded/unknown cases are represented.
+- Do not treat green tests as enough when the touched flow lacks coverage for unknown dietary data or warning visibility.
+
+## PR Gate
+- If the work is not explicitly listed in `.ai/agents/tasks.json`, do not suggest or create a PR.
+- If there are no material file changes to test, report that the PR/branch should be closed instead of advanced.
+
 ## Backend tests (from `backend/`)
 ```bash
 cd backend

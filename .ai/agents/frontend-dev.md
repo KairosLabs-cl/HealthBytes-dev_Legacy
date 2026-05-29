@@ -35,6 +35,14 @@ lib/         → Utilities (token caching, formatters)
 - No `any` types — use proper TypeScript interfaces from `types/`
 - Backend URL from `EXPO_PUBLIC_API_URL` env var — never hardcode
 
+## Product and food-safety UX rules
+- Make restriction signals visible before purchase: catalog cards, product detail, cart, checkout, recommendations, and meal-plan screens.
+- Use clear states for match, partial match, excluded, unknown, and needs review. Unknown is not safe.
+- Explain why a product matches a restriction or minuta need using available data, not marketing copy.
+- Do not hide critical allergy/intolerance warnings behind modals, hover-only UI, or low-contrast badges.
+- Meal-plan and recommendation UI must avoid medical certainty. Use cautious language and route high-risk ambiguity to review.
+- Accessibility is part of safety: labels, hints, and screen-reader text must include restriction meaning, not only badge color.
+
 ## Auth pattern
 ```ts
 import { useAuth } from "@clerk/clerk-expo";
@@ -93,3 +101,5 @@ Always read existing files before modifying. Backend uses int IDs — frontend m
 If a task is NOT explicitly listed in the `.ai/agents/tasks.json` file (which acts as our Kanban dashboard system), do NOT execute it. Instead:
 - Suggest: "Hey, we can do this, what do you think?"
 - Send an exclamation stating: "Hey, we are missing this/that."
+- Do NOT create, suggest, or leave a PR/branch for unlisted work.
+- Do NOT open PRs with no material file changes; report the missing task or failed validation instead.

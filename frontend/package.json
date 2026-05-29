@@ -110,8 +110,7 @@
       "brace-expansion": "~5.0.6",
       "yaml": "~2.8.3",
       "@tootallnate/once": "~3.0.1",
-      "@clerk/types": "4.101.20",
-      "@clerk/shared>js-cookie": "3.0.6"
+      "@clerk/types": "4.101.20"
     },
     "ignoredBuiltDependencies": [
       "@clerk/shared",
