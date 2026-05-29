@@ -24,7 +24,10 @@
     "done": {
       "id": "done",
       "title": "Done",
-      "taskIds": []
+      "taskIds": [
+        "task-20260529-agent-role-routing",
+        "task-20260529-product-safety-agents"
+      ]
     }
   },
   "tasks": {
@@ -47,6 +50,16 @@
       "id": "task-1779486907711",
       "content": "Ejecutar tests End-to-End de flujos críticos",
       "agent": "healthbytes-qa"
+    },
+    "task-20260529-agent-role-routing": {
+      "id": "task-20260529-agent-role-routing",
+      "content": "Actualizar AGENTS.md y .ai/router.json para que los roles agent:* se resuelvan a perfiles ejecutables",
+      "agent": "hermes-verifier"
+    },
+    "task-20260529-product-safety-agents": {
+      "id": "task-20260529-product-safety-agents",
+      "content": "Actualizar agentes y docs IA para mejorar decisiones de producto y seguridad alimentaria en HealthBytes",
+      "agent": "hermes-verifier"
     }
   },
   "columnOrder": [

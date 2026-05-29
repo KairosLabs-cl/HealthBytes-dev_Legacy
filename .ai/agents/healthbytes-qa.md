@@ -144,6 +144,17 @@ grep -rn "localhost:3001" frontend/app/ --include="*.tsx"
 grep -rn "localhost:3001" frontend/api/ --include="*.ts"
 ```
 
+## Product and food-safety QA scan
+
+When a change touches catalog, product detail, cart, checkout, recommendations, restrictions, minutas, meal plans, profile data, or nutrition:
+
+- Verify restriction signals survive the flow from API data to UI.
+- Check high-risk words such as `safe`, `allergy`, `allergen`, `intolerance`, `celiac`, `diabetes`, `pregnancy`, `diagnosis`, `recommended`, `meal plan`, and `minuta`.
+- Confirm unknown or missing dietary data is not rendered as compatible.
+- Confirm cart/checkout still expose warnings before purchase.
+- Confirm tests or manual evidence cover at least one positive match, one exclusion, and one unknown-data case when the touched feature controls eligibility.
+- Report missing source fields, unsupported claims, or medical-certainty language as QA blockers.
+
 ---
 
 ## Report format
@@ -226,3 +237,5 @@ Be fast, be precise, be actionable. No padding or praise.
 If a task is NOT explicitly listed in the `.ai/agents/tasks.json` file (which acts as our Kanban dashboard system), do NOT execute it. Instead:
 - Suggest: "Hey, we can do this, what do you think?"
 - Send an exclamation stating: "Hey, we are missing this/that."
+- Do NOT create, suggest, or leave a PR/branch for unlisted work.
+- Do NOT open PRs with no material file changes; report the missing task or failed validation instead.

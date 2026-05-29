@@ -138,25 +138,129 @@
   "agents": [
     {
       "name": "backend-dev",
-      "path": ".ai/agents/backend-dev.md"
+      "path": ".ai/agents/backend-dev.md",
+      "description": "Executable backend implementation agent for FastAPI, SQLAlchemy, services, schemas, routers, backend tests, and source-backed dietary eligibility data.",
+      "roles": ["agent:architecture", "agent:security"],
+      "jules_prompt": ".ai/agents/jules/backend-dev-prompt.md",
+      "task_gate": ".ai/agents/tasks.json"
     },
     {
       "name": "code-reviewer",
-      "path": ".ai/agents/code-reviewer.md"
+      "path": ".ai/agents/code-reviewer.md",
+      "description": "Executable review agent for correctness, security, architecture, product trust, food-safety claims, conventions, and PR readiness.",
+      "roles": [
+        "agent:producto",
+        "agent:ux",
+        "agent:ui",
+        "agent:accessibility",
+        "agent:security",
+        "agent:architecture",
+        "agent:docs"
+      ],
+      "jules_prompt": ".ai/agents/jules/code-reviewer-prompt.md",
+      "task_gate": ".ai/agents/tasks.json"
     },
     {
       "name": "frontend-dev",
-      "path": ".ai/agents/frontend-dev.md"
+      "path": ".ai/agents/frontend-dev.md",
+      "description": "Executable frontend implementation agent for Expo, React Native, components, screens, stores, API clients, restriction-aware UI, UX, and accessibility fixes.",
+      "roles": ["agent:ux", "agent:ui", "agent:accessibility", "agent:architecture"],
+      "jules_prompt": ".ai/agents/jules/frontend-dev-prompt.md",
+      "task_gate": ".ai/agents/tasks.json"
     },
     {
       "name": "healthbytes-qa",
-      "path": ".ai/agents/healthbytes-qa.md"
+      "path": ".ai/agents/healthbytes-qa.md",
+      "description": "Executable QA agent for full backend/frontend verification, CI evidence, architecture scans, restriction-flow checks, and smoke-test reporting.",
+      "roles": ["agent:qa"],
+      "jules_prompt": ".ai/agents/jules/healthbytes-qa-prompt.md",
+      "task_gate": ".ai/agents/tasks.json"
     },
     {
       "name": "test-runner",
-      "path": ".ai/agents/test-runner.md"
+      "path": ".ai/agents/test-runner.md",
+      "description": "Executable test agent for focused pytest, Jest, type-check, lint, dietary edge-case coverage, and failure triage.",
+      "roles": ["agent:qa"],
+      "jules_prompt": ".ai/agents/jules/test-runner-prompt.md",
+      "task_gate": ".ai/agents/tasks.json"
+    },
+    {
+      "name": "hermes-verifier",
+      "path": ".ai/agents/hermes-verifier.md",
+      "description": "Executable final verifier for product truth, docs consistency, source-backed claims, task evidence, and PR gate validation.",
+      "roles": ["agent:docs", "agent:qa", "agent:architecture"],
+      "jules_prompt": ".ai/agents/jules/hermes-verifier-prompt.md",
+      "task_gate": ".ai/agents/tasks.json"
     }
   ],
+  "roleLabels": [
+    {
+      "label": "agent:producto",
+      "primary_agent": "code-reviewer",
+      "prompt_section": "Perfil: Producto",
+      "mode": "review"
+    },
+    {
+      "label": "agent:ux",
+      "primary_agent": "frontend-dev",
+      "review_agent": "code-reviewer",
+      "prompt_section": "Perfil: UX",
+      "mode": "review_or_implementation"
+    },
+    {
+      "label": "agent:ui",
+      "primary_agent": "frontend-dev",
+      "review_agent": "code-reviewer",
+      "prompt_section": "Perfil: UI Visual",
+      "mode": "review_or_implementation"
+    },
+    {
+      "label": "agent:accessibility",
+      "primary_agent": "frontend-dev",
+      "review_agent": "code-reviewer",
+      "prompt_section": "Perfil: Accesibilidad",
+      "mode": "review_or_implementation"
+    },
+    {
+      "label": "agent:security",
+      "primary_agent": "code-reviewer",
+      "implementation_agents": ["backend-dev", "frontend-dev"],
+      "prompt_section": "Perfil: Seguridad",
+      "mode": "review_or_implementation"
+    },
+    {
+      "label": "agent:architecture",
+      "primary_agent": "backend-dev",
+      "implementation_agents": ["backend-dev", "frontend-dev"],
+      "review_agent": "code-reviewer",
+      "prompt_section": "Perfil: Arquitectura E Ingenieria",
+      "mode": "review_or_implementation"
+    },
+    {
+      "label": "agent:qa",
+      "primary_agent": "healthbytes-qa",
+      "focused_agent": "test-runner",
+      "prompt_section": "Perfil: QA Y CI",
+      "mode": "verification"
+    },
+    {
+      "label": "agent:docs",
+      "primary_agent": "hermes-verifier",
+      "review_agent": "code-reviewer",
+      "prompt_section": "Perfil: Documentacion Y Knowledge Base",
+      "mode": "review_or_verification"
+    }
+  ],
+  "domainDecisionRules": {
+    "healthbytes_product_safety": [
+      "Treat allergies, intolerances, diagnoses, minutas, meal plans, and restriction profiles as trust-sensitive product work.",
+      "Never infer safe, compatible, or recommended from missing, weak, or client-provided data.",
+      "Dietary and nutrition claims need source-backed product data or an explicit unverified/unknown state.",
+      "Keep restriction warnings visible in catalog, product detail, cart, checkout, recommendations, and meal-plan flows.",
+      "Avoid medical-certainty language; HealthBytes can support choices, not diagnose or guarantee outcomes.",
+      "Protect restriction, diagnosis, minuta, and meal-plan data as sensitive personal data."
+    ]
+  },
   "context": [
     {
       "name": "bolt",
