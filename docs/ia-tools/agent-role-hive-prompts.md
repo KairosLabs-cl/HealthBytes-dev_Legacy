@@ -19,6 +19,7 @@ Esta guia define un sistema de trabajo para agentes IA especializados que operan
 6. Seguridad, pagos, auth, permisos, datos sensibles y env siempre requieren revision de seguridad.
 7. UI y UX no son lo mismo: UX evalua flujo, tarea y comprension; UI evalua jerarquia visual, consistencia y ejecucion de interfaz.
 8. Accesibilidad es un criterio propio, no un subtitulo cosmetico de UI.
+9. Restricciones alimentarias, alergias, intolerancias, minutas, planes y recomendaciones son trabajo de confianza: requieren producto, seguridad y QA cuando cambian elegibilidad o mensajes de seguridad.
 
 ## Canvas de Evaluacion
 
@@ -45,12 +46,14 @@ Checks observados:
 - Tests/checks:
 - Docs:
 - Pantallas/flujo:
+- Evidencia de claims/restricciones:
 - Riesgos relacionados:
 
 ## Puntajes
 - Valor funcional: 1-10
 - Calidad de implementacion: 1-10
 - Seguridad al aceptar: 1-10
+- Claridad de confianza alimentaria: 1-10 / no aplica
 - Riesgo de regresion: bajo / medio / alto
 - Frescura del cambio: vigente / stale / duplicado / desconocido
 
@@ -159,6 +162,62 @@ reason:security-review
 reason:stale-snapshot
 ```
 
+## Mapa De Roles Ejecutables
+
+Los labels `agent:*` describen una especialidad. Para que sean ejecutables por
+Jules, Codex, OpenCode u otra herramienta, deben resolverse contra
+`.ai/router.json` y cargar el perfil correspondiente en `.ai/agents/`.
+
+| Label | Perfil principal | Perfil de apoyo | Uso |
+| --- | --- | --- | --- |
+| `agent:producto` | `code-reviewer` | - | Revisar valor funcional con el prompt `Perfil: Producto`. |
+| `agent:ux` | `frontend-dev` | `code-reviewer` | Implementar o revisar flujo, labels, estados y friccion. |
+| `agent:ui` | `frontend-dev` | `code-reviewer` | Implementar o revisar jerarquia visual, consistencia y estados. |
+| `agent:accessibility` | `frontend-dev` | `code-reviewer` | Implementar o revisar semantica, labels, hints, targets y lectores. |
+| `agent:security` | `code-reviewer` | `backend-dev`, `frontend-dev` | Revisar riesgos; implementar fixes en el stack tocado. |
+| `agent:architecture` | `backend-dev` | `frontend-dev`, `code-reviewer` | Mantener boundaries backend/frontend y estructura. |
+| `agent:qa` | `healthbytes-qa` | `test-runner` | Ejecutar validacion completa o pruebas enfocadas. |
+| `agent:docs` | `hermes-verifier` | `code-reviewer` | Verificar verdad documental, vigencia y navegacion. |
+
+Reglas de activacion:
+
+1. Si un item del Kanban trae `agent:*`, primero buscar el label en
+   `.ai/router.json`.
+2. Cargar el archivo `.ai/agents/<perfil>.md` del perfil principal antes de
+   actuar.
+3. Si el label es de implementacion y el cambio toca ambos stacks, usar los
+   perfiles de apoyo por stack.
+4. Si se ejecuta en Jules, cargar el wrapper en `.ai/agents/jules/` y luego el
+   perfil real indicado por ese wrapper.
+5. Si no existe mapeo para un label, detener el trabajo y actualizar
+   `.ai/router.json` antes de usarlo.
+
+## Canvas Producto Restrictivo Y Seguridad Alimentaria
+
+Usar este bloque adicional cuando el item toca catalogo, ingredientes,
+nutricion, filtros, restricciones, alergias, intolerancias, minutas,
+recomendaciones, perfil de salud, carrito o checkout.
+
+```md
+## Producto Restrictivo / Seguridad Alimentaria
+- Restricciones afectadas:
+- Datos usados para decidir compatibilidad:
+- Fuente de ingredientes/nutricion/claims:
+- Estado de incertidumbre: claro / ambiguo / no tratado
+- Riesgo para usuario si el dato esta mal:
+- Donde se ve la advertencia: catalogo / detalle / carrito / checkout / plan
+- Lenguaje medico o promesa de seguridad: si / no
+- Roles requeridos: producto, seguridad, qa, ux si toca flujo visible
+```
+
+Reglas:
+
+- `unknown` no equivale a compatible.
+- Un sustituto debe calzar por restriccion relevante, no solo por categoria.
+- Claims de salud o nutricion sin fuente son condicion de `modify`.
+- Warnings escondidos en checkout, bajo contraste o solo por color son bloqueo.
+- Si la PR toca minutas o planes, prohibir tono de diagnostico medico.
+
 ## Reglas De Cierre Rapido
 
 Cerrar o marcar `decision:close` cuando se cumpla una de estas condiciones:
@@ -194,6 +253,8 @@ Evaluar si el cambio resuelve un problema real del negocio, del usuario o del fl
 - Impacto en compra, busqueda, checkout, confianza, retencion o soporte.
 - Si el cambio aporta a dietary restrictions, sellers, pagos, ordenes o recomendaciones.
 - Si hay una metrica o senal observable de valor.
+- Si mejora o empeora la confianza del usuario con restricciones alimentarias.
+- Si las recomendaciones, sustitutos o minutas explican por que calzan y que datos usan.
 
 ### Prompt
 
@@ -207,6 +268,7 @@ Reglas:
 - Penaliza cambios duplicados, snapshots stale, micro-optimizaciones sin medicion y docs generadas sin impacto.
 - Si hay valor pero la ejecucion es mala, recomienda `rescue`.
 - Si toca checkout, pagos, auth, restricciones alimentarias o ordenes, exige evidencia mas fuerte.
+- Si toca alergias, intolerancias, minutas, planes o recomendaciones, exige fuente de claims y manejo de incertidumbre.
 
 Entrega solo el Agent Review Canvas completo.
 ```
@@ -315,6 +377,7 @@ Evaluar riesgo de aceptar cambios que toquen auth, permisos, pagos, secretos, da
 - Pagos y webhooks.
 - Validacion de inputs.
 - Logs de errores y datos personales.
+- Restricciones alimentarias, diagnosticos, minutas, planes, perfil de salud y notas del usuario como datos sensibles.
 - Dependencias y lockfile.
 - Checks: SAST, secret scan, dependency audit.
 
@@ -327,6 +390,7 @@ Evalua este item como si pudiera llegar a produccion. Revisa diff, archivos toca
 
 Reglas:
 - Si toca auth, pagos, webhooks, roles, tokens, env o dependencias, exige evidencia fuerte.
+- Si toca datos de salud, restricciones, minutas o recomendaciones, exige minimizacion de datos, no logging sensible y acceso autorizado.
 - Penaliza logs con emails, tokens, passwords, payloads sensibles o errores demasiado verbosos.
 - Revisa que endpoints no se expongan sin autenticacion salvo `/health` y `/docs`.
 - Si no hay impacto de seguridad, indica por que.
@@ -447,6 +511,7 @@ Para cada item entrega:
 Reglas:
 - No hagas review profunda si el item cumple reglas de cierre rapido.
 - Si toca pagos/auth/permisos/env/dependencias, incluye siempre seguridad.
+- Si toca restricciones alimentarias, alergias, intolerancias, minutas, meal plans o recomendaciones, incluye producto, seguridad y QA.
 - Si toca pantallas o componentes, incluye UX o UI segun corresponda.
 - Si toca labels, roles, hitSlop o readers, incluye accesibilidad.
 - Si toca tests/checks/scripts, incluye QA/CI.
