@@ -76,13 +76,13 @@ export function PaymentMethodSelector({
                 : "Selecciona este método de pago"
             }
             accessibilityState={{
-              selected: selected === method.id,
-              disabled: method.disabled,
+              checked: selected === method.id,
+              disabled: !!method.disabled,
             }}
           >
             <HStack className="items-center justify-between">
               <HStack className="flex-1 items-center">
-                <Text className="text-3xl mr-3">{method.icon}</Text>
+                <Text className="text-3xl mr-3" accessibilityElementsHidden>{method.icon}</Text>
                 <View className="flex-1">
                   <HStack className="items-center">
                     <Text className="text-lg font-bold text-ink">
