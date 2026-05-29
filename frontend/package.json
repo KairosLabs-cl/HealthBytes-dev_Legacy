@@ -18,9 +18,10 @@
     "test:coverage": "jest --coverage",
     "clean": "bash ./start.sh --clear",
     "prebuild": "pnpm run type-check",
-    "build:android:preview": "eas build --platform android --profile preview",
-    "build:android:production": "eas build --platform android --profile production",
-    "build:android:local": "expo prebuild && cd android && ./gradlew assembleRelease"
+    "build:android:preview": "npx eas-cli build --platform android --profile preview",
+    "build:android:production": "npx eas-cli build --platform android --profile production",
+    "build:android:local": "expo prebuild && cd android && ./gradlew assembleRelease",
+    "build:android:development": "npx eas-cli build --platform android --profile development"
   },
   "dependencies": {
     "@clerk/clerk-expo": "2.19.36",
@@ -44,6 +45,7 @@
     "expo-auth-session": "~7.0.10",
     "expo-constants": "~18.0.13",
     "expo-crypto": "~15.0.8",
+    "expo-dev-client": "~6.0.21",
     "expo-device": "^8.0.10",
     "expo-font": "^14.0.11",
     "expo-haptics": "^15.0.8",
