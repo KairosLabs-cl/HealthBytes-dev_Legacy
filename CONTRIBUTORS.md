@@ -10,10 +10,10 @@ De acuerdo con nuestras políticas del repositorio, los colaboradores listados a
 
 | Colaborador | Usuario GitHub | Ramas Fusionadas | Rol / Contribuciones Principales |
 | :--- | :--- | :---: | :--- |
-| **Benjamin Zamora** | [@nojustbenja](https://github.com/nojustbenja) | **43** | Liderazgo Técnico, Arquitectura del Sistema (FastAPI/Zustand), Integración de Pagos y Seguridad. |
-| **Guillermo Serrano** | [@GuillermoSerrano132](https://github.com/GuillermoSerrano132) | **8** | Desarrollo Frontend, Vistas del E-commerce, Refactorización y Pruebas Unitarias. |
-| **José** | [@chachoCL](https://github.com/chachoCL) | **4** | Rutas de Autenticación, Middleware del Backend y Reforzamiento de Seguridad. |
-| **Basty001** | [@Basty001](https://github.com/Basty001) | **3** | Componentes de la Interfaz del Frontend, Limpieza de TypeScript y Validación de Formularios. |
+| **Benjamin Zamora** | [@nojustbenja](https://github/nojustbenja) | **43** | Liderazgo Técnico, Arquitectura del Sistema (FastAPI/Zustand), Integración de Pagos y Seguridad. |
+| **Guillermo Serrano** | [@GuillermoSerrano132](https://github/GuillermoSerrano132) | **8** | Desarrollo Frontend, Vistas del E-commerce, Refactorización y Pruebas Unitarias. |
+| **José** | [@chachoCL](https://github/chachoCL) | **5** | Rutas de Autenticación, Middleware del Backend y Reforzamiento de Seguridad. |
+| **Basty001** | [@Basty001](https://github/Basty001) | **3** | Componentes de la Interfaz del Frontend, Limpieza de TypeScript y Validación de Formularios. |
 
 ---
 

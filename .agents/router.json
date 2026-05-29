@@ -139,6 +139,12 @@
       "description": "PostgreSQL-specific patterns for database design, optimization, and transaction management.",
       "trigger": "postgres_work",
       "alias_for": "supabase-postgres-best-practices"
+    },
+    {
+      "name": "contributors-generator",
+      "path": ".agents/skills/contributors-generator/SKILL.md",
+      "description": "Automatically generates and updates the CONTRIBUTORS.md file by analyzing git merge history, identifying authors who have merged at least 2 branches, and formatting the output beautifully.",
+      "trigger": "on_demand"
     }
   ],
   "agents": [
