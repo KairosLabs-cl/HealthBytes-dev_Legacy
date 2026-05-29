@@ -133,7 +133,7 @@ const GuestBanner = React.memo(() => {
 
   return (
     <View className="mx-4 mt-3 bg-green-50 border border-green-100 rounded-2xl px-4 py-3 flex-row items-center gap-3">
-      <Text className="text-2xl">{"\u{1F957}"}</Text>
+      <Text className="text-2xl" accessibilityElementsHidden>{"\u{1F957}"}</Text>
       <Text className="text-xs font-medium text-green-900 flex-1">
         Inicia sesión para ver productos personalizados
       </Text>

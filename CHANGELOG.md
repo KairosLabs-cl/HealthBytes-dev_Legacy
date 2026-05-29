@@ -4,6 +4,276 @@
 > Para revisión humana antes de cada release, editar esta sección si es necesario.
 
 <!-- DOCSYNC:changelog-body -->
+## [2026-05-29] — Snapshot automático
+
+> Generado por `docsync.py` | 17 commits en los últimos 7 días
+> Tests totales: **636** | Coverage backend: **87%** | Endpoints API: **53**
+
+### Features
+  - feat: implement Jules agent management dashboard with status tracking and dynamic prompt creation, plus update Kanban task structure
+  - feat: initialize Jules agent system prompts and remove Kanban dashboard restrictions from individual agent configurations
+  - feat(security): implement Refresh Token Rotation and infrastructure hardening
+  - feat(frontend): add theme preference, push notifications, and Sentry infra
+  - feat: Mayo 2026 — Push Notifications, Reviews, Recommendations, Deep Linking, Dark Mode, A11y (#193)
+  - feat(home): Agregar sección de descuentos visuales e insignias de pro… (#158)
+  - feat(docs): update project status and audit details in README.md and docs/README.md
+  - feat(docs): centralize project status and roadmap in PROJECT_STATUS.md, update references across documentation
+  - feat(audit): add comprehensive frontend audit report for HealthBytes app, covering compliance, architecture, performance, and critical issues
+  - feat: add reviews system for products and vendors (#128)
+
+### Bug Fixes
+  - fix: apply CodeRabbit auto-fixes
+  - fix(frontend): align lockfile config and scoped js-cookie override
+  - fix(a11y): label accessibility action surfaces (#223)
+  - fix(repo): remediate hygiene issues (#206)
+  - fix(backend): repair products, addresses, users, payments API
+  - fix(frontend): restore grid layout and product detail image visibility
+  - fix(frontend): add width 100% to BottomNavBar animated wrapper on mobile
+  - fix(frontend): resolve frozen ref crash in BottomNavBar on Android
+  - fix(ci): restore safety check with continue-on-error
+  - fix(phase-3): TypeScript fixes and cleanup
+
+### Performance
+  - perf(repo): implement critical P0 performance optimizations across backend and frontend
+  - perf(home): batch product filter selectors (#221)
+  - perf(layout): batch zustand selectors with useShallow (#218)
+  - perf(cart): batch Zustand selectors
+  - perf(frontend): fix unnecessary re-renders in product detail screen
+  - perf(frontend): migrate to FlashList, expo-image caching, and remove per-card rating queries
+  - perf(frontend): prevent full-screen re-renders on favorite toggle
+  - perf(frontend): prevent HomeScreen re-renders on favorite toggle
+  - perf(frontend): optimize zustand selector in root layout
+  - perf(layout): Use granular selectors for Zustand store in root layout
+
+### Refactor
+  - refactor(a11y): improve accessibility across UI and clean backend imports
+  - refactor: standardize agent roles, formalize product safety protocols, and enforce task-based PR workflows across all AI agents
+  - refactor: improve type safety in auth API, optimize token generation code, and disable rate limiting for test suite
+  - refactor(root): reorganize misplaced scripts and extraction artifacts
+  - refactor(frontend): extract shared ProductCard and DietaryFilterBar components
+  - refactor: improve product dietary tag filtering, implement auth timing attack mitigation, and clean up temporary files and .gitignore entries.
+  - refactor(frontend): fix any types and gate debug logs with __DEV__
+  - refactor: optimize test imports and enhance profile layout with responsive design
+  - refactor(api): products router delegates business logic to service layer
+
+### Tests
+  - test(backend): add legacy model schema coverage
+  - test(products): cover discount listing
+  - test(deprecations): fix check script to ignore its own mock test file
+  - test(frontend): fix mocks for AuthGate and ScreenHeader to resolve CI failures
+  - test(backend): fix test_auth_timing comparing string with bytes for the mock hash
+  - test(backend): restore dietary tags test deleted during merge conflict resolution
+  - test(backend): add missing dietary tags filter reproduction test
+  - test(frontend): add Zustand store tests for orders, addresses, favorites
+  - test(frontend): add API client and jest env setup for 67 new tests
+  - test: add comprehensive router and schema tests to reach 85% coverage
+
+### Docs
+  - docs(ia): add weekly agent kanban for performance and de-overengineering
+  - docs(status): update project status after cleanup and security hardening
+  - docs(status): consolidate project state into PROJECT_STATUS.md
+  - docs: initialize project architecture and maintenance guides
+  - docs(ai): implement agent instructions and self-improvement skill
+  - docs: track dependency CR in agent kanban
+  - docs(ia): add role-based agent hive prompts (#219)
+  - docs: finalize sync (#196)
+  - docs(sync): auto-update metrics 2026-05-04
+  - docs(sync): auto-update metrics 2026-04-27
+
+### Chore
+  - chore(deps): merge brace-expansion bump
+  - chore(deps): merge postcss bump
+  - chore(deps): merge ws bump
+  - chore: update dependencies and regenerate node_modules lockfile
+  - chore(structure): move root docker scripts to Tools/ops/ and update docs
+  - chore(ai): unify AI context into .ai/ and remove legacy systems
+  - chore(frontend): remove unused dependency bs58
+  - chore(deps): bump ws from 8.18.3 to 8.20.1 in /frontend
+  - chore(deps): bump postcss from 8.4.49 to 8.5.14 in /frontend
+  - chore(deps): bump brace-expansion from 5.0.5 to 5.0.6 in /frontend
+
+---
+
+## [2026-05-29] — Snapshot automático
+
+> Generado por `docsync.py` | 17 commits en los últimos 7 días
+> Tests totales: **505** | Coverage backend: **87%** | Endpoints API: **53**
+
+### Features
+  - feat: implement Jules agent management dashboard with status tracking and dynamic prompt creation, plus update Kanban task structure
+  - feat: initialize Jules agent system prompts and remove Kanban dashboard restrictions from individual agent configurations
+  - feat(security): implement Refresh Token Rotation and infrastructure hardening
+  - feat(frontend): add theme preference, push notifications, and Sentry infra
+  - feat: Mayo 2026 — Push Notifications, Reviews, Recommendations, Deep Linking, Dark Mode, A11y (#193)
+  - feat(home): Agregar sección de descuentos visuales e insignias de pro… (#158)
+  - feat(docs): update project status and audit details in README.md and docs/README.md
+  - feat(docs): centralize project status and roadmap in PROJECT_STATUS.md, update references across documentation
+  - feat(audit): add comprehensive frontend audit report for HealthBytes app, covering compliance, architecture, performance, and critical issues
+  - feat: add reviews system for products and vendors (#128)
+
+### Bug Fixes
+  - fix: apply CodeRabbit auto-fixes
+  - fix(frontend): align lockfile config and scoped js-cookie override
+  - fix(a11y): label accessibility action surfaces (#223)
+  - fix(repo): remediate hygiene issues (#206)
+  - fix(backend): repair products, addresses, users, payments API
+  - fix(frontend): restore grid layout and product detail image visibility
+  - fix(frontend): add width 100% to BottomNavBar animated wrapper on mobile
+  - fix(frontend): resolve frozen ref crash in BottomNavBar on Android
+  - fix(ci): restore safety check with continue-on-error
+  - fix(phase-3): TypeScript fixes and cleanup
+
+### Performance
+  - perf(repo): implement critical P0 performance optimizations across backend and frontend
+  - perf(home): batch product filter selectors (#221)
+  - perf(layout): batch zustand selectors with useShallow (#218)
+  - perf(cart): batch Zustand selectors
+  - perf(frontend): fix unnecessary re-renders in product detail screen
+  - perf(frontend): migrate to FlashList, expo-image caching, and remove per-card rating queries
+  - perf(frontend): prevent full-screen re-renders on favorite toggle
+  - perf(frontend): prevent HomeScreen re-renders on favorite toggle
+  - perf(frontend): optimize zustand selector in root layout
+  - perf(layout): Use granular selectors for Zustand store in root layout
+
+### Refactor
+  - refactor(a11y): improve accessibility across UI and clean backend imports
+  - refactor: standardize agent roles, formalize product safety protocols, and enforce task-based PR workflows across all AI agents
+  - refactor: improve type safety in auth API, optimize token generation code, and disable rate limiting for test suite
+  - refactor(root): reorganize misplaced scripts and extraction artifacts
+  - refactor(frontend): extract shared ProductCard and DietaryFilterBar components
+  - refactor: improve product dietary tag filtering, implement auth timing attack mitigation, and clean up temporary files and .gitignore entries.
+  - refactor(frontend): fix any types and gate debug logs with __DEV__
+  - refactor: optimize test imports and enhance profile layout with responsive design
+  - refactor(api): products router delegates business logic to service layer
+
+### Tests
+  - test(backend): add legacy model schema coverage
+  - test(products): cover discount listing
+  - test(deprecations): fix check script to ignore its own mock test file
+  - test(frontend): fix mocks for AuthGate and ScreenHeader to resolve CI failures
+  - test(backend): fix test_auth_timing comparing string with bytes for the mock hash
+  - test(backend): restore dietary tags test deleted during merge conflict resolution
+  - test(backend): add missing dietary tags filter reproduction test
+  - test(frontend): add Zustand store tests for orders, addresses, favorites
+  - test(frontend): add API client and jest env setup for 67 new tests
+  - test: add comprehensive router and schema tests to reach 85% coverage
+
+### Docs
+  - docs(ia): add weekly agent kanban for performance and de-overengineering
+  - docs(status): update project status after cleanup and security hardening
+  - docs(status): consolidate project state into PROJECT_STATUS.md
+  - docs: initialize project architecture and maintenance guides
+  - docs(ai): implement agent instructions and self-improvement skill
+  - docs: track dependency CR in agent kanban
+  - docs(ia): add role-based agent hive prompts (#219)
+  - docs: finalize sync (#196)
+  - docs(sync): auto-update metrics 2026-05-04
+  - docs(sync): auto-update metrics 2026-04-27
+
+### Chore
+  - chore(deps): merge brace-expansion bump
+  - chore(deps): merge postcss bump
+  - chore(deps): merge ws bump
+  - chore: update dependencies and regenerate node_modules lockfile
+  - chore(structure): move root docker scripts to Tools/ops/ and update docs
+  - chore(ai): unify AI context into .ai/ and remove legacy systems
+  - chore(frontend): remove unused dependency bs58
+  - chore(deps): bump ws from 8.18.3 to 8.20.1 in /frontend
+  - chore(deps): bump postcss from 8.4.49 to 8.5.14 in /frontend
+  - chore(deps): bump brace-expansion from 5.0.5 to 5.0.6 in /frontend
+
+---
+
+## [2026-05-29] — Snapshot automático
+
+> Generado por `docsync.py` | 17 commits en los últimos 7 días
+> Tests totales: **636** | Coverage backend: **42%** | Endpoints API: **53**
+
+### Features
+  - feat: implement Jules agent management dashboard with status tracking and dynamic prompt creation, plus update Kanban task structure
+  - feat: initialize Jules agent system prompts and remove Kanban dashboard restrictions from individual agent configurations
+  - feat(security): implement Refresh Token Rotation and infrastructure hardening
+  - feat(frontend): add theme preference, push notifications, and Sentry infra
+  - feat: Mayo 2026 — Push Notifications, Reviews, Recommendations, Deep Linking, Dark Mode, A11y (#193)
+  - feat(home): Agregar sección de descuentos visuales e insignias de pro… (#158)
+  - feat(docs): update project status and audit details in README.md and docs/README.md
+  - feat(docs): centralize project status and roadmap in PROJECT_STATUS.md, update references across documentation
+  - feat(audit): add comprehensive frontend audit report for HealthBytes app, covering compliance, architecture, performance, and critical issues
+  - feat: add reviews system for products and vendors (#128)
+
+### Bug Fixes
+  - fix: apply CodeRabbit auto-fixes
+  - fix(frontend): align lockfile config and scoped js-cookie override
+  - fix(a11y): label accessibility action surfaces (#223)
+  - fix(repo): remediate hygiene issues (#206)
+  - fix(backend): repair products, addresses, users, payments API
+  - fix(frontend): restore grid layout and product detail image visibility
+  - fix(frontend): add width 100% to BottomNavBar animated wrapper on mobile
+  - fix(frontend): resolve frozen ref crash in BottomNavBar on Android
+  - fix(ci): restore safety check with continue-on-error
+  - fix(phase-3): TypeScript fixes and cleanup
+
+### Performance
+  - perf(repo): implement critical P0 performance optimizations across backend and frontend
+  - perf(home): batch product filter selectors (#221)
+  - perf(layout): batch zustand selectors with useShallow (#218)
+  - perf(cart): batch Zustand selectors
+  - perf(frontend): fix unnecessary re-renders in product detail screen
+  - perf(frontend): migrate to FlashList, expo-image caching, and remove per-card rating queries
+  - perf(frontend): prevent full-screen re-renders on favorite toggle
+  - perf(frontend): prevent HomeScreen re-renders on favorite toggle
+  - perf(frontend): optimize zustand selector in root layout
+  - perf(layout): Use granular selectors for Zustand store in root layout
+
+### Refactor
+  - refactor(a11y): improve accessibility across UI and clean backend imports
+  - refactor: standardize agent roles, formalize product safety protocols, and enforce task-based PR workflows across all AI agents
+  - refactor: improve type safety in auth API, optimize token generation code, and disable rate limiting for test suite
+  - refactor(root): reorganize misplaced scripts and extraction artifacts
+  - refactor(frontend): extract shared ProductCard and DietaryFilterBar components
+  - refactor: improve product dietary tag filtering, implement auth timing attack mitigation, and clean up temporary files and .gitignore entries.
+  - refactor(frontend): fix any types and gate debug logs with __DEV__
+  - refactor: optimize test imports and enhance profile layout with responsive design
+  - refactor(api): products router delegates business logic to service layer
+
+### Tests
+  - test(backend): add legacy model schema coverage
+  - test(products): cover discount listing
+  - test(deprecations): fix check script to ignore its own mock test file
+  - test(frontend): fix mocks for AuthGate and ScreenHeader to resolve CI failures
+  - test(backend): fix test_auth_timing comparing string with bytes for the mock hash
+  - test(backend): restore dietary tags test deleted during merge conflict resolution
+  - test(backend): add missing dietary tags filter reproduction test
+  - test(frontend): add Zustand store tests for orders, addresses, favorites
+  - test(frontend): add API client and jest env setup for 67 new tests
+  - test: add comprehensive router and schema tests to reach 85% coverage
+
+### Docs
+  - docs(ia): add weekly agent kanban for performance and de-overengineering
+  - docs(status): update project status after cleanup and security hardening
+  - docs(status): consolidate project state into PROJECT_STATUS.md
+  - docs: initialize project architecture and maintenance guides
+  - docs(ai): implement agent instructions and self-improvement skill
+  - docs: track dependency CR in agent kanban
+  - docs(ia): add role-based agent hive prompts (#219)
+  - docs: finalize sync (#196)
+  - docs(sync): auto-update metrics 2026-05-04
+  - docs(sync): auto-update metrics 2026-04-27
+
+### Chore
+  - chore(deps): merge brace-expansion bump
+  - chore(deps): merge postcss bump
+  - chore(deps): merge ws bump
+  - chore: update dependencies and regenerate node_modules lockfile
+  - chore(structure): move root docker scripts to Tools/ops/ and update docs
+  - chore(ai): unify AI context into .ai/ and remove legacy systems
+  - chore(frontend): remove unused dependency bs58
+  - chore(deps): bump ws from 8.18.3 to 8.20.1 in /frontend
+  - chore(deps): bump postcss from 8.4.49 to 8.5.14 in /frontend
+  - chore(deps): bump brace-expansion from 5.0.5 to 5.0.6 in /frontend
+
+---
+
 ## [2026-05-06] — Snapshot automático
 
 > Generado por `docsync.py` | 1 commits en los últimos 7 días

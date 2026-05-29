@@ -29,12 +29,12 @@ export function Header({
 
   useEffect(() => {
     const templates = [
-      "👋 Hola, {name}!",
-      "✨ ¡Qué lindo volverte a ver, {name}!",
-      "🎉 ¡Volviste, {name}!",
-      "🙌 ¡Bienvenido de nuevo, {name}!",
-      "🥗 ¿Listo para comer sano, {name}?",
-      "💚 ¡Hola de nuevo, {name}!",
+      "👋|Hola, {name}!",
+      "✨|¡Qué lindo volverte a ver, {name}!",
+      "🎉|¡Volviste, {name}!",
+      "🙌|¡Bienvenido de nuevo, {name}!",
+      "🥗|¿Listo para comer sano, {name}?",
+      "💚|¡Hola de nuevo, {name}!",
     ];
     setGreeting(templates[Math.floor(Math.random() * templates.length)]);
   }, []);
@@ -92,8 +92,9 @@ export function Header({
       ) : (
         isLoggedIn &&
         greeting && (
-          <Text className="text-lg font-bold">
-            {greeting.replace("{name}", userName)}
+          <Text className="text-lg font-bold" accessibilityRole="header">
+            <Text accessibilityElementsHidden>{greeting.split("|")[0]} </Text>
+            <Text>{greeting.split("|")[1].replace("{name}", userName)}</Text>
           </Text>
         )
       )}
