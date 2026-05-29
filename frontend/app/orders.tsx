@@ -327,8 +327,7 @@ export default function OrdersScreen() {
           )}
         </Pressable>
       </View>
-    );
-  }, [isLoading, hasMore, selectedFilter, isLoadingMore, getToken, loadMoreOrders]);
+    ) : null;
 
   if (!isLoading && selectedFilter === "all" && orders.length === 0) {
     return (
