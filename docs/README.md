@@ -16,8 +16,6 @@ Guías paso a paso para configurar el entorno de desarrollo:
 Comprende cómo está construido HealthBytes:
 - **[README.md](./architecture/README.md)** - Estructura y decisiones técnicas
 - **[architecture.md](./architecture/architecture.md)** - Arquitectura del sistema y componentes
-- **[API_DESIGN_ANALYSIS.md](./architecture/API_DESIGN_ANALYSIS.md)** - Análisis completo del REST API
-- **[04_negocio.md](./architecture/04_negocio.md)** - Auditoría de lógica de negocio y resiliencia transaccional
 
 ### ✨ [features/](./features/) - Características Implementadas
 Documentación detallada de features del proyecto:
@@ -35,14 +33,11 @@ Guías para trabajar en el código:
 - **[PROJECT_STATUS.md](./development/PROJECT_STATUS.md)** - ⭐ Estado y roadmap centralizados (fuente de verdad)
 - **[development-guide.md](./development/development-guide.md)** - Setup, comandos y flujo de contribución
 - **[testing.md](./development/testing.md)** - Infraestructura y procedimientos de testing
-- **[UIUX_ROADMAP.md](./development/UIUX_ROADMAP.md)** - Roadmap UI/UX detallado
-- **[UIUX_SYSTEM_OVERVIEW.md](./development/UIUX_SYSTEM_OVERVIEW.md)** - Overview del design system
 - **[inspections/](./development/inspections/)** - Reportes de inspección de código
 - **[inspections/01_infra.md](./development/inspections/01_infra.md)** - Auditoría de infraestructura, CI/CD y DevOps
 
 ### 📱 [frontend/](./frontend/) - Auditorías Frontend
 Reportes específicos de frontend y experiencia de usuario:
-- **[03_frontend.md](./frontend/03_frontend.md)** - Auditoría de cumplimiento y performance frontend
 - **[accessibility-audit-2026.md](./frontend/accessibility-audit-2026.md)** - Auditoría WCAG 2.2 AA de accesibilidad
 
 ### 🤖 [ia-tools/](./ia-tools/) - Prompts y Flujos Para Agentes
@@ -92,5 +87,5 @@ Guías operativas para herramientas IA y revisión automatizada:
 
 Para visualizar los flujos y arquitectura del proyecto:
 - [Diagramas técnicos](./diagramas/)
-- [Infraestructura](diagramas/Infrastructura.drawio) - Diagrama de infraestructura (abrir con draw.io)
+- [Infraestructura](architecture/Infrastructura.drawio) - Diagrama de infraestructura (abrir con draw.io)
 - [Flujo B2B de Inserción de Productos](diagramas/b2b-product-insertion-flow.md) - Storyboard Mermaid del proceso de integración de proveedores

@@ -66,10 +66,10 @@
 
 | Documento | Ubicación |
 |-----------|-----------|
-| **Arquitectura** | `.planning/codebase/ARCHITECTURE.md` |
-| **Preocupaciones** | `.planning/codebase/CONCERNS.md` |
-| **Stack Detallado** | `.planning/codebase/STACK.md` |
-| **Estructura** | `.planning/codebase/STRUCTURE.md` |
+| **Arquitectura** | `docs/architecture/architecture.md` |
+| **Review Técnica** | `docs/architecture/HealthBytes_Architecture_Review.md` |
+| **Setup** | `docs/development/setup/` |
+| **Features** | `docs/product/features/` |
 
 ## Decisión de Gobernanza Documental
 
@@ -77,7 +77,7 @@ Desde esta fecha:
 
 - Este archivo centraliza estado y roadmap.
 - Los demás documentos DEBEN referenciar este archivo para estado global.
-- Si existe discrepancia con documentos históricos (como `.planning/STATE.md`), prevalece este archivo.
+- Si existe discrepancia con documentos históricos (como `docs/STATE.md`), prevalece este archivo.
 
 ## Protocolo de Actualización (Semanal)
 

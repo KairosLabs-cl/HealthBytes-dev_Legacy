@@ -1,0 +1,71 @@
+{
+  "columns": {
+    "periodic": {
+      "id": "periodic",
+      "title": "Periódicas",
+      "taskIds": [
+        "task-1779486907711",
+        "task-1779486907706"
+      ]
+    },
+    "todo": {
+      "id": "todo",
+      "title": "To Do",
+      "taskIds": [
+        "task-1779486907707",
+        "task-1779486907708"
+      ]
+    },
+    "in-progress": {
+      "id": "in-progress",
+      "title": "In Progress",
+      "taskIds": []
+    },
+    "done": {
+      "id": "done",
+      "title": "Done",
+      "taskIds": [
+        "task-20260529-agent-role-routing",
+        "task-20260529-product-safety-agents"
+      ]
+    }
+  },
+  "tasks": {
+    "task-1779486907706": {
+      "id": "task-1779486907706",
+      "content": "Realizar una auditoría de docs personalizados tanto readmes como contextos",
+      "agent": "hermes-verifier"
+    },
+    "task-1779486907707": {
+      "id": "task-1779486907707",
+      "content": "Auditoría UX y Accesibilidad Frontend",
+      "agent": "frontend-dev"
+    },
+    "task-1779486907708": {
+      "id": "task-1779486907708",
+      "content": "Aumentar coverage de pruebas backend al 85%",
+      "agent": "healthbytes-qa"
+    },
+    "task-1779486907711": {
+      "id": "task-1779486907711",
+      "content": "Ejecutar tests End-to-End de flujos críticos",
+      "agent": "healthbytes-qa"
+    },
+    "task-20260529-agent-role-routing": {
+      "id": "task-20260529-agent-role-routing",
+      "content": "Actualizar AGENTS.md y .agents/router.json para que los roles agent:* se resuelvan a perfiles ejecutables",
+      "agent": "hermes-verifier"
+    },
+    "task-20260529-product-safety-agents": {
+      "id": "task-20260529-product-safety-agents",
+      "content": "Actualizar agentes y docs IA para mejorar decisiones de producto y seguridad alimentaria en HealthBytes",
+      "agent": "hermes-verifier"
+    }
+  },
+  "columnOrder": [
+    "periodic",
+    "todo",
+    "in-progress",
+    "done"
+  ]
+}

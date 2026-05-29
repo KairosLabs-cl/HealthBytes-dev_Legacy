@@ -86,7 +86,7 @@
   - chore(deps): merge ws bump
   - chore: update dependencies and regenerate node_modules lockfile
   - chore(structure): move root docker scripts to Tools/ops/ and update docs
-  - chore(ai): unify AI context into .ai/ and remove legacy systems
+  - chore(ai): unify AI context into .agents/ and remove legacy systems
   - chore(frontend): remove unused dependency bs58
   - chore(deps): bump ws from 8.18.3 to 8.20.1 in /frontend
   - chore(deps): bump postcss from 8.4.49 to 8.5.14 in /frontend
@@ -176,7 +176,7 @@
   - chore(deps): merge ws bump
   - chore: update dependencies and regenerate node_modules lockfile
   - chore(structure): move root docker scripts to Tools/ops/ and update docs
-  - chore(ai): unify AI context into .ai/ and remove legacy systems
+  - chore(ai): unify AI context into .agents/ and remove legacy systems
   - chore(frontend): remove unused dependency bs58
   - chore(deps): bump ws from 8.18.3 to 8.20.1 in /frontend
   - chore(deps): bump postcss from 8.4.49 to 8.5.14 in /frontend
@@ -266,7 +266,7 @@
   - chore(deps): merge ws bump
   - chore: update dependencies and regenerate node_modules lockfile
   - chore(structure): move root docker scripts to Tools/ops/ and update docs
-  - chore(ai): unify AI context into .ai/ and remove legacy systems
+  - chore(ai): unify AI context into .agents/ and remove legacy systems
   - chore(frontend): remove unused dependency bs58
   - chore(deps): bump ws from 8.18.3 to 8.20.1 in /frontend
   - chore(deps): bump postcss from 8.4.49 to 8.5.14 in /frontend

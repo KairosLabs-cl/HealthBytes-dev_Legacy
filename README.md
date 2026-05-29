@@ -47,7 +47,7 @@ El intercambio es explícito y simétrico:
 
 Esto convierte a HealthBytes en la fuente de verdad sobre **dónde están y qué tienen disponible** las tiendas especializadas — dato que hoy no existe en ningún lugar centralizado.
 
-> Esta propuesta es una visión de negocio a largo plazo. No hay implementación activa. El flujo de inserción B2B está documentado en [docs/diagramas/b2b-product-insertion-flow.md](docs/diagramas/b2b-product-insertion-flow.md).
+> Esta propuesta es una visión de negocio a largo plazo. No hay implementación activa. El flujo de inserción B2B está documentado en [docs/architecture/diagrams/b2b-product-insertion-flow.md](docs/architecture/diagrams/b2b-product-insertion-flow.md).
 
 ### Visión — Computer Vision
 
@@ -267,7 +267,7 @@ HealthBytes-dev/
 │   └── security/            # Políticas y auditorías
 │
 ├── infra/                   # Scripts AWS (ECR, ECS, SSM)
-├── .ai/                     # Skills y agentes de IA del repo
+├── .agents/                     # Skills y agentes de IA del repo
 ├── docker-compose.yml       # Postgres + Redis
 └── AGENTS.md                # Reglas para agentes de IA
 ```
@@ -280,7 +280,7 @@ HealthBytes-dev/
 | --- | --- |
 | Estado y roadmap actual | [docs/development/PROJECT_STATUS.md](docs/development/PROJECT_STATUS.md) |
 | Índice general de docs | [docs/README.md](docs/README.md) |
-| Seguridad | [docs/security/](docs/security/) |
+| Seguridad | [docs/architecture/security/](docs/architecture/security/) |
 | Reglas para agentes de IA | [AGENTS.md](AGENTS.md) · [.cursorrules](.cursorrules) |
 | API interactiva (runtime) | http://localhost:3001/docs |
 | Figma / Wireframes | [Ver diseño](https://www.figma.com/design/0yTwgp5ddVCKM1SL1p2rIS/) |
@@ -352,7 +352,7 @@ git push origin feat/mi-feature
 # Abre PR en GitHub — sigue la plantilla en .github/PULL_REQUEST_TEMPLATE.md
 ```
 
-> Antes de abrir un PR, verifica que exista una entrada en `.ai/agents/tasks.json` para el trabajo.
+> Antes de abrir un PR, verifica que exista una entrada en `.agents/agents/tasks.json` para el trabajo.
 
 ---
 

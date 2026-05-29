@@ -1,76 +1,66 @@
-# HealthBytes Infrastructure
+# Ops Utilities
 
-Scripts y configuración para desplegar HealthBytes en AWS.
+Este directorio contiene scripts y herramientas para la gestión operativa del proyecto HealthBytes.
 
-## Requisitos
+## 🐳 Docker Management
 
-- AWS CLI configurado (`aws configure`)
-- Permisos IAM: ECS, ECR, SSM, CloudWatch Logs, VPC
-- Bash o Git Bash (Windows)
+Scripts para iniciar y gestionar los contenedores de desarrollo.
 
-## Archivos
+### Iniciar Servicios (Docker Compose)
 
-| Archivo | Descripción |
-|---------|-------------|
-| `ecr-setup.sh` | Crea el repositorio ECR para la imagen del backend |
-| `ecs-task-definition.json` | Task definition para ECS Fargate |
-| `secrets-setup.sh` | Pobl parameter store en SSM con secrets de producción |
-| `README.md` | Este archivo |
+- **PowerShell (Windows):**
+  ```powershell
+  ./Tools/ops/docker-start.ps1
+  ```
+- **Bash (Linux/Mac):**
+  ```bash
+  ./Tools/ops/docker-start.sh
+  ```
 
-## Uso
+Estos scripts se encargan de levantar la base de datos PostgreSQL y otros servicios necesarios definidos en el `docker-compose.yml`.
 
-### 1. ECR Setup
+---
 
+## 🛣️ Parallel Lanes (Worktrees)
+
+Utilidad para gestionar múltiples flujos de trabajo paralelos usando git worktrees y tmux.
+
+### Iniciar Lanes
+
+Inicia una sesión de tmux con tres worktrees aislados:
+- `lane/p0` -> `.worktrees/lane-p0` (Critical fixes)
+- `lane/p1` -> `.worktrees/lane-p1` (Features)
+- `lane/p2` -> `.worktrees/lane-p2` (Debt/Refactor)
+
+**Comando:**
 ```bash
-chmod +x ecr-setup.sh
-./ecr-setup.sh
+./Tools/ops/parallel-lanes.sh
 ```
 
-Esto crea el repositorio `healthbytes-backend` en ECR.
-
-### 2. Secrets Setup
-
+**Opcional (crear/reutilizar sin adjuntar):**
 ```bash
-chmod +x secrets-setup.sh
-./secrets-setup.sh
+./Tools/ops/parallel-lanes.sh --no-attach
 ```
 
-El script pide interactivamente cada secret. Los valores se almacenan en SSM Parameter Store como `SecureString`.
+### Lane Monitor
 
-### 3. ECS Task Definition
-
-Antes de registrar, reemplazar `ACCOUNT_ID` en `ecs-task-definition.json` con el ID de tu cuenta AWS:
-
+Estado rápido de las tres lanes:
 ```bash
-sed -i 's/ACCOUNT_ID/123456789012/g' ecs-task-definition.json
-aws ecs register-task-definition \
-  --cli-input-json file://ecs-task-definition.json \
-  --region us-east-1
+./Tools/ops/lane-monitor.sh
 ```
 
-### 4. Deploy con GitHub Actions
-
-El workflow `deploy.yml` en `.github/workflows/` hace deploy automático a staging en push a main, y a producción con approval manual.
-
-## Estructura de Secrets en SSM
-
-```
-/healthbytes/prod/DATABASE_URL
-/healthbytes/prod/JWT_SECRET
-/healthbytes/prod/CLERK_PUBLISHABLE_KEY
-/healthbytes/prod/CLERK_SECRET_KEY
-/healthbytes/prod/MERCADO_PAGO_ACCESS_TOKEN
-/healthbytes/prod/MERCADO_PAGO_WEBHOOK_SECRET
-/healthbytes/prod/RESEND_API_KEY
-/healthbytes/prod/EMAIL_FROM_ADDRESS
-/healthbytes/prod/BACKEND_URL
-/healthbytes/prod/FRONTEND_URL
-/healthbytes/prod/ENVIRONMENT
-/healthbytes/prod/SENTRY_DSN
+**Modo live (refresca cada 5s):**
+```bash
+./Tools/ops/lane-monitor.sh --watch
 ```
 
-## Notas
+---
 
-- Todos los scripts asumen `us-east-1`. Cambiar `AWS_REGION` si se usa otra región.
-- El ECS service usa la VPC por defecto. Para producción, crear una VPC dedicada.
-- Los logs van a CloudWatch `/ecs/healthbytes-backend`.
+## 📉 Deprecations Governance
+
+Documentación y herramientas para el seguimiento de la deuda técnica (Deprecations).
+
+- **Baseline:** `docs/plans/2026-04-01-p2-deprecation-baseline.json`
+- **CI Check:** `backend/scripts/check_p2_deprecations.py`
+
+Ver detalles de gobernanza en el código fuente de los scripts.

@@ -58,3 +58,6 @@ AGENT.md
 
 # Auth & Sessions
 .auth/
+
+# Docs tests (sub-branches only, not master)
+docs/tests/

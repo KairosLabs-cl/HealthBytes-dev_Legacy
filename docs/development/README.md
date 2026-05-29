@@ -14,15 +14,8 @@ Documentación para el equipo de desarrollo de HealthBytes.
 - **[development-guide.md](./development-guide.md)** - Setup local, comandos y flujo de contribución
 - **[testing.md](./testing.md)** - Infraestructura, comandos y convenciones de testing
 
-### UI/UX
-- **[UIUX_ROADMAP.md](./UIUX_ROADMAP.md)** - Roadmap de mejoras UI/UX pendientes
-- **[UIUX_SYSTEM_OVERVIEW.md](./UIUX_SYSTEM_OVERVIEW.md)** - Overview del design system actual
-
 ### Inspecciones de Código
-- **[inspections/](./inspections/)** - Reportes de revisión de código recientes
-  - `01_infra.md` - Auditoría de infraestructura, CI/CD y DevOps
-  - `DEEP_INSPECTION_2026-03-03.md` - Inspección profunda del backend
-  - `STAFF_ENGINEER_REVIEW_2026-03-02.md` - Review de staff engineer
+- **[inspections/01_infra.md](./inspections/01_infra.md)** - Auditoría de infraestructura, CI/CD y DevOps
 
 ---
 

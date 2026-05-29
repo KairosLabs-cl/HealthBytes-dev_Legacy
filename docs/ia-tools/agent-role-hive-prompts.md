@@ -166,7 +166,7 @@ reason:stale-snapshot
 
 Los labels `agent:*` describen una especialidad. Para que sean ejecutables por
 Jules, Codex, OpenCode u otra herramienta, deben resolverse contra
-`.ai/router.json` y cargar el perfil correspondiente en `.ai/agents/`.
+`.agents/router.json` y cargar el perfil correspondiente en `.agents/agents/`.
 
 | Label | Perfil principal | Perfil de apoyo | Uso |
 | --- | --- | --- | --- |
@@ -182,15 +182,15 @@ Jules, Codex, OpenCode u otra herramienta, deben resolverse contra
 Reglas de activacion:
 
 1. Si un item del Kanban trae `agent:*`, primero buscar el label en
-   `.ai/router.json`.
-2. Cargar el archivo `.ai/agents/<perfil>.md` del perfil principal antes de
+   `.agents/router.json`.
+2. Cargar el archivo `.agents/agents/<perfil>.md` del perfil principal antes de
    actuar.
 3. Si el label es de implementacion y el cambio toca ambos stacks, usar los
    perfiles de apoyo por stack.
-4. Si se ejecuta en Jules, cargar el wrapper en `.ai/agents/jules/` y luego el
+4. Si se ejecuta en Jules, cargar el wrapper en `.agents/agents/jules/` y luego el
    perfil real indicado por ese wrapper.
 5. Si no existe mapeo para un label, detener el trabajo y actualizar
-   `.ai/router.json` antes de usarlo.
+   `.agents/router.json` antes de usarlo.
 
 ## Canvas Producto Restrictivo Y Seguridad Alimentaria
 
