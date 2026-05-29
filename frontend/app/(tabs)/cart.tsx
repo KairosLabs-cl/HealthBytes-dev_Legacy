@@ -115,7 +115,6 @@ export default function CartScreen() {
     <AuthGate message="Necesitas una cuenta para ver tu carrito.">
       {items.length === 0 ? (
         <>
-          <Stack.Screen options={{ headerShown: false }} />
           <ScreenHeader title="Carrito de compras" icon={ShoppingBag} />
           <ListEmptyState
             icon={ShoppingBag}
@@ -128,7 +127,6 @@ export default function CartScreen() {
         </>
       ) : (
         <>
-          <Stack.Screen options={{ headerShown: false }} />
           <ScreenHeader title="Carrito de compras" icon={ShoppingBag} />
           <View className="flex-1 bg-[#fafafa]">
             <FlashList

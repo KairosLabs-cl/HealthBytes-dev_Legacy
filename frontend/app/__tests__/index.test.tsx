@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react-native";
-import HomeScreen from "../index";
+import HomeScreen from "../(tabs)/index";
 import { useQuery } from "@tanstack/react-query";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 

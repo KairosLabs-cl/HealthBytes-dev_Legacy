@@ -1,7 +1,6 @@
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { Icon } from "@/components/ui/icon";
-import BottomNavBar from "@/components/ui/NavBar/BottomNavBar";
 import CartFlyOverlay from "@/components/CartFlyOverlay";
 import {
   Toast,
@@ -19,7 +18,7 @@ import { usePreferencesStore } from "@/store/preferencesStore";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { ClerkLoaded, ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Link, Stack, useSegments } from "expo-router";
+import { Link, Stack } from "expo-router";
 import { User } from "lucide-react-native";
 import { Suspense, lazy, useEffect } from "react";
 import { Pressable } from "react-native";
@@ -148,13 +147,10 @@ function RootLayoutNav() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSignedIn]);
 
-  const segments = useSegments();
-  const hideNavBar = segments[0] === "(auth)";
-
   return (
     <>
       <Stack>
-        <Stack.Screen name="index" options={{ title: "HealthBytes" }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="(auth)/login"
           options={{
@@ -173,21 +169,7 @@ function RootLayoutNav() {
               ),
           }}
         />
-        <Stack.Screen
-          name="profile"
-          options={{
-            title: "Mi Perfil",
-            headerTitleAlign: "center",
-          }}
-        />
         <Stack.Screen name="product/[id]" options={{ title: "Product" }} />
-        <Stack.Screen
-          name="cart"
-          options={{
-            title: "Carrito de Compras",
-            headerTitleAlign: "center",
-          }}
-        />
         <Stack.Screen
           name="checkout-v2"
           options={{
@@ -197,7 +179,6 @@ function RootLayoutNav() {
         />
       </Stack>
 
-      {!hideNavBar && <BottomNavBar />}
       <CartFlyOverlay />
 
       <Suspense fallback={null}>

@@ -440,35 +440,9 @@ export default function HomeScreen() {
     []
   );
 
-  const renderListHeader = useCallback(
-    () => (
-      <HomeListHeader
-        userName={userName}
-        dietaryTags={dietaryTags}
-        toggleDietaryTag={toggleDietaryTag}
-        heroProduct={heroProduct}
-        products={data}
-        onViewAll={onViewAll}
-        onClearFilters={clearFilters}
-        onSeeAllFavorites={onSeeAllFavorites}
-      />
-    ),
-    [
-      userName,
-      dietaryTags,
-      toggleDietaryTag,
-      heroProduct,
-      data,
-      onViewAll,
-      clearFilters,
-      onSeeAllFavorites,
-    ]
-  );
-
   if (isLoading && !data) {
     return (
       <>
-        <Stack.Screen options={{ headerShown: false }} />
         <HomeSkeleton />
       </>
     );
@@ -477,7 +451,6 @@ export default function HomeScreen() {
   if (error) {
     return (
       <>
-        <Stack.Screen options={{ headerShown: false }} />
         <View className="flex-1 items-center justify-center bg-[#fafafa] px-6">
           <Text className="mb-4 text-base font-semibold text-red-700">
             Error cargando productos
@@ -499,17 +472,27 @@ export default function HomeScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#fafafa]" edges={["top"]}>
       <StatusBar style="dark" />
-      <Stack.Screen options={{ headerShown: false }} />
 
       {isFetching && !refreshing && data && (
         <View className="h-0.5 bg-brand-green" />
       )}
 
-      <View key={numColumns} className="flex-1">
+      <View className="flex-1">
         <FlashList<Product>
           className="flex-1 bg-[#fafafa]"
           showsVerticalScrollIndicator={false}
-          ListHeaderComponent={renderListHeader}
+          ListHeaderComponent={
+            <HomeListHeader
+              userName={userName}
+              dietaryTags={dietaryTags}
+              toggleDietaryTag={toggleDietaryTag}
+              heroProduct={heroProduct}
+              products={data}
+              onViewAll={onViewAll}
+              onClearFilters={clearFilters}
+              onSeeAllFavorites={onSeeAllFavorites}
+            />
+          }
           onRefresh={handleRefresh}
           refreshing={refreshing}
           ListEmptyComponent={

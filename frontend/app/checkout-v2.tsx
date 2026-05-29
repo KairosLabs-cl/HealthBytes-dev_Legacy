@@ -18,7 +18,7 @@ import { Stack, useRouter } from "expo-router";
 import { MapPinIcon, PhoneIcon } from "lucide-react-native";
 import { useEffect, useRef, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 import {
   View,
   ScrollView,
@@ -223,8 +223,7 @@ export default function CheckoutV2Screen() {
           {/* Content */}
           <View className="mb-8">
             {/* Step 1: Address Selection */}
-            {currentStep === "address" && (
-              <Animated.View entering={FadeIn.duration(250)} exiting={FadeOut.duration(200)}>
+            <View style={{ display: currentStep === "address" ? "flex" : "none" }}>
               <VStack space="lg">
                 <View>
                   <HStack className="items-center mb-3">
@@ -330,22 +329,18 @@ export default function CheckoutV2Screen() {
                   </Button>
                 )}
               </VStack>
-              </Animated.View>
-            )}
+            </View>
 
             {/* Step 2: Payment Method */}
-            {currentStep === "payment" && (
-              <Animated.View entering={FadeIn.duration(250)} exiting={FadeOut.duration(200)}>
+            <View style={{ display: currentStep === "payment" ? "flex" : "none" }}>
                 <PaymentMethodSelector
                   selected={selectedPayment}
                   onSelect={setSelectedPayment}
                 />
-              </Animated.View>
-            )}
+            </View>
 
             {/* Step 3: Order Summary */}
-            {currentStep === "summary" && (
-              <Animated.View entering={FadeIn.duration(250)} exiting={FadeOut.duration(200)}>
+            <View style={{ display: currentStep === "summary" ? "flex" : "none" }}>
                 <VStack space="lg">
                 {/* Address Summary */}
                 {selectedAddress && (
@@ -437,8 +432,7 @@ export default function CheckoutV2Screen() {
                   </HStack>
                 </View>
               </VStack>
-              </Animated.View>
-            )}
+            </View>
           </View>
         </ScrollView>
 
