@@ -3,7 +3,7 @@ import * as WebBrowser from "expo-web-browser";
 import { Text } from "@/components/ui/text";
 import { View, Pressable } from "react-native";
 import { Stack, useRouter } from "expo-router";
-import { useOAuth, useAuth } from "@clerk/clerk-expo";
+import { useOAuth } from "@clerk/clerk-expo";
 import { useState } from "react";
 import { ChevronLeft, Leaf, ShieldCheck } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -13,7 +13,6 @@ WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { getToken } = useAuth();
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -31,25 +30,9 @@ export default function LoginScreen() {
       if (createdSessionId && setActive) {
         await setActive({ session: createdSessionId });
 
-        const startTime = Date.now();
-        const TIMEOUT_MS = 8000;
-
-        while (Date.now() - startTime < TIMEOUT_MS) {
-          try {
-            const token = await getToken?.();
-            if (token) {
-              router.replace("/");
-              return;
-            }
-          } catch {
-            /* continuar */
-          }
-          await new Promise((r) => setTimeout(r, 150));
-        }
-
-        // Si llegamos aquí, el token nunca llegó
-        setError("No se pudo verificar tu sesión. Por favor intenta de nuevo.");
-        setIsLoading(false);
+        // Navigation occurs instantly as session activation is completed.
+        // The root layout (_layout.tsx) reactively listens to isSignedIn and performs user data sync.
+        router.replace("/");
         return;
       } else {
         setError("No se pudo completar el inicio de sesión. Intenta de nuevo.");

@@ -13,7 +13,7 @@ import { useAuth } from "@clerk/clerk-expo";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { AlertCircle, Package } from "lucide-react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import {
   FlatList,
   Pressable,
@@ -135,6 +135,14 @@ const OrdersListHeader = React.memo(function OrdersListHeader({
   );
 });
 OrdersListHeader.displayName = "OrdersListHeader";
+const FILTERS = [
+  { id: "all", label: "Todas" },
+  { id: "unpaid", label: "Sin pagar" },
+  { id: "processing", label: "En proceso" },
+  { id: "shipped", label: "Enviado" },
+  { id: "delivered", label: "Entregado" },
+  { id: "returns", label: "Devolución" },
+] as const;
 
 export default function OrdersScreen() {
   const router = useRouter();
@@ -190,14 +198,7 @@ export default function OrdersScreen() {
     }
   );
 
-  const filters = [
-    { id: "all", label: "Todas" },
-    { id: "unpaid", label: "Sin pagar" },
-    { id: "processing", label: "En proceso" },
-    { id: "shipped", label: "Enviado" },
-    { id: "delivered", label: "Entregado" },
-    { id: "returns", label: "Devolución" },
-  ] as const;
+  // FILTERS is now defined statically outside the component to prevent recreation on every render
 
   useEffect(() => {
     if (!isSignedIn || !isLoaded) return;
@@ -258,7 +259,7 @@ export default function OrdersScreen() {
   // memo component to prevent the FlatList from unmounting the header.
   const listHeader = (
     <OrdersListHeader
-      filters={filters}
+      filters={FILTERS}
       selectedFilter={selectedFilter}
       onFilterPress={handleFilterPress}
       filteredOrderCount={filteredOrders.length}

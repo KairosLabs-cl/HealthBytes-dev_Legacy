@@ -86,17 +86,27 @@ export function usePushNotifications() {
         return;
       }
 
-      token = (
-        await Notifications.getExpoPushTokenAsync({
-          projectId,
-        })
-      ).data;
+      try {
+        const pushTokenString = (
+          await Notifications.getExpoPushTokenAsync({
+            projectId,
+          })
+        ).data;
 
-      if (!EXPO_PUSH_TOKEN_PATTERN.test(token)) {
-        return;
+        if (EXPO_PUSH_TOKEN_PATTERN.test(pushTokenString)) {
+          token = pushTokenString;
+          setExpoPushToken(token);
+        }
+      } catch (e: unknown) {
+        // En SDK 53, expo-notifications remueve el soporte de Push Notifications en Expo Go para Android.
+        // Capturamos el error para que la app no crashee en desarrollo.
+        console.warn(
+          "No se pudo obtener el token de push (¿Estás usando Expo Go en Android?). Error: ",
+          e
+        );
       }
-
-      setExpoPushToken(token);
+    } else {
+      console.log("Must use physical device for Push Notifications");
     }
 
     return token;

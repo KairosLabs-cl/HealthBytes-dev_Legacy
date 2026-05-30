@@ -78,6 +78,7 @@ const CartItem = ({
             disabled={isUpdating || isRemoving}
             accessibilityRole="button"
             accessibilityLabel={`Disminuir cantidad de ${item.product.name}`}
+            accessibilityHint="Resta una unidad de este producto del carrito"
             accessibilityState={{ disabled: isUpdating || isRemoving }}
             className={`h-11 w-11 items-center justify-center rounded-2xl ${
               isUpdating || isRemoving
@@ -113,6 +114,7 @@ const CartItem = ({
             disabled={isAdding || isUpdating || isRemoving}
             accessibilityRole="button"
             accessibilityLabel={`Aumentar cantidad de ${item.product.name}`}
+            accessibilityHint="Suma una unidad de este producto al carrito"
             accessibilityState={{
               disabled: isAdding || isUpdating || isRemoving,
             }}
@@ -137,6 +139,7 @@ const CartItem = ({
             disabled={isRemoving}
             accessibilityRole="button"
             accessibilityLabel={`Eliminar ${item.product.name} del carrito`}
+            accessibilityHint="Quita este producto del carrito por completo"
             accessibilityState={{ disabled: isRemoving }}
             className={`h-11 w-11 items-center justify-center rounded-2xl transition-colors ${
               isRemoving

@@ -75,9 +75,9 @@ init_sentry()
 
 # Create FastAPI application
 app = FastAPI(
-    title="HealthBytes API - FastAPI",
-    version="2.0.0",
-    description="FastAPI replica of Node.js Express API",
+    title="HealthBytes API",
+    version="0.4.0",
+    description="API de HealthBytes — plataforma de e-commerce para personas con restricciones dietéticas",
     docs_url="/docs" if settings.ENVIRONMENT == "dev" else None,
     redoc_url="/redoc" if settings.ENVIRONMENT == "dev" else None,
     redirect_slashes=False,
