@@ -77,7 +77,10 @@ init_sentry()
 app = FastAPI(
     title="HealthBytes API",
     version="0.4.0",
-    description="API de HealthBytes — plataforma de e-commerce para personas con restricciones dietéticas",
+    description=(
+        "API de HealthBytes — plataforma de e-commerce para personas con "
+        "restricciones dietéticas"
+    ),
     docs_url="/docs" if settings.ENVIRONMENT == "dev" else None,
     redoc_url="/redoc" if settings.ENVIRONMENT == "dev" else None,
     redirect_slashes=False,
