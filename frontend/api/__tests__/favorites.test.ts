@@ -42,13 +42,15 @@ describe("addFavorite", () => {
 });
 
 describe("removeFavorite", () => {
-  test("sends DELETE for product", async () => {
-    mockFetch.mockResolvedValue({ ok: true, json: () => Promise.resolve({}) });
+  test("sends DELETE for product without parsing a 204 response body", async () => {
+    const json = jest.fn();
+    mockFetch.mockResolvedValue({ ok: true, status: 204, json });
 
-    await removeFavorite(5, getToken);
+    await expect(removeFavorite(5, getToken)).resolves.toBeUndefined();
     const [url, options] = mockFetch.mock.calls[0];
     expect(url).toContain("/favorites/5");
     expect(options.method).toBe("DELETE");
+    expect(json).not.toHaveBeenCalled();
   });
 
   test("throws on 404", async () => {
