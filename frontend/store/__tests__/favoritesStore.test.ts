@@ -47,6 +47,23 @@ describe("Favorites Store", () => {
       expect(useFavoritesStore.getState().favoriteIds.size).toBe(0);
       expect(useFavoritesStore.getState().isLoading).toBe(false);
     });
+
+    test("clearFavorites ignores a stale load completion", async () => {
+      let resolveIds: ((ids: number[]) => void) | undefined;
+      (favoritesApi.getFavoriteIds as jest.Mock).mockImplementation(
+        () =>
+          new Promise<number[]>((resolve) => {
+            resolveIds = resolve;
+          })
+      );
+
+      const load = useFavoritesStore.getState().loadFavorites(getToken);
+      useFavoritesStore.getState().clearFavorites();
+      resolveIds?.([5]);
+      await load;
+
+      expect(useFavoritesStore.getState().favoriteIds.size).toBe(0);
+    });
   });
 
   describe("toggleFavorite", () => {

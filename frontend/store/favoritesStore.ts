@@ -4,6 +4,7 @@ import { ApiError } from "@/lib/apiError";
 
 const pendingToggles = new Map<number, Promise<void>>();
 const toggleVersions = new Map<number, number>();
+let favoritesSessionGeneration = 0;
 
 interface FavoritesState {
   favoriteIds: Set<number>;
@@ -21,11 +22,15 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
   isLoading: false,
 
   loadFavorites: async (getToken) => {
+    const requestGeneration = favoritesSessionGeneration;
+
     try {
       set({ isLoading: true });
       const ids = await getFavoriteIds(getToken);
+      if (requestGeneration !== favoritesSessionGeneration) return;
       set({ favoriteIds: new Set(ids), isLoading: false });
     } catch {
+      if (requestGeneration !== favoritesSessionGeneration) return;
       set({ isLoading: false });
     }
   },
@@ -93,6 +98,9 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
   },
 
   clearFavorites: () => {
-    set({ favoriteIds: new Set<number>() });
+    favoritesSessionGeneration += 1;
+    pendingToggles.clear();
+    toggleVersions.clear();
+    set({ favoriteIds: new Set<number>(), isLoading: false });
   },
 }));

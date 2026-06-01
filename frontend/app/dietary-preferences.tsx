@@ -11,17 +11,7 @@ import { Check, Salad } from "lucide-react-native";
 import { usePreferencesStore } from "@/store/preferencesStore";
 import { updateDietaryPreferences } from "@/api/preferences";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
-
-const DIETARY_OPTIONS = [
-  { slug: "sin-gluten", label: "Sin Gluten" },
-  { slug: "vegano", label: "Vegano" },
-  { slug: "sin-lactosa", label: "Sin Lactosa" },
-  { slug: "bajo-en-azucar", label: "Bajo en azúcar" },
-  { slug: "alto-en-proteina", label: "Alto en proteína" },
-  { slug: "para-diabeticos", label: "Para diabéticos" },
-  { slug: "sin-nueces", label: "Sin Nueces" },
-  { slug: "sin-mariscos", label: "Sin Mariscos" },
-] as const;
+import { DIETARY_OPTIONS } from "@/lib/dietaryOptions";
 
 export default function DietaryPreferencesScreen() {
   const { getToken } = useAuth();
@@ -88,7 +78,7 @@ export default function DietaryPreferencesScreen() {
           </Text>
 
           <View className="flex-row flex-wrap gap-3 mb-4">
-            {DIETARY_OPTIONS.map(({ slug, label }) => {
+            {DIETARY_OPTIONS.map(({ slug, label, icon: DietaryIcon }) => {
               const isActive = selectedTags.includes(slug);
               return (
                 <Pressable
@@ -110,6 +100,9 @@ export default function DietaryPreferencesScreen() {
                   >
                     {isActive && (
                       <Check size={13} color="#ffffff" strokeWidth={2.8} />
+                    )}
+                    {!isActive && (
+                      <DietaryIcon size={13} color="#334155" strokeWidth={2.2} />
                     )}
                   </View>
                   <Text

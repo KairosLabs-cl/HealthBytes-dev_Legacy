@@ -102,7 +102,7 @@ export default function LoginScreen() {
           <View className="flex-row items-center gap-2">
             <ShieldCheck size={16} color="#22c55e" strokeWidth={2.4} />
             <Text className="text-[13px] font-semibold text-zinc-600">
-              Tus datos se protegen con autenticación segura.
+              Autenticación protegida por Clerk
             </Text>
           </View>
 

@@ -1,5 +1,5 @@
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
+import { AppThemeProvider } from "@/components/AppThemeProvider";
 import { Icon } from "@/components/ui/icon";
 import CartFlyOverlay from "@/components/CartFlyOverlay";
 import {
@@ -122,11 +122,13 @@ function RootLayoutNav() {
   );
 
   useEffect(() => {
+    let cancelled = false;
+
     const syncUserData = async () => {
       if (isSignedIn) {
         // User logged in via Clerk
         const token = await getToken();
-        if (token) {
+        if (token && !cancelled) {
           // Sync Clerk token with our unified AuthStore
           useAuthStore.getState().setTokens(token, ""); // No refresh token for Clerk
           
@@ -144,6 +146,9 @@ function RootLayoutNav() {
     };
 
     syncUserData();
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSignedIn]);
 
@@ -200,11 +205,11 @@ export default Sentry.wrap(function RootLayout() {
       <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
         <ClerkLoaded>
           <QueryClientProvider client={queryClient}>
-            <GluestackUIProvider>
+            <AppThemeProvider>
               <ErrorBoundary>
                 <RootLayoutNav />
               </ErrorBoundary>
-            </GluestackUIProvider>
+            </AppThemeProvider>
           </QueryClientProvider>
         </ClerkLoaded>
       </ClerkProvider>

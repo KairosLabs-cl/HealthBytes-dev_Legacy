@@ -1,6 +1,6 @@
 /// <reference types="nativewind/types" />
 import { AuthGate } from "@/components/AuthGate";
-import { ScrollView, View, Image } from "react-native";
+import { ScrollView, View, Image, Pressable } from "react-native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Text } from "@/components/ui/text";
@@ -10,9 +10,21 @@ import { useUser } from "@clerk/clerk-expo";
 import { useEffect, useMemo, useState } from "react";
 import { User } from "lucide-react-native";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { usePreferencesStore } from "@/store/preferencesStore";
+import type { ThemePreference } from "@/lib/themePreference";
+
+const themeOptions: { label: string; value: ThemePreference }[] = [
+  { label: "Automático", value: "system" },
+  { label: "Claro", value: "light" },
+  { label: "Oscuro", value: "dark" },
+];
 
 export default function ProfileSettingsScreen() {
   const { user, isLoaded } = useUser();
+  const themePreference = usePreferencesStore((state) => state.themePreference);
+  const setThemePreference = usePreferencesStore(
+    (state) => state.setThemePreference
+  );
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -197,6 +209,43 @@ export default function ProfileSettingsScreen() {
                 {isSaving ? "Guardando..." : "Guardar Cambios"}
               </ButtonText>
             </Button>
+          </View>
+
+          <View className="mb-8">
+            <Text className="mb-2 text-lg font-black text-[#09090b]">
+              Configuraciones de la aplicación
+            </Text>
+            <Text className="mb-4 text-sm text-gray-600">
+              Elige cómo quieres ver HealthBytes.
+            </Text>
+
+            <View className="rounded-[24px] border border-slate-200/70 bg-white p-2">
+              <View className="flex-row">
+                {themeOptions.map((option) => {
+                  const isActive = themePreference === option.value;
+                  return (
+                    <Pressable
+                      key={option.value}
+                      className={`min-h-12 flex-1 items-center justify-center rounded-2xl px-2 ${
+                        isActive ? "bg-[#09090b]" : "bg-transparent"
+                      }`}
+                      onPress={() => setThemePreference(option.value)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Usar modo ${option.label.toLowerCase()}`}
+                      accessibilityState={{ selected: isActive }}
+                    >
+                      <Text
+                        className={`text-sm font-bold ${
+                          isActive ? "text-white" : "text-gray-700"
+                        }`}
+                      >
+                        {option.label}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
           </View>
         </ScrollView>
       </View>

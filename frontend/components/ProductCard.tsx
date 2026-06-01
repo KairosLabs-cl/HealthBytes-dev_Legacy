@@ -8,6 +8,7 @@ import { RatingStars } from "@/components/RatingStars";
 import StockBadge from "@/components/StockBadge";
 import { Text } from "@/components/ui/text";
 import { formatPrice } from "@/lib/formatPrice";
+import { DIETARY_ICON_BY_SLUG } from "@/lib/dietaryOptions";
 import { theme } from "@/lib/theme";
 import { useCartAnimation } from "@/store/cartAnimationStore";
 import { useCart } from "@/store/cartStore";
@@ -17,15 +18,9 @@ import { useAuth } from "@clerk/clerk-expo";
 import { Image as ExpoImage } from "expo-image";
 import { useRouter } from "expo-router";
 import {
-  Dumbbell,
-  Gauge,
-  Heart,
   Info,
-  MilkOff,
   Package,
   Store,
-  Vegan,
-  WheatOff,
 } from "lucide-react-native";
 import { memo, useRef, useState } from "react";
 import {
@@ -47,19 +42,6 @@ import Animated, {
 } from "react-native-reanimated";
 
 const { colors, shadows } = theme;
-
-const DIETARY_ICONS: Record<
-  string,
-  React.ComponentType<{ size?: number; color?: string }>
-> = {
-  "sin-gluten": WheatOff,
-  vegano: Vegan,
-  "para-veganos": Vegan,
-  "sin-lactosa": MilkOff,
-  "bajo-en-azucar": Gauge,
-  "alto-en-proteina": Dumbbell,
-  "para-diabeticos": Heart,
-};
 
 const TAG_COLORS: Record<string, { bg: string; text: string; border: string }> =
   {
@@ -347,7 +329,10 @@ function ProductCard({
             >
               {allTags.slice(0, 2).map((tag) => {
                 const c = TAG_COLORS[tag.color || ""] || DEFAULT_TAG;
-                const TagIcon = DIETARY_ICONS[tag.name] ?? Info;
+                const TagIcon =
+                  DIETARY_ICON_BY_SLUG[
+                    tag.name as keyof typeof DIETARY_ICON_BY_SLUG
+                  ] ?? Info;
                 return (
                   <View
                     key={tag.name}

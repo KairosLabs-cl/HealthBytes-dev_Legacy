@@ -20,7 +20,9 @@
       "id": "in-progress",
       "title": "In Progress",
       "taskIds": [
-        "task-20260531-orders-payment-query-contract"
+        "task-20260531-orders-payment-query-contract",
+        "task-20260601-nativewind-web-dark-mode",
+        "task-20260601-account-settings-theme-selector"
       ]
     },
     "done": {
@@ -31,7 +33,9 @@
         "task-20260529-agent-role-routing",
         "task-20260529-product-safety-agents",
         "task-20260531-cart-delete-response-contract",
-        "task-20260531-wishlist-toggle-concurrency"
+        "task-20260531-wishlist-toggle-concurrency",
+        "task-20260601-android-lan-start-default",
+        "task-20260601-auth-preferences-startup-polish"
       ]
     }
   },
@@ -84,6 +88,26 @@
     "task-20260531-wishlist-toggle-concurrency": {
       "id": "task-20260531-wishlist-toggle-concurrency",
       "content": "Corregir comportamiento end-to-end de likes repetidos en wishlist con tests",
+      "agent": "frontend-dev"
+    },
+    "task-20260601-android-lan-start-default": {
+      "id": "task-20260601-android-lan-start-default",
+      "content": "Hacer explícitos Expo Go y LAN como defaults de pnpm start para testing Android por QR y validar overrides de Expo",
+      "agent": "frontend-dev"
+    },
+    "task-20260601-auth-preferences-startup-polish": {
+      "id": "task-20260601-auth-preferences-startup-polish",
+      "content": "Corregir fuente Fraunces, detalle Clerk, iconos SVG de preferencias y doble consulta inicial de catálogo con tests",
+      "agent": "frontend-dev"
+    },
+    "task-20260601-nativewind-web-dark-mode": {
+      "id": "task-20260601-nativewind-web-dark-mode",
+      "content": "Diagnosticar y corregir error web de NativeWind al sincronizar tema manual con darkMode media, con regresión y validación runtime en 8081",
+      "agent": "frontend-dev"
+    },
+    "task-20260601-account-settings-theme-selector": {
+      "id": "task-20260601-account-settings-theme-selector",
+      "content": "Agregar selector de apariencia Automático, Claro y Oscuro en Ajustes de Cuenta y conectar AppThemeProvider global con tests",
       "agent": "frontend-dev"
     }
   },

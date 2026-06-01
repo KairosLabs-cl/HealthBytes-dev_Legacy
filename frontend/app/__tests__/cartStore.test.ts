@@ -207,6 +207,36 @@ describe("Cart Store Logic", () => {
     expect(useCart.getState().items).toHaveLength(1);
   });
 
+  test("clearLocalCart ignores a stale server sync completion", async () => {
+    let resolveCart:
+      | ((cart: { items: any[]; total: number }) => void)
+      | undefined;
+    (cartApi.getCart as jest.Mock).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveCart = resolve;
+        })
+    );
+
+    const sync = useCart.getState().syncWithServer();
+    useCart.getState().clearLocalCart();
+    resolveCart?.({
+      items: [
+        {
+          id: 1,
+          product_id: 1,
+          quantity: 1,
+          created_at: "",
+          product: { id: 1, name: "Old session item", price: 100, stock: 10 },
+        },
+      ],
+      total: 100,
+    });
+    await sync;
+
+    expect(useCart.getState().items).toHaveLength(0);
+  });
+
   test("resetCart rolls back on API failure", async () => {
     // Setup initial state with items
     useCart.setState({
@@ -224,5 +254,26 @@ describe("Cart Store Logic", () => {
 
     // Final state should still have items (rolled back)
     expect(useCart.getState().items).toHaveLength(1);
+  });
+
+  test("clearLocalCart ignores a stale reset rollback", async () => {
+    let rejectClear: ((error: Error) => void) | undefined;
+    useCart.setState({
+      items: [{ product: product, quantity: 1 }],
+    });
+    (cartApi.clearCart as jest.Mock).mockImplementation(
+      () =>
+        new Promise<void>((_, reject) => {
+          rejectClear = reject;
+        })
+    );
+
+    const reset = useCart.getState().resetCart();
+    useCart.getState().clearLocalCart();
+    rejectClear?.(new Error("Old session request failed"));
+    await reset;
+
+    expect(useCart.getState().items).toHaveLength(0);
+    expect(useCart.getState().error).toBeNull();
   });
 });

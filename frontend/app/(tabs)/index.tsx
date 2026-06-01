@@ -12,6 +12,7 @@ import { useBreakpointValue } from "@/components/ui/utils/use-break-point-value"
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { usePreferencesStore } from "@/store/preferencesStore";
 import { DietaryTag, useProductFilters } from "@/store/productFiltersStore";
+import { VALID_DIETARY_TAGS } from "@/lib/dietaryOptions";
 import { useShallow } from "zustand/react/shallow";
 import { Product } from "@/types/product";
 import { useAuth, useUser } from "@clerk/clerk-expo";
@@ -25,15 +26,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 // ─── Constants ───────────────────────────────────────────────────────────────
-
-const VALID_DIETARY_TAGS = new Set<string>([
-  "sin-gluten",
-  "vegano",
-  "sin-lactosa",
-  "bajo-en-azucar",
-  "alto-en-proteina",
-  "para-diabeticos",
-]);
 
 // Dynamic hero content per active filter
 const HERO_CONTENT: Record<string, { headline: string; subtitle: string }> = {
@@ -380,6 +372,7 @@ export default function HomeScreen() {
   const { user } = useUser();
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
+  const hasHydrated = usePreferencesStore((state) => state.hasHydrated);
 
   // Pre-apply saved dietary preferences on first mount only
   useEffect(() => {
@@ -394,8 +387,7 @@ export default function HomeScreen() {
       ) as DietaryTag[];
       if (validTags.length > 0) setDietaryTags(validTags);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [hasHydrated, setDietaryTags]);
 
   const { data, isLoading, error, isFetching, refetch } = useQuery({
     queryKey: ["products", dietaryTags],
@@ -405,6 +397,7 @@ export default function HomeScreen() {
       }),
     placeholderData: (previousData) => previousData,
     staleTime: 5 * 60 * 1000,
+    enabled: hasHydrated,
   });
 
   const { data: heroProduct } = useQuery({

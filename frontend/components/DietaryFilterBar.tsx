@@ -8,15 +8,12 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { DIETARY_OPTIONS } from "@/lib/dietaryOptions";
 
-export const DIET_FILTERS = [
-  { label: "Celiacos", tag: "sin-gluten" },
-  { label: "Veganos", tag: "vegano" },
-  { label: "Sin lactosa", tag: "sin-lactosa" },
-  { label: "Bajo en azucar", tag: "bajo-en-azucar" },
-  { label: "Alto en proteína", tag: "alto-en-proteina" },
-  { label: "Diabéticos", tag: "para-diabeticos" },
-] as const;
+export const DIET_FILTERS = DIETARY_OPTIONS.map(({ label, slug }) => ({
+  label,
+  tag: slug,
+}));
 
 function AnimatedFilterChip({
   label,

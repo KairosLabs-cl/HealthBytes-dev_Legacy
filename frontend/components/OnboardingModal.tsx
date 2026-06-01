@@ -15,42 +15,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { Check, CheckCircle2, Salad } from "lucide-react-native";
-
-const DIETARY_OPTIONS = [
-  {
-    slug: "sin-gluten",
-    label: "Sin Gluten",
-    description: "Apto para celíacos",
-    testID: "tag-celiac",
-  },
-  {
-    slug: "para-diabeticos",
-    label: "Para diabéticos",
-    description: "Bajo índice glucémico",
-    testID: "tag-diabetic",
-  },
-  {
-    slug: "vegano",
-    label: "Vegano",
-    description: "Sin productos de origen animal",
-    testID: "tag-vegan",
-  },
-  {
-    slug: "sin-lactosa",
-    label: "Sin Lactosa",
-    description: "Apto para intolerantes",
-  },
-  {
-    slug: "bajo-en-azucar",
-    label: "Bajo en azúcar",
-    description: "Reducido en azúcares",
-  },
-  {
-    slug: "alto-en-proteina",
-    label: "Alto en proteína",
-    description: "Ideal para deportistas",
-  },
-] as const;
+import { DIETARY_OPTIONS } from "@/lib/dietaryOptions";
 
 const TOTAL_STEPS = 3;
 
@@ -289,6 +254,7 @@ function DietaryTagCard({
   isActive: boolean;
   onPress: () => void;
 }) {
+  const DietaryIcon = item.icon;
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -343,7 +309,7 @@ function DietaryTagCard({
             {isActive ? (
               <Check size={18} color="#ffffff" strokeWidth={2.8} />
             ) : (
-              <Salad size={18} color="#09090b" strokeWidth={2.2} />
+              <DietaryIcon size={18} color="#09090b" strokeWidth={2.2} />
             )}
           </View>
         </View>
