@@ -20,9 +20,7 @@
       "id": "in-progress",
       "title": "In Progress",
       "taskIds": [
-        "task-20260531-orders-payment-query-contract",
-        "task-20260531-cart-delete-response-contract",
-        "task-20260531-wishlist-toggle-concurrency"
+        "task-20260531-orders-payment-query-contract"
       ]
     },
     "done": {
@@ -31,7 +29,9 @@
       "taskIds": [
         "task-20260529-changelog-cleanup",
         "task-20260529-agent-role-routing",
-        "task-20260529-product-safety-agents"
+        "task-20260529-product-safety-agents",
+        "task-20260531-cart-delete-response-contract",
+        "task-20260531-wishlist-toggle-concurrency"
       ]
     }
   },
