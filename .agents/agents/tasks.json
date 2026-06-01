@@ -19,7 +19,11 @@
     "in-progress": {
       "id": "in-progress",
       "title": "In Progress",
-      "taskIds": []
+      "taskIds": [
+        "task-20260531-orders-payment-query-contract",
+        "task-20260531-cart-delete-response-contract",
+        "task-20260531-wishlist-toggle-concurrency"
+      ]
     },
     "done": {
       "id": "done",
@@ -66,6 +70,21 @@
       "id": "task-20260529-product-safety-agents",
       "content": "Actualizar agentes y docs IA para mejorar decisiones de producto y seguridad alimentaria en HealthBytes",
       "agent": "hermes-verifier"
+    },
+    "task-20260531-orders-payment-query-contract": {
+      "id": "task-20260531-orders-payment-query-contract",
+      "content": "Definir y corregir contrato end-to-end de consulta de órdenes pagadas y no pagadas con tests",
+      "agent": "backend-dev"
+    },
+    "task-20260531-cart-delete-response-contract": {
+      "id": "task-20260531-cart-delete-response-contract",
+      "content": "Corregir contrato end-to-end de eliminación rápida y consecutiva de ítems del carrito con tests",
+      "agent": "frontend-dev"
+    },
+    "task-20260531-wishlist-toggle-concurrency": {
+      "id": "task-20260531-wishlist-toggle-concurrency",
+      "content": "Corregir comportamiento end-to-end de likes repetidos en wishlist con tests",
+      "agent": "frontend-dev"
     }
   },
   "columnOrder": [
