@@ -22,10 +22,12 @@ export function GluestackUIProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode]);
 
+  const resolvedMode = colorScheme === "dark" ? "dark" : "light";
+
   return (
     <View
       style={[
-        config[colorScheme!],
+        config[resolvedMode],
         { flex: 1, height: "100%", width: "100%" },
         props.style,
       ]}

@@ -1,79 +1,133 @@
 /**
- * HealthBytes Design Tokens
+ * HealthBytes design tokens.
  *
- * Semantic tokens for consistent theming across the app.
- * Based on the warm, calm aesthetic from checkout-v2.
- *
- * Usage:
- * - Colors: theme.colors.surface.warm, theme.colors.ink, etc.
- * - Spacing: theme.spacing.xs, theme.spacing.md, etc.
- * - BorderRadius: theme.radius.sm, theme.radius.lg, etc.
+ * `theme` and convenience exports stay mapped to light mode during the
+ * migration. New inline styles should use `getAppTheme` or `useAppTheme`.
  */
 
-export const theme = {
-  colors: {
-    // Background surfaces
-    surface: {
-      warm: "#FCFAF8", // Main warm background
-      card: "#FFFFFF", // Elevated card surfaces
-      elevated: "#FAFAF9", // Slightly elevated
-      muted: "#F5F5F4", // Dividers, subtle backgrounds
-      overlay: "rgba(0,0,0,0.45)", // Modal overlays
-    },
-
-    // Text ink system
-    ink: {
-      primary: "#2D2926", // Primary text (warm charcoal)
-      muted: "#6B6B6B", // Secondary text
-      subtle: "#9CA3AF", // Tertiary/hints
-      inverse: "#FFFFFF", // Text on dark backgrounds
-    },
-
-    // Border colors
-    border: {
-      subtle: "#E8E6E3", // Default borders
-      focus: "#2D2926", // Focus states
-      default: "#D1D5DB", // Default gray border
-    },
-
-    // Accent colors (minimal use)
-    accent: {
-      primary: "#5C6B5A", // Muted sage green
-      hover: "#4A5649", // Darker sage
-      light: "#F0FDF4", // Light sage background
-    },
-
-    // Semantic colors
-    success: "#4A7C59", // Muted forest green
-    warning: "#B8860B", // Muted gold
-    error: "#9B4D4D", // Muted terracotta
-    info: "#5C6B5A", // Same as accent
-
-    // Brand
-    brand: {
-      green: "#2E5C3A", // Primary brand green
-      greenLight: "#F0FDF4", // Light green background
-    },
-
-    // Legacy support (mapped to new system)
-    legacy: {
-      white: "#FFFFFF",
-      black: "#111827",
-      gray: {
-        50: "#F9FAFB",
-        100: "#F3F4F6",
-        200: "#E5E7EB",
-        300: "#D1D5DB",
-        400: "#9CA3AF",
-        500: "#6B7280",
-        600: "#4B5563",
-        700: "#374151",
-        800: "#1F2937",
-        900: "#111827",
-      },
+const lightColors = {
+  surface: {
+    warm: "#FCFAF8",
+    card: "#FFFFFF",
+    elevated: "#FAFAF9",
+    muted: "#F5F5F4",
+    overlay: "rgba(0,0,0,0.45)",
+  },
+  ink: {
+    primary: "#2D2926",
+    muted: "#6B6B6B",
+    subtle: "#9CA3AF",
+    inverse: "#FFFFFF",
+  },
+  border: {
+    subtle: "#E8E6E3",
+    focus: "#2D2926",
+    default: "#D1D5DB",
+  },
+  icon: {
+    primary: "#2D2926",
+    muted: "#6B6B6B",
+    accent: "#2E5C3A",
+  },
+  accent: {
+    primary: "#5C6B5A",
+    hover: "#4A5649",
+    light: "#F0FDF4",
+  },
+  state: {
+    success: "#4A7C59",
+    warning: "#B8860B",
+    error: "#9B4D4D",
+    info: "#5C6B5A",
+  },
+  success: "#4A7C59",
+  warning: "#B8860B",
+  error: "#9B4D4D",
+  info: "#5C6B5A",
+  brand: {
+    green: "#2E5C3A",
+    greenLight: "#F0FDF4",
+  },
+  legacy: {
+    white: "#FFFFFF",
+    black: "#111827",
+    gray: {
+      50: "#F9FAFB",
+      100: "#F3F4F6",
+      200: "#E5E7EB",
+      300: "#D1D5DB",
+      400: "#9CA3AF",
+      500: "#6B7280",
+      600: "#4B5563",
+      700: "#374151",
+      800: "#1F2937",
+      900: "#111827",
     },
   },
+} as const;
 
+const darkColors = {
+  surface: {
+    warm: "#1C1C1E",
+    card: "#2C2C2E",
+    elevated: "#3A3A3C",
+    muted: "#303032",
+    overlay: "rgba(0,0,0,0.65)",
+  },
+  ink: {
+    primary: "#F5F0EB",
+    muted: "#BEB9B4",
+    subtle: "#9CA3AF",
+    inverse: "#1C1C1E",
+  },
+  border: {
+    subtle: "#3A3A3C",
+    focus: "#F5F0EB",
+    default: "#525254",
+  },
+  icon: {
+    primary: "#F5F0EB",
+    muted: "#BEB9B4",
+    accent: "#4CAF72",
+  },
+  accent: {
+    primary: "#769974",
+    hover: "#8CAE8A",
+    light: "#203E2A",
+  },
+  state: {
+    success: "#6EB585",
+    warning: "#E0B44B",
+    error: "#DB8080",
+    info: "#7EA4C9",
+  },
+  success: "#6EB585",
+  warning: "#E0B44B",
+  error: "#DB8080",
+  info: "#7EA4C9",
+  brand: {
+    green: "#4CAF72",
+    greenLight: "#203E2A",
+  },
+  legacy: {
+    white: "#1C1C1E",
+    black: "#F5F0EB",
+    gray: {
+      50: "#303032",
+      100: "#3A3A3C",
+      200: "#525254",
+      300: "#6B6B6D",
+      400: "#8E8E93",
+      500: "#AEAEB2",
+      600: "#BEB9B4",
+      700: "#D1CDCA",
+      800: "#E5E1DE",
+      900: "#F5F0EB",
+    },
+  },
+} as const;
+
+const sharedTokens = {
   spacing: {
     xs: 4,
     sm: 8,
@@ -85,7 +139,6 @@ export const theme = {
     "4xl": 48,
     "5xl": 64,
   },
-
   radius: {
     sm: 4,
     md: 8,
@@ -94,7 +147,6 @@ export const theme = {
     "2xl": 24,
     full: 9999,
   },
-
   shadows: {
     soft: {
       1: "0px 0px 10px rgba(38, 38, 38, 0.1)",
@@ -107,7 +159,6 @@ export const theme = {
     },
     lift: "0px 2px 4px rgba(45, 41, 38, 0.04), 0px 4px 12px rgba(45, 41, 38, 0.04)",
   },
-
   typography: {
     fontSize: {
       xs: 10,
@@ -134,8 +185,6 @@ export const theme = {
       wider: 0.8,
     },
   },
-
-  // Animation durations
   animation: {
     fast: 150,
     normal: 300,
@@ -143,7 +192,25 @@ export const theme = {
   },
 } as const;
 
-// Export individual tokens for convenience
+export const lightTheme = {
+  colors: lightColors,
+  ...sharedTokens,
+} as const;
+
+export const darkTheme = {
+  colors: darkColors,
+  ...sharedTokens,
+} as const;
+
+export type AppThemeMode = "light" | "dark";
+export type AppTheme = typeof lightTheme | typeof darkTheme;
+
+export function getAppTheme(mode: AppThemeMode): AppTheme {
+  return mode === "dark" ? darkTheme : lightTheme;
+}
+
+// Transitional compatibility for screens not migrated to useAppTheme yet.
+export const theme = lightTheme;
 export const colors = theme.colors;
 export const spacing = theme.spacing;
 export const radius = theme.radius;

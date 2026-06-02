@@ -14,6 +14,7 @@ import { RefreshCw, Package } from "lucide-react-native";
 import { useProductFilters } from "@/store/productFiltersStore";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { Product } from "@/types/product";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 type SkeletonProductItem = { id: string; _isSkeleton: true };
 type ProductListItem = Product | SkeletonProductItem;
@@ -54,6 +55,7 @@ export default function AllProductsScreen() {
   const toggleDietaryTag = useProductFilters((state) => state.toggleDietaryTag);
   const clearFilters = useProductFilters((state) => state.clearFilters);
   const [refreshing, setRefreshing] = useState(false);
+  const { palette, statusBarStyle } = useAppTheme();
 
   const {
     data: products,
@@ -107,7 +109,7 @@ export default function AllProductsScreen() {
           toggleDietaryTag={toggleDietaryTag}
         />
         <View className="mt-4 mb-3 flex-row items-center justify-between px-4">
-          <Text className="text-lg font-black tracking-[-0.2px] text-[#09090b]">
+          <Text className="text-lg font-black tracking-[-0.2px] text-ink">
             {dietaryTags.length > 0
               ? "Productos filtrados"
               : "Todo el catalogo"}
@@ -131,8 +133,8 @@ export default function AllProductsScreen() {
   );
 
   return (
-    <View className="flex-1 bg-[#fafafa]">
-      <StatusBar style="dark" />
+    <View className="flex-1 bg-surface-warm">
+      <StatusBar style={statusBarStyle} />
       <Stack.Screen options={{ headerShown: false }} />
 
       <ScreenHeader
@@ -148,13 +150,13 @@ export default function AllProductsScreen() {
           </Text>
           <Pressable
             onPress={() => refetch()}
-            className="flex-row items-center gap-2 rounded-2xl bg-[#09090b] px-6 py-3"
+            className="flex-row items-center gap-2 rounded-2xl bg-ink px-6 py-3"
             style={{ minHeight: 48 }}
             accessibilityRole="button"
             accessibilityLabel="Reintentar cargar productos"
           >
-            <RefreshCw size={18} color="white" />
-            <Text className="text-white font-bold">Reintentar</Text>
+            <RefreshCw size={18} color={palette.colors.ink.inverse} />
+            <Text className="text-ink-inverse font-bold">Reintentar</Text>
           </Pressable>
         </View>
       ) : (
@@ -175,11 +177,11 @@ export default function AllProductsScreen() {
             estimatedItemSize={280}
             ListEmptyComponent={
               isLoading ? null : (
-                <View className="items-start rounded-[28px] border border-slate-200/70 bg-white p-6">
-                  <View className="mb-5 h-14 w-14 items-center justify-center rounded-[22px] bg-slate-100">
-                    <Package size={28} color="#09090b" />
+                <View className="items-start rounded-[28px] border border-border-subtle bg-surface-card p-6">
+                  <View className="mb-5 h-14 w-14 items-center justify-center rounded-[22px] bg-surface-muted">
+                    <Package size={28} color={palette.colors.icon.primary} />
                   </View>
-                  <Text className="text-base leading-6 text-zinc-600">
+                  <Text className="text-base leading-6 text-ink-muted">
                     {dietaryTags.length > 0
                       ? "No hay productos para estos filtros"
                       : "No hay productos disponibles por ahora."}
@@ -187,12 +189,12 @@ export default function AllProductsScreen() {
                   {dietaryTags.length > 0 && (
                     <Pressable
                       onPress={clearFilters}
-                      className="mt-4 rounded-2xl bg-[#09090b] px-6 py-3"
+                      className="mt-4 rounded-2xl bg-ink px-6 py-3"
                       style={{ minHeight: 48 }}
                       accessibilityRole="button"
                       accessibilityLabel="Ver todos los productos"
                     >
-                      <Text className="text-white font-semibold">
+                      <Text className="text-ink-inverse font-semibold">
                         Ver todos
                       </Text>
                     </Pressable>

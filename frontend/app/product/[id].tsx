@@ -16,6 +16,7 @@ import ReviewModal from "@/components/ReviewModal";
 import StockBadge from "@/components/StockBadge";
 import { Image } from "@/components/ui/image";
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/hooks/useAppTheme";
 import { formatPrice } from "@/lib/formatPrice";
 import { useCart, selectCartItemCount } from "@/store/cartStore";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
@@ -59,10 +60,10 @@ function ProductDetailSkeleton() {
   const shimmer = useShimmerStyle();
 
   return (
-    <View className="flex-1 bg-white">
+    <View className="flex-1 bg-surface-card">
       {/* Image placeholder */}
       <Animated.View style={shimmer}>
-        <View className="bg-gray-50 items-center justify-center py-4">
+        <View className="bg-surface-elevated items-center justify-center py-4">
           <View className="w-full h-64" />
         </View>
       </Animated.View>
@@ -71,37 +72,37 @@ function ProductDetailSkeleton() {
         {/* Badges */}
         <View className="flex-row gap-2 mb-3">
           <Animated.View style={shimmer}>
-            <View className="h-6 w-20 bg-gray-200 rounded-full" />
+            <View className="h-6 w-20 bg-surface-muted rounded-full" />
           </Animated.View>
           <Animated.View style={shimmer}>
-            <View className="h-6 w-24 bg-gray-200 rounded-full" />
+            <View className="h-6 w-24 bg-surface-muted rounded-full" />
           </Animated.View>
         </View>
 
         {/* Title + Price row */}
         <View className="flex-row items-start justify-between mb-3">
           <Animated.View style={shimmer}>
-            <View className="h-7 bg-gray-200 rounded w-48 mr-4" />
+            <View className="h-7 bg-surface-muted rounded w-48 mr-4" />
           </Animated.View>
           <Animated.View style={shimmer}>
-            <View className="h-7 bg-gray-200 rounded w-20" />
+            <View className="h-7 bg-surface-muted rounded w-20" />
           </Animated.View>
         </View>
 
         {/* Stock */}
         <Animated.View style={shimmer}>
-          <View className="h-4 bg-gray-200 rounded w-1/2 mb-5" />
+          <View className="h-4 bg-surface-muted rounded w-1/2 mb-5" />
         </Animated.View>
 
         {/* Description */}
         <Animated.View style={shimmer}>
-          <View className="h-4 bg-gray-200 rounded w-full mb-2" />
+          <View className="h-4 bg-surface-muted rounded w-full mb-2" />
         </Animated.View>
         <Animated.View style={shimmer}>
-          <View className="h-4 bg-gray-200 rounded w-5/6 mb-2" />
+          <View className="h-4 bg-surface-muted rounded w-5/6 mb-2" />
         </Animated.View>
         <Animated.View style={shimmer}>
-          <View className="h-4 bg-gray-200 rounded w-2/3" />
+          <View className="h-4 bg-surface-muted rounded w-2/3" />
         </Animated.View>
       </View>
     </View>
@@ -113,6 +114,8 @@ export default function ProductDetailsScreen() {
 
   const router = useRouter();
   const { isSignedIn } = useAuth();
+  const { palette, statusBarStyle } = useAppTheme();
+  const { colors } = palette;
   const insets = useSafeAreaInsets();
   const addProduct = useCart((state) => state.addProduct);
   const decrementProduct = useCart((state) => state.decrementProduct);
@@ -148,7 +151,7 @@ export default function ProductDetailsScreen() {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: "#111827",
+    backgroundColor: colors.ink.primary,
     alignItems: "center" as const,
     justifyContent: "center" as const,
     opacity: flyOpacity.value,
@@ -360,7 +363,7 @@ export default function ProductDetailsScreen() {
 
   if (error) {
     return (
-      <SafeAreaView className="flex-1 bg-[#fafafa]" edges={["top"]}>
+      <SafeAreaView className="flex-1 bg-surface-warm" edges={["top"]}>
         <Stack.Screen options={{ headerShown: false }} />
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-red-500 text-lg mb-4">
@@ -368,13 +371,13 @@ export default function ProductDetailsScreen() {
           </Text>
           <Pressable
             onPress={() => refetch()}
-            className="flex-row items-center gap-2 rounded-2xl bg-[#09090b] px-6 py-3"
+            className="flex-row items-center gap-2 rounded-2xl bg-ink px-6 py-3"
             style={{ minHeight: 48 }}
             accessibilityRole="button"
             accessibilityLabel="Reintentar cargar producto"
           >
-            <RefreshCw size={18} color="white" />
-            <Text className="text-white font-bold">Reintentar</Text>
+            <RefreshCw size={18} color={colors.ink.inverse} />
+            <Text className="text-ink-inverse font-bold">Reintentar</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -393,8 +396,8 @@ export default function ProductDetailsScreen() {
   const productStock = product.stock ?? 0;
 
   return (
-    <View className="flex-1 bg-[#fafafa]">
-      <StatusBar style="dark" />
+    <View className="flex-1 bg-surface-warm">
+      <StatusBar style={statusBarStyle} />
       <Stack.Screen options={{ headerShown: false }} />
       <ScreenHeader title="Producto" icon={Package} showBackButton={true} />
 
@@ -413,7 +416,7 @@ export default function ProductDetailsScreen() {
       >
         <Pressable
           onPress={() => router.push("/cart")}
-          className="h-12 w-12 items-center justify-center rounded-2xl bg-[#09090b]"
+          className="h-12 w-12 items-center justify-center rounded-2xl bg-ink"
           accessibilityRole="button"
           accessibilityLabel={
             cartItemCount > 0
@@ -425,7 +428,7 @@ export default function ProductDetailsScreen() {
           }}
         >
           <View>
-            <ShoppingCart size={24} color="white" />
+            <ShoppingCart size={24} color={colors.ink.inverse} />
             {cartItemCount > 0 && (
               <View className="absolute -top-2 -right-2 bg-red-500 rounded-full min-w-[18px] h-[18px] px-1 items-center justify-center">
                 <Text className="text-white text-[10px] font-bold">
@@ -445,14 +448,14 @@ export default function ProductDetailsScreen() {
         {/* Hero Image */}
         <Animated.View entering={FadeIn.duration(400)}>
           <View className="px-4 py-4">
-            <View className="items-center justify-center overflow-hidden rounded-[28px] border border-slate-200/70 bg-white py-6">
+            <View className="items-center justify-center overflow-hidden rounded-[28px] border border-border-subtle bg-surface-card py-6">
               <Image
                 source={{ uri: product.image }}
                 className="h-72 w-full"
                 resizeMode="contain"
                 alt={`Imagen de ${product.name}`}
               />
-              <View className="absolute bottom-0 h-12 w-full bg-slate-50/80" />
+              <View className="absolute bottom-0 h-12 w-full bg-surface-elevated/80" />
             </View>
           </View>
         </Animated.View>
@@ -469,7 +472,7 @@ export default function ProductDetailsScreen() {
             className="mt-3 mb-4"
           >
             <Text
-              className="mb-2 text-3xl font-black leading-tight text-[#09090b]"
+              className="mb-2 text-3xl font-black leading-tight text-ink"
               style={{ letterSpacing: -0.5 }}
             >
               {product.name}
@@ -501,7 +504,7 @@ export default function ProductDetailsScreen() {
           >
             <View className="flex-row items-baseline gap-3">
               <Text
-                className="text-[18px] font-black text-[#09090b]"
+                className="text-[18px] font-black text-ink"
                 style={{ letterSpacing: -0.2 }}
               >
                 {formatPrice(product.price)}
@@ -527,21 +530,21 @@ export default function ProductDetailsScreen() {
           </Animated.View>
 
           {/* Separator */}
-          <View className="mb-6 h-px bg-slate-200/70" />
+          <View className="mb-6 h-px bg-border-subtle" />
 
           {/* Description */}
           <View className="mb-6">
             <Text className="mb-2 text-xs font-black uppercase tracking-[1px] text-zinc-500">
               Descripción
             </Text>
-            <Text className="max-w-[520px] text-base leading-6 text-zinc-700">
+            <Text className="max-w-[520px] text-base leading-6 text-ink-muted">
               {product.description ||
-                "Producto de alta calidad especialmente seleccionado para personas con restricciones alimentarias. Ingredientes cuidadosamente verificados para garantizar su seguridad."}
+                "Consulta ingredientes, etiquetado e información disponible antes de decidir si este producto se ajusta a tus restricciones alimentarias."}
             </Text>
           </View>
 
           {/* Separator */}
-          <View className="mb-6 h-px bg-slate-200/70" />
+          <View className="mb-6 h-px bg-border-subtle" />
 
           {/* Nutritional Info */}
           {nutritionData && (
@@ -549,26 +552,26 @@ export default function ProductDetailsScreen() {
               <Text className="mb-3 text-xs font-black uppercase tracking-[1px] text-zinc-500">
                 Información nutricional
               </Text>
-              <View className="rounded-[24px] border border-slate-200/70 bg-white p-4">
+              <View className="rounded-[24px] border border-border-subtle bg-surface-card p-4">
                 <View className="gap-3">
                   <View className="flex-row justify-between py-2">
-                    <Text className="text-sm text-gray-600 font-medium">Calorías</Text>
-                    <Text className="text-sm font-bold text-gray-900">{nutritionData.calories} kcal</Text>
+                    <Text className="text-sm text-ink-muted font-medium">Calorías</Text>
+                    <Text className="text-sm font-bold text-ink">{nutritionData.calories} kcal</Text>
                   </View>
-                  <View className="h-px bg-gray-200" />
+                  <View className="h-px bg-border-subtle" />
                   <View className="flex-row justify-between py-2">
-                    <Text className="text-sm text-gray-600 font-medium">Proteínas</Text>
-                    <Text className="text-sm font-bold text-gray-900">{nutritionData.protein}g</Text>
+                    <Text className="text-sm text-ink-muted font-medium">Proteínas</Text>
+                    <Text className="text-sm font-bold text-ink">{nutritionData.protein}g</Text>
                   </View>
-                  <View className="h-px bg-gray-200" />
+                  <View className="h-px bg-border-subtle" />
                   <View className="flex-row justify-between py-2">
-                    <Text className="text-sm text-gray-600 font-medium">Carbohidratos</Text>
-                    <Text className="text-sm font-bold text-gray-900">{nutritionData.carbs}g</Text>
+                    <Text className="text-sm text-ink-muted font-medium">Carbohidratos</Text>
+                    <Text className="text-sm font-bold text-ink">{nutritionData.carbs}g</Text>
                   </View>
-                  <View className="h-px bg-gray-200" />
+                  <View className="h-px bg-border-subtle" />
                   <View className="flex-row justify-between py-2">
-                    <Text className="text-sm text-gray-600 font-medium">Grasas</Text>
-                    <Text className="text-sm font-bold text-gray-900">{nutritionData.fat}g</Text>
+                    <Text className="text-sm text-ink-muted font-medium">Grasas</Text>
+                    <Text className="text-sm font-bold text-ink">{nutritionData.fat}g</Text>
                   </View>
                 </View>
               </View>
@@ -579,7 +582,7 @@ export default function ProductDetailsScreen() {
           {product.vendor_name && otherVendorProducts.length > 0 && (
             <View className="mt-8 mb-4">
               <View className="flex-row items-center justify-between mb-4">
-                <Text className="text-lg font-black tracking-[-0.2px] text-[#09090b]">
+                <Text className="text-lg font-black tracking-[-0.2px] text-ink">
                   Más de {product.vendor_name}
                 </Text>
                 <Pressable
@@ -588,14 +591,14 @@ export default function ProductDetailsScreen() {
                       `/search?q=${encodeURIComponent(product.vendor_name!)}`
                     )
                   }
-                  className="h-11 flex-row items-center rounded-2xl bg-white px-3 active:bg-slate-100"
+                  className="h-11 flex-row items-center rounded-2xl bg-surface-card px-3 active:bg-surface-muted"
                   accessibilityRole="button"
                   accessibilityLabel={`Ver tienda de ${product.vendor_name}`}
                 >
-                  <Text className="text-sm font-bold text-gray-700 mr-1">
+                  <Text className="text-sm font-bold text-ink-muted mr-1">
                     Ver tienda
                   </Text>
-                  <ChevronRight size={14} color="#374151" />
+                  <ChevronRight size={14} color={colors.icon.muted} />
                 </Pressable>
               </View>
               <View className="-mx-5">
@@ -617,17 +620,17 @@ export default function ProductDetailsScreen() {
           {/* Product Reviews */}
           <View className="mt-6 mb-8 px-1">
             <View className="mb-4 flex-row items-center justify-between">
-              <Text className="text-xl font-black tracking-[-0.2px] text-[#09090b]">
+              <Text className="text-xl font-black tracking-[-0.2px] text-ink">
                 Reseñas
               </Text>
               {rating && rating.review_count > 0 && (
-                <View className="flex-row items-center gap-2 rounded-2xl bg-white px-3 py-1.5">
+                <View className="flex-row items-center gap-2 rounded-2xl bg-surface-card px-3 py-1.5">
                   <RatingStars
                     rating={rating.avg_rating}
                     size={16}
                     showFraction
                   />
-                  <Text className="text-sm text-gray-500 font-medium">
+                  <Text className="text-sm text-ink-subtle font-medium">
                     ({rating.review_count})
                   </Text>
                 </View>
@@ -663,8 +666,8 @@ export default function ProductDetailsScreen() {
                 )}
               </>
             ) : (
-              <View className="rounded-[24px] border border-slate-200/70 bg-white p-6">
-                <Text className="text-center text-zinc-600">
+              <View className="rounded-[24px] border border-border-subtle bg-surface-card p-6">
+                <Text className="text-center text-ink-muted">
                   Sé el primero en valorar este producto
                 </Text>
               </View>
@@ -673,11 +676,11 @@ export default function ProductDetailsScreen() {
             {/* Botón para escribir reseña */}
             <Pressable
               onPress={() => setReviewModalVisible(true)}
-              className="mt-4 rounded-2xl bg-[#09090b] py-3.5"
+              className="mt-4 rounded-2xl bg-ink py-3.5"
               accessibilityRole="button"
               accessibilityLabel={`Escribir una reseña de ${product.name}`}
             >
-              <Text className="text-white text-center font-bold">
+              <Text className="text-ink-inverse text-center font-bold">
                 Escribir una reseña
               </Text>
             </Pressable>
@@ -698,7 +701,7 @@ export default function ProductDetailsScreen() {
 
       {/* Sticky CTA bar */}
       <View
-        className="absolute bottom-0 left-0 right-0 border-t border-slate-200/70 bg-white px-5 pt-3"
+        className="absolute bottom-0 left-0 right-0 border-t border-border-subtle bg-surface-card px-5 pt-3"
         style={{
           paddingBottom: insets.bottom + 12,
           boxShadow: "0 -18px 40px -30px rgba(15,23,42,0.45)",
@@ -715,47 +718,47 @@ export default function ProductDetailsScreen() {
             {!isSignedIn && (
               <Pressable
                 onPress={() => router.push("/(auth)/login")}
-                className="h-10 flex-row items-center gap-1 rounded-xl bg-[#09090b] px-3"
+                className="h-10 flex-row items-center gap-1 rounded-xl bg-ink px-3"
                 accessibilityRole="button"
                 accessibilityLabel="Iniciar sesión"
               >
-                <LogIn size={14} color="#ffffff" strokeWidth={2.4} />
-                <Text className="text-xs font-bold text-white">Entrar</Text>
+                <LogIn size={14} color={colors.ink.inverse} strokeWidth={2.4} />
+                <Text className="text-xs font-bold text-ink-inverse">Entrar</Text>
               </Pressable>
             )}
           </View>
         )}
         <View className="flex-row items-center gap-2">
           {/* Favorite button */}
-          <View className="h-12 w-12 items-center justify-center rounded-2xl border border-slate-200/70 bg-slate-50">
+          <View className="h-12 w-12 items-center justify-center rounded-2xl border border-border-subtle bg-surface-muted">
             <FavoriteButton productId={Number(id)} size={20} />
           </View>
 
           {/* Quantity selector — visible only when item already in cart */}
           {currentInCart > 0 && (
-            <View className="h-12 flex-row items-center overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+            <View className="h-12 flex-row items-center overflow-hidden rounded-2xl border border-border-default bg-surface-muted">
               <Pressable
                 onPress={handleDecrement}
-                className="w-11 h-12 items-center justify-center active:bg-gray-200"
+                className="w-11 h-12 items-center justify-center active:bg-surface-elevated"
                 style={{ minWidth: 44 }}
                 accessibilityRole="button"
                 accessibilityLabel={`Quitar una unidad de ${product.name}`}
               >
-                <Minus size={16} color="#111827" />
+                <Minus size={16} color={colors.icon.primary} />
               </Pressable>
-              <Text className="text-base font-bold w-6 text-center text-gray-900">
+              <Text className="text-base font-bold w-6 text-center text-ink">
                 {currentInCart}
               </Text>
               <Pressable
                 onPress={handleAddToCart}
                 disabled={!canAddMore}
-                className="w-11 h-12 items-center justify-center active:bg-gray-200"
+                className="w-11 h-12 items-center justify-center active:bg-surface-elevated"
                 style={{ minWidth: 44 }}
                 accessibilityRole="button"
                 accessibilityLabel={`Agregar una unidad de ${product.name}`}
                 accessibilityState={{ disabled: !canAddMore }}
               >
-                <Plus size={16} color={canAddMore ? "#111827" : "#D1D5DB"} />
+                <Plus size={16} color={canAddMore ? colors.icon.primary : colors.ink.subtle} />
               </Pressable>
             </View>
           )}
@@ -767,7 +770,7 @@ export default function ProductDetailsScreen() {
               onPress={handleAddToCart}
               disabled={!canAddMore}
               className={`h-12 flex-row items-center justify-center gap-2 rounded-2xl ${
-                canAddMore ? "bg-[#09090b] active:opacity-80" : "bg-slate-300"
+                canAddMore ? "bg-ink active:opacity-80" : "bg-surface-muted"
               }`}
               style={{ minHeight: 48 }}
               accessibilityRole="button"
@@ -780,10 +783,10 @@ export default function ProductDetailsScreen() {
             >
               <ShoppingCart
                 size={18}
-                color={canAddMore ? "white" : "#9CA3AF"}
+                color={canAddMore ? colors.ink.inverse : colors.ink.subtle}
               />
               <Text
-                className={`font-semibold text-base ${canAddMore ? "text-white" : "text-gray-500"}`}
+                className={`font-semibold text-base ${canAddMore ? "text-ink-inverse" : "text-ink-subtle"}`}
               >
                 {ctaLabel()}
               </Text>
@@ -794,7 +797,7 @@ export default function ProductDetailsScreen() {
 
       {/* Flying cart bubble — renders above everything, no touch */}
       <Animated.View style={flyingStyle} pointerEvents="none">
-        <ShoppingCart size={18} color="white" />
+        <ShoppingCart size={18} color={colors.ink.inverse} />
       </Animated.View>
     </View>
   );

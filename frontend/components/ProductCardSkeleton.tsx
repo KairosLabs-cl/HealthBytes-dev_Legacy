@@ -36,35 +36,35 @@ function ProductCardSkeleton({ shimmerStyle }: Props) {
   const style = shimmerStyle ?? localAnimatedStyle;
 
   return (
-    <View className="flex-1 overflow-hidden rounded-[24px] border border-slate-200/60 bg-white">
+    <View className="flex-1 overflow-hidden rounded-[24px] border border-border-subtle bg-surface-card">
       {/* Image placeholder */}
       <Animated.View style={[{ aspectRatio: 1 }, style]}>
-        <View className="h-full w-full bg-slate-200" />
+        <View className="h-full w-full bg-surface-elevated" />
       </Animated.View>
       {/* Content area */}
       <View className="px-3 pt-2.5 pb-3">
         {/* Rating placeholder */}
         <Animated.View style={style}>
-          <View className="mb-1 h-3 w-10 rounded bg-slate-200" />
+          <View className="mb-1 h-3 w-10 rounded bg-surface-elevated" />
         </Animated.View>
         {/* Name placeholder */}
         <Animated.View style={style}>
-          <View className="mb-1 h-4 w-4/5 rounded bg-slate-200" />
+          <View className="mb-1 h-4 w-4/5 rounded bg-surface-elevated" />
         </Animated.View>
         <Animated.View style={style}>
-          <View className="mb-1.5 h-4 w-3/5 rounded bg-slate-200" />
+          <View className="mb-1.5 h-4 w-3/5 rounded bg-surface-elevated" />
         </Animated.View>
         {/* Tag placeholder */}
         <Animated.View style={style}>
-          <View className="mb-2 h-5 w-20 rounded-full bg-slate-100" />
+          <View className="mb-2 h-5 w-20 rounded-full bg-surface-muted" />
         </Animated.View>
         {/* Price placeholder */}
         <Animated.View style={style}>
-          <View className="mb-2.5 h-5 w-1/3 rounded bg-slate-200" />
+          <View className="mb-2.5 h-5 w-1/3 rounded bg-surface-elevated" />
         </Animated.View>
         {/* Button placeholder */}
         <Animated.View style={style}>
-          <View className="h-11 w-full rounded-2xl bg-slate-200" />
+          <View className="h-11 w-full rounded-2xl bg-surface-elevated" />
         </Animated.View>
       </View>
     </View>

@@ -3,9 +3,7 @@ import { Text } from "./ui/text";
 import { Search, ArrowLeft, X } from "lucide-react-native";
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "expo-router";
-import { theme } from "@/lib/theme";
-
-const { colors } = theme;
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 type HeaderProps = {
   userName: string;
@@ -24,6 +22,8 @@ export function Header({
 }: HeaderProps) {
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const router = useRouter();
+  const { palette } = useAppTheme();
+  const { colors } = palette;
 
   const [salutation, setSalutation] = useState<string>("");
 
@@ -69,7 +69,7 @@ export function Header({
         paddingHorizontal: 20,
         paddingTop: 20,
         paddingBottom: 12,
-        backgroundColor: "#fafafa",
+        backgroundColor: colors.surface.warm,
       }}
     >
       {showBackButton ? (
@@ -105,7 +105,7 @@ export function Header({
               style={{
                 fontSize: 24,
                 fontWeight: "900",
-                color: "#09090b",
+                color: colors.ink.primary,
                 letterSpacing: -0.8,
                 lineHeight: 28,
               }}
@@ -122,11 +122,11 @@ export function Header({
           flexDirection: "row",
           alignItems: "center",
           borderRadius: 16,
-          backgroundColor: "#f1f5f9",
+          backgroundColor: colors.surface.muted,
           paddingHorizontal: 14,
           paddingVertical: 10,
           borderWidth: 1,
-          borderColor: "rgba(226,232,240,0.8)",
+          borderColor: colors.border.subtle,
         }}
       >
         <Pressable

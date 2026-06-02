@@ -7,14 +7,16 @@ import { Text } from "@/components/ui/text";
 import { Button, ButtonText } from "@/components/ui/button";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { CreditCard } from "lucide-react-native";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 export default function PaymentsScreen() {
   const router = useRouter();
+  const { palette, statusBarStyle } = useAppTheme();
 
   return (
     <AuthGate message="Inicia sesión para ver tu historial de pagos.">
-      <SafeAreaView className="flex-1 bg-[#fafafa]" edges={["top"]}>
-        <StatusBar style="dark" />
+      <SafeAreaView className="flex-1 bg-surface-warm" edges={["top"]}>
+        <StatusBar style={statusBarStyle} />
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
           title="Métodos de pago"
@@ -23,24 +25,27 @@ export default function PaymentsScreen() {
         />
 
         <View className="flex-1 px-6 pt-6">
-          <Text className="mb-2 text-2xl font-black tracking-[-0.4px] text-[#09090b]">
+          <Text className="mb-2 text-2xl font-black tracking-[-0.4px] text-ink">
             Métodos de pago
           </Text>
-          <Text className="text-gray-600 mb-6">
+          <Text className="text-ink-muted mb-6">
             Administra tus tarjetas y métodos preferidos.
           </Text>
 
-          <View className="mb-6 rounded-[24px] border border-slate-200/70 bg-white p-4">
-            <Text className="text-gray-700">
+          <View
+            className="mb-6 rounded-[24px] border border-border-subtle bg-surface-card p-4"
+            style={{ borderColor: palette.colors.border.subtle }}
+          >
+            <Text className="text-ink-muted">
               Próximamente: tarjetas guardadas y pago rápido.
             </Text>
           </View>
 
           <Button
             onPress={() => router.back()}
-            className="rounded-2xl bg-[#09090b]"
+            className="rounded-2xl bg-ink"
           >
-            <ButtonText className="text-white">Volver</ButtonText>
+            <ButtonText className="text-ink-inverse">Volver</ButtonText>
           </Button>
         </View>
       </SafeAreaView>

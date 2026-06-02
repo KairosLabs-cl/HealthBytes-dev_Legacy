@@ -1,4 +1,5 @@
 import { HStack } from "@/components/ui/hstack";
+import { useAppTheme } from "@/hooks/useAppTheme";
 import { Check } from "lucide-react-native";
 import { Text, View } from "react-native";
 
@@ -13,6 +14,8 @@ export function StepIndicator({
   totalSteps,
   steps,
 }: StepIndicatorProps) {
+  const { palette } = useAppTheme();
+
   return (
     <View className="mb-8">
       <HStack space="md" className="items-center justify-between">
@@ -28,22 +31,26 @@ export function StepIndicator({
                 className="mb-2 h-10 w-10 items-center justify-center rounded-2xl border"
                 style={{
                   backgroundColor: isCompleted
-                    ? "#22c55e"
+                    ? palette.colors.state.success
                     : isActive
-                      ? "#09090b"
-                      : "#ffffff",
+                      ? palette.colors.ink.primary
+                      : palette.colors.surface.card,
                   borderColor:
                     isCompleted || isActive
                       ? "transparent"
-                      : "rgba(226,232,240,0.9)",
+                      : palette.colors.border.subtle,
                 }}
               >
                 {isCompleted ? (
-                  <Check size={16} color="#ffffff" strokeWidth={2.8} />
+                  <Check
+                    size={16}
+                    color={palette.colors.ink.inverse}
+                    strokeWidth={2.8}
+                  />
                 ) : (
                   <Text
                     className={`text-sm font-bold ${
-                      isActive ? "text-white" : "text-zinc-500"
+                      isActive ? "text-ink-inverse" : "text-ink-subtle"
                     }`}
                   >
                     {stepNumber}
@@ -54,7 +61,7 @@ export function StepIndicator({
               {/* Label */}
               <Text
                 className={`text-xs font-semibold text-center ${
-                  isActive ? "text-[#09090b]" : "text-zinc-500"
+                  isActive ? "text-ink" : "text-ink-subtle"
                 }`}
               >
                 {step}
@@ -65,9 +72,9 @@ export function StepIndicator({
       </HStack>
 
       {/* Progress Bar */}
-      <View className="mt-4 h-1 overflow-hidden rounded-full bg-slate-200">
+      <View className="mt-4 h-1 overflow-hidden rounded-full bg-border-subtle">
         <View
-          className="h-full rounded-full bg-[#09090b]"
+          className="h-full rounded-full bg-ink"
           style={{ width: `${((currentStep - 1) / (totalSteps - 1)) * 100}%` }}
         />
       </View>

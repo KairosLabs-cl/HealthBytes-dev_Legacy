@@ -9,6 +9,7 @@ import DiscountsBar from "@/components/DiscountsBar";
 import RecommendationsBar from "@/components/RecommendationsBar";
 import { Text } from "@/components/ui/text";
 import { useBreakpointValue } from "@/components/ui/utils/use-break-point-value";
+import { useAppTheme } from "@/hooks/useAppTheme";
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { usePreferencesStore } from "@/store/preferencesStore";
 import { DietaryTag, useProductFilters } from "@/store/productFiltersStore";
@@ -242,12 +243,13 @@ HeroBanner.displayName = "HeroBanner";
 const GuestBanner = React.memo(() => {
   const { isSignedIn } = useAuth();
   const router = useRouter();
+  const { palette } = useAppTheme();
 
   if (isSignedIn) return null;
 
   return (
     <View className="mx-4 mt-3 flex-row items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3">
-      <View className="h-11 w-11 items-center justify-center rounded-2xl bg-white">
+      <View className="h-11 w-11 items-center justify-center rounded-2xl bg-surface-card">
         <Utensils size={20} color="#22c55e" strokeWidth={2.3} />
       </View>
       <Text className="flex-1 text-xs font-semibold leading-5 text-emerald-950">
@@ -255,11 +257,11 @@ const GuestBanner = React.memo(() => {
       </Text>
       <Pressable
         onPress={() => router.push("/(auth)/login")}
-        className="h-11 min-w-11 items-center justify-center rounded-2xl bg-[#09090b] px-3"
+        className="h-11 min-w-11 items-center justify-center rounded-2xl bg-ink px-3"
         accessibilityRole="button"
         accessibilityLabel="Entrar a HealthBytes"
       >
-        <LogIn size={16} color="#ffffff" strokeWidth={2.5} />
+        <LogIn size={16} color={palette.colors.ink.inverse} strokeWidth={2.5} />
       </Pressable>
     </View>
   );
@@ -335,7 +337,7 @@ const HomeListHeader = React.memo(
       <HomeFavorites products={products} onSeeAll={onSeeAllFavorites} />
 
       <View className="mt-5 mb-3 flex-row items-center justify-between px-4">
-        <Text className="text-[19px] font-black tracking-[-0.3px] text-[#09090b]">
+        <Text className="text-[19px] font-black tracking-[-0.3px] text-ink">
           {dietaryTags.length > 0
             ? "Productos filtrados"
             : "Todos los productos"}
@@ -371,6 +373,7 @@ export default function HomeScreen() {
   );
   const { user } = useUser();
   const router = useRouter();
+  const { palette, statusBarStyle } = useAppTheme();
   const [refreshing, setRefreshing] = useState(false);
   const hasHydrated = usePreferencesStore((state) => state.hasHydrated);
 
@@ -444,18 +447,18 @@ export default function HomeScreen() {
   if (error) {
     return (
       <>
-        <View className="flex-1 items-center justify-center bg-[#fafafa] px-6">
+        <View className="flex-1 items-center justify-center bg-surface-warm px-6">
           <Text className="mb-4 text-base font-semibold text-red-700">
             Error cargando productos
           </Text>
           <Pressable
             onPress={() => refetch()}
-            className="flex-row items-center gap-2 rounded-2xl bg-[#09090b] px-6 py-3"
+            className="flex-row items-center gap-2 rounded-2xl bg-ink px-6 py-3"
             style={{ minHeight: 48 }}
             accessibilityRole="button"
           >
-            <RefreshCw size={18} color="white" />
-            <Text className="text-white font-bold">Reintentar</Text>
+            <RefreshCw size={18} color={palette.colors.ink.inverse} />
+            <Text className="text-ink-inverse font-bold">Reintentar</Text>
           </Pressable>
         </View>
       </>
@@ -463,8 +466,8 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#fafafa]" edges={["top"]}>
-      <StatusBar style="dark" />
+    <SafeAreaView className="flex-1 bg-surface-warm" edges={["top"]}>
+      <StatusBar style={statusBarStyle} />
 
       {isFetching && !refreshing && data && (
         <View className="h-0.5 bg-brand-green" />
@@ -472,7 +475,7 @@ export default function HomeScreen() {
 
       <View className="flex-1">
         <FlashList<Product>
-          className="flex-1 bg-[#fafafa]"
+          className="flex-1 bg-surface-warm"
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={
             <HomeListHeader
@@ -491,36 +494,36 @@ export default function HomeScreen() {
           ListEmptyComponent={
             <View className="flex-1 px-6 py-12">
               {dietaryTags.length > 0 ? (
-                <View className="items-start rounded-[24px] border border-slate-200/70 bg-white p-5">
-                  <View className="mb-5 h-12 w-12 items-center justify-center rounded-2xl bg-slate-100">
-                    <SearchX size={23} color="#09090b" strokeWidth={2.4} />
+                <View className="items-start rounded-[24px] border border-border-subtle bg-surface-card p-5">
+                  <View className="mb-5 h-12 w-12 items-center justify-center rounded-2xl bg-surface-muted">
+                    <SearchX size={23} color={palette.colors.icon.primary} strokeWidth={2.4} />
                   </View>
-                  <Text className="mb-2 text-xl font-black tracking-[-0.3px] text-[#09090b]">
+                  <Text className="mb-2 text-xl font-black tracking-[-0.3px] text-ink">
                     Sin resultados
                   </Text>
-                  <Text className="mb-5 text-base leading-6 text-zinc-600">
+                  <Text className="mb-5 text-base leading-6 text-ink-muted">
                     No hay productos para estos filtros
                   </Text>
                   <Pressable
                     onPress={clearFilters}
-                    className="rounded-2xl bg-[#09090b] px-5 py-3"
+                    className="rounded-2xl bg-ink px-5 py-3"
                     style={{ minHeight: 48 }}
                     accessibilityRole="button"
                   >
-                    <Text className="text-white font-semibold">
+                    <Text className="text-ink-inverse font-semibold">
                       Ver todos los productos
                     </Text>
                   </Pressable>
                 </View>
               ) : (
-                <View className="items-start rounded-[24px] border border-slate-200/70 bg-white p-5">
-                  <View className="mb-5 h-12 w-12 items-center justify-center rounded-2xl bg-slate-100">
-                    <Utensils size={23} color="#09090b" strokeWidth={2.4} />
+                <View className="items-start rounded-[24px] border border-border-subtle bg-surface-card p-5">
+                  <View className="mb-5 h-12 w-12 items-center justify-center rounded-2xl bg-surface-muted">
+                    <Utensils size={23} color={palette.colors.icon.primary} strokeWidth={2.4} />
                   </View>
-                  <Text className="mb-2 text-xl font-black tracking-[-0.3px] text-[#09090b]">
+                  <Text className="mb-2 text-xl font-black tracking-[-0.3px] text-ink">
                     Catálogo en preparación
                   </Text>
-                  <Text className="text-base leading-6 text-zinc-600">
+                  <Text className="text-base leading-6 text-ink-muted">
                     Pronto aparecerán productos disponibles.
                   </Text>
                 </View>

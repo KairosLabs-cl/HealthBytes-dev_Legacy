@@ -10,7 +10,7 @@ import {
 } from "@/store/cartStore";
 import { CartItem as CartItemType } from "@/types/cart";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
-import { Stack, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { ListEmptyState } from "@/components/ui/ListEmptyState";
 import { ShoppingBag } from "lucide-react-native";
 import React, { useCallback } from "react";
@@ -27,8 +27,8 @@ interface CartFooterProps {
 const CartFooter = React.memo<CartFooterProps>(
   ({ itemCount, subtotal, onCheckout }) => {
     return (
-      <View className="mt-2 rounded-[24px] border border-slate-200/70 bg-white p-5">
-        <Text className="mb-4 text-lg font-black tracking-[-0.2px] text-[#09090b]">
+      <View className="mt-2 rounded-[24px] border border-border-subtle bg-surface-card p-5">
+        <Text className="mb-4 text-lg font-black tracking-[-0.2px] text-ink">
           Resumen de compra
         </Text>
 
@@ -36,23 +36,23 @@ const CartFooter = React.memo<CartFooterProps>(
           <Text className="text-sm text-ink-muted font-medium">
             Subtotal ({itemCount} {itemCount === 1 ? "producto" : "productos"})
           </Text>
-          <Text className="font-bold text-[#09090b]">
+          <Text className="font-bold text-ink">
             {formatPrice(subtotal)}
           </Text>
         </View>
 
         <View className="flex-row justify-between mb-4">
           <Text className="text-sm text-ink-muted font-medium">Envío</Text>
-          <Text className="font-bold text-emerald-600">Gratis</Text>
+          <Text className="font-bold text-state-success">Gratis</Text>
         </View>
 
-        <View className="my-4 h-px bg-slate-200/80" />
+        <View className="my-4 h-px bg-border-subtle" />
 
         <View className="mb-5 flex-row items-center justify-between">
-          <Text className="text-xl font-black text-[#09090b]">
+          <Text className="text-xl font-black text-ink">
             Total
           </Text>
-          <Text className="text-2xl font-black tracking-[-0.3px] text-[#09090b]">
+          <Text className="text-2xl font-black tracking-[-0.3px] text-ink">
             {formatPrice(subtotal)}
           </Text>
         </View>
@@ -60,11 +60,11 @@ const CartFooter = React.memo<CartFooterProps>(
         {/* Checkout Button */}
         <Pressable
           onPress={onCheckout}
-          className="h-14 w-full items-center justify-center rounded-2xl bg-[#09090b] active:opacity-75"
+          className="h-14 w-full items-center justify-center rounded-2xl bg-ink active:opacity-75"
           accessibilityRole="button"
           accessibilityLabel={`Proceder al pago, total ${formatPrice(subtotal)}`}
         >
-          <Text className="text-white font-bold text-base">
+          <Text className="text-ink-inverse font-bold text-base">
             Proceder al pago
           </Text>
         </Pressable>
@@ -128,7 +128,7 @@ export default function CartScreen() {
       ) : (
         <>
           <ScreenHeader title="Carrito de compras" icon={ShoppingBag} />
-          <View className="flex-1 bg-[#fafafa]">
+          <View className="flex-1 bg-surface-warm">
             <FlashList
               data={items}
               contentContainerStyle={{ padding: 16, paddingBottom: 32 }}

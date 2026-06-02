@@ -31,13 +31,13 @@ export default function FavoritesBar({ products, limit = 8, onSeeAll }: Props) {
   }
 
   return (
-    <View className="mx-4 mb-4 mt-4 rounded-[24px] border border-slate-200/70 bg-white px-4 pb-3 pt-4">
+    <View className="mx-4 mb-4 mt-4 rounded-[24px] border border-border-subtle bg-surface-card px-4 pb-3 pt-4">
       <View className="mb-3 flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <View className="h-9 w-9 items-center justify-center rounded-2xl bg-rose-50">
             <Heart size={18} color="#e11d48" strokeWidth={2.4} />
           </View>
-          <Text className="text-[17px] font-black tracking-[-0.2px] text-[#09090b]">
+          <Text className="text-[17px] font-black tracking-[-0.2px] text-ink">
             Favoritos
           </Text>
         </View>
@@ -47,7 +47,7 @@ export default function FavoritesBar({ products, limit = 8, onSeeAll }: Props) {
           accessibilityRole="button"
           accessibilityLabel="Ver favoritos"
         >
-          <Text className="text-sm font-bold text-zinc-600">Ver mas</Text>
+          <Text className="text-sm font-bold text-ink-muted">Ver mas</Text>
         </Pressable>
       </View>
 

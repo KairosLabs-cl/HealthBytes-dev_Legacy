@@ -15,11 +15,13 @@ import { useShimmerStyle } from "@/components/ProductCardSkeleton";
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { Product } from "@/types/product";
 import { Favorite, getUserFavorites } from "@/api/favorites";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 export default function WishlistScreen() {
   const router = useRouter();
   const { isLoaded, isSignedIn, getToken } = useAuth();
   const shimmerStyle = useShimmerStyle();
+  const { palette, statusBarStyle } = useAppTheme();
 
   const {
     data: favorites,
@@ -63,8 +65,8 @@ export default function WishlistScreen() {
     () => (
       <ListEmptyState
         icon={HeartOff}
-        iconColor="#e11d48"
-        iconBgColor="#fff1f2"
+        iconColor={palette.colors.state.error}
+        iconBgColor={`${palette.colors.state.error}1F`}
         title="Lista vacía"
         description="Guarda productos para volver rápido a tus favoritos."
         actionLabel="Explorar productos"
@@ -72,12 +74,16 @@ export default function WishlistScreen() {
         style={{ marginTop: 40 }}
       />
     ),
-    [router]
+    [palette.colors.state.error, router]
   );
 
   if (!isLoaded || isLoading) {
     return (
-      <View className="flex-1 bg-[#fafafa]">
+      <View
+        className="flex-1"
+        style={{ backgroundColor: palette.colors.surface.warm }}
+      >
+        <StatusBar style={statusBarStyle} />
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
           title="Lista de deseos"
@@ -97,7 +103,11 @@ export default function WishlistScreen() {
 
   if (error) {
     return (
-      <View className="flex-1 bg-[#fafafa]">
+      <View
+        className="flex-1"
+        style={{ backgroundColor: palette.colors.surface.warm }}
+      >
+        <StatusBar style={statusBarStyle} />
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
           title="Lista de deseos"
@@ -105,18 +115,29 @@ export default function WishlistScreen() {
           showBackButton={true}
         />
         <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-red-500 text-base mb-4">
+          <Text
+            className="text-base mb-4"
+            style={{ color: palette.colors.state.error }}
+          >
             Error cargando tu lista de deseos
           </Text>
           <Pressable
             onPress={() => refetch()}
-            className="flex-row items-center gap-2 rounded-2xl bg-[#09090b] px-6 py-3"
-            style={{ minHeight: 48 }}
+            className="flex-row items-center gap-2 rounded-2xl px-6 py-3"
+            style={{
+              minHeight: 48,
+              backgroundColor: palette.colors.ink.primary,
+            }}
             accessibilityRole="button"
             accessibilityLabel="Reintentar cargar lista de deseos"
           >
-            <RefreshCw size={18} color="white" />
-            <Text className="text-white font-bold">Reintentar</Text>
+            <RefreshCw size={18} color={palette.colors.ink.inverse} />
+            <Text
+              className="font-bold"
+              style={{ color: palette.colors.ink.inverse }}
+            >
+              Reintentar
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -125,12 +146,16 @@ export default function WishlistScreen() {
 
   return (
     <AuthGate message="Inicia sesión para ver tu lista de deseos.">
-      <View className="flex-1 bg-[#fafafa]">
-        <StatusBar style="dark" />
+      <View
+        className="flex-1"
+        style={{ backgroundColor: palette.colors.surface.warm }}
+      >
+        <StatusBar style={statusBarStyle} />
         <Stack.Screen options={{ headerShown: false }} />
 
         <FlatList
-          className="flex-1 bg-[#fafafa]"
+          className="flex-1"
+          style={{ backgroundColor: palette.colors.surface.warm }}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 120, paddingTop: 8 }}
           ListHeaderComponent={listHeader}

@@ -7,6 +7,9 @@ dist/
 build/
 *.log
 
+# PNPM
+.pnpm-store/
+
 # Node modules (ONLY in frontend/)
 /node_modules/
 /package-lock.json

@@ -46,7 +46,7 @@ export function ReviewCard({
   };
 
   return (
-    <View className="bg-white p-4 rounded-2xl mb-3 border border-gray-100 shadow-sm">
+    <View className="bg-surface-card p-4 rounded-2xl mb-3 border border-border-subtle shadow-sm">
       <View className="flex-row gap-3">
         {/* Avatar */}
         {userImage ? (
@@ -69,7 +69,7 @@ export function ReviewCard({
         <View className="flex-1">
           {/* Header: Name + Rating */}
           <View className="flex-row items-center justify-between mb-1">
-            <Text className="font-bold text-gray-900" numberOfLines={1}>
+            <Text className="font-bold text-ink" numberOfLines={1}>
               {userName}
             </Text>
             <RatingStars rating={rating} size={14} showFraction />

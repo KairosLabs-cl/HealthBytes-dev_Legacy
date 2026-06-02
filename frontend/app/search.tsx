@@ -15,6 +15,7 @@ import { useCallback, useMemo } from "react";
 import { RefreshCw, Search as SearchIcon } from "lucide-react-native";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { useShimmerStyle } from "@/components/ProductCardSkeleton";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 type SkeletonSearchItem = { id: string; _isSkeleton: true };
 type SearchListItem = Product | SkeletonSearchItem;
@@ -29,6 +30,7 @@ export default function SearchScreen() {
   const searchTerm = q || "";
   const { user } = useUser();
   const router = useRouter();
+  const { palette, statusBarStyle } = useAppTheme();
 
   const { data, isLoading, error, refetch } = useQuery<Product[]>({
     queryKey: ["products", searchTerm],
@@ -75,9 +77,9 @@ export default function SearchScreen() {
         />
         {searchTerm && (
           <View className="px-4 py-2">
-            <Text className="text-gray-500 text-lg">
+            <Text className="text-ink-muted text-lg">
               Resultados para{" "}
-              <Text className="font-bold text-black">"{searchTerm}"</Text>
+              <Text className="font-bold text-ink">"{searchTerm}"</Text>
             </Text>
           </View>
         )}
@@ -89,11 +91,11 @@ export default function SearchScreen() {
   const renderEmpty = useMemo(
     () => (
       <View className="mt-10 flex-1 justify-center p-8">
-        <View className="items-start rounded-[28px] border border-slate-200/70 bg-white p-6">
-        <View className="mb-5 h-14 w-14 items-center justify-center rounded-[22px] bg-slate-100">
-          <SearchIcon size={26} color="#09090b" />
+        <View className="items-start rounded-[28px] border border-border-subtle bg-surface-card p-6">
+        <View className="mb-5 h-14 w-14 items-center justify-center rounded-[22px] bg-surface-muted">
+          <SearchIcon size={26} color={palette.colors.icon.primary} />
         </View>
-        <Text className="mb-6 text-base leading-6 text-zinc-600">
+        <Text className="mb-6 text-base leading-6 text-ink-muted">
           {searchTerm
             ? `No se encontraron resultados para "${searchTerm}"`
             : "Ingresa un término para buscar productos."}
@@ -101,19 +103,19 @@ export default function SearchScreen() {
 
         <Pressable
           onPress={() => router.push("/")}
-          className="rounded-2xl bg-[#09090b] px-6 py-3 active:opacity-80"
+          className="rounded-2xl bg-ink px-6 py-3 active:opacity-80"
           style={{ minHeight: 48 }}
           accessibilityRole="button"
           accessibilityLabel="Volver al inicio"
         >
-          <Text className="text-white font-bold text-base">
+          <Text className="text-ink-inverse font-bold text-base">
             Volver al inicio
           </Text>
         </Pressable>
         </View>
       </View>
     ),
-    [searchTerm, router]
+    [palette.colors.icon.primary, searchTerm, router]
   );
 
   const renderEmptyState = useMemo(() => {
@@ -125,13 +127,13 @@ export default function SearchScreen() {
           </Text>
           <Pressable
             onPress={() => refetch()}
-            className="mb-3 flex-row items-center gap-2 rounded-2xl bg-[#09090b] px-6 py-3"
+            className="mb-3 flex-row items-center gap-2 rounded-2xl bg-ink px-6 py-3"
             style={{ minHeight: 48 }}
             accessibilityRole="button"
             accessibilityLabel="Reintentar búsqueda"
           >
-            <RefreshCw size={18} color="white" />
-            <Text className="text-white font-bold">Reintentar</Text>
+            <RefreshCw size={18} color={palette.colors.ink.inverse} />
+            <Text className="text-ink-inverse font-bold">Reintentar</Text>
           </Pressable>
           <Pressable
             onPress={() => router.push("/")}
@@ -140,23 +142,23 @@ export default function SearchScreen() {
             accessibilityRole="button"
             accessibilityLabel="Volver al inicio"
           >
-            <Text className="text-gray-600 font-bold">Volver al inicio</Text>
+            <Text className="text-ink-muted font-bold">Volver al inicio</Text>
           </Pressable>
         </View>
       );
     }
     
     return renderEmpty;
-  }, [error, refetch, router, renderEmpty]);
+  }, [error, palette.colors.ink.inverse, refetch, router, renderEmpty]);
 
   return (
-    <View className="flex-1 bg-[#fafafa]">
-      <StatusBar style="dark" />
+    <View className="flex-1 bg-surface-warm">
+      <StatusBar style={statusBarStyle} />
       <Stack.Screen options={{ headerShown: false }} />
 
       <View key={numColumns} className="flex-1">
         <FlashList<SearchListItem>
-          className="flex-1 bg-[#fafafa]"
+          className="flex-1 bg-surface-warm"
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={renderHeader}
           ListEmptyComponent={renderEmptyState}

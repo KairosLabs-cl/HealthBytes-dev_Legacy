@@ -7,9 +7,9 @@ import FavoriteButton from "@/components/FavoriteButton";
 import { RatingStars } from "@/components/RatingStars";
 import StockBadge from "@/components/StockBadge";
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/hooks/useAppTheme";
 import { formatPrice } from "@/lib/formatPrice";
 import { DIETARY_ICON_BY_SLUG } from "@/lib/dietaryOptions";
-import { theme } from "@/lib/theme";
 import { useCartAnimation } from "@/store/cartAnimationStore";
 import { useCart } from "@/store/cartStore";
 import type { Product } from "@/types/product";
@@ -41,26 +41,6 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-const { colors, shadows } = theme;
-
-const TAG_COLORS: Record<string, { bg: string; text: string; border: string }> =
-  {
-    green: {
-      bg: colors.brand.greenLight,
-      text: colors.success,
-      border: "#86EFAC",
-    },
-    blue: { bg: "#EFF6FF", text: "#1D4ED8", border: "#93C5FD" },
-    orange: { bg: "#FFF7ED", text: "#C2410C", border: "#FDBA74" },
-    purple: { bg: "#FAF5FF", text: "#7E22CE", border: "#D8B4FE" },
-    red: { bg: "#FEF2F2", text: colors.error, border: "#FCA5A5" },
-    emerald: { bg: "#ECFDF5", text: colors.success, border: "#6EE7B7" },
-  };
-const DEFAULT_TAG = {
-  bg: colors.legacy.gray[50],
-  text: colors.legacy.gray[600],
-  border: colors.border.default,
-};
 type CrossPlatformViewStyle = ViewStyle & { boxShadow?: string };
 
 export type ProductCardProps = {
@@ -80,6 +60,8 @@ function ProductCard({
 }: ProductCardProps) {
   const router = useRouter();
   const { isSignedIn } = useAuth();
+  const { palette } = useAppTheme();
+  const { colors } = palette;
   const addProduct = useCart((state) => state.addProduct);
   const triggerFly = useCartAnimation((s) => s.trigger);
   const isOutOfStock = product.stock === 0;
@@ -123,6 +105,24 @@ function ProductCard({
   };
 
   const allTags = (product.dietary_tags ?? []).map(normalizeDietaryTag);
+  const tagColors: Record<string, { bg: string; text: string; border: string }> =
+    {
+      green: {
+        bg: colors.brand.greenLight,
+        text: colors.success,
+        border: "#86EFAC",
+      },
+      blue: { bg: "#EFF6FF", text: "#1D4ED8", border: "#93C5FD" },
+      orange: { bg: "#FFF7ED", text: "#C2410C", border: "#FDBA74" },
+      purple: { bg: "#FAF5FF", text: "#7E22CE", border: "#D8B4FE" },
+      red: { bg: "#FEF2F2", text: colors.error, border: "#FCA5A5" },
+      emerald: { bg: "#ECFDF5", text: colors.success, border: "#6EE7B7" },
+    };
+  const defaultTag = {
+    bg: colors.legacy.gray[50],
+    text: colors.legacy.gray[600],
+    border: colors.border.default,
+  };
   const categoryLabel = product.category
     ? product.category.charAt(0).toUpperCase() + product.category.slice(1)
     : null;
@@ -141,10 +141,10 @@ function ProductCard({
       <View
         style={{
           ...containerStyle,
-          backgroundColor: "#ffffff",
+          backgroundColor: colors.surface.card,
           borderRadius: 24,
           borderWidth: 1,
-          borderColor: "rgba(226, 232, 240, 0.5)",
+          borderColor: colors.border.subtle,
           ...Platform.select<CrossPlatformViewStyle>({
             web: {
               boxShadow: "0 20px 40px -15px rgba(0,0,0,0.05)",
@@ -208,7 +208,7 @@ function ProductCard({
               aspectRatio: 1,
               borderRadius: 16,
               overflow: "hidden",
-              backgroundColor: "#f9fafb",
+              backgroundColor: colors.surface.elevated,
             }}
           >
             {!imgError && product.image ? (
@@ -328,7 +328,7 @@ function ProductCard({
               }}
             >
               {allTags.slice(0, 2).map((tag) => {
-                const c = TAG_COLORS[tag.color || ""] || DEFAULT_TAG;
+                const c = tagColors[tag.color || ""] || defaultTag;
                 const TagIcon =
                   DIETARY_ICON_BY_SLUG[
                     tag.name as keyof typeof DIETARY_ICON_BY_SLUG
@@ -443,7 +443,7 @@ function ProductCard({
                 justifyContent: "center",
                 backgroundColor: isOutOfStock
                   ? colors.legacy.gray[200]
-                  : "#09090b", // zinc-950 for pure contrast
+                  : colors.ink.primary,
                 minHeight: 40,
                 borderRadius: 16,
                 ...Platform.select<CrossPlatformViewStyle>({

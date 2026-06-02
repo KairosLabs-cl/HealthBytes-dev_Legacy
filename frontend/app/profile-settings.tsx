@@ -12,6 +12,7 @@ import { User } from "lucide-react-native";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { usePreferencesStore } from "@/store/preferencesStore";
 import type { ThemePreference } from "@/lib/themePreference";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 const themeOptions: { label: string; value: ThemePreference }[] = [
   { label: "Automático", value: "system" },
@@ -21,6 +22,7 @@ const themeOptions: { label: string; value: ThemePreference }[] = [
 
 export default function ProfileSettingsScreen() {
   const { user, isLoaded } = useUser();
+  const { palette, statusBarStyle } = useAppTheme();
   const themePreference = usePreferencesStore((state) => state.themePreference);
   const setThemePreference = usePreferencesStore(
     (state) => state.setThemePreference
@@ -79,16 +81,22 @@ export default function ProfileSettingsScreen() {
 
   if (!isLoaded) {
     return (
-      <View className="flex-1 items-center justify-center bg-white">
-        <Text>Cargando...</Text>
+      <View
+        className="flex-1 items-center justify-center"
+        style={{ backgroundColor: palette.colors.surface.warm }}
+      >
+        <Text style={{ color: palette.colors.ink.primary }}>Cargando...</Text>
       </View>
     );
   }
 
   return (
     <AuthGate message="Inicia sesión para acceder a la configuración.">
-      <View className="flex-1 bg-[#fafafa]">
-        <StatusBar style="dark" />
+      <View
+        className="flex-1"
+        style={{ backgroundColor: palette.colors.surface.warm }}
+      >
+        <StatusBar style={statusBarStyle} />
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
           title="Ajustes de Cuenta"
@@ -102,11 +110,20 @@ export default function ProfileSettingsScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="mb-8">
-            <Text className="text-gray-600 text-sm mb-6">
+            <Text
+              className="text-sm mb-6"
+              style={{ color: palette.colors.ink.muted }}
+            >
               Actualiza tu nombre, email y foto de perfil.
             </Text>
 
-            <View className="mb-6 flex-row items-center rounded-[24px] border border-slate-200/70 bg-white p-4">
+            <View
+              className="mb-6 flex-row items-center rounded-[24px] border p-4"
+              style={{
+                backgroundColor: palette.colors.surface.card,
+                borderColor: palette.colors.border.subtle,
+              }}
+            >
               {user?.imageUrl ? (
                 <Image
                   source={{ uri: user.imageUrl }}
@@ -114,23 +131,36 @@ export default function ProfileSettingsScreen() {
                   alt="Foto de perfil"
                 />
               ) : (
-                <View className="mr-4 h-16 w-16 items-center justify-center rounded-2xl bg-[#09090b]">
-                  <Text className="text-xl font-black text-white">
+                <View
+                  className="mr-4 h-16 w-16 items-center justify-center rounded-2xl"
+                  style={{ backgroundColor: palette.colors.accent.primary }}
+                >
+                  <Text
+                    className="text-xl font-black"
+                    style={{ color: palette.colors.ink.inverse }}
+                  >
                     {initials}
                   </Text>
                 </View>
               )}
               <View className="flex-1">
-                <Text className="text-base text-black font-semibold">
+                <Text
+                  className="text-base font-semibold"
+                  style={{ color: palette.colors.ink.primary }}
+                >
                   {displayName}
                 </Text>
-                <Text className="text-xs text-gray-500 mt-1">
+                <Text
+                  className="text-xs mt-1"
+                  style={{ color: palette.colors.ink.muted }}
+                >
                   Foto de perfil
                 </Text>
               </View>
               <Button
                 size="sm"
-                className="rounded-2xl bg-[#09090b]"
+                className="rounded-2xl"
+                style={{ backgroundColor: palette.colors.accent.primary }}
                 onPress={() =>
                   setError(
                     "Para cambiar la foto necesitamos habilitar selección de imágenes."
@@ -139,17 +169,39 @@ export default function ProfileSettingsScreen() {
                 accessibilityLabel="Cambiar foto de perfil"
                 accessibilityRole="button"
               >
-                <ButtonText className="text-white text-xs">Cambiar</ButtonText>
+                <ButtonText
+                  className="text-xs"
+                  style={{ color: palette.colors.ink.inverse }}
+                >
+                  Cambiar
+                </ButtonText>
               </Button>
             </View>
 
             {/* Email (solo lectura) */}
-            <View className="mb-6 rounded-[24px] border border-slate-200/70 bg-white p-4">
-              <Text className="text-sm text-gray-500 mb-2">Email</Text>
-              <Text className="text-base text-black font-semibold">
+            <View
+              className="mb-6 rounded-[24px] border p-4"
+              style={{
+                backgroundColor: palette.colors.surface.card,
+                borderColor: palette.colors.border.subtle,
+              }}
+            >
+              <Text
+                className="text-sm mb-2"
+                style={{ color: palette.colors.ink.muted }}
+              >
+                Email
+              </Text>
+              <Text
+                className="text-base font-semibold"
+                style={{ color: palette.colors.ink.primary }}
+              >
                 {primaryEmail}
               </Text>
-              <Text className="text-xs text-gray-500 mt-2">
+              <Text
+                className="text-xs mt-2"
+                style={{ color: palette.colors.ink.muted }}
+              >
                 Tu email no puede ser modificado aquí. Contáctate con soporte si
                 necesitas cambiar tu email.
               </Text>
@@ -157,16 +209,25 @@ export default function ProfileSettingsScreen() {
 
             {/* Nombre */}
             <View className="mb-4">
-              <Text className="text-sm font-semibold text-gray-800 mb-2">
+              <Text
+                className="text-sm font-semibold mb-2"
+                style={{ color: palette.colors.ink.primary }}
+              >
                 Nombre
               </Text>
-              <Input className="rounded-2xl border-slate-200 bg-white">
+              <Input
+                className="rounded-2xl"
+                style={{
+                  backgroundColor: palette.colors.surface.card,
+                  borderColor: palette.colors.border.subtle,
+                }}
+              >
                 <InputField
                   value={firstName}
                   onChangeText={setFirstName}
                   placeholder="Tu nombre"
-                  placeholderTextColor="#9CA3AF"
-                  className="text-black"
+                  placeholderTextColor={palette.colors.ink.subtle}
+                  style={{ color: palette.colors.ink.primary }}
                   accessibilityLabel="Nombre"
                 />
               </Input>
@@ -174,70 +235,123 @@ export default function ProfileSettingsScreen() {
 
             {/* Apellido */}
             <View className="mb-6">
-              <Text className="text-sm font-semibold text-gray-800 mb-2">
+              <Text
+                className="text-sm font-semibold mb-2"
+                style={{ color: palette.colors.ink.primary }}
+              >
                 Apellido
               </Text>
-              <Input className="rounded-2xl border-slate-200 bg-white">
+              <Input
+                className="rounded-2xl"
+                style={{
+                  backgroundColor: palette.colors.surface.card,
+                  borderColor: palette.colors.border.subtle,
+                }}
+              >
                 <InputField
                   value={lastName}
                   onChangeText={setLastName}
                   placeholder="Tu apellido"
-                  placeholderTextColor="#9CA3AF"
-                  className="text-black"
+                  placeholderTextColor={palette.colors.ink.subtle}
+                  style={{ color: palette.colors.ink.primary }}
                   accessibilityLabel="Apellido"
                 />
               </Input>
             </View>
 
             {error && (
-              <View className="mb-4 rounded-2xl border border-red-200 bg-red-50 p-3">
-                <Text className="text-red-700 text-sm">{error}</Text>
+              <View
+                className="mb-4 rounded-2xl border p-3"
+                style={{
+                  backgroundColor: palette.colors.surface.elevated,
+                  borderColor: palette.colors.state.error,
+                }}
+              >
+                <Text
+                  className="text-sm"
+                  style={{ color: palette.colors.state.error }}
+                >
+                  {error}
+                </Text>
               </View>
             )}
             {success && (
-              <View className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-3">
-                <Text className="text-sm text-emerald-700">{success}</Text>
+              <View
+                className="mb-4 rounded-2xl border p-3"
+                style={{
+                  backgroundColor: palette.colors.surface.elevated,
+                  borderColor: palette.colors.state.success,
+                }}
+              >
+                <Text
+                  className="text-sm"
+                  style={{ color: palette.colors.state.success }}
+                >
+                  {success}
+                </Text>
               </View>
             )}
 
             <Button
               onPress={handleSaveProfile}
-              className="min-h-[52px] flex-row items-center justify-center rounded-2xl bg-[#09090b]"
+              className="min-h-[52px] flex-row items-center justify-center rounded-2xl"
+              style={{ backgroundColor: palette.colors.accent.primary }}
               disabled={!isLoaded || isSaving}
             >
-              <ButtonText className="text-white font-semibold text-base text-center leading-5">
+              <ButtonText
+                className="font-semibold text-base text-center leading-5"
+                style={{ color: palette.colors.ink.inverse }}
+              >
                 {isSaving ? "Guardando..." : "Guardar Cambios"}
               </ButtonText>
             </Button>
           </View>
 
           <View className="mb-8">
-            <Text className="mb-2 text-lg font-black text-[#09090b]">
+            <Text
+              className="mb-2 text-lg font-black"
+              style={{ color: palette.colors.ink.primary }}
+            >
               Configuraciones de la aplicación
             </Text>
-            <Text className="mb-4 text-sm text-gray-600">
+            <Text
+              className="mb-4 text-sm"
+              style={{ color: palette.colors.ink.muted }}
+            >
               Elige cómo quieres ver HealthBytes.
             </Text>
 
-            <View className="rounded-[24px] border border-slate-200/70 bg-white p-2">
+            <View
+              className="rounded-[24px] border p-2"
+              style={{
+                backgroundColor: palette.colors.surface.card,
+                borderColor: palette.colors.border.subtle,
+              }}
+            >
               <View className="flex-row">
                 {themeOptions.map((option) => {
                   const isActive = themePreference === option.value;
                   return (
                     <Pressable
                       key={option.value}
-                      className={`min-h-12 flex-1 items-center justify-center rounded-2xl px-2 ${
-                        isActive ? "bg-[#09090b]" : "bg-transparent"
-                      }`}
+                      className="min-h-12 flex-1 items-center justify-center rounded-2xl px-2"
+                      style={{
+                        backgroundColor: isActive
+                          ? palette.colors.accent.primary
+                          : "transparent",
+                      }}
                       onPress={() => setThemePreference(option.value)}
                       accessibilityRole="button"
                       accessibilityLabel={`Usar modo ${option.label.toLowerCase()}`}
                       accessibilityState={{ selected: isActive }}
                     >
                       <Text
-                        className={`text-sm font-bold ${
-                          isActive ? "text-white" : "text-gray-700"
-                        }`}
+                        className="text-sm font-bold"
+                        style={{
+                          color: isActive
+                            ? palette.colors.ink.inverse
+                            : palette.colors.ink.muted,
+                        }}
                       >
                         {option.label}
                       </Text>

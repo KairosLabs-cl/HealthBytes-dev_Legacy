@@ -1,6 +1,7 @@
 import { AuthGate } from "@/components/AuthGate";
 import { Button, ButtonText } from "@/components/ui/button";
 import { VStack } from "@/components/ui/vstack";
+import { useAppTheme } from "@/hooks/useAppTheme";
 import { useCart } from "@/store/cartStore";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { CheckCircleIcon } from "lucide-react-native";
@@ -9,6 +10,7 @@ import { Text, View } from "react-native";
 
 export default function PaymentSuccessScreen() {
   const router = useRouter();
+  const { palette } = useAppTheme();
   // ⚡ Bolt: Use granular selectors for Zustand stores to prevent unnecessary full-screen re-renders
   const resetCart = useCart((state) => state.resetCart);
   const { orderId } = useLocalSearchParams();
@@ -27,41 +29,41 @@ export default function PaymentSuccessScreen() {
 
   return (
     <AuthGate message="Inicia sesion para ver el resultado de tu pago.">
-      <View className="flex-1 items-center justify-center bg-[#fafafa] p-6">
-        <View className="mb-6 rounded-[28px] bg-emerald-50 p-6">
-          <CheckCircleIcon size={64} color="#16a34a" />
+      <View className="flex-1 items-center justify-center bg-surface-warm p-6">
+        <View className="mb-6 rounded-[28px] bg-accent-light p-6">
+          <CheckCircleIcon size={64} color={palette.colors.state.success} />
         </View>
 
-        <Text className="mb-2 text-center text-3xl font-black tracking-[-0.5px] text-[#09090b]">
+        <Text className="mb-2 text-center text-3xl font-black tracking-[-0.5px] text-ink">
           Pago exitoso
         </Text>
 
-        <Text className="text-gray-600 text-center mb-4 text-lg">
+        <Text className="text-ink-muted text-center mb-4 text-lg">
           Tu orden ha sido procesada correctamente.
         </Text>
 
         {orderId && (
-          <Text className="text-sm text-gray-400 text-center mb-8">
+          <Text className="text-sm text-ink-subtle text-center mb-8">
             Orden ID: {orderId}
           </Text>
         )}
 
-        <Text className="text-sm text-gray-500 text-center mb-6">
+        <Text className="text-sm text-ink-muted text-center mb-6">
           Redirigiendo a tus órdenes en 3 segundos...
         </Text>
 
         {isRedirecting && (
           <View className="mb-6 flex-row gap-2">
-            <View className="h-3 w-3 rounded-full bg-[#22c55e]" />
-            <View className="h-3 w-3 rounded-full bg-slate-300" />
-            <View className="h-3 w-3 rounded-full bg-slate-400" />
+            <View className="h-3 w-3 rounded-full bg-state-success" />
+            <View className="h-3 w-3 rounded-full bg-border-default" />
+            <View className="h-3 w-3 rounded-full bg-ink-subtle" />
           </View>
         )}
 
         <VStack space="md" className="w-full">
           <Button
             size="lg"
-            className="rounded-2xl bg-[#09090b]"
+            className="rounded-2xl bg-ink"
             onPress={() => {
               setIsRedirecting(true);
               resetCart();
@@ -69,7 +71,7 @@ export default function PaymentSuccessScreen() {
             }}
             disabled={isRedirecting}
           >
-            <ButtonText className="text-white font-bold">
+            <ButtonText className="text-ink-inverse font-bold">
               {isRedirecting ? "Redirigiendo..." : "Ir a mis órdenes"}
             </ButtonText>
           </Button>
@@ -77,14 +79,14 @@ export default function PaymentSuccessScreen() {
           <Button
             size="lg"
             variant="outline"
-            className="rounded-2xl border-gray-300"
+            className="rounded-2xl border-border-default"
             onPress={() => {
               resetCart();
               router.replace("/");
             }}
             disabled={isRedirecting}
           >
-            <ButtonText className="text-gray-700 font-bold">
+            <ButtonText className="text-ink font-bold">
               Volver al inicio
             </ButtonText>
           </Button>

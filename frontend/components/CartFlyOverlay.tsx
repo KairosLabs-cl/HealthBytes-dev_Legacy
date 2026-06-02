@@ -15,12 +15,14 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCartAnimation } from "@/store/cartAnimationStore";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 export default function CartFlyOverlay() {
   const pending = useCartAnimation((s) => s.pending);
   const clear = useCartAnimation((s) => s.clear);
   const insets = useSafeAreaInsets();
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const { palette } = useAppTheme();
 
   const flyX = useSharedValue(0);
   const flyY = useSharedValue(0);
@@ -35,7 +37,7 @@ export default function CartFlyOverlay() {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: "#111827",
+    backgroundColor: palette.colors.ink.primary,
     alignItems: "center" as const,
     justifyContent: "center" as const,
     opacity: flyOpacity.value,
@@ -64,7 +66,10 @@ export default function CartFlyOverlay() {
     flyScale.value = withSequence(
       withTiming(1.2, { duration: 200, easing: Easing.out(Easing.back(2)) }),
       withTiming(1, { duration: 150 }),
-      withDelay(150, withTiming(0.4, { duration: 400, easing: Easing.in(Easing.cubic) })),
+      withDelay(
+        150,
+        withTiming(0.4, { duration: 400, easing: Easing.in(Easing.cubic) })
+      ),
       withTiming(0, { duration: 100 })
     );
 
@@ -82,13 +87,22 @@ export default function CartFlyOverlay() {
 
     // Arching path using bezier
     flyY.value = withSequence(
-      withTiming(startY - 40, { duration: 300, easing: Easing.out(Easing.quad) }),
-      withTiming(targetY - 22, { duration: 500, easing: Easing.in(Easing.quad) })
+      withTiming(startY - 40, {
+        duration: 300,
+        easing: Easing.out(Easing.quad),
+      }),
+      withTiming(targetY - 22, {
+        duration: 500,
+        easing: Easing.in(Easing.quad),
+      })
     );
 
     flyX.value = withDelay(
       300,
-      withTiming(targetX - 22, { duration: 500, easing: Easing.inOut(Easing.quad) })
+      withTiming(targetX - 22, {
+        duration: 500,
+        easing: Easing.inOut(Easing.quad),
+      })
     );
   }, [pending]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -98,7 +112,7 @@ export default function CartFlyOverlay() {
       pointerEvents="none"
     >
       <Animated.View style={flyingStyle} pointerEvents="none">
-        <ShoppingCart size={18} color="white" />
+        <ShoppingCart size={18} color={palette.colors.ink.inverse} />
       </Animated.View>
     </View>
   );

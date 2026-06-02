@@ -1,4 +1,5 @@
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/hooks/useAppTheme";
 import { formatPrice } from "@/lib/formatPrice";
 import { useCart } from "@/store/cartStore";
 import { CartItem as CartItemType, Product } from "@/types/cart";
@@ -21,6 +22,7 @@ const CartItem = ({
   onDecrement,
   onRemove,
 }: CartItemProps) => {
+  const { palette } = useAppTheme();
   const { isAdding, isUpdating, isRemoving } = useCart(
     useShallow((state) => ({
       isAdding: state.addingProducts.has(item.product.id),
@@ -50,9 +52,9 @@ const CartItem = ({
     [item.product.id, onRemove]
   );
   return (
-    <View className="flex-row gap-3 rounded-[24px] border border-slate-200/70 bg-white p-4">
+    <View className="flex-row gap-3 rounded-[24px] border border-border-subtle bg-surface-card p-4">
       {/* Product Image */}
-      <View className="h-24 w-24 overflow-hidden rounded-2xl bg-slate-100">
+      <View className="h-24 w-24 overflow-hidden rounded-2xl bg-surface-muted">
         <ExpoImage
           source={{ uri: item.product.image }}
           style={{ width: "100%", height: "100%" }}
@@ -64,10 +66,10 @@ const CartItem = ({
 
       {/* Product Info */}
       <View className="flex-1">
-        <Text className="mb-1 text-sm font-black leading-snug text-[#09090b]">
+        <Text className="mb-1 text-sm font-black leading-snug text-ink">
           {item.product.name}
         </Text>
-        <Text className="mb-4 text-lg font-black tracking-[-0.2px] text-[#09090b]">
+        <Text className="mb-4 text-lg font-black tracking-[-0.2px] text-ink">
           {formatPrice(item.product.price * item.quantity)}
         </Text>
 
@@ -82,13 +84,17 @@ const CartItem = ({
             accessibilityState={{ disabled: isUpdating || isRemoving }}
             className={`h-11 w-11 items-center justify-center rounded-2xl ${
               isUpdating || isRemoving
-                ? "bg-slate-300 opacity-60"
-                : "bg-[#09090b] active:opacity-85"
+                ? "bg-surface-muted opacity-60"
+                : "bg-ink active:opacity-85"
             }`}
           >
             <Minus
               size={16}
-              color={isUpdating || isRemoving ? "#9CA3AF" : "#FFFFFF"}
+              color={
+                isUpdating || isRemoving
+                  ? palette.colors.ink.subtle
+                  : palette.colors.ink.inverse
+              }
             />
           </Pressable>
 
@@ -105,7 +111,7 @@ const CartItem = ({
             }}
             keyboardType="numeric"
             accessibilityLabel="Cantidad"
-            className="min-h-11 min-w-11 rounded-2xl bg-slate-100 px-3 py-2 text-center text-sm font-bold text-[#09090b]"
+            className="min-h-11 min-w-11 rounded-2xl bg-surface-muted px-3 py-2 text-center text-sm font-bold text-ink"
             editable={!isUpdating && !isRemoving}
           />
 
@@ -120,14 +126,16 @@ const CartItem = ({
             }}
             className={`h-11 w-11 items-center justify-center rounded-2xl ${
               isAdding || isUpdating || isRemoving
-                ? "bg-slate-300 opacity-60"
-                : "bg-[#09090b] active:opacity-85"
+                ? "bg-surface-muted opacity-60"
+                : "bg-ink active:opacity-85"
             }`}
           >
             <Plus
               size={16}
               color={
-                isAdding || isUpdating || isRemoving ? "#9CA3AF" : "#FFFFFF"
+                isAdding || isUpdating || isRemoving
+                  ? palette.colors.ink.subtle
+                  : palette.colors.ink.inverse
               }
             />
           </Pressable>
@@ -141,13 +149,23 @@ const CartItem = ({
             accessibilityLabel={`Eliminar ${item.product.name} del carrito`}
             accessibilityHint="Quita este producto del carrito por completo"
             accessibilityState={{ disabled: isRemoving }}
-            className={`h-11 w-11 items-center justify-center rounded-2xl transition-colors ${
-              isRemoving
-                ? "bg-slate-100 opacity-40"
-                : "bg-red-50 active:bg-red-100"
+            className={`h-11 w-11 items-center justify-center rounded-2xl border transition-colors ${
+              isRemoving ? "bg-surface-muted opacity-40" : "bg-surface-card active:opacity-75"
             }`}
+            style={{
+              borderColor: isRemoving
+                ? palette.colors.border.subtle
+                : palette.colors.state.error,
+            }}
           >
-            <Trash2 size={16} color={isRemoving ? "#D1D5DB" : "#EF4444"} />
+            <Trash2
+              size={16}
+              color={
+                isRemoving
+                  ? palette.colors.ink.subtle
+                  : palette.colors.state.error
+              }
+            />
           </Pressable>
         </View>
       </View>

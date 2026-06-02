@@ -1,5 +1,7 @@
 import gluestackPlugin from "@gluestack-ui/nativewind-utils/tailwind-plugin";
 
+const dynamicColor = (token) => `rgb(var(--color-${token})/<alpha-value>)`;
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: "class",
@@ -48,6 +50,7 @@ module.exports = {
           950: "rgb(var(--color-secondary-950)/<alpha-value>)",
         },
         tertiary: {
+          0: "rgb(var(--color-tertiary-0)/<alpha-value>)",
           50: "rgb(var(--color-tertiary-50)/<alpha-value>)",
           100: "rgb(var(--color-tertiary-100)/<alpha-value>)",
           200: "rgb(var(--color-tertiary-200)/<alpha-value>)",
@@ -173,31 +176,41 @@ module.exports = {
           info: "rgb(var(--color-indicator-info)/<alpha-value>)",
           error: "rgb(var(--color-indicator-error)/<alpha-value>)",
         },
-        "surface-warm": "#FCFAF8",
-        "surface-card": "#FFFFFF",
-        "surface-elevated": "#FAFAF9",
-        "surface-muted": "#F5F5F4",
-        ink: "var(--ink)",
-        "brand-green": "var(--brand-green)",
-        "border-subtle": "var(--border-subtle)",
+        "surface-warm": dynamicColor("surface-warm"),
+        "surface-card": dynamicColor("surface-card"),
+        "surface-elevated": dynamicColor("surface-elevated"),
+        "surface-muted": dynamicColor("surface-muted"),
+        ink: dynamicColor("ink-primary"),
+        "brand-green": dynamicColor("brand-green"),
+        "border-subtle": dynamicColor("border-subtle"),
 
         // Semantic tokens - Warm Earth Palette
         // Backgrounds
-        "surface-warm-alt": "#FCFAF8",
+        "surface-warm-alt": dynamicColor("surface-warm"),
 
         // Text - Ink system
-        "ink-primary": "#2D2926",
-        "ink-muted": "#6B6B6B",
-        "ink-subtle": "#9CA3AF",
+        "ink-primary": dynamicColor("ink-primary"),
+        "ink-muted": dynamicColor("ink-muted"),
+        "ink-subtle": dynamicColor("ink-subtle"),
+        "ink-inverse": dynamicColor("ink-inverse"),
 
         // Borders
-        "border-default": "#D1D5DB",
-        "border-focus": "#2D2926",
+        "border-default": dynamicColor("border-default"),
+        "border-focus": dynamicColor("border-focus"),
 
-        // Accent
-        "accent-primary": "#5C6B5A",
-        "accent-hover": "#4A5649",
-        "accent-light": "#F0FDF4",
+        // Icons and accents
+        "icon-primary": dynamicColor("icon-primary"),
+        "icon-muted": dynamicColor("icon-muted"),
+        "icon-accent": dynamicColor("icon-accent"),
+        "accent-primary": dynamicColor("accent-primary"),
+        "accent-hover": dynamicColor("accent-hover"),
+        "accent-light": dynamicColor("accent-light"),
+        state: {
+          success: dynamicColor("state-success"),
+          warning: dynamicColor("state-warning"),
+          error: dynamicColor("state-error"),
+          info: dynamicColor("state-info"),
+        },
       },
       fontFamily: {
         // Custom distinctive fonts for HealthBytes

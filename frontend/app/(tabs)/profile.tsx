@@ -22,6 +22,7 @@ import {
 import { Pressable, ScrollView, View } from "react-native";
 import { Image } from "expo-image";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 const orderStatuses = [
   {
@@ -61,6 +62,7 @@ const options = [
 export default function ProfileScreen() {
   const router = useRouter();
   const { signOut } = useClerk();
+  const { palette, statusBarStyle } = useAppTheme();
 
   const { user } = useUser();
   const displayName = user?.fullName || user?.firstName || "Usuario";
@@ -78,18 +80,28 @@ export default function ProfileScreen() {
 
   return (
     <AuthGate message="Inicia sesion para ver tu perfil.">
-      <View className="flex-1 bg-[#fafafa]">
-        <StatusBar style="dark" />
+      <View
+        className="flex-1"
+        style={{ backgroundColor: palette.colors.surface.warm }}
+      >
+        <StatusBar style={statusBarStyle} />
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader title="Perfil" icon={UserIcon} />
 
         <ScrollView
-          className="flex-1 bg-[#fafafa]"
+          className="flex-1"
+          style={{ backgroundColor: palette.colors.surface.warm }}
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
         >
           {/* Perfil del usuario */}
-          <View className="mb-4 flex-row items-center rounded-[28px] border border-slate-200/70 bg-white p-4">
+          <View
+            className="mb-4 flex-row items-center rounded-[28px] border p-4"
+            style={{
+              backgroundColor: palette.colors.surface.card,
+              borderColor: palette.colors.border.subtle,
+            }}
+          >
             {user?.imageUrl ? (
               <Image
                 source={{ uri: user.imageUrl }}
@@ -98,38 +110,68 @@ export default function ProfileScreen() {
                 cachePolicy="disk"
               />
             ) : (
-              <View className="h-20 w-20 items-center justify-center rounded-[24px] bg-[#09090b]">
-                <Text className="text-2xl font-black text-white">
+              <View
+                className="h-20 w-20 items-center justify-center rounded-[24px]"
+                style={{ backgroundColor: palette.colors.accent.primary }}
+              >
+                <Text
+                  className="text-2xl font-black"
+                  style={{ color: palette.colors.ink.inverse }}
+                >
                   {initials || "HB"}
                 </Text>
               </View>
             )}
             <View className="ml-4 flex-1">
-              <Text className="text-xl font-black tracking-[-0.3px] text-[#09090b]">
+              <Text
+                className="text-xl font-black tracking-[-0.3px]"
+                style={{ color: palette.colors.ink.primary }}
+              >
                 {displayName}
               </Text>
-              <Text className="text-sm text-zinc-600">
+              <Text
+                className="text-sm"
+                style={{ color: palette.colors.ink.muted }}
+              >
                 {user?.primaryEmailAddress?.emailAddress || "Sin email"}
               </Text>
             </View>
             <Pressable
-              className="h-12 w-12 items-center justify-center rounded-2xl bg-[#09090b]"
+              className="h-12 w-12 items-center justify-center rounded-2xl"
+              style={{ backgroundColor: palette.colors.accent.primary }}
               onPress={() => router.push("/profile-settings")}
               accessibilityRole="button"
               accessibilityLabel="Abrir configuración de perfil"
             >
-              <Icon as={Settings} color="#ffffff" size="lg" />
+              <Icon
+                as={Settings}
+                color={palette.colors.ink.inverse}
+                size="lg"
+              />
             </Pressable>
           </View>
 
-          <View className="mb-4 rounded-[28px] bg-[#09090b] p-4">
+          <View
+            className="mb-4 rounded-[28px] p-4"
+            style={{ backgroundColor: palette.colors.accent.primary }}
+          >
             <View className="flex-row items-center mb-1">
-              <Icon as={PackageOpen} color="#ffffff" size="lg" />
-              <Text className="text-white text-lg font-semibold ml-2">
+              <Icon
+                as={PackageOpen}
+                color={palette.colors.ink.inverse}
+                size="lg"
+              />
+              <Text
+                className="text-lg font-semibold ml-2"
+                style={{ color: palette.colors.ink.inverse }}
+              >
                 Mis órdenes
               </Text>
             </View>
-            <Text className="text-gray-300 text-xs mb-3">
+            <Text
+              className="text-xs mb-3"
+              style={{ color: palette.colors.ink.inverse }}
+            >
               Ve el estado de tus compras!
             </Text>
             <ScrollView
@@ -140,8 +182,12 @@ export default function ProfileScreen() {
               {orderStatuses.map((item) => (
                 <Pressable
                   key={item.label}
-                  className="items-center justify-center rounded-2xl bg-white px-3 py-2"
-                  style={{ minHeight: 56, minWidth: 88 }}
+                  className="items-center justify-center rounded-2xl px-3 py-2"
+                  style={{
+                    minHeight: 56,
+                    minWidth: 88,
+                    backgroundColor: palette.colors.surface.card,
+                  }}
                   onPress={() =>
                     router.push({
                       pathname: "/orders",
@@ -153,11 +199,14 @@ export default function ProfileScreen() {
                 >
                   <Icon
                     as={item.icon}
-                    color="#1f2937"
+                    color={palette.colors.icon.primary}
                     size="lg"
                     className="mb-1"
                   />
-                  <Text className="text-[11px] text-black font-semibold text-center">
+                  <Text
+                    className="text-[11px] font-semibold text-center"
+                    style={{ color: palette.colors.ink.primary }}
+                  >
                     {item.label}
                   </Text>
                 </Pressable>
@@ -166,11 +215,27 @@ export default function ProfileScreen() {
           </View>
 
           <View className="mb-3 flex-row items-center">
-            <Icon as={Settings} color="#000000" size="lg" className="mr-2" />
-            <Text className="text-xl font-black tracking-[-0.2px] text-[#09090b]">General</Text>
+            <Icon
+              as={Settings}
+              color={palette.colors.icon.primary}
+              size="lg"
+              className="mr-2"
+            />
+            <Text
+              className="text-xl font-black tracking-[-0.2px]"
+              style={{ color: palette.colors.ink.primary }}
+            >
+              General
+            </Text>
           </View>
 
-          <View className="mb-3 overflow-hidden rounded-[24px] border border-slate-200/70 bg-white">
+          <View
+            className="mb-3 overflow-hidden rounded-[24px] border"
+            style={{
+              backgroundColor: palette.colors.surface.card,
+              borderColor: palette.colors.border.subtle,
+            }}
+          >
             {options.map((item, index) => (
               <Pressable
                 key={item.label}
@@ -178,16 +243,26 @@ export default function ProfileScreen() {
                 style={{
                   minHeight: 64,
                   borderTopWidth: index === 0 ? 0 : 1,
-                  borderTopColor: "rgba(226,232,240,0.8)",
+                  borderTopColor: palette.colors.border.subtle,
                 }}
                 onPress={() => router.push(item.href)}
                 accessibilityRole="button"
                 accessibilityLabel={item.label}
               >
-                <View className="mr-3 h-11 w-11 items-center justify-center rounded-2xl bg-slate-100">
-                  <Icon as={item.icon} color="#09090b" size="lg" />
+                <View
+                  className="mr-3 h-11 w-11 items-center justify-center rounded-2xl"
+                  style={{ backgroundColor: palette.colors.surface.muted }}
+                >
+                  <Icon
+                    as={item.icon}
+                    color={palette.colors.icon.primary}
+                    size="lg"
+                  />
                 </View>
-                <Text className="text-base font-bold text-[#09090b]">
+                <Text
+                  className="text-base font-bold"
+                  style={{ color: palette.colors.ink.primary }}
+                >
                   {item.label}
                 </Text>
               </Pressable>
@@ -200,11 +275,24 @@ export default function ProfileScreen() {
             accessibilityRole="button"
             accessibilityLabel="Salir de la cuenta"
           >
-            <View className="flex-row items-center bg-red-600 px-4 py-4">
-              <View className="w-12 h-12 bg-white rounded-2xl items-center justify-center mr-3">
-                <Icon as={LogOut} color="#d12d2d" size="lg" />
+            <View
+              className="flex-row items-center px-4 py-4"
+              style={{ backgroundColor: palette.colors.state.error }}
+            >
+              <View
+                className="w-12 h-12 rounded-2xl items-center justify-center mr-3"
+                style={{ backgroundColor: palette.colors.surface.card }}
+              >
+                <Icon
+                  as={LogOut}
+                  color={palette.colors.state.error}
+                  size="lg"
+                />
               </View>
-              <Text className="text-white text-lg font-bold">
+              <Text
+                className="text-lg font-bold"
+                style={{ color: palette.colors.ink.inverse }}
+              >
                 Salir de la cuenta
               </Text>
             </View>
@@ -212,8 +300,16 @@ export default function ProfileScreen() {
 
           {/* Footer simple y limpio */}
           <View className="mt-16 mb-8 items-center">
-            <Text className="text-xs text-gray-400 mb-2">Versión {Constants.expoConfig?.version ?? "0.4.0"}</Text>
-            <Text className="text-xs text-gray-500">
+            <Text
+              className="text-xs mb-2"
+              style={{ color: palette.colors.ink.subtle }}
+            >
+              Versión {Constants.expoConfig?.version ?? "0.4.0"}
+            </Text>
+            <Text
+              className="text-xs"
+              style={{ color: palette.colors.ink.muted }}
+            >
               Hecho por el equipo de HealthBytes
             </Text>
           </View>

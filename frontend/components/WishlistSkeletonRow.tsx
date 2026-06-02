@@ -8,6 +8,7 @@ import Animated, {
   Easing,
 } from "react-native-reanimated";
 import { useShimmerStyle } from "@/components/ProductCardSkeleton";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 type Props = {
   shimmerStyle?: ViewStyle;
@@ -15,6 +16,7 @@ type Props = {
 
 function WishlistSkeletonRow({ shimmerStyle }: Props) {
   const localOpacity = useSharedValue(0.3);
+  const { palette } = useAppTheme();
 
   useEffect(() => {
     if (shimmerStyle) return;
@@ -34,10 +36,10 @@ function WishlistSkeletonRow({ shimmerStyle }: Props) {
   return (
     <View
       style={{
-        backgroundColor: "white",
+        backgroundColor: palette.colors.surface.card,
         borderRadius: 24,
         borderWidth: 1,
-        borderColor: "rgba(226,232,240,0.7)",
+        borderColor: palette.colors.border.subtle,
         marginHorizontal: 16,
         marginBottom: 10,
         flexDirection: "row",
@@ -52,7 +54,7 @@ function WishlistSkeletonRow({ shimmerStyle }: Props) {
             width: 80,
             height: 80,
             borderRadius: 18,
-            backgroundColor: "#e2e8f0",
+            backgroundColor: palette.colors.surface.elevated,
             flexShrink: 0,
           },
           style,
@@ -63,23 +65,23 @@ function WishlistSkeletonRow({ shimmerStyle }: Props) {
       <View style={{ flex: 1, paddingHorizontal: 12 }}>
         {/* Name placeholder (2 lines) */}
         <Animated.View style={style}>
-          <View className="mb-1 h-3 w-full rounded bg-slate-200" />
-          <View className="mb-3 h-3 w-2/3 rounded bg-slate-200" />
+          <View className="mb-1 h-3 w-full rounded bg-surface-elevated" />
+          <View className="mb-3 h-3 w-2/3 rounded bg-surface-elevated" />
         </Animated.View>
 
         {/* Price placeholder */}
         <Animated.View style={style}>
-          <View className="mb-3 h-4 w-16 rounded bg-slate-200" />
+          <View className="mb-3 h-4 w-16 rounded bg-surface-elevated" />
         </Animated.View>
 
         {/* Stock badge placeholder */}
         <Animated.View style={style}>
-          <View className="mb-2 h-4 w-14 rounded-full bg-slate-100" />
+          <View className="mb-2 h-4 w-14 rounded-full bg-surface-muted" />
         </Animated.View>
 
         {/* Add to cart placeholder */}
         <Animated.View style={style}>
-          <View className="h-11 w-full rounded-2xl bg-slate-200" />
+          <View className="h-11 w-full rounded-2xl bg-surface-elevated" />
         </Animated.View>
       </View>
 
@@ -94,7 +96,7 @@ function WishlistSkeletonRow({ shimmerStyle }: Props) {
         }}
       >
         <Animated.View style={style}>
-          <View className="h-4 w-4 rounded bg-slate-200 mt-2" />
+          <View className="h-4 w-4 rounded bg-surface-elevated mt-2" />
         </Animated.View>
       </View>
     </View>

@@ -28,7 +28,7 @@ const UIToast = createToast({
 });
 
 const toastStyle = tva({
-  base: "flex-row items-center p-4 gap-3 bg-background-0 shadow-soft-1 rounded-md border-outline-100 border-none sm:shadow-hard-5 sm:border bg-white shadow-xl elevation-5",
+  base: "flex-row items-center p-4 gap-3 bg-background-0 shadow-soft-1 rounded-md border-outline-100 border-none sm:shadow-hard-5 sm:border bg-surface-card shadow-xl elevation-5",
   variants: {
     action: {
       success: "border border-success-200 bg-success-50",

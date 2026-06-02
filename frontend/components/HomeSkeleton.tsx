@@ -14,24 +14,24 @@ function HomeSkeleton() {
   const shimmerStyle = useShimmerStyle();
 
   return (
-    <SafeAreaView className="flex-1 bg-[#fafafa]" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-surface-warm" edges={["top"]}>
       {/* Header placeholder — matches Header.tsx layout */}
-      <View className="bg-[#fafafa] px-4 pt-6 pb-4">
+      <View className="bg-surface-warm px-4 pt-6 pb-4">
         <Animated.View style={shimmerStyle}>
-          <View className="mb-3 h-7 w-44 rounded-xl bg-slate-200" />
+          <View className="mb-3 h-7 w-44 rounded-xl bg-surface-elevated" />
         </Animated.View>
         {/* Search bar placeholder */}
         <Animated.View style={shimmerStyle}>
-          <View className="h-12 rounded-2xl bg-slate-100" />
+          <View className="h-12 rounded-2xl bg-surface-muted" />
         </Animated.View>
       </View>
 
       {/* Filter chips placeholder — matches 44px minHeight chips */}
-      <View className="bg-[#fafafa] px-4 pb-1">
+      <View className="bg-surface-warm px-4 pb-1">
         <View className="flex-row gap-2 mt-2">
           {[80, 70, 90, 100].map((width, i) => (
             <Animated.View key={i} style={[shimmerStyle, { width }]}>
-              <View className="h-12 w-full rounded-2xl bg-slate-100" />
+              <View className="h-12 w-full rounded-2xl bg-surface-muted" />
             </Animated.View>
           ))}
         </View>
@@ -40,7 +40,7 @@ function HomeSkeleton() {
       {/* Banner placeholder */}
       <View className="px-4 mt-4">
         <Animated.View style={shimmerStyle}>
-          <View className="h-40 rounded-[28px] bg-slate-200" />
+          <View className="h-40 rounded-[28px] bg-surface-elevated" />
         </Animated.View>
       </View>
 

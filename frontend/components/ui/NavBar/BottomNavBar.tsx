@@ -12,6 +12,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 // Try to import haptics - gracefully degrade if not installed
 type HapticsModule = typeof import("expo-haptics");
@@ -92,6 +93,7 @@ interface TabItemProps {
 const TabItem = React.memo(
   ({ label, icon, isActive, badge, onPress, onLongPress }: TabItemProps) => {
     const scale = useSharedValue(1);
+    const { palette } = useAppTheme();
 
     const handlePressIn = useCallback(() => {
       if (isMobile) {
@@ -122,21 +124,31 @@ const TabItem = React.memo(
           isMobile ? "px-3 py-2" : "px-3 py-1.5"
         }`}
         style={{
-          backgroundColor: isActive ? "#ffffff" : "#303030",
+          backgroundColor: isActive
+            ? palette.colors.surface.card
+            : "transparent",
           minHeight: 44,
         }}
       >
         <View className="relative">
           <Icon
             as={icon}
-            color={isActive ? "#000" : "#cbd5e1"}
+            color={
+              isActive
+                ? palette.colors.icon.primary
+                : palette.colors.ink.inverse
+            }
             size={isMobile ? "lg" : "md"}
           />
           {badge !== undefined && <AnimatedBadge count={badge} />}
         </View>
         <Text
           className={`${isMobile ? "text-xs" : "text-[10px]"} font-bold`}
-          style={{ color: isActive ? "#000" : "#cbd5e1" }}
+          style={{
+            color: isActive
+              ? palette.colors.ink.primary
+              : palette.colors.ink.inverse,
+          }}
         >
           {label}
         </Text>
@@ -186,17 +198,18 @@ TabItem.displayName = "TabItem";
 function BottomNavBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const cartCount = useCart(selectCartItemCount);
   const insets = useSafeAreaInsets();
+  const { palette } = useAppTheme();
 
   // Calculate bottom position respecting safe area
   const bottomPosition = Math.max(insets.bottom, 8);
 
   const navContent = (
     <View
-      className={`bg-black rounded-full flex-row justify-between items-center ${
+      className={`bg-ink rounded-full flex-row justify-between items-center ${
         isMobile ? "px-4 py-2" : "px-3 py-1.5"
       } ${isMobile ? "gap-3" : "gap-2"}`}
       style={{
-        shadowColor: "#000",
+        shadowColor: palette.colors.surface.overlay,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.15,
         shadowRadius: 12,

@@ -1,6 +1,5 @@
 import { AuthGate } from "@/components/AuthGate";
 import { OrderListItem } from "@/components/OrderListItem";
-import { Button, ButtonText } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { ListEmptyState } from "@/components/ui/ListEmptyState";
 import { LoadingDots } from "@/components/ui/LoadingDots";
@@ -23,6 +22,7 @@ import {
 } from "react-native";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 // ─── OrdersListHeader ────────────────────────────────────────────────────────
 // Memoized to prevent FlatList from remounting the header on every filter/state
@@ -50,6 +50,8 @@ const OrdersListHeader = React.memo(function OrdersListHeader({
   onClearError,
   onShowAll,
 }: OrdersListHeaderProps) {
+  const { palette } = useAppTheme();
+
   return (
     <View className="px-4 pt-4">
       {/* Filter chips */}
@@ -63,20 +65,31 @@ const OrdersListHeader = React.memo(function OrdersListHeader({
           <Pressable
             key={f.id}
             onPress={() => onFilterPress(f.id as "all" | OrderStatus)}
-            style={{ minHeight: 44, justifyContent: "center" }}
+            style={{
+              minHeight: 44,
+              justifyContent: "center",
+              backgroundColor:
+                selectedFilter === f.id
+                  ? palette.colors.ink.primary
+                  : palette.colors.surface.card,
+              borderColor:
+                selectedFilter === f.id
+                  ? palette.colors.border.focus
+                  : palette.colors.border.subtle,
+            }}
             accessibilityRole="button"
             accessibilityLabel={`Filtrar órdenes: ${f.label}`}
             accessibilityState={{ selected: selectedFilter === f.id }}
-            className={`rounded-2xl border px-4 transition-colors duration-200 ${
-              selectedFilter === f.id
-                ? "border-[#09090b] bg-[#09090b]"
-                : "border-slate-200 bg-white"
-            }`}
+            className="rounded-2xl border px-4 transition-colors duration-200"
           >
             <Text
-              className={`font-semibold transition-colors duration-200 ${
-                selectedFilter === f.id ? "text-white" : "text-gray-700"
-              }`}
+              className="font-semibold transition-colors duration-200"
+              style={{
+                color:
+                  selectedFilter === f.id
+                    ? palette.colors.ink.inverse
+                    : palette.colors.ink.primary,
+              }}
             >
               {f.label}
             </Text>
@@ -86,7 +99,7 @@ const OrdersListHeader = React.memo(function OrdersListHeader({
 
       {/* Result count */}
       <View className="mb-4 mt-3">
-        <Text className="text-gray-600">
+        <Text style={{ color: palette.colors.ink.muted }}>
           {filteredOrderCount} orden{filteredOrderCount !== 1 ? "es" : ""}
           {selectedFilter !== "all" && " encontradas"}
         </Text>
@@ -94,11 +107,32 @@ const OrdersListHeader = React.memo(function OrdersListHeader({
 
       {/* Error */}
       {error && (
-        <View className="mb-4 flex-row items-start rounded-2xl border border-red-200 bg-red-50 p-4">
-          <Icon as={AlertCircle} size="md" className="text-red-600 mr-3 mt-0.5" />
+        <View
+          className="mb-4 flex-row items-start rounded-2xl border p-4"
+          style={{
+            backgroundColor: `${palette.colors.state.error}1F`,
+            borderColor: `${palette.colors.state.error}3D`,
+          }}
+        >
+          <Icon
+            as={AlertCircle}
+            size="md"
+            className="mr-3 mt-0.5"
+            style={{ color: palette.colors.state.error }}
+          />
           <View className="flex-1">
-            <Text className="text-red-800 font-semibold mb-1">Error</Text>
-            <Text className="text-red-700 text-sm">{error}</Text>
+            <Text
+              className="font-semibold mb-1"
+              style={{ color: palette.colors.state.error }}
+            >
+              Error
+            </Text>
+            <Text
+              className="text-sm"
+              style={{ color: palette.colors.state.error }}
+            >
+              {error}
+            </Text>
             <Pressable
               onPress={onClearError}
               className="mt-2"
@@ -106,7 +140,12 @@ const OrdersListHeader = React.memo(function OrdersListHeader({
               accessibilityRole="button"
               accessibilityLabel="Descartar error"
             >
-              <Text className="text-red-600 font-semibold text-sm">Descartar</Text>
+              <Text
+                className="font-semibold text-sm"
+                style={{ color: palette.colors.state.error }}
+              >
+                Descartar
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -115,8 +154,10 @@ const OrdersListHeader = React.memo(function OrdersListHeader({
       {/* Loading */}
       {isLoading && (
         <View className="flex-1 items-center justify-center py-12">
-          <LoadingDots color="#22c55e" size={12} />
-          <Text className="text-gray-500 mt-4">Cargando órdenes...</Text>
+          <LoadingDots color={palette.colors.state.success} size={12} />
+          <Text className="mt-4" style={{ color: palette.colors.ink.muted }}>
+            Cargando órdenes...
+          </Text>
         </View>
       )}
 
@@ -177,6 +218,7 @@ export default function OrdersScreen() {
 
   const [refreshing, setRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
+  const { palette, statusBarStyle } = useAppTheme();
 
   const initialParam = filter || status;
   const [selectedFilter, setSelectedFilter] = useState<"all" | OrderStatus>(
@@ -271,12 +313,14 @@ export default function OrdersScreen() {
     />
   );
 
-
   const listFooter =
     !isLoading && hasMore ? (
       <View className="mx-4 mt-4 mb-2">
         {selectedFilter !== "all" && (
-          <Text className="text-center text-gray-400 text-xs mb-3">
+          <Text
+            className="text-center text-xs mb-3"
+            style={{ color: palette.colors.ink.subtle }}
+          >
             Puede haber más órdenes sin cargar
           </Text>
         )}
@@ -286,8 +330,12 @@ export default function OrdersScreen() {
             if (token) await loadMoreOrders(token);
           }}
           disabled={isLoadingMore}
-          className="flex-row items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white active:bg-slate-50"
-          style={{ minHeight: 48 }}
+          className="flex-row items-center justify-center gap-2 rounded-2xl border active:opacity-85"
+          style={{
+            minHeight: 48,
+            backgroundColor: palette.colors.surface.card,
+            borderColor: palette.colors.border.subtle,
+          }}
           accessibilityRole="button"
           accessibilityLabel={
             isLoadingMore ? "Cargando más órdenes" : "Cargar más órdenes"
@@ -295,9 +343,12 @@ export default function OrdersScreen() {
           accessibilityState={{ disabled: isLoadingMore }}
         >
           {isLoadingMore ? (
-            <LoadingDots color="#09090b" size={8} />
+            <LoadingDots color={palette.colors.icon.primary} size={8} />
           ) : (
-            <Text className="text-sm font-semibold text-gray-700">
+            <Text
+              className="text-sm font-semibold"
+              style={{ color: palette.colors.ink.primary }}
+            >
               Cargar más órdenes
             </Text>
           )}
@@ -307,8 +358,11 @@ export default function OrdersScreen() {
 
   if (!isLoading && selectedFilter === "all" && orders.length === 0) {
     return (
-      <View className="flex-1 bg-[#fafafa]">
-        <StatusBar style="dark" />
+      <View
+        className="flex-1"
+        style={{ backgroundColor: palette.colors.surface.warm }}
+      >
+        <StatusBar style={statusBarStyle} />
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
           title="Mis órdenes"
@@ -331,8 +385,11 @@ export default function OrdersScreen() {
 
   return (
     <AuthGate message="Inicia sesion para ver el historial de tus pedidos.">
-      <View className="flex-1 bg-[#fafafa]">
-        <StatusBar style="dark" />
+      <View
+        className="flex-1"
+        style={{ backgroundColor: palette.colors.surface.warm }}
+      >
+        <StatusBar style={statusBarStyle} />
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
           title="Mis órdenes"
@@ -341,7 +398,8 @@ export default function OrdersScreen() {
         />
 
         <FlatList
-          className="flex-1 bg-[#fafafa]"
+          className="flex-1"
+          style={{ backgroundColor: palette.colors.surface.warm }}
           data={!isLoading ? filteredOrders : []}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderOrderItem}
@@ -351,7 +409,7 @@ export default function OrdersScreen() {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor="#000000"
+              tintColor={palette.colors.icon.primary}
             />
           }
           contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
