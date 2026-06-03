@@ -23,7 +23,8 @@
         "task-20260531-orders-payment-query-contract",
         "task-20260601-nativewind-web-dark-mode",
         "task-20260601-account-settings-theme-selector",
-        "task-20260603-expo-go-push-warning"
+        "task-20260603-expo-go-push-warning",
+        "task-20260603-security-dependency-audit-fixes"
       ]
     },
     "done": {
@@ -115,6 +116,11 @@
       "id": "task-20260603-expo-go-push-warning",
       "content": "Evitar warnings esperados de push notifications en Expo Go y bloquear registro remoto no soportado con tests",
       "agent": "frontend-dev"
+    },
+    "task-20260603-security-dependency-audit-fixes": {
+      "id": "task-20260603-security-dependency-audit-fixes",
+      "content": "Corregir hallazgos de auditoría seguridad/dependencias frontend y backend con validación enfocada",
+      "agent": "code-reviewer"
     }
   },
   "columnOrder": [

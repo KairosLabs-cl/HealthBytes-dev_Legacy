@@ -40,7 +40,6 @@
     "@sentry/react-native": "^7.2.0",
     "@shopify/flash-list": "^2.3.1",
     "@tanstack/react-query": "^5.90.19",
-    "babel-plugin-module-resolver": "^5.0.2",
     "expo": "~54.0.33",
     "expo-auth-session": "~7.0.10",
     "expo-constants": "~18.0.13",
@@ -76,6 +75,7 @@
     "@babel/core": "^7.28.6",
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "^12.9.0",
+    "babel-plugin-module-resolver": "^5.0.2",
     "@types/jest": "^29.5.14",
     "@types/node": "^25.1.0",
     "@types/react": "~19.1.10",
@@ -89,44 +89,9 @@
     "eslint-plugin-security": "^1.7.1",
     "jest": "^29.7.0",
     "jest-expo": "~54.0.17",
-    "jscodeshift": "^17.3.0",
     "prettier": "^3.8.0",
     "typescript": "~5.9.2",
     "typescript-eslint": "^8.59.2"
-  },
-  "pnpm": {
-    "overrides": {
-      "tmp": ">=0.2.4",
-      "bs58": "^6.0.0",
-      "minimatch": "^10.2.3",
-      "glob": "^11.0.0",
-      "babel-plugin-module-resolver>glob": "^8",
-      "tar": ">=7.5.10",
-      "@clerk/shared": "~3.47.4",
-      "flatted": "~3.4.2",
-      "lodash": "~4.18.0",
-      "undici": "~6.24.0",
-      "picomatch": "~4.0.4",
-      "@xmldom/xmldom": "~0.8.12",
-      "node-forge": "~1.4.0",
-      "brace-expansion": "~5.0.6",
-      "yaml": "~2.8.3",
-      "@tootallnate/once": "~3.0.1",
-      "@clerk/types": "4.101.20"
-    },
-    "ignoredBuiltDependencies": [
-      "@clerk/shared",
-      "browser-tabs-lock",
-      "bufferutil",
-      "core-js",
-      "utf-8-validate"
-    ],
-    "peerDependencyRules": {
-      "allowedVersions": {
-        "react": "18 || 19",
-        "react-dom": "18 || 19"
-      }
-    }
   },
   "private": true
 }

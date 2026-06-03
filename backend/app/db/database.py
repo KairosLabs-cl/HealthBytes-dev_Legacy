@@ -1,4 +1,5 @@
 import logging
+from urllib.parse import urlsplit, urlunsplit
 
 import redis.asyncio as aioredis
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -49,6 +50,19 @@ _redis_logger = logging.getLogger(__name__)
 _redis_client: "aioredis.Redis | None" = None
 
 
+def _redact_url_credentials(url: str) -> str:
+    """Return URL safe for logs by removing username/password."""
+    parsed = urlsplit(url)
+    if "@" not in parsed.netloc:
+        return url
+
+    host = parsed.hostname or ""
+    if parsed.port is not None:
+        host = f"{host}:{parsed.port}"
+
+    return urlunsplit((parsed.scheme, host, parsed.path, parsed.query, parsed.fragment))
+
+
 async def get_redis() -> "aioredis.Redis | None":
     """
     Returns a connected Redis client if REDIS_URL is configured.
@@ -66,7 +80,7 @@ async def get_redis() -> "aioredis.Redis | None":
                 socket_connect_timeout=2,
             )
             await _redis_client.ping()
-            _redis_logger.info("Redis connected: %s", settings.REDIS_URL)
+            _redis_logger.info("Redis connected: %s", _redact_url_credentials(settings.REDIS_URL))
         except Exception as exc:
             _redis_logger.warning("Redis unavailable — cache disabled: %s", exc)
             _redis_client = None
