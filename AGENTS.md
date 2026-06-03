@@ -3,18 +3,18 @@
 ## Startup
 
 - Read `.cursorrules` before planning substantial work.
-- Inspect `.ai/skills/` and load the skill that matches the task before coding.
+- Inspect `.agents/skills/` and load the skill that matches the task before coding.
 - Use existing repo scripts and documented flows before ad hoc commands.
 - After planning, use `/caveman` style for concise working updates unless the user asks for normal mode.
 
 ## AI Agents And Roles
 
-- `.ai/router.json` is the machine-readable registry for repo skills, executable agents, and role labels.
-- `.ai/agents/tasks.json` is the Kanban gate. Before an agent starts implementation, review, or PR work, the work must map to an explicit task entry.
-- `.ai/agents/*.md` are executable agent profiles. Jules/OpenCode/Codex prompts must load the matching file instead of copying stale instructions.
+- `.agents/router.json` is the machine-readable registry for repo skills, executable agents, and role labels.
+- `.agents/agents/tasks.json` is the Kanban gate. Before an agent starts implementation, review, or PR work, the work must map to an explicit task entry.
+- `.agents/agents/*.md` are executable agent profiles. Jules/OpenCode/Codex prompts must load the matching file instead of copying stale instructions.
 - `docs/ia-tools/agent-role-hive-prompts.md` defines conceptual review roles and labels such as `agent:security`, `agent:architecture`, and `agent:qa`.
-- When a task uses a conceptual role label, resolve it through `.ai/router.json` to one or more executable agent profiles before acting.
-- When adding a new agent profile, add its `.ai/agents/<name>.md` file, its optional `.ai/agents/jules/<name>-prompt.md` loader, and its `.ai/router.json` registry entry in the same change.
+- When a task uses a conceptual role label, resolve it through `.agents/router.json` to one or more executable agent profiles before acting.
+- When adding a new agent profile, add its `.agents/agents/<name>.md` file, its optional `.agents/agents/jules/<name>-prompt.md` loader, and its `.agents/router.json` registry entry in the same change.
 
 ## Product And Food Safety
 
@@ -63,7 +63,7 @@ HealthBytes is an e-commerce product for people with dietary restrictions, restr
 
 Verify:
 
-- There is an explicit task entry in `.ai/agents/tasks.json` for this work.
+- There is an explicit task entry in `.agents/agents/tasks.json` for this work.
 - If no task exists, do not create, suggest, or leave behind a PR/branch; report the missing task instead.
 - The branch contains material changes against its base. Empty PRs, validation-failure PRs, or PRs that only report missing work must be closed instead of opened.
 - Branch name follows `type/description`.

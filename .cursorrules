@@ -3,7 +3,7 @@
 **Este documento establece límites y reglas estrictas para cualquier asistente de IA trabajando en este proyecto.**
 
 ## 🤖 COMPORTAMIENTO INICIAL DEL ASISTENTE (OBLIGATORIO)
-Al iniciar CUALQUIER chat nuevo (sea en VSCode, Cursor, Open Code, u otro), **debes revisar automáticamente** el directorio `.ai/skills/` y cargar las habilidades ("skills"), reglas o flujos de trabajo aplicables para tu tarea actual. **NO** comenzes a planificar ni a codificar sin antes consultar las herramientas en dicha carpeta.
+Al iniciar CUALQUIER chat nuevo (sea en VSCode, Cursor, Open Code, u otro), **debes revisar automáticamente** el directorio `.agents/skills/` y cargar las habilidades ("skills"), reglas o flujos de trabajo aplicables para tu tarea actual. **NO** comenzes a planificar ni a codificar sin antes consultar las herramientas en dicha carpeta.
 
 ---
 
@@ -339,7 +339,7 @@ Al actualizar documentación:
 2. Verifica la estructura actual con grep_search o semantic_search
 3. Identifica el archivo exacto donde hacer el cambio
 4. Lee el archivo completo antes de editarlo
-5. Carga los skills relevantes de .ai/skills/
+5. Carga los skills relevantes de .agents/skills/
 ```
 
 ### 2. Al Crear Nuevas Features
@@ -563,7 +563,7 @@ docker-compose down -v         # No borrar volúmenes sin consultar
 
 ## 📝 CONVENCIONES DE CÓDIGO
 
-> **Nota:** Las convenciones detalladas de código están disponibles en los skills de `.ai/`
+> **Nota:** Las convenciones detalladas de código están disponibles en los skills de `.agents/`
 > - Backend (Python/FastAPI): `systematic-debugging`, `error-handling-patterns`, `supabase-postgres-best-practices`
 > - Frontend (React Native/Expo): `vercel-react-best-practices`, `vercel-composition-patterns`, `react-native-best-practices`, `building-native-ui`
 
@@ -627,7 +627,7 @@ export const fetchProducts = async (): Promise<any> => {  // No any
 
 ## 🔍 DEBUGGING
 
-> **Nota:** Para debugging sistemático, usa el skill `systematic-debugging` de .ai/skills/
+> **Nota:** Para debugging sistemático, usa el skill `systematic-debugging` de .agents/skills/
 
 ### Logging
 
@@ -660,7 +660,7 @@ alert('Error');  // Usar toast/notification UI
 
 ## 🎯 CRITERIOS DE "COMPLETADO"
 
-> **Nota:** Los criterios detallados de verificación están en el skill `verification-before-completion` de .ai/skills/
+> **Nota:** Los criterios detallados de verificación están en el skill `verification-before-completion` de .agents/skills/
 
 Una tarea NO está completa hasta que:
 
@@ -954,7 +954,7 @@ tipo(scope): descripción en presente
 7. **Seguridad primero** (no tokens en logs, no endpoints sin auth)
 8. **Pregunta si dudas** (mejor consultar que romper)
 9. **Usa templates de PR/commits** (definidos en este documento)
-10. **Carga los skills relevantes** de `.ai/skills/` antes de trabajar
+10. **Carga los skills relevantes** de `.agents/skills/` antes de trabajar
 
 ---
 

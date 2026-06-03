@@ -1,7 +1,6 @@
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
+import { AppThemeProvider } from "@/components/AppThemeProvider";
 import { Icon } from "@/components/ui/icon";
-import BottomNavBar from "@/components/ui/NavBar/BottomNavBar";
 import CartFlyOverlay from "@/components/CartFlyOverlay";
 import {
   Toast,
@@ -17,16 +16,20 @@ import { useCart } from "@/store/cartStore";
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { usePreferencesStore } from "@/store/preferencesStore";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
-import OnboardingModal from "@/components/OnboardingModal";
 import { ClerkLoaded, ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Link, Stack, useSegments } from "expo-router";
+import { Link, Stack } from "expo-router";
 import { User } from "lucide-react-native";
-import { useEffect } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Pressable } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Sentry from "@sentry/react-native";
 import { useShallow } from "zustand/react/shallow";
+
+// Lazy-load OnboardingModal — it's only shown once per device and adds unnecessary
+// bundle weight to every app cold start. Loading it lazily defers the JS parsing
+// until the first time it's actually needed.
+const OnboardingModal = lazy(() => import("@/components/OnboardingModal"));
 
 // Initialize Sentry if DSN is configured
 const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN;
@@ -119,11 +122,13 @@ function RootLayoutNav() {
   );
 
   useEffect(() => {
+    let cancelled = false;
+
     const syncUserData = async () => {
       if (isSignedIn) {
         // User logged in via Clerk
         const token = await getToken();
-        if (token) {
+        if (token && !cancelled) {
           // Sync Clerk token with our unified AuthStore
           useAuthStore.getState().setTokens(token, ""); // No refresh token for Clerk
           
@@ -141,16 +146,16 @@ function RootLayoutNav() {
     };
 
     syncUserData();
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSignedIn]);
-
-  const segments = useSegments();
-  const hideNavBar = segments[0] === "(auth)";
 
   return (
     <>
       <Stack>
-        <Stack.Screen name="index" options={{ title: "HealthBytes" }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="(auth)/login"
           options={{
@@ -169,21 +174,7 @@ function RootLayoutNav() {
               ),
           }}
         />
-        <Stack.Screen
-          name="profile"
-          options={{
-            title: "Mi Perfil",
-            headerTitleAlign: "center",
-          }}
-        />
         <Stack.Screen name="product/[id]" options={{ title: "Product" }} />
-        <Stack.Screen
-          name="cart"
-          options={{
-            title: "Carrito de Compras",
-            headerTitleAlign: "center",
-          }}
-        />
         <Stack.Screen
           name="checkout-v2"
           options={{
@@ -193,13 +184,14 @@ function RootLayoutNav() {
         />
       </Stack>
 
-      {!hideNavBar && <BottomNavBar />}
       <CartFlyOverlay />
 
-      <OnboardingModal
-        visible={!!(isSignedIn && !hasCompletedOnboarding)}
-        onComplete={handleOnboardingComplete}
-      />
+      <Suspense fallback={null}>
+        <OnboardingModal
+          visible={!!(isSignedIn && !hasCompletedOnboarding)}
+          onComplete={handleOnboardingComplete}
+        />
+      </Suspense>
     </>
   );
 }
@@ -213,11 +205,11 @@ export default Sentry.wrap(function RootLayout() {
       <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
         <ClerkLoaded>
           <QueryClientProvider client={queryClient}>
-            <GluestackUIProvider>
+            <AppThemeProvider>
               <ErrorBoundary>
                 <RootLayoutNav />
               </ErrorBoundary>
-            </GluestackUIProvider>
+            </AppThemeProvider>
           </QueryClientProvider>
         </ClerkLoaded>
       </ClerkProvider>

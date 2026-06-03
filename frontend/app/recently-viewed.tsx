@@ -11,10 +11,12 @@ import ProductListItem from "@/components/ProductListItem";
 import type { Product } from "@/types/product";
 import { Clock } from "lucide-react-native";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 export default function RecentlyViewedScreen() {
   const history = useRecentlyViewed((state) => state.items);
   const router = useRouter();
+  const { palette, statusBarStyle } = useAppTheme();
 
   const numColumns = useBreakpointValue({
     default: 2,
@@ -29,8 +31,11 @@ export default function RecentlyViewedScreen() {
 
   return (
     <AuthGate message="Inicia sesión para ver tus productos visitados.">
-      <View className="flex-1 bg-white">
-        <StatusBar style="dark" />
+      <View
+        className="flex-1"
+        style={{ backgroundColor: palette.colors.surface.warm }}
+      >
+        <StatusBar style={statusBarStyle} />
         <Stack.Screen options={{ headerShown: false }} />
 
         <ScreenHeader
@@ -40,7 +45,13 @@ export default function RecentlyViewedScreen() {
         />
 
         <View style={{ paddingHorizontal: 16, paddingVertical: 8 }}>
-          <Text style={{ fontSize: 14, color: "#6B7280", marginBottom: 16 }}>
+          <Text
+            style={{
+              fontSize: 14,
+              color: palette.colors.ink.muted,
+              marginBottom: 16,
+            }}
+          >
             Tu historial de navegación reciente.
           </Text>
         </View>
@@ -58,19 +69,44 @@ export default function RecentlyViewedScreen() {
             showsVerticalScrollIndicator={false}
             estimatedItemSize={280}
             ListEmptyComponent={
-              <View className="items-center justify-center py-40 px-6">
-                <Clock size={48} color="#D1D5DB" />
-                <Text className="text-gray-400 mt-4 text-center">
-                  Aún no has visto ningún producto. ¡Empieza a explorar!
-                </Text>
-                <Pressable
-                  onPress={() => router.push("/")}
-                  className="mt-6 bg-black px-8 py-3 rounded-full"
-                  accessibilityRole="button"
-                  accessibilityLabel="Explorar productos"
+              <View className="px-6 py-28">
+                <View
+                  className="items-start rounded-[28px] border p-6"
+                  style={{
+                    backgroundColor: palette.colors.surface.card,
+                    borderColor: palette.colors.border.subtle,
+                  }}
                 >
-                  <Text className="text-white font-bold">Explorar ahora</Text>
-                </Pressable>
+                  <View
+                    className="mb-5 h-14 w-14 items-center justify-center rounded-[22px]"
+                    style={{ backgroundColor: palette.colors.surface.muted }}
+                  >
+                    <Clock size={28} color={palette.colors.icon.primary} />
+                  </View>
+                  <Text
+                    className="text-base leading-6"
+                    style={{ color: palette.colors.ink.muted }}
+                  >
+                    Aún no has visto ningún producto. Empieza a explorar.
+                  </Text>
+                  <Pressable
+                    onPress={() => router.push("/")}
+                    className="mt-6 rounded-2xl px-8 py-3"
+                    style={{
+                      minHeight: 48,
+                      backgroundColor: palette.colors.ink.primary,
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel="Explorar productos"
+                  >
+                    <Text
+                      className="font-bold"
+                      style={{ color: palette.colors.ink.inverse }}
+                    >
+                      Explorar ahora
+                    </Text>
+                  </Pressable>
+                </View>
               </View>
             }
           />

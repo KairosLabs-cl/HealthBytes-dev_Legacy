@@ -1,19 +1,18 @@
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { useCart, selectCartItemCount } from "@/store/cartStore";
-import { Link, usePathname } from "expo-router";
 import { Home, ShoppingCart, User } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo } from "react";
-import { Platform, Pressable, View } from "react-native";
+import { Platform, Pressable, StyleSheet, View } from "react-native";
 import Animated, {
-  Easing,
   useAnimatedStyle,
   useSharedValue,
   withSequence,
   withSpring,
-  withTiming,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 // Try to import haptics - gracefully degrade if not installed
 type HapticsModule = typeof import("expo-haptics");
@@ -32,14 +31,54 @@ const AnimatedPressable = isMobile
   ? Animated.createAnimatedComponent(Pressable)
   : null;
 
-// Screens where the nav bar should be hidden
-const HIDDEN_ROUTES = ["/product/", "/checkout-v2", "/orders"];
-
 const TAB_CONFIG = [
-  { href: "/", label: "Inicio", icon: Home, hasBadge: false },
-  { href: "/cart", label: "Carrito", icon: ShoppingCart, hasBadge: true },
-  { href: "/profile", label: "Perfil", icon: User, hasBadge: false },
+  { name: "index", label: "Inicio", icon: Home, hasBadge: false },
+  { name: "cart", label: "Carrito", icon: ShoppingCart, hasBadge: true },
+  { name: "profile", label: "Perfil", icon: User, hasBadge: false },
 ] as const;
+
+const NAV_BAR_RADIUS = 999;
+const TAB_PILL_RADIUS = 999;
+
+const styles = StyleSheet.create({
+  animatedTabContent: {
+    width: "100%",
+    borderRadius: TAB_PILL_RADIUS,
+    overflow: "hidden",
+  },
+  mobileTabPressable: {
+    minHeight: 48,
+    width: "100%",
+    flex: 1,
+    borderRadius: TAB_PILL_RADIUS,
+    overflow: "hidden",
+  },
+  navShell: {
+    borderRadius: NAV_BAR_RADIUS,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+    overflow: "hidden",
+  },
+  positioner: {
+    position: "absolute",
+    left: 12,
+    right: 12,
+    zIndex: 50,
+  },
+  tabPill: {
+    borderRadius: TAB_PILL_RADIUS,
+    minHeight: 44,
+    overflow: "hidden",
+  },
+  webTabPressable: {
+    minHeight: 48,
+    flex: 1,
+    borderRadius: TAB_PILL_RADIUS,
+    overflow: "hidden",
+  },
+});
 
 // --- Animated Badge Component ---
 const AnimatedBadge = React.memo(({ count }: { count: number }) => {
@@ -86,16 +125,26 @@ AnimatedBadge.displayName = "AnimatedBadge";
 
 // --- Tab Item Component ---
 interface TabItemProps {
-  href: string;
   label: string;
   icon: typeof Home;
   isActive: boolean;
   badge?: number;
+  onPress: () => void;
+  onLongPress: () => void;
 }
 
 const TabItem = React.memo(
-  ({ href, label, icon, isActive, badge }: TabItemProps) => {
+  ({ label, icon, isActive, badge, onPress, onLongPress }: TabItemProps) => {
     const scale = useSharedValue(1);
+    const { palette } = useAppTheme();
+    const tabPillStyle = useMemo(
+      () => ({
+        backgroundColor: isActive
+          ? palette.colors.surface.card
+          : "transparent",
+      }),
+      [isActive, palette.colors.surface.card]
+    );
 
     const handlePressIn = useCallback(() => {
       if (isMobile) {
@@ -113,7 +162,8 @@ const TabItem = React.memo(
       if (Haptics && isMobile) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle?.Light);
       }
-    }, []);
+      onPress();
+    }, [onPress]);
 
     const animatedStyle = useAnimatedStyle(() => ({
       transform: [{ scale: scale.value }],
@@ -121,26 +171,30 @@ const TabItem = React.memo(
 
     const innerContent = (
       <View
-        className={`w-full items-center justify-center gap-1 rounded-full ${
+        className={`w-full items-center justify-center gap-1 ${
           isMobile ? "px-3 py-2" : "px-3 py-1.5"
         }`}
-        style={{
-          backgroundColor: isActive ? "#ffffff" : "#303030",
-          minHeight: 44,
-        }}
+        style={[styles.tabPill, tabPillStyle]}
       >
         <View className="relative">
           <Icon
             as={icon}
-            color={isActive ? "#000" : "#fff"}
+            color={
+              isActive
+                ? palette.colors.icon.primary
+                : palette.colors.ink.inverse
+            }
             size={isMobile ? "lg" : "md"}
           />
           {badge !== undefined && <AnimatedBadge count={badge} />}
         </View>
         <Text
-          className={`${isMobile ? "text-xs" : "text-[10px]"} font-bold ${
-            isActive ? "text-black" : "text-white"
-          }`}
+          className={`${isMobile ? "text-xs" : "text-[10px]"} font-bold`}
+          style={{
+            color: isActive
+              ? palette.colors.ink.primary
+              : palette.colors.ink.inverse,
+          }}
         >
           {label}
         </Text>
@@ -149,37 +203,37 @@ const TabItem = React.memo(
 
     if (isMobile && AnimatedPressable) {
       return (
-        <Link href={href} asChild>
-          <Pressable
-            style={{ minHeight: 48 }}
-            className="flex-1 items-center justify-center"
-            accessibilityRole="button"
-            accessibilityLabel={label}
-            onPressIn={handlePressIn}
-            onPressOut={handlePressOut}
-            onPress={handlePress}
-          >
-            <Animated.View style={[animatedStyle, { width: "100%" }]}>
-              {innerContent}
-            </Animated.View>
-          </Pressable>
-        </Link>
+        <AnimatedPressable
+          style={styles.mobileTabPressable}
+          className="items-center justify-center"
+          accessibilityRole="button"
+          accessibilityState={isActive ? { selected: true } : {}}
+          accessibilityLabel={label}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          onPress={handlePress}
+          onLongPress={onLongPress}
+        >
+          <Animated.View style={[animatedStyle, styles.animatedTabContent]}>
+            {innerContent}
+          </Animated.View>
+        </AnimatedPressable>
       );
     }
 
     // On web: use plain Pressable (no Reanimated transforms)
     return (
-      <Link href={href} asChild>
-        <Pressable
-          style={{ minHeight: 48 }}
-          className="flex-1 items-center justify-center"
-          accessibilityRole="button"
-          accessibilityLabel={label}
-          onPress={handlePress}
-        >
-          {innerContent}
-        </Pressable>
-      </Link>
+      <Pressable
+        style={styles.webTabPressable}
+        className="items-center justify-center"
+        accessibilityRole="button"
+        accessibilityState={isActive ? { selected: true } : {}}
+        accessibilityLabel={label}
+        onPress={handlePress}
+        onLongPress={onLongPress}
+      >
+        {innerContent}
+      </Pressable>
     );
   }
 );
@@ -187,96 +241,79 @@ const TabItem = React.memo(
 TabItem.displayName = "TabItem";
 
 // --- Main BottomNavBar ---
-function BottomNavBar() {
-  const pathname = usePathname();
+/**
+ * Bottom navigation bar component for tab-based navigation.
+ * Renders tabs from react-navigation state with theme-driven styling.
+ * @param props - BottomTabBarProps from @react-navigation/bottom-tabs
+ */
+function BottomNavBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const cartCount = useCart(selectCartItemCount);
   const insets = useSafeAreaInsets();
-
-  // Determine visibility based on current route
-  const shouldHide = useMemo(
-    () => HIDDEN_ROUTES.some((route) => pathname?.startsWith(route)),
-    [pathname]
-  );
-
-  // Animated show/hide (native only)
-  const translateY = useSharedValue(0);
-
-  useEffect(() => {
-    if (isMobile) {
-      translateY.value = withTiming(shouldHide ? 120 : 0, {
-        duration: 250,
-        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-      });
-    }
-  }, [shouldHide, translateY]);
-
-  const navAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }],
-  }));
-
-  // Memoize isActive check
-  const isActive = useCallback(
-    (href: string) => {
-      if (href === "/") return pathname === "/";
-      return pathname?.startsWith(href) ?? false;
-    },
-    [pathname]
-  );
+  const { palette } = useAppTheme();
 
   // Calculate bottom position respecting safe area
   const bottomPosition = Math.max(insets.bottom, 8);
 
-  // On web: hide instantly without animation
-  if (!isMobile && shouldHide) return null;
-
   const navContent = (
     <View
-      className={`bg-black rounded-full flex-row justify-between items-center ${
+      className={`flex-row justify-between items-center ${
         isMobile ? "px-4 py-2" : "px-3 py-1.5"
       } ${isMobile ? "gap-3" : "gap-2"}`}
-      style={{
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
-        elevation: 8,
-      }}
+      style={[
+        styles.navShell,
+        {
+          backgroundColor: palette.colors.ink.primary,
+          shadowColor: palette.colors.surface.overlay,
+        },
+      ]}
     >
-      {TAB_CONFIG.map((tab) => (
-        <TabItem
-          key={tab.href}
-          href={tab.href}
-          label={tab.label}
-          icon={tab.icon}
-          isActive={isActive(tab.href)}
-          badge={tab.hasBadge ? cartCount : undefined}
-        />
-      ))}
+      {state.routes.map((route, index) => {
+        const { options } = descriptors[route.key];
+
+        const isFocused = state.index === index;
+
+        const onPress = () => {
+          const event = navigation.emit({
+            type: "tabPress",
+            target: route.key,
+            canPreventDefault: true,
+          });
+
+          if (!isFocused && !event.defaultPrevented) {
+            navigation.navigate(route.name, route.params);
+          }
+        };
+
+        const onLongPress = () => {
+          navigation.emit({
+            type: "tabLongPress",
+            target: route.key,
+          });
+        };
+
+        const config = TAB_CONFIG.find((t) => t.name === route.name);
+        if (!config) return null;
+
+        return (
+          <TabItem
+            key={route.key}
+            label={options.title !== undefined ? options.title : config.label}
+            icon={config.icon}
+            isActive={isFocused}
+            badge={config.hasBadge ? cartCount : undefined}
+            onPress={onPress}
+            onLongPress={onLongPress}
+          />
+        );
+      })}
     </View>
   );
 
-  const positionStyle = {
-    position: "absolute" as const,
-    bottom: bottomPosition,
-    left: 12,
-    right: 12,
-    zIndex: 50,
-  };
-
-  // On native: use Animated.View for slide animation
-  if (isMobile) {
-    return (
-      <Animated.View
-        style={[navAnimatedStyle, positionStyle]}
-        pointerEvents={shouldHide ? "none" : "auto"}
-      >
-        {navContent}
-      </Animated.View>
-    );
-  }
-
-  // On web: use plain View
-  return <View style={positionStyle}>{navContent}</View>;
+  return (
+    <View style={[styles.positioner, { bottom: bottomPosition }]}>
+      {navContent}
+    </View>
+  );
 }
 
 export default React.memo(BottomNavBar);

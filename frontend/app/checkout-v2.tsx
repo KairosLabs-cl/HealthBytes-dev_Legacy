@@ -6,6 +6,7 @@ import {
 } from "@/components/PaymentMethodSelector";
 import { StepIndicator } from "@/components/StepIndicator";
 import { Button, ButtonText } from "@/components/ui/button";
+import { LoadingDots } from "@/components/ui/LoadingDots";
 import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
 import { formatPrice } from "@/lib/formatPrice";
@@ -17,23 +18,24 @@ import { Stack, useRouter } from "expo-router";
 import { MapPinIcon, PhoneIcon } from "lucide-react-native";
 import { useEffect, useRef, useState } from "react";
 import { StatusBar } from "expo-status-bar";
+import Animated from "react-native-reanimated";
 import {
   View,
   ScrollView,
   Pressable,
   Linking,
-  ActivityIndicator,
-  Alert,
   Text,
 } from "react-native";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { CreditCard } from "lucide-react-native";
 import { AuthGate } from "@/components/AuthGate";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 type CheckoutStep = "address" | "payment" | "summary";
 
 export default function CheckoutV2Screen() {
   const router = useRouter();
+  const { palette, statusBarStyle } = useAppTheme();
 
   // Use specific selectors to prevent unnecessary re-renders when other store state changes
   const items = useCart((state) => state.items);
@@ -52,6 +54,7 @@ export default function CheckoutV2Screen() {
     null
   );
   const [isProcessing, setIsProcessing] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
@@ -74,20 +77,16 @@ export default function CheckoutV2Screen() {
 
   const handleNext = async () => {
     if (currentStep === "address" && !selectedAddress) {
-      Alert.alert(
-        "Dirección requerida",
-        "Por favor selecciona una dirección de envío"
-      );
+      setFormError("Selecciona una dirección de envío para continuar.");
       return;
     }
 
     if (currentStep === "payment" && !selectedPayment) {
-      Alert.alert(
-        "Método de pago requerido",
-        "Por favor selecciona un método de pago"
-      );
+      setFormError("Selecciona un método de pago para continuar.");
       return;
     }
+
+    setFormError(null);
 
     if (currentStep === "address") {
       setCurrentStep("payment");
@@ -98,10 +97,7 @@ export default function CheckoutV2Screen() {
     } else if (currentStep === "summary") {
       // Safety net: hard auth check before payment processing
       if (!isSignedIn) {
-        Alert.alert(
-          "Sesion requerida",
-          "Debes iniciar sesion antes de confirmar tu compra."
-        );
+        setFormError("Debes iniciar sesión antes de confirmar tu compra.");
         return;
       }
 
@@ -113,10 +109,7 @@ export default function CheckoutV2Screen() {
       }
 
       if (!token) {
-        Alert.alert(
-          "Sesión expirada",
-          "Tu sesión ha expirado. Por favor, inicia sesión nuevamente."
-        );
+        setFormError("Tu sesión expiró. Inicia sesión nuevamente.");
         router.push("/(auth)/login");
         return;
       }
@@ -154,9 +147,8 @@ export default function CheckoutV2Screen() {
         if (canOpen) {
           await Linking.openURL(checkoutUrl);
         } else {
-          Alert.alert(
-            "Error",
-            "No se pudo redirigir a Mercado Pago. Por favor, intenta nuevamente."
+          setFormError(
+            "No se pudo redirigir a Mercado Pago. Intenta nuevamente."
           );
           setIsProcessing(false);
           return;
@@ -174,8 +166,7 @@ export default function CheckoutV2Screen() {
         });
       } catch (error) {
         setIsProcessing(false);
-        Alert.alert(
-          "Error",
+        setFormError(
           error instanceof Error
             ? error.message
             : "Hubo un error al procesar tu orden. Intenta nuevamente."
@@ -197,7 +188,7 @@ export default function CheckoutV2Screen() {
   return (
     <AuthGate message="Inicia sesion para completar tu compra.">
       <View className="flex-1 bg-surface-warm">
-        <StatusBar style="dark" />
+        <StatusBar style={statusBarStyle} />
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
           title="Checkout"
@@ -208,7 +199,8 @@ export default function CheckoutV2Screen() {
         <ScrollView
           ref={scrollRef}
           showsVerticalScrollIndicator={false}
-          className="flex-1 p-6"
+          className="flex-1"
+          contentContainerStyle={{ padding: 24, paddingBottom: 32 }}
         >
           {/* Step Indicator */}
           <StepIndicator
@@ -219,19 +211,34 @@ export default function CheckoutV2Screen() {
             steps={["Dirección", "Pago", "Resumen"]}
           />
 
+          {formError && (
+            <View
+              className="mb-5 rounded-2xl border bg-surface-card px-4 py-3"
+              style={{ borderColor: palette.colors.state.error }}
+              accessibilityRole="alert"
+            >
+              <Text
+                className="text-sm font-semibold leading-5"
+                style={{ color: palette.colors.state.error }}
+              >
+                {formError}
+              </Text>
+            </View>
+          )}
+
           {/* Content */}
           <View className="mb-8">
             {/* Step 1: Address Selection */}
-            {currentStep === "address" && (
+            <View style={{ display: currentStep === "address" ? "flex" : "none" }}>
               <VStack space="lg">
                 <View>
                   <HStack className="items-center mb-3">
-                    <MapPinIcon size={24} color="#2D2926" />
-                    <Text className="text-xl font-bold text-ink ml-2">
+                    <MapPinIcon size={24} color={palette.colors.icon.primary} />
+                    <Text className="ml-2 text-xl font-black tracking-[-0.2px] text-ink">
                       ¿A dónde lo llevamos?
                     </Text>
                   </HStack>
-                  <Text className="text-gray-500 text-sm">
+                  <Text className="text-ink-muted text-sm">
                     Selecciona una dirección o añade una nueva
                   </Text>
                 </View>
@@ -242,12 +249,18 @@ export default function CheckoutV2Screen() {
                       <Pressable
                         key={address.id}
                         onPress={() => setSelectedAddress(address)}
-                        style={{ minHeight: 64 }}
-                        className={`p-4 rounded-2xl border ${
-                          selectedAddress?.id === address.id
-                            ? "border-brand-green bg-[#F0FDF4]"
-                            : "border-border-subtle bg-surface-card shadow-soft-lift"
-                        }`}
+                        className="rounded-[24px] border p-4"
+                        style={{
+                          minHeight: 64,
+                          backgroundColor:
+                            selectedAddress?.id === address.id
+                              ? palette.colors.accent.light
+                              : palette.colors.surface.card,
+                          borderColor:
+                            selectedAddress?.id === address.id
+                              ? palette.colors.state.success
+                              : palette.colors.border.subtle,
+                        }}
                         accessibilityLabel={`Dirección: ${address.street}, ${address.city}`}
                         accessibilityHint="Selecciona esta dirección para el envío"
                         accessibilityRole="radio"
@@ -260,29 +273,34 @@ export default function CheckoutV2Screen() {
                             <Text className="font-bold text-ink mb-1">
                               {address.street}
                             </Text>
-                            <Text className="text-sm text-gray-600 mb-1">
+                            <Text className="text-sm text-ink-muted mb-1">
                               {address.city}, {address.region}
                             </Text>
-                            <Text className="text-xs text-gray-500">
+                            <Text className="text-xs text-ink-muted">
                               CP: {address.postal_code}
                             </Text>
                             {address.street_number && (
-                              <Text className="text-xs text-gray-500 mt-1">
+                              <Text className="text-xs text-ink-muted mt-1">
                                 {address.street_number}
                               </Text>
                             )}
                           </View>
 
-                          {/* Checkbox */}
                           <View
-                            className={`w-6 h-6 rounded-full border items-center justify-center ml-3 ${
-                              selectedAddress?.id === address.id
-                                ? "border-brand-green bg-brand-green"
-                                : "border-border-subtle"
-                            }`}
+                            className="ml-3 h-7 w-7 items-center justify-center rounded-xl border"
+                            style={{
+                              backgroundColor:
+                                selectedAddress?.id === address.id
+                                  ? palette.colors.state.success
+                                  : palette.colors.surface.card,
+                              borderColor:
+                                selectedAddress?.id === address.id
+                                  ? palette.colors.state.success
+                                  : palette.colors.border.subtle,
+                            }}
                           >
                             {selectedAddress?.id === address.id && (
-                              <View className="w-3 h-3 rounded-full bg-white" />
+                              <View className="h-3 w-3 rounded bg-ink-inverse" />
                             )}
                           </View>
                         </HStack>
@@ -290,19 +308,21 @@ export default function CheckoutV2Screen() {
                     ))}
                   </VStack>
                 ) : (
-                  <View className="p-6 bg-surface-card border border-border-subtle rounded-2xl items-center shadow-soft-lift">
-                    <Text className="text-gray-600 text-center mb-4">
+                  <View className="items-center rounded-[24px] border border-border-subtle bg-surface-card p-6">
+                    <Text className="text-ink-muted text-center mb-4">
                       No tienes direcciones guardadas aún
                     </Text>
                     <Button
                       size="sm"
-                      className="bg-brand-green"
+                      className="bg-ink"
                       style={{ minHeight: 48 }}
                       onPress={() => router.push("/addresses")}
                       accessibilityLabel="Agregar nueva dirección"
                       accessibilityRole="button"
                     >
-                      <ButtonText>+ Añadir Dirección</ButtonText>
+                      <ButtonText className="text-ink-inverse">
+                        Añadir Dirección
+                      </ButtonText>
                     </Button>
                   </View>
                 )}
@@ -311,53 +331,51 @@ export default function CheckoutV2Screen() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-brand-green"
+                    className="border-border-default"
                     style={{ minHeight: 48 }}
                     onPress={() => router.push("/addresses")}
                     accessibilityLabel="Agregar nueva dirección"
                     accessibilityRole="button"
                   >
-                    <ButtonText className="text-brand-green">
-                      + Añadir otra dirección
+                    <ButtonText className="text-ink">
+                      Añadir otra dirección
                     </ButtonText>
                   </Button>
                 )}
               </VStack>
-            )}
+            </View>
 
             {/* Step 2: Payment Method */}
-            {currentStep === "payment" && (
-              <View>
+            <View style={{ display: currentStep === "payment" ? "flex" : "none" }}>
                 <PaymentMethodSelector
                   selected={selectedPayment}
                   onSelect={setSelectedPayment}
                 />
-              </View>
-            )}
+            </View>
 
             {/* Step 3: Order Summary */}
-            {currentStep === "summary" && (
-              <VStack space="lg">
+            <View style={{ display: currentStep === "summary" ? "flex" : "none" }}>
+                <VStack space="lg">
                 {/* Address Summary */}
                 {selectedAddress && (
-                  <View className="p-4 bg-surface-card rounded-2xl border border-border-subtle shadow-soft-lift">
+                  <View className="rounded-[24px] border border-border-subtle bg-surface-card p-4">
                     <HStack className="items-start">
-                      <MapPinIcon size={20} color="#2D2926" />
+                      <MapPinIcon size={20} color={palette.colors.icon.primary} />
                       <View className="flex-1 ml-3">
                         <Text className="font-bold text-ink text-sm mb-1">
                           Dirección de Envío
                         </Text>
-                        <Text className="text-sm text-gray-700">
+                        <Text className="text-sm text-ink-muted">
                           {selectedAddress.street}
                         </Text>
-                        <Text className="text-sm text-gray-700">
+                        <Text className="text-sm text-ink-muted">
                           {selectedAddress.city}, {selectedAddress.region}{" "}
                           {selectedAddress.postal_code}
                         </Text>
                         {selectedAddress.phone && (
                           <HStack className="items-center mt-2">
-                            <PhoneIcon size={14} color="#666" />
-                            <Text className="text-xs text-gray-600 ml-1">
+                            <PhoneIcon size={14} color={palette.colors.icon.muted} />
+                            <Text className="text-xs text-ink-muted ml-1">
                               {selectedAddress.phone}
                             </Text>
                           </HStack>
@@ -372,10 +390,10 @@ export default function CheckoutV2Screen() {
                   <Text className="font-bold text-ink text-sm mb-2">
                     Método de Pago
                   </Text>
-                  <Text className="text-sm text-gray-700">
+                  <Text className="text-sm text-ink-muted">
                     {selectedPayment === "venti"
-                      ? "💳 Venti - Transferencia Bancaria"
-                      : "🏦 Mercado Pago - Billetera Digital"}
+                      ? "Venti - Transferencia bancaria"
+                      : "Mercado Pago - Billetera digital"}
                   </Text>
                 </View>
 
@@ -386,13 +404,13 @@ export default function CheckoutV2Screen() {
                     {items.map((item) => (
                       <View
                         key={item.product.id}
-                        className="flex-row justify-between items-center p-3 bg-surface-card border border-border-subtle shadow-soft-lift rounded-lg"
+                        className="flex-row items-center justify-between rounded-2xl border border-border-subtle bg-surface-card p-3"
                       >
                         <View className="flex-1">
                           <Text className="font-semibold text-ink text-sm">
                             {item.product.name}
                           </Text>
-                          <Text className="text-xs text-gray-500">
+                          <Text className="text-xs text-ink-muted">
                             x{item.quantity} @ {formatPrice(item.product.price)}
                           </Text>
                         </View>
@@ -405,35 +423,35 @@ export default function CheckoutV2Screen() {
                 </View>
 
                 {/* Pricing Summary */}
-                <View className="p-4 bg-surface-card rounded-2xl border border-border-subtle shadow-soft-lift">
+                <View className="rounded-[24px] border border-border-subtle bg-surface-card p-4">
                   <HStack className="justify-between mb-2">
-                    <Text className="text-gray-600">Subtotal</Text>
+                    <Text className="text-ink-muted">Subtotal</Text>
                     <Text className="font-medium text-ink">
                       {formatPrice(subtotal)}
                     </Text>
                   </HStack>
 
                   <HStack className="justify-between mb-3">
-                    <Text className="text-gray-600">Envío</Text>
-                    <Text className="font-medium text-brand-green">Gratis</Text>
+                    <Text className="text-ink-muted">Envío</Text>
+                    <Text className="font-bold text-state-success">Gratis</Text>
                   </HStack>
 
                   <View className="h-[1px] bg-border-subtle my-3" />
 
                   <HStack className="justify-between items-end">
-                    <Text className="text-lg font-bold text-ink">Total</Text>
-                    <Text className="text-2xl font-bold text-ink">
+                    <Text className="text-lg font-black text-ink">Total</Text>
+                    <Text className="text-2xl font-black tracking-[-0.3px] text-ink">
                       {formatPrice(total)}
                     </Text>
                   </HStack>
                 </View>
               </VStack>
-            )}
+            </View>
           </View>
         </ScrollView>
 
         {/* Bottom Action Buttons */}
-        <View className="p-6 bg-surface-card border-t border-border-subtle">
+        <View className="border-t border-border-subtle bg-surface-card p-6">
           <VStack space="md">
             {(currentStep === "payment" || currentStep === "summary") && (
               <Button
@@ -454,7 +472,7 @@ export default function CheckoutV2Screen() {
 
             <Button
               size="lg"
-              className="bg-ink h-16 rounded-full shadow-soft-lift"
+              className="h-16 rounded-2xl bg-ink"
               onPress={handleNext}
               disabled={isProcessing}
               accessibilityRole="button"
@@ -469,15 +487,15 @@ export default function CheckoutV2Screen() {
             >
               {isProcessing ? (
                 <HStack space="md" className="items-center">
-                  <ActivityIndicator color="white" />
-                  <ButtonText className="text-white font-semibold text-lg">
+                  <LoadingDots color={palette.colors.state.success} size={8} />
+                  <ButtonText className="text-ink-inverse font-semibold text-lg">
                     {currentStep === "summary"
                       ? "Confirmando..."
                       : "Procesando..."}
                   </ButtonText>
                 </HStack>
               ) : (
-                <ButtonText className="text-white font-bold text-lg">
+                <ButtonText className="text-ink-inverse font-bold text-lg">
                   {currentStep === "address"
                     ? "Continuar"
                     : currentStep === "payment"
@@ -496,15 +514,19 @@ export default function CheckoutV2Screen() {
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: "rgba(0,0,0,0.45)",
+              backgroundColor: palette.colors.surface.overlay,
               alignItems: "center",
               justifyContent: "center",
               zIndex: 50,
             }}
           >
-            <View className="bg-white rounded-2xl px-8 py-6 items-center">
-              <ActivityIndicator size="large" color="#111827" />
-              <Text className="text-gray-900 font-semibold mt-4 text-base">
+            <View className="items-center rounded-[24px] bg-surface-card px-8 py-6">
+              <View className="mb-4 flex-row gap-2">
+                <View className="h-3 w-3 rounded-full bg-state-success" />
+                <View className="h-3 w-3 rounded-full bg-border-default" />
+                <View className="h-3 w-3 rounded-full bg-ink-subtle" />
+              </View>
+              <Text className="text-base font-semibold text-ink">
                 Confirmando tu orden...
               </Text>
             </View>

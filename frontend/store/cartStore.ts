@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import * as cartApi from "@/api/cart";
 
+let cartSessionGeneration = 0;
+
 type Product = {
   id: string | number;
   name: string;
@@ -58,15 +60,25 @@ export const useCart = create<CartState>((set, get) => ({
    * Clear only local state (used on logout)
    */
   clearLocalCart: () => {
-    set({ items: [] });
+    cartSessionGeneration += 1;
+    set({
+      items: [],
+      error: null,
+      addingProducts: new Set(),
+      updatingProducts: new Set(),
+      removingProducts: new Set(),
+    });
   },
 
   /**
    * Sync cart from server (when authenticated)
    */
   syncWithServer: async (getToken) => {
+    const requestGeneration = cartSessionGeneration;
+
     try {
       const cart = await cartApi.getCart(getToken);
+      if (requestGeneration !== cartSessionGeneration) return;
 
       // Convert API response to local format
       const items: CartItem[] = cart.items.map((item) => ({
@@ -83,6 +95,7 @@ export const useCart = create<CartState>((set, get) => ({
 
       set({ items });
     } catch {
+      if (requestGeneration !== cartSessionGeneration) return;
       set({ error: "No se pudo sincronizar el carrito." });
     }
   },
@@ -92,6 +105,7 @@ export const useCart = create<CartState>((set, get) => ({
    */
   mergeAndSync: async (getToken) => {
     const { items } = get();
+    const requestGeneration = cartSessionGeneration;
 
     try {
       // If there are local items, merge them with server
@@ -102,6 +116,7 @@ export const useCart = create<CartState>((set, get) => ({
         }));
 
         const mergedCart = await cartApi.mergeCart(localItems, getToken);
+        if (requestGeneration !== cartSessionGeneration) return;
 
         // Update local state with merged cart
         const mergedItems: CartItem[] = mergedCart.items.map((item) => ({
@@ -122,6 +137,7 @@ export const useCart = create<CartState>((set, get) => ({
         await get().syncWithServer(getToken);
       }
     } catch {
+      if (requestGeneration !== cartSessionGeneration) return;
       set({ error: "No se pudo fusionar el carrito." });
       // Fallback: just sync from server
       await get().syncWithServer(getToken);
@@ -132,6 +148,7 @@ export const useCart = create<CartState>((set, get) => ({
    * Add product to cart
    */
   addProduct: async (product: Product, getToken) => {
+    const requestGeneration = cartSessionGeneration;
     const {
       items: previousItems,
       addingProducts,
@@ -182,6 +199,7 @@ export const useCart = create<CartState>((set, get) => ({
     try {
       await cartApi.addToCart(Number(product.id), 1, getToken);
     } catch {
+      if (requestGeneration !== cartSessionGeneration) return;
       // Rollback: re-fetch actual server state instead of restoring stale snapshot
       await get().syncWithServer(getToken);
       set({
@@ -190,6 +208,7 @@ export const useCart = create<CartState>((set, get) => ({
       });
     }
 
+    if (requestGeneration !== cartSessionGeneration) return;
     // Remove from adding set
     set((state) => {
       const newSet = new Set(state.addingProducts);
@@ -202,6 +221,7 @@ export const useCart = create<CartState>((set, get) => ({
    * Update product quantity directly
    */
   updateQuantity: async (productId: string | number, newQuantity: number, getToken) => {
+    const requestGeneration = cartSessionGeneration;
     const { updatingProducts } = get();
 
     // Prevent multiple simultaneous updates of the same product
@@ -233,6 +253,7 @@ export const useCart = create<CartState>((set, get) => ({
     try {
       await cartApi.updateCartItem(Number(productId), newQuantity, getToken);
     } catch {
+      if (requestGeneration !== cartSessionGeneration) return;
       await get().syncWithServer(getToken);
       set({
         error:
@@ -240,6 +261,7 @@ export const useCart = create<CartState>((set, get) => ({
       });
     }
 
+    if (requestGeneration !== cartSessionGeneration) return;
     // Remove from updating set
     set((state) => {
       const newSet = new Set(state.updatingProducts);
@@ -252,6 +274,7 @@ export const useCart = create<CartState>((set, get) => ({
    * Decrement product quantity
    */
   decrementProduct: async (productId: string | number, getToken) => {
+    const requestGeneration = cartSessionGeneration;
     const { items, updatingProducts } = get();
 
     const existingItem = items.find((item) => item.product.id === productId);
@@ -297,6 +320,7 @@ export const useCart = create<CartState>((set, get) => ({
         await cartApi.removeFromCart(Number(productId), getToken);
       }
     } catch {
+      if (requestGeneration !== cartSessionGeneration) return;
       await get().syncWithServer(getToken);
       set({
         error:
@@ -304,6 +328,7 @@ export const useCart = create<CartState>((set, get) => ({
       });
     }
 
+    if (requestGeneration !== cartSessionGeneration) return;
     // Remove from updating set
     set((state) => {
       const newSet = new Set(state.updatingProducts);
@@ -316,6 +341,7 @@ export const useCart = create<CartState>((set, get) => ({
    * Remove product from cart
    */
   removeProduct: async (productId: string | number, getToken) => {
+    const requestGeneration = cartSessionGeneration;
     const { removingProducts } = get();
 
     // Prevent multiple simultaneous removes of the same product
@@ -337,12 +363,14 @@ export const useCart = create<CartState>((set, get) => ({
     try {
       await cartApi.removeFromCart(Number(productId), getToken);
     } catch {
+      if (requestGeneration !== cartSessionGeneration) return;
       await get().syncWithServer(getToken);
       set({
         error: "No se pudo eliminar el producto. Por favor intenta de nuevo.",
       });
     }
 
+    if (requestGeneration !== cartSessionGeneration) return;
     // Remove from removing set
     set((state) => {
       const newSet = new Set(state.removingProducts);
@@ -355,6 +383,7 @@ export const useCart = create<CartState>((set, get) => ({
    * Reset/clear entire cart
    */
   resetCart: async (getToken) => {
+    const requestGeneration = cartSessionGeneration;
     const { items: previousItems } = get();
 
     // Clear local state
@@ -364,6 +393,7 @@ export const useCart = create<CartState>((set, get) => ({
     try {
       await cartApi.clearCart(getToken);
     } catch {
+      if (requestGeneration !== cartSessionGeneration) return;
       // Rollback to previous state
       set({
         items: previousItems,

@@ -7,24 +7,16 @@ import { Text } from "@/components/ui/text";
 import { Button, ButtonText } from "@/components/ui/button";
 import { useAuth } from "@clerk/clerk-expo";
 import { useEffect, useState } from "react";
-import { Salad } from "lucide-react-native";
+import { Check, Salad } from "lucide-react-native";
 import { usePreferencesStore } from "@/store/preferencesStore";
 import { updateDietaryPreferences } from "@/api/preferences";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
-
-const DIETARY_OPTIONS = [
-  { slug: "sin-gluten", label: "Sin Gluten", emoji: "🌾" },
-  { slug: "vegano", label: "Vegano", emoji: "🌱" },
-  { slug: "sin-lactosa", label: "Sin Lactosa", emoji: "🥛" },
-  { slug: "bajo-en-azucar", label: "Bajo en azúcar", emoji: "🍬" },
-  { slug: "alto-en-proteina", label: "Alto en proteína", emoji: "💪" },
-  { slug: "para-diabeticos", label: "Para diabéticos", emoji: "🩺" },
-  { slug: "sin-nueces", label: "Sin Nueces", emoji: "🥜" },
-  { slug: "sin-mariscos", label: "Sin Mariscos", emoji: "🦐" },
-] as const;
+import { DIETARY_OPTIONS } from "@/lib/dietaryOptions";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 export default function DietaryPreferencesScreen() {
   const { getToken } = useAuth();
+  const { palette, statusBarStyle } = useAppTheme();
   // ⚡ Bolt: Use granular selectors to avoid re-renders when other preferences change
   const dietaryPreferences = usePreferencesStore(
     (state) => state.dietaryPreferences
@@ -57,12 +49,10 @@ export default function DietaryPreferencesScreen() {
         await updateDietaryPreferences(selectedTags, token);
       }
       setDietaryPreferences(selectedTags);
-      setSuccess("✓ Preferencias guardadas");
+      setSuccess("Preferencias guardadas");
       setTimeout(() => setSuccess(null), 3000);
     } catch {
-      setError(
-        "❌ No se pudieron guardar las preferencias. Intenta nuevamente."
-      );
+      setError("No se pudieron guardar las preferencias. Intenta nuevamente.");
     } finally {
       setIsSaving(false);
     }
@@ -70,8 +60,11 @@ export default function DietaryPreferencesScreen() {
 
   return (
     <AuthGate message="Inicia sesión para configurar tus preferencias dietéticas.">
-      <View className="flex-1 bg-white">
-        <StatusBar style="dark" />
+      <View
+        className="flex-1"
+        style={{ backgroundColor: palette.colors.surface.warm }}
+      >
+        <StatusBar style={statusBarStyle} />
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
           title="Preferencias alimentarias"
@@ -84,30 +77,64 @@ export default function DietaryPreferencesScreen() {
           contentContainerStyle={{ paddingBottom: 140 }}
           showsVerticalScrollIndicator={false}
         >
-          <Text className="text-gray-600 text-sm mb-6">
+          <Text
+            className="text-sm mb-6"
+            style={{ color: palette.colors.ink.muted }}
+          >
             Selecciona tus restricciones para filtrar automáticamente los
             productos.
           </Text>
 
           <View className="flex-row flex-wrap gap-3 mb-4">
-            {DIETARY_OPTIONS.map(({ slug, label, emoji }) => {
+            {DIETARY_OPTIONS.map(({ slug, label, icon: DietaryIcon }) => {
               const isActive = selectedTags.includes(slug);
               return (
                 <Pressable
                   key={slug}
                   onPress={() => toggleTag(slug)}
-                  style={{ minHeight: 44 }}
-                  className={`flex-row items-center gap-2 px-4 py-3 rounded-full border-2 ${
-                    isActive
-                      ? "bg-green-50 border-green-500"
-                      : "bg-gray-50 border-gray-200"
-                  }`}
+                  style={{
+                    minHeight: 48,
+                    backgroundColor: isActive
+                      ? palette.colors.accent.primary
+                      : palette.colors.surface.card,
+                    borderColor: isActive
+                      ? palette.colors.accent.primary
+                      : palette.colors.border.subtle,
+                  }}
+                  className="flex-row items-center gap-2 rounded-2xl border px-4 py-3"
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: isActive }}
                 >
-                  <Text className="text-base" accessibilityElementsHidden>{emoji}</Text>
+                  <View
+                    className="h-5 w-5 items-center justify-center rounded-lg"
+                    style={{
+                      backgroundColor: isActive
+                        ? palette.colors.brand.green
+                        : palette.colors.surface.muted,
+                    }}
+                  >
+                    {isActive && (
+                      <Check
+                        size={13}
+                        color={palette.colors.ink.inverse}
+                        strokeWidth={2.8}
+                      />
+                    )}
+                    {!isActive && (
+                      <DietaryIcon
+                        size={13}
+                        color={palette.colors.icon.primary}
+                        strokeWidth={2.2}
+                      />
+                    )}
+                  </View>
                   <Text
-                    className={`text-sm font-semibold ${
-                      isActive ? "text-green-700" : "text-gray-700"
-                    }`}
+                    className="text-sm font-semibold"
+                    style={{
+                      color: isActive
+                        ? palette.colors.ink.inverse
+                        : palette.colors.ink.primary,
+                    }}
                   >
                     {label}
                   </Text>
@@ -117,22 +144,48 @@ export default function DietaryPreferencesScreen() {
           </View>
 
           {error && (
-            <View className="bg-red-50 border border-red-300 rounded-lg p-3 mb-4">
-              <Text className="text-red-700 text-sm">{error}</Text>
+            <View
+              className="mb-4 rounded-2xl border p-3"
+              style={{
+                backgroundColor: palette.colors.surface.elevated,
+                borderColor: palette.colors.state.error,
+              }}
+            >
+              <Text
+                className="text-sm"
+                style={{ color: palette.colors.state.error }}
+              >
+                {error}
+              </Text>
             </View>
           )}
           {success && (
-            <View className="bg-green-50 border border-green-300 rounded-lg p-3 mb-4">
-              <Text className="text-green-700 text-sm">{success}</Text>
+            <View
+              className="mb-4 rounded-2xl border p-3"
+              style={{
+                backgroundColor: palette.colors.surface.elevated,
+                borderColor: palette.colors.state.success,
+              }}
+            >
+              <Text
+                className="text-sm"
+                style={{ color: palette.colors.state.success }}
+              >
+                {success}
+              </Text>
             </View>
           )}
 
           <Button
             onPress={handleSave}
-            className="bg-black rounded-full min-h-[52px] flex-row items-center justify-center"
+            className="min-h-[52px] flex-row items-center justify-center rounded-2xl"
+            style={{ backgroundColor: palette.colors.accent.primary }}
             disabled={isSaving}
           >
-            <ButtonText className="text-white font-semibold text-base text-center leading-5">
+            <ButtonText
+              className="font-semibold text-base text-center leading-5"
+              style={{ color: palette.colors.ink.inverse }}
+            >
               {isSaving ? "Guardando..." : "Guardar preferencias"}
             </ButtonText>
           </Button>

@@ -56,12 +56,31 @@ EOF
 
 normalize_expo_args() {
   EXPO_ARGS=()
+  local has_host_arg=0
+  local has_client_arg=0
   for arg in "$@"; do
     if [ "$arg" = "--" ]; then
       continue
     fi
+    case "$arg" in
+      --lan|--tunnel|--localhost|--host|--host=*)
+        has_host_arg=1
+        ;;
+    esac
+    case "$arg" in
+      --go|--dev-client)
+        has_client_arg=1
+        ;;
+    esac
     EXPO_ARGS+=("$arg")
   done
+
+  if [ "$has_host_arg" -eq 0 ]; then
+    EXPO_ARGS+=("--lan")
+  fi
+  if [ "$has_client_arg" -eq 0 ]; then
+    EXPO_ARGS+=("--go")
+  fi
 }
 
 # ── Graceful Degradation: try fnm first, then nvm ──────────────────────────

@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react-native";
-import HomeScreen from "../index";
+import HomeScreen from "../(tabs)/index";
 import { useQuery } from "@tanstack/react-query";
 import { useRecentlyViewed } from "@/store/recentlyViewedStore";
 
@@ -90,6 +90,7 @@ jest.mock("@/store/productFiltersStore", () => ({
 
 const mockPreferencesStore = {
   dietaryPreferences: [],
+  hasHydrated: false,
 };
 
 jest.mock("@/store/preferencesStore", () => ({
@@ -182,7 +183,14 @@ jest.mock("@/components/ui/utils/use-break-point-value", () => ({
 
 describe("HomeScreen Structural Test", () => {
   beforeEach(() => {
+    jest.clearAllMocks();
     (useRecentlyViewed as unknown as jest.Mock).mockReturnValue({ items: [] });
+    (useQuery as jest.Mock).mockReturnValue({
+      data: [],
+      isLoading: false,
+      error: null,
+      isFetching: false,
+    });
   });
 
   it("renders a list of products", async () => {
@@ -205,5 +213,14 @@ describe("HomeScreen Structural Test", () => {
 
     // Check if Header is rendered
     expect(screen.getByTestId("header")).toBeTruthy();
+  });
+
+  it("waits for persisted preferences before loading the catalog", () => {
+    render(<HomeScreen />);
+
+    expect(useQuery).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ enabled: false })
+    );
   });
 });

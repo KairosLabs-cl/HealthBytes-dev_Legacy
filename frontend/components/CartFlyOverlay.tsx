@@ -15,12 +15,14 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCartAnimation } from "@/store/cartAnimationStore";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 export default function CartFlyOverlay() {
   const pending = useCartAnimation((s) => s.pending);
   const clear = useCartAnimation((s) => s.clear);
   const insets = useSafeAreaInsets();
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const { palette } = useAppTheme();
 
   const flyX = useSharedValue(0);
   const flyY = useSharedValue(0);
@@ -35,7 +37,7 @@ export default function CartFlyOverlay() {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: "#111827",
+    backgroundColor: palette.colors.ink.primary,
     alignItems: "center" as const,
     justifyContent: "center" as const,
     opacity: flyOpacity.value,
@@ -57,50 +59,49 @@ export default function CartFlyOverlay() {
     flyOpacity.value = 0;
     flyRotate.value = 0;
 
-    // ─── Phase 1 (0–500ms): pop in + jiggle ──────────────────────────────
-    flyScale.value = withSequence(
-      withTiming(1.35, { duration: 180, easing: Easing.out(Easing.back(2.5)) }),
-      withTiming(1.05, { duration: 120 }),
-      withTiming(1.18, { duration: 100, easing: Easing.inOut(Easing.ease) }),
-      withTiming(1.0, { duration: 100, easing: Easing.inOut(Easing.ease) }),
-      // ─── Phase 2 (500–1000ms): fly + shrink ──────────────────────────
-      withTiming(0.5, { duration: 350, easing: Easing.in(Easing.cubic) }),
-      withTiming(0, { duration: 150 })
-    ); // 1000ms
+    // ─── Simplified Animation Phase ──────────────────────────────
+    // Reduced from complex 6-part sequence to simple pop and fly to save frames
 
-    flyOpacity.value = withSequence(
-      withTiming(1, { duration: 80 }),
-      withDelay(770, withTiming(0, { duration: 150 }))
+    // Pop in and shrink as it flies
+    flyScale.value = withSequence(
+      withTiming(1.2, { duration: 200, easing: Easing.out(Easing.back(2)) }),
+      withTiming(1, { duration: 150 }),
+      withDelay(
+        150,
+        withTiming(0.4, { duration: 400, easing: Easing.in(Easing.cubic) })
+      ),
+      withTiming(0, { duration: 100 })
     );
 
-    // Jiggle then spin
-    flyRotate.value = withSequence(
-      withTiming(-22, { duration: 130 }),
-      withTiming(22, { duration: 130 }),
-      withTiming(-12, { duration: 90 }),
-      withTiming(12, { duration: 90 }),
-      withTiming(0, { duration: 60 }),
-      withTiming(360, { duration: 500, easing: Easing.linear })
-    ); // 1000ms
+    // Fade in, hold, fade out
+    flyOpacity.value = withSequence(
+      withTiming(1, { duration: 100 }),
+      withDelay(600, withTiming(0, { duration: 200 }))
+    );
 
-    // Y: hover up, then fly down to nav bar cart
+    // Simple single rotation
+    flyRotate.value = withSequence(
+      withTiming(-15, { duration: 200 }),
+      withTiming(360, { duration: 600, easing: Easing.inOut(Easing.ease) })
+    );
+
+    // Arching path using bezier
     flyY.value = withSequence(
-      withTiming(startY - 52, {
-        duration: 500,
-        easing: Easing.out(Easing.ease),
+      withTiming(startY - 40, {
+        duration: 300,
+        easing: Easing.out(Easing.quad),
       }),
       withTiming(targetY - 22, {
         duration: 500,
-        easing: Easing.bezier(0.4, 0, 0.2, 1),
+        easing: Easing.in(Easing.quad),
       })
     );
 
-    // X: hold while jiggling, then glide to cart center
     flyX.value = withDelay(
-      500,
+      300,
       withTiming(targetX - 22, {
         duration: 500,
-        easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
+        easing: Easing.inOut(Easing.quad),
       })
     );
   }, [pending]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -111,7 +112,7 @@ export default function CartFlyOverlay() {
       pointerEvents="none"
     >
       <Animated.View style={flyingStyle} pointerEvents="none">
-        <ShoppingCart size={18} color="white" />
+        <ShoppingCart size={18} color={palette.colors.ink.inverse} />
       </Animated.View>
     </View>
   );

@@ -1,5 +1,10 @@
 import { create } from "zustand";
 import { addFavorite, removeFavorite, getFavoriteIds } from "@/api/favorites";
+import { ApiError } from "@/lib/apiError";
+
+const pendingToggles = new Map<number, Promise<void>>();
+const toggleVersions = new Map<number, number>();
+let favoritesSessionGeneration = 0;
 
 interface FavoritesState {
   favoriteIds: Set<number>;
@@ -17,11 +22,15 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
   isLoading: false,
 
   loadFavorites: async (getToken) => {
+    const requestGeneration = favoritesSessionGeneration;
+
     try {
       set({ isLoading: true });
       const ids = await getFavoriteIds(getToken);
+      if (requestGeneration !== favoritesSessionGeneration) return;
       set({ favoriteIds: new Set(ids), isLoading: false });
     } catch {
+      if (requestGeneration !== favoritesSessionGeneration) return;
       set({ isLoading: false });
     }
   },
@@ -29,6 +38,9 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
   toggleFavorite: async (productId: number, getToken) => {
     const { favoriteIds } = get();
     const wasFavorite = favoriteIds.has(productId);
+    const shouldBeFavorite = !wasFavorite;
+    const version = (toggleVersions.get(productId) ?? 0) + 1;
+    toggleVersions.set(productId, version);
 
     // Optimistic update - UI changes immediately
     const newIds = new Set(favoriteIds);
@@ -39,16 +51,45 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
     }
     set({ favoriteIds: newIds });
 
-    // API request in background
-    try {
-      if (wasFavorite) {
-        await removeFavorite(productId, getToken);
-      } else {
-        await addFavorite(productId, getToken);
+    const previousToggle = pendingToggles.get(productId);
+    const runToggle = async () => {
+      if (previousToggle) {
+        await previousToggle;
       }
-    } catch {
-      // Rollback on error
-      set({ favoriteIds });
+
+      try {
+        if (shouldBeFavorite) {
+          await addFavorite(productId, getToken);
+        } else {
+          await removeFavorite(productId, getToken);
+        }
+      } catch (error) {
+        const alreadyConverged =
+          error instanceof ApiError &&
+          ((shouldBeFavorite && error.status === 409) ||
+            (!shouldBeFavorite && error.status === 404));
+
+        if (!alreadyConverged && toggleVersions.get(productId) === version) {
+          set((state) => {
+            const rolledBackIds = new Set(state.favoriteIds);
+            if (shouldBeFavorite) {
+              rolledBackIds.delete(productId);
+            } else {
+              rolledBackIds.add(productId);
+            }
+            return { favoriteIds: rolledBackIds };
+          });
+        }
+      }
+    };
+
+    const currentToggle = runToggle();
+    pendingToggles.set(productId, currentToggle);
+    await currentToggle;
+
+    if (pendingToggles.get(productId) === currentToggle) {
+      pendingToggles.delete(productId);
+      toggleVersions.delete(productId);
     }
   },
 
@@ -57,6 +98,9 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
   },
 
   clearFavorites: () => {
-    set({ favoriteIds: new Set<number>() });
+    favoritesSessionGeneration += 1;
+    pendingToggles.clear();
+    toggleVersions.clear();
+    set({ favoriteIds: new Set<number>(), isLoading: false });
   },
 }));

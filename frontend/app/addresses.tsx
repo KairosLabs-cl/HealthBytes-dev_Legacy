@@ -1,6 +1,6 @@
 /// <reference types="nativewind/types" />
 import { AuthGate } from "@/components/AuthGate";
-import { ActivityIndicator, Pressable, ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Text } from "@/components/ui/text";
@@ -23,10 +23,12 @@ import {
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { useAddress } from "@/store/addressStore";
 import Animated, { FadeInUp, FadeIn, Layout } from "react-native-reanimated";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 export default function AddressesScreen() {
   const { getToken } = useAuth();
   const scrollRef = useRef<ScrollView>(null);
+  const { palette, statusBarStyle } = useAppTheme();
 
   // Store state (using selectors to prevent unnecessary re-renders)
   const addresses = useAddress((state) => state.addresses);
@@ -47,6 +49,7 @@ export default function AddressesScreen() {
   const [success, setSuccess] = useState<string | null>(null);
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const isSubmittingRef = useRef(false);
 
   const addressRegion = "Metropolitana de Santiago";
 
@@ -159,9 +162,15 @@ export default function AddressesScreen() {
   };
 
   const handleSubmit = async () => {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+
     setLocalError(null);
     clearError();
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      isSubmittingRef.current = false;
+      return;
+    }
 
     setIsActionLoading(true);
     try {
@@ -196,6 +205,7 @@ export default function AddressesScreen() {
       );
     } finally {
       setIsActionLoading(false);
+      isSubmittingRef.current = false;
     }
   };
 
@@ -215,16 +225,19 @@ export default function AddressesScreen() {
   const getLabelIcon = (label: string) => {
     const l = label.toLowerCase();
     if (l.includes("casa") || l.includes("hogar"))
-      return <Home size={18} color="#16A34A" />;
+      return <Home size={18} color={palette.colors.icon.accent} />;
     if (l.includes("trabajo") || l.includes("oficina"))
-      return <Briefcase size={18} color="#16A34A" />;
-    return <MapPin size={18} color="#16A34A" />;
+      return <Briefcase size={18} color={palette.colors.icon.accent} />;
+    return <MapPin size={18} color={palette.colors.icon.accent} />;
   };
 
   return (
     <AuthGate message="Inicia sesión para gestionar tus direcciones.">
-      <View className="flex-1 bg-white">
-        <StatusBar style="dark" />
+      <View
+        className="flex-1"
+        style={{ backgroundColor: palette.colors.surface.warm }}
+      >
+        <StatusBar style={statusBarStyle} />
         <Stack.Screen options={{ headerShown: false }} />
 
         <ScreenHeader
@@ -242,21 +255,33 @@ export default function AddressesScreen() {
           <View className="max-w-[800px] mx-auto w-full">
             {/* Hero Section */}
             <View className="px-5 mt-4">
-              <View className="rounded-3xl bg-black px-6 py-8 overflow-hidden relative">
+              <View
+                className="relative overflow-hidden rounded-[28px] px-6 py-8"
+                style={{ backgroundColor: palette.colors.ink.primary }}
+              >
                 <View className="z-10">
-                  <Text className="text-[11px] uppercase text-gray-400 tracking-[1.5px] font-bold mb-1">
+                  <Text
+                    className="text-[11px] uppercase tracking-[1.5px] font-bold mb-1"
+                    style={{ color: palette.colors.ink.subtle }}
+                  >
                     Configuración
                   </Text>
-                  <Text className="text-3xl font-extrabold text-white mb-2">
+                  <Text
+                    className="text-3xl font-extrabold mb-2"
+                    style={{ color: palette.colors.ink.inverse }}
+                  >
                     Mis{"\n"}Direcciones
                   </Text>
-                  <Text className="text-sm text-gray-300 max-w-[200px]">
+                  <Text
+                    className="text-sm max-w-[200px]"
+                    style={{ color: palette.colors.ink.subtle }}
+                  >
                     Gestiona tus lugares de entrega para compras más rápidas.
                   </Text>
                 </View>
 
                 <View className="absolute right-6 top-8">
-                  <Map size={80} color="rgba(255,255,255,0.05)" />
+                  <Map size={80} color={`${palette.colors.ink.inverse}0D`} />
                 </View>
               </View>
             </View>
@@ -264,7 +289,10 @@ export default function AddressesScreen() {
             {/* Form Section */}
             <View className="px-5 mt-8">
               <View className="flex-row items-center justify-between mb-5">
-                <Text className="text-lg font-bold text-gray-900">
+                <Text
+                  className="text-lg font-bold"
+                  style={{ color: palette.colors.ink.primary }}
+                >
                   {editingId !== null
                     ? "Editar dirección"
                     : "Agregar nueva ubicación"}
@@ -272,13 +300,19 @@ export default function AddressesScreen() {
                 {editingId !== null && (
                   <Pressable
                     onPress={handleCancelEdit}
-                    style={{ minHeight: 48 }}
-                    className="flex-row items-center justify-center gap-1.5 px-4 bg-gray-100 rounded-full active:bg-gray-200"
+                    style={{
+                      minHeight: 48,
+                      backgroundColor: palette.colors.surface.muted,
+                    }}
+                    className="flex-row items-center justify-center gap-1.5 rounded-2xl px-4 active:opacity-85"
                     accessibilityLabel="Cancelar edición"
                     accessibilityRole="button"
                   >
-                    <X size={14} color="#6B7280" />
-                    <Text className="text-xs text-gray-500 font-medium">
+                    <X size={14} color={palette.colors.icon.muted} />
+                    <Text
+                      className="text-xs font-medium"
+                      style={{ color: palette.colors.ink.muted }}
+                    >
                       Cancelar
                     </Text>
                   </Pressable>
@@ -286,55 +320,84 @@ export default function AddressesScreen() {
               </View>
 
               <View
-                className={`rounded-3xl p-6 border shadow-sm ${editingId !== null ? "bg-blue-50 border-blue-100" : "bg-gray-50 border-gray-100"}`}
+                className="rounded-[28px] border p-6"
+                style={{
+                  backgroundColor: palette.colors.surface.card,
+                  borderColor: palette.colors.border.subtle,
+                }}
               >
                 {/* Label */}
                 <View className="mb-4">
-                  <Text className="text-xs font-bold text-gray-500 uppercase mb-2 ml-1">
+                  <Text
+                    className="text-xs font-bold uppercase mb-2 ml-1"
+                    style={{ color: palette.colors.ink.muted }}
+                  >
                     Contexto (ej: Casa, Oficina)
                   </Text>
                   <Input
                     variant="outline"
                     size="lg"
-                    className="bg-white border-gray-100 rounded-2xl h-14"
+                    className="h-14 rounded-2xl"
+                    style={{
+                      backgroundColor: palette.colors.surface.card,
+                      borderColor: palette.colors.border.default,
+                    }}
                   >
                     <InputField
                       placeholder="Nombre de esta dirección"
                       value={addressLabel}
                       onChangeText={setAddressLabel}
                       accessibilityLabel="Etiqueta de dirección"
+                      style={{ color: palette.colors.ink.primary }}
+                      placeholderTextColor={palette.colors.ink.subtle}
                     />
                   </Input>
                 </View>
 
                 {/* Street */}
                 <View className="mb-4">
-                  <Text className="text-xs font-bold text-gray-500 uppercase mb-2 ml-1">
+                  <Text
+                    className="text-xs font-bold uppercase mb-2 ml-1"
+                    style={{ color: palette.colors.ink.muted }}
+                  >
                     Dirección exacta
                   </Text>
                   <Input
                     variant="outline"
                     size="lg"
-                    className="bg-white border-gray-100 rounded-2xl h-14"
+                    className="h-14 rounded-2xl"
+                    style={{
+                      backgroundColor: palette.colors.surface.card,
+                      borderColor: palette.colors.border.default,
+                    }}
                   >
                     <InputField
                       placeholder="Calle, número, depto..."
                       value={addressLine}
                       onChangeText={setAddressLine}
                       accessibilityLabel="Dirección"
+                      style={{ color: palette.colors.ink.primary }}
+                      placeholderTextColor={palette.colors.ink.subtle}
                     />
                   </Input>
                 </View>
 
                 {/* Postal Code */}
                 <View className="mb-4">
-                  <Text className="text-xs font-bold text-gray-500 uppercase mb-2 ml-1">
+                  <Text
+                    className="text-xs font-bold uppercase mb-2 ml-1"
+                    style={{ color: palette.colors.ink.muted }}
+                  >
                     Código postal
                   </Text>
                   <Input
                     variant="outline"
                     size="lg"
-                    className="bg-white border-gray-100 rounded-2xl h-14"
+                    className="h-14 rounded-2xl"
+                    style={{
+                      backgroundColor: palette.colors.surface.card,
+                      borderColor: palette.colors.border.default,
+                    }}
                   >
                     <InputField
                       placeholder="Ej: 7500000"
@@ -343,19 +406,28 @@ export default function AddressesScreen() {
                       keyboardType="numeric"
                       maxLength={7}
                       accessibilityLabel="Código postal"
+                      style={{ color: palette.colors.ink.primary }}
+                      placeholderTextColor={palette.colors.ink.subtle}
                     />
                   </Input>
                 </View>
 
                 {/* Comuna */}
                 <View className="mb-6">
-                  <Text className="text-xs font-bold text-gray-500 uppercase mb-2 ml-1">
+                  <Text
+                    className="text-xs font-bold uppercase mb-2 ml-1"
+                    style={{ color: palette.colors.ink.muted }}
+                  >
                     Comuna
                   </Text>
                   <Input
                     variant="outline"
                     size="lg"
-                    className="bg-white border-gray-100 rounded-2xl h-14"
+                    className="h-14 rounded-2xl"
+                    style={{
+                      backgroundColor: palette.colors.surface.card,
+                      borderColor: palette.colors.border.default,
+                    }}
                   >
                     <InputField
                       placeholder="Escribe tu comuna..."
@@ -366,15 +438,26 @@ export default function AddressesScreen() {
                       }}
                       onFocus={() => setShowComunaSuggestions(true)}
                       accessibilityLabel="Comuna"
+                      style={{ color: palette.colors.ink.primary }}
+                      placeholderTextColor={palette.colors.ink.subtle}
                     />
                     <View className="pr-4 justify-center">
-                      <ChevronDown size={20} color="#9CA3AF" />
+                      <ChevronDown
+                        size={20}
+                        color={palette.colors.icon.muted}
+                      />
                     </View>
                   </Input>
 
                   {showComunaSuggestions && filteredComunas.length > 0 && (
                     <Animated.View entering={FadeIn} className="mt-2">
-                      <View className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                      <View
+                        className="overflow-hidden rounded-2xl border"
+                        style={{
+                          backgroundColor: palette.colors.surface.card,
+                          borderColor: palette.colors.border.default,
+                        }}
+                      >
                         <ScrollView
                           nestedScrollEnabled
                           style={{ maxHeight: 220 }}
@@ -382,13 +465,20 @@ export default function AddressesScreen() {
                           {filteredComunas.map((comuna) => (
                             <Pressable
                               key={comuna}
-                              className="p-4 border-b border-gray-50 active:bg-gray-50"
+                              className="border-b p-4 active:opacity-85"
+                              style={{
+                                borderBottomColor: palette.colors.border.subtle,
+                              }}
                               onPress={() => {
                                 setAddressComuna(comuna);
                                 setShowComunaSuggestions(false);
                               }}
                             >
-                              <Text className="text-gray-700">{comuna}</Text>
+                              <Text
+                                style={{ color: palette.colors.ink.primary }}
+                              >
+                                {comuna}
+                              </Text>
                             </Pressable>
                           ))}
                         </ScrollView>
@@ -399,18 +489,39 @@ export default function AddressesScreen() {
 
                 {/* Feedback Messages */}
                 {localError && (
-                  <View className="flex-row items-center bg-red-50 p-4 rounded-2xl mb-4 border border-red-100">
-                    <AlertCircle size={18} color="#DC2626" />
-                    <Text className="text-red-600 text-xs font-medium ml-2 flex-1">
+                  <View
+                    className="flex-row items-center p-4 rounded-2xl mb-4 border"
+                    style={{
+                      backgroundColor: `${palette.colors.state.error}1F`,
+                      borderColor: `${palette.colors.state.error}3D`,
+                    }}
+                  >
+                    <AlertCircle size={18} color={palette.colors.state.error} />
+                    <Text
+                      className="text-xs font-medium ml-2 flex-1"
+                      style={{ color: palette.colors.state.error }}
+                    >
                       {localError}
                     </Text>
                   </View>
                 )}
 
                 {success && (
-                  <View className="flex-row items-center bg-green-50 p-4 rounded-2xl mb-4 border border-green-100">
-                    <CheckCircle2 size={18} color="#16A34A" />
-                    <Text className="text-green-700 text-xs font-medium ml-2 flex-1">
+                  <View
+                    className="flex-row items-center p-4 rounded-2xl mb-4 border"
+                    style={{
+                      backgroundColor: `${palette.colors.state.success}1F`,
+                      borderColor: `${palette.colors.state.success}3D`,
+                    }}
+                  >
+                    <CheckCircle2
+                      size={18}
+                      color={palette.colors.state.success}
+                    />
+                    <Text
+                      className="text-xs font-medium ml-2 flex-1"
+                      style={{ color: palette.colors.state.success }}
+                    >
                       {success}
                     </Text>
                   </View>
@@ -420,21 +531,49 @@ export default function AddressesScreen() {
                 <Pressable
                   onPress={handleSubmit}
                   disabled={isActionLoading}
-                  className={`h-14 rounded-full items-center justify-center flex-row gap-2 active:opacity-90 ${isActionLoading ? "bg-gray-200" : "bg-black"}`}
+                  className="h-14 flex-row items-center justify-center gap-2 rounded-2xl active:opacity-90"
+                  style={{
+                    backgroundColor: isActionLoading
+                      ? palette.colors.surface.muted
+                      : palette.colors.ink.primary,
+                  }}
+                  accessibilityRole="button"
+                  accessibilityState={{ disabled: isActionLoading }}
                 >
                   {isActionLoading ? (
-                    <ActivityIndicator color="white" />
+                    <>
+                      <View
+                        className="h-2 w-2 rounded-full"
+                        style={{
+                          backgroundColor: palette.colors.state.success,
+                        }}
+                      />
+                      <View
+                        className="h-2 w-2 rounded-full"
+                        style={{ backgroundColor: palette.colors.ink.subtle }}
+                      />
+                      <View
+                        className="h-2 w-2 rounded-full"
+                        style={{ backgroundColor: palette.colors.ink.muted }}
+                      />
+                    </>
                   ) : editingId !== null ? (
                     <>
-                      <Pencil size={18} color="white" />
-                      <Text className="text-white font-bold text-base">
+                      <Pencil size={18} color={palette.colors.ink.inverse} />
+                      <Text
+                        className="font-bold text-base"
+                        style={{ color: palette.colors.ink.inverse }}
+                      >
                         Actualizar dirección
                       </Text>
                     </>
                   ) : (
                     <>
-                      <Plus size={20} color="white" />
-                      <Text className="text-white font-bold text-base">
+                      <Plus size={20} color={palette.colors.ink.inverse} />
+                      <Text
+                        className="font-bold text-base"
+                        style={{ color: palette.colors.ink.inverse }}
+                      >
                         Guardar dirección
                       </Text>
                     </>
@@ -445,12 +584,28 @@ export default function AddressesScreen() {
 
             {/* List Section */}
             <View className="px-5 mt-10">
-              <Text className="text-lg font-bold text-gray-900 mb-5">
+              <Text
+                className="mb-5 text-lg font-black tracking-[-0.2px]"
+                style={{ color: palette.colors.ink.primary }}
+              >
                 Tus direcciones guardadas
               </Text>
 
               {isStoreLoading && addresses.length === 0 ? (
-                <ActivityIndicator color="black" className="my-10" />
+                <View className="my-10 flex-row justify-center gap-2">
+                  <View
+                    className="h-3 w-3 rounded-full"
+                    style={{ backgroundColor: palette.colors.state.success }}
+                  />
+                  <View
+                    className="h-3 w-3 rounded-full"
+                    style={{ backgroundColor: palette.colors.surface.muted }}
+                  />
+                  <View
+                    className="h-3 w-3 rounded-full"
+                    style={{ backgroundColor: palette.colors.ink.subtle }}
+                  />
+                </View>
               ) : addresses.length > 0 ? (
                 <View className="gap-4">
                   {addresses.map((addr, index) => (
@@ -460,29 +615,60 @@ export default function AddressesScreen() {
                       layout={Layout.springify()}
                     >
                       <View
-                        className={`bg-white border rounded-3xl p-5 shadow-sm flex-row items-center ${editingId === addr.id ? "border-blue-300" : "border-gray-100"}`}
+                        className="flex-row items-center rounded-[24px] border p-5"
+                        style={{
+                          backgroundColor: palette.colors.surface.card,
+                          borderColor:
+                            editingId === addr.id
+                              ? palette.colors.state.success
+                              : palette.colors.border.subtle,
+                        }}
                       >
-                        <View className="w-12 h-12 bg-green-50 rounded-2xl items-center justify-center">
+                        <View
+                          className="h-12 w-12 items-center justify-center rounded-2xl"
+                          style={{
+                            backgroundColor: palette.colors.accent.light,
+                          }}
+                        >
                           {getLabelIcon(addr.label || "")}
                         </View>
 
                         <View className="flex-1 ml-4">
                           <View className="flex-row items-center gap-2">
-                            <Text className="text-sm font-bold text-gray-900">
+                            <Text
+                              className="text-sm font-bold"
+                              style={{ color: palette.colors.ink.primary }}
+                            >
                               {addr.label}
                             </Text>
                             {addr.is_default && (
-                              <View className="bg-green-100 px-2 py-0.5 rounded-md">
-                                <Text className="text-[9px] font-bold text-green-700">
-                                  DEFAULT
+                              <View
+                                className="rounded-md px-2 py-0.5"
+                                style={{
+                                  backgroundColor: `${palette.colors.state.success}1F`,
+                                }}
+                              >
+                                <Text
+                                  className="text-[9px] font-bold"
+                                  style={{
+                                    color: palette.colors.state.success,
+                                  }}
+                                >
+                                  Principal
                                 </Text>
                               </View>
                             )}
                           </View>
-                          <Text className="text-xs text-gray-500 mt-0.5">
+                          <Text
+                            className="text-xs mt-0.5"
+                            style={{ color: palette.colors.ink.muted }}
+                          >
                             {addr.street}
                           </Text>
-                          <Text className="text-[11px] text-gray-400 mt-0.5">
+                          <Text
+                            className="text-[11px] mt-0.5"
+                            style={{ color: palette.colors.ink.subtle }}
+                          >
                             {addr.city}, {addr.region}
                           </Text>
                         </View>
@@ -495,12 +681,17 @@ export default function AddressesScreen() {
                               minWidth: 48,
                               justifyContent: "center",
                               alignItems: "center",
+                              backgroundColor: palette.colors.surface.elevated,
+                              borderColor: palette.colors.border.subtle,
                             }}
-                            className="bg-gray-50 rounded-xl active:bg-gray-100 border border-gray-100"
+                            className="rounded-xl active:opacity-85 border"
                             accessibilityLabel={`Editar dirección ${addr.label}`}
                             accessibilityRole="button"
                           >
-                            <Pencil size={18} color="#6B7280" />
+                            <Pencil
+                              size={18}
+                              color={palette.colors.icon.muted}
+                            />
                           </Pressable>
                           <Pressable
                             onPress={() => handleDelete(addr.id)}
@@ -509,12 +700,17 @@ export default function AddressesScreen() {
                               minWidth: 48,
                               justifyContent: "center",
                               alignItems: "center",
+                              backgroundColor: `${palette.colors.state.error}1F`,
+                              borderColor: `${palette.colors.state.error}3D`,
                             }}
-                            className="bg-red-50 rounded-xl active:bg-red-100 border border-red-100"
+                            className="rounded-xl active:opacity-85 border"
                             accessibilityLabel={`Eliminar dirección ${addr.label}`}
                             accessibilityRole="button"
                           >
-                            <Trash2 size={18} color="#DC2626" />
+                            <Trash2
+                              size={18}
+                              color={palette.colors.state.error}
+                            />
                           </Pressable>
                         </View>
                       </View>
@@ -522,10 +718,30 @@ export default function AddressesScreen() {
                   ))}
                 </View>
               ) : (
-                <View className="items-center py-10 bg-gray-50 rounded-3xl border border-gray-100 border-dashed">
-                  <MapPin size={40} color="#D1D5DB" />
-                  <Text className="text-gray-400 text-sm mt-3">
+                <View
+                  className="items-start rounded-[28px] border border-dashed p-6"
+                  style={{
+                    backgroundColor: palette.colors.surface.card,
+                    borderColor: palette.colors.border.subtle,
+                  }}
+                >
+                  <View
+                    className="mb-5 h-14 w-14 items-center justify-center rounded-[22px]"
+                    style={{ backgroundColor: palette.colors.surface.muted }}
+                  >
+                    <MapPin size={28} color={palette.colors.icon.primary} />
+                  </View>
+                  <Text
+                    className="mb-2 text-xl font-black tracking-[-0.3px]"
+                    style={{ color: palette.colors.ink.primary }}
+                  >
                     No hay direcciones guardadas
+                  </Text>
+                  <Text
+                    className="text-sm leading-5"
+                    style={{ color: palette.colors.ink.muted }}
+                  >
+                    Guarda una dirección para acelerar tus próximos pedidos.
                   </Text>
                 </View>
               )}

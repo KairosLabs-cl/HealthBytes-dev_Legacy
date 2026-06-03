@@ -36,35 +36,35 @@ function ProductCardSkeleton({ shimmerStyle }: Props) {
   const style = shimmerStyle ?? localAnimatedStyle;
 
   return (
-    <View className="flex-1 rounded-2xl border border-gray-100 bg-white overflow-hidden">
+    <View className="flex-1 overflow-hidden rounded-[24px] border border-border-subtle bg-surface-card">
       {/* Image placeholder */}
-      <Animated.View style={[{ aspectRatio: 4 / 3 }, style]}>
-        <View className="w-full h-full bg-gray-200" />
+      <Animated.View style={[{ aspectRatio: 1 }, style]}>
+        <View className="h-full w-full bg-surface-elevated" />
       </Animated.View>
       {/* Content area */}
       <View className="px-3 pt-2.5 pb-3">
         {/* Rating placeholder */}
         <Animated.View style={style}>
-          <View className="h-3 bg-gray-200 rounded w-10 mb-1" />
+          <View className="mb-1 h-3 w-10 rounded bg-surface-elevated" />
         </Animated.View>
         {/* Name placeholder */}
         <Animated.View style={style}>
-          <View className="h-4 bg-gray-200 rounded w-4/5 mb-1" />
+          <View className="mb-1 h-4 w-4/5 rounded bg-surface-elevated" />
         </Animated.View>
         <Animated.View style={style}>
-          <View className="h-4 bg-gray-200 rounded w-3/5 mb-1.5" />
+          <View className="mb-1.5 h-4 w-3/5 rounded bg-surface-elevated" />
         </Animated.View>
         {/* Tag placeholder */}
         <Animated.View style={style}>
-          <View className="h-5 bg-gray-100 rounded-full w-20 mb-2" />
+          <View className="mb-2 h-5 w-20 rounded-full bg-surface-muted" />
         </Animated.View>
         {/* Price placeholder */}
         <Animated.View style={style}>
-          <View className="h-5 bg-gray-200 rounded w-1/3 mb-2.5" />
+          <View className="mb-2.5 h-5 w-1/3 rounded bg-surface-elevated" />
         </Animated.View>
         {/* Button placeholder */}
         <Animated.View style={style}>
-          <View className="h-10 bg-gray-200 rounded-xl w-full" />
+          <View className="h-11 w-full rounded-2xl bg-surface-elevated" />
         </Animated.View>
       </View>
     </View>

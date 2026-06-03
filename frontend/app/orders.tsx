@@ -1,18 +1,19 @@
 import { AuthGate } from "@/components/AuthGate";
 import { OrderListItem } from "@/components/OrderListItem";
-import { Button, ButtonText } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
+import { ListEmptyState } from "@/components/ui/ListEmptyState";
+import { LoadingDots } from "@/components/ui/LoadingDots";
 import { Text } from "@/components/ui/text";
 import { useOrders } from "@/store/orderStore";
 import { useShallow } from "zustand/react/shallow";
 import { OrderStatus } from "@/types/order";
+import type { Order } from "@/types/order";
 import { useAuth } from "@clerk/clerk-expo";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { AlertCircle, Package } from "lucide-react-native";
-import { useCallback, useEffect, useState, useMemo } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   Pressable,
   RefreshControl,
@@ -21,7 +22,160 @@ import {
 } from "react-native";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
+// ─── OrdersListHeader ────────────────────────────────────────────────────────
+// Memoized to prevent FlatList from remounting the header on every filter/state
+// change. Previously it was an inline JSX literal, causing full remounts.
+type Filter = { id: string; label: string };
+type OrdersListHeaderProps = {
+  filters: readonly Filter[];
+  selectedFilter: string;
+  onFilterPress: (id: "all" | OrderStatus) => void;
+  filteredOrderCount: number;
+  error: string | null;
+  isLoading: boolean;
+  showEmptyFilter: boolean;
+  onClearError: () => void;
+  onShowAll: () => void;
+};
+const OrdersListHeader = React.memo(function OrdersListHeader({
+  filters,
+  selectedFilter,
+  onFilterPress,
+  filteredOrderCount,
+  error,
+  isLoading,
+  showEmptyFilter,
+  onClearError,
+  onShowAll,
+}: OrdersListHeaderProps) {
+  const { palette } = useAppTheme();
+
+  return (
+    <View className="px-4 pt-4">
+      {/* Filter chips */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        className="flex-row gap-2"
+        contentContainerStyle={{ paddingRight: 16, gap: 8 }}
+      >
+        {filters.map((f) => (
+          <Pressable
+            key={f.id}
+            onPress={() => onFilterPress(f.id as "all" | OrderStatus)}
+            style={{
+              minHeight: 44,
+              justifyContent: "center",
+              backgroundColor:
+                selectedFilter === f.id
+                  ? palette.colors.ink.primary
+                  : palette.colors.surface.card,
+              borderColor:
+                selectedFilter === f.id
+                  ? palette.colors.border.focus
+                  : palette.colors.border.subtle,
+            }}
+            accessibilityRole="button"
+            accessibilityLabel={`Filtrar órdenes: ${f.label}`}
+            accessibilityState={{ selected: selectedFilter === f.id }}
+            className="rounded-2xl border px-4 transition-colors duration-200"
+          >
+            <Text
+              className="font-semibold transition-colors duration-200"
+              style={{
+                color:
+                  selectedFilter === f.id
+                    ? palette.colors.ink.inverse
+                    : palette.colors.ink.primary,
+              }}
+            >
+              {f.label}
+            </Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+
+      {/* Result count */}
+      <View className="mb-4 mt-3">
+        <Text style={{ color: palette.colors.ink.muted }}>
+          {filteredOrderCount} orden{filteredOrderCount !== 1 ? "es" : ""}
+          {selectedFilter !== "all" && " encontradas"}
+        </Text>
+      </View>
+
+      {/* Error */}
+      {error && (
+        <View
+          className="mb-4 flex-row items-start rounded-2xl border p-4"
+          style={{
+            backgroundColor: `${palette.colors.state.error}1F`,
+            borderColor: `${palette.colors.state.error}3D`,
+          }}
+        >
+          <Icon
+            as={AlertCircle}
+            size="md"
+            className="mr-3 mt-0.5"
+            style={{ color: palette.colors.state.error }}
+          />
+          <View className="flex-1">
+            <Text
+              className="font-semibold mb-1"
+              style={{ color: palette.colors.state.error }}
+            >
+              Error
+            </Text>
+            <Text
+              className="text-sm"
+              style={{ color: palette.colors.state.error }}
+            >
+              {error}
+            </Text>
+            <Pressable
+              onPress={onClearError}
+              className="mt-2"
+              style={{ minHeight: 44, justifyContent: "center" }}
+              accessibilityRole="button"
+              accessibilityLabel="Descartar error"
+            >
+              <Text
+                className="font-semibold text-sm"
+                style={{ color: palette.colors.state.error }}
+              >
+                Descartar
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      )}
+
+      {/* Loading */}
+      {isLoading && (
+        <View className="flex-1 items-center justify-center py-12">
+          <LoadingDots color={palette.colors.state.success} size={12} />
+          <Text className="mt-4" style={{ color: palette.colors.ink.muted }}>
+            Cargando órdenes...
+          </Text>
+        </View>
+      )}
+
+      {/* Empty filter */}
+      {showEmptyFilter && (
+        <ListEmptyState
+          icon={Package}
+          title="No se encontraron órdenes"
+          description="No hay órdenes con este estado"
+          actionLabel="Ver todas"
+          onActionPress={onShowAll}
+          style={{ padding: 16 }}
+        />
+      )}
+    </View>
+  );
+});
+OrdersListHeader.displayName = "OrdersListHeader";
 const FILTERS = [
   { id: "all", label: "Todas" },
   { id: "unpaid", label: "Sin pagar" },
@@ -64,6 +218,7 @@ export default function OrdersScreen() {
 
   const [refreshing, setRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
+  const { palette, statusBarStyle } = useAppTheme();
 
   const initialParam = filter || status;
   const [selectedFilter, setSelectedFilter] = useState<"all" | OrderStatus>(
@@ -129,113 +284,43 @@ export default function OrdersScreen() {
   const showEmptyFilter =
     !isLoading && orders.length === 0 && selectedFilter !== "all";
 
-  // Memoized to avoid remounting the header on every state change
-  const listHeader = useMemo(() => (
-    <View className="px-4 pt-4">
-      {/* Filter chips */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        className="flex-row gap-2"
-        contentContainerStyle={{ paddingRight: 16, gap: 8 }}
-      >
-        {FILTERS.map((f) => (
-          <Pressable
-            key={f.id}
-            onPress={() => handleFilterPress(f.id as OrderStatus)}
-            style={{ minHeight: 44, justifyContent: "center" }}
-            accessibilityRole="button"
-            accessibilityLabel={`Filtrar órdenes: ${f.label}`}
-            accessibilityState={{ selected: selectedFilter === f.id }}
-            className={`px-4 rounded-full border ${
-              selectedFilter === f.id
-                ? "bg-black border-black"
-                : "bg-white border-gray-300"
-            }`}
-          >
-            <Text
-              className={`font-semibold ${
-                selectedFilter === f.id ? "text-white" : "text-gray-700"
-              }`}
-            >
-              {f.label}
-            </Text>
-          </Pressable>
-        ))}
-      </ScrollView>
-
-      {/* Result count */}
-      <View className="mb-4">
-        <Text className="text-gray-600">
-          {filteredOrders.length} orden{filteredOrders.length !== 1 ? "es" : ""}
-          {selectedFilter !== "all" && " encontradas"}
-        </Text>
+  // Memoized renderItem — prevents FlatList from re-creating the row wrapper on
+  // every state update. The inline version was creating a new function reference
+  // on every render, defeating FlatList's row recycling.
+  const renderOrderItem = useCallback(
+    ({ item }: { item: Order }) => (
+      <View className="px-4">
+        <OrderListItem order={item} onPress={() => handleOrderPress(item.id)} />
       </View>
+    ),
+    [handleOrderPress]
+  );
 
-      {/* Error */}
-      {error && (
-        <View className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4 flex-row items-start">
-          <Icon
-            as={AlertCircle}
-            size="md"
-            className="text-red-600 mr-3 mt-0.5"
-          />
-          <View className="flex-1">
-            <Text className="text-red-800 font-semibold mb-1">Error</Text>
-            <Text className="text-red-700 text-sm">{error}</Text>
-            <Pressable
-              onPress={clearError}
-              className="mt-2"
-              style={{ minHeight: 44, justifyContent: "center" }}
-              accessibilityRole="button"
-              accessibilityLabel="Descartar error"
-            >
-              <Text className="text-red-600 font-semibold text-sm">
-                Descartar
-              </Text>
-            </Pressable>
-          </View>
-        </View>
-      )}
+  // ─── Memoized list header ─────────────────────────────────────────────────
+  // Previously a JSX literal that remounted on every state change — now a stable
+  // memo component to prevent the FlatList from unmounting the header.
+  const listHeader = (
+    <OrdersListHeader
+      filters={FILTERS}
+      selectedFilter={selectedFilter}
+      onFilterPress={handleFilterPress}
+      filteredOrderCount={filteredOrders.length}
+      error={error}
+      isLoading={isLoading}
+      showEmptyFilter={showEmptyFilter}
+      onClearError={clearError}
+      onShowAll={() => handleFilterPress("all")}
+    />
+  );
 
-      {/* Loading */}
-      {isLoading && (
-        <View className="flex-1 items-center justify-center py-12">
-          <ActivityIndicator size="large" color="#000000" />
-          <Text className="text-gray-500 mt-4">Cargando órdenes...</Text>
-        </View>
-      )}
-
-      {/* Empty filter */}
-      {showEmptyFilter && (
-        <View className="items-center justify-center py-12">
-          <Icon as={Package} size="xl" className="text-gray-300 mb-4" />
-          <Text className="text-lg font-semibold text-black mb-2">
-            No se encontraron órdenes
-          </Text>
-          <Text className="text-center text-gray-600 mb-4">
-            No hay órdenes con este estado
-          </Text>
-          <Pressable
-            onPress={() => handleFilterPress("all")}
-            className="bg-black px-4 rounded-full"
-            style={{ minHeight: 44, justifyContent: "center" }}
-            accessibilityRole="button"
-            accessibilityLabel="Ver todas las órdenes"
-          >
-            <Text className="text-white font-semibold">Ver todas</Text>
-          </Pressable>
-        </View>
-      )}
-    </View>
-  ), [selectedFilter, filteredOrders.length, error, isLoading, showEmptyFilter, handleFilterPress, clearError]);
-
-  const listFooter = useMemo(() => {
-    if (isLoading || !hasMore) return null;
-    return (
+  const listFooter =
+    !isLoading && hasMore ? (
       <View className="mx-4 mt-4 mb-2">
         {selectedFilter !== "all" && (
-          <Text className="text-center text-gray-400 text-xs mb-3">
+          <Text
+            className="text-center text-xs mb-3"
+            style={{ color: palette.colors.ink.subtle }}
+          >
             Puede haber más órdenes sin cargar
           </Text>
         )}
@@ -245,8 +330,12 @@ export default function OrdersScreen() {
             if (token) await loadMoreOrders(token);
           }}
           disabled={isLoadingMore}
-          className="rounded-full border border-gray-200 items-center justify-center flex-row gap-2 active:bg-gray-50"
-          style={{ minHeight: 48 }}
+          className="flex-row items-center justify-center gap-2 rounded-2xl border active:opacity-85"
+          style={{
+            minHeight: 48,
+            backgroundColor: palette.colors.surface.card,
+            borderColor: palette.colors.border.subtle,
+          }}
           accessibilityRole="button"
           accessibilityLabel={
             isLoadingMore ? "Cargando más órdenes" : "Cargar más órdenes"
@@ -254,44 +343,41 @@ export default function OrdersScreen() {
           accessibilityState={{ disabled: isLoadingMore }}
         >
           {isLoadingMore ? (
-            <ActivityIndicator size="small" color="#000" />
+            <LoadingDots color={palette.colors.icon.primary} size={8} />
           ) : (
-            <Text className="text-sm font-semibold text-gray-700">
+            <Text
+              className="text-sm font-semibold"
+              style={{ color: palette.colors.ink.primary }}
+            >
               Cargar más órdenes
             </Text>
           )}
         </Pressable>
       </View>
-    );
-  }, [isLoading, hasMore, selectedFilter, isLoadingMore, getToken, loadMoreOrders]);
+    ) : null;
 
   if (!isLoading && selectedFilter === "all" && orders.length === 0) {
     return (
-      <View className="flex-1 bg-white">
-        <StatusBar style="dark" />
+      <View
+        className="flex-1"
+        style={{ backgroundColor: palette.colors.surface.warm }}
+      >
+        <StatusBar style={statusBarStyle} />
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
           title="Mis órdenes"
           icon={Package}
           showBackButton={true}
         />
-        <View className="flex-1 items-center justify-center px-6">
-          <Icon as={Package} size="xl" className="text-gray-300 mb-4" />
-          <Text className="text-xl font-semibold text-black mb-2">
-            No hay órdenes todavía
-          </Text>
-          <Text className="text-center text-gray-600 mb-6">
-            Cuando hagas tu primera compra, aparecerá aquí el historial de todos
-            tus pedidos.
-          </Text>
-          <Button
-            onPress={() => router.replace("/")}
-            className="bg-black rounded-full"
-            accessibilityRole="button"
-            accessibilityLabel="Ver productos"
-          >
-            <ButtonText className="text-white">Ver productos</ButtonText>
-          </Button>
+        <View className="flex-1 justify-center px-6">
+          <ListEmptyState
+            icon={Package}
+            title="No hay órdenes todavía"
+            description="Cuando hagas tu primera compra, aparecerá aquí el historial de todos tus pedidos."
+            actionLabel="Ver productos"
+            onActionPress={() => router.replace("/")}
+            style={{ padding: 0 }}
+          />
         </View>
       </View>
     );
@@ -299,8 +385,11 @@ export default function OrdersScreen() {
 
   return (
     <AuthGate message="Inicia sesion para ver el historial de tus pedidos.">
-      <View className="flex-1 bg-white">
-        <StatusBar style="dark" />
+      <View
+        className="flex-1"
+        style={{ backgroundColor: palette.colors.surface.warm }}
+      >
+        <StatusBar style={statusBarStyle} />
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
           title="Mis órdenes"
@@ -309,24 +398,18 @@ export default function OrdersScreen() {
         />
 
         <FlatList
-          className="flex-1 bg-white"
+          className="flex-1"
+          style={{ backgroundColor: palette.colors.surface.warm }}
           data={!isLoading ? filteredOrders : []}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <View className="px-4">
-              <OrderListItem
-                order={item}
-                onPress={() => handleOrderPress(item.id)}
-              />
-            </View>
-          )}
+          renderItem={renderOrderItem}
           ListHeaderComponent={listHeader}
           ListFooterComponent={listFooter}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor="#000000"
+              tintColor={palette.colors.icon.primary}
             />
           }
           contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}

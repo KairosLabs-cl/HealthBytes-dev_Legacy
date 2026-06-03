@@ -8,15 +8,13 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { DIETARY_OPTIONS } from "@/lib/dietaryOptions";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
-export const DIET_FILTERS = [
-  { label: "Celiacos", tag: "sin-gluten" },
-  { label: "Veganos", tag: "vegano" },
-  { label: "Sin lactosa", tag: "sin-lactosa" },
-  { label: "Bajo en azucar", tag: "bajo-en-azucar" },
-  { label: "Alto en proteína", tag: "alto-en-proteina" },
-  { label: "Diabéticos", tag: "para-diabeticos" },
-] as const;
+export const DIET_FILTERS = DIETARY_OPTIONS.map(({ label, slug }) => ({
+  label,
+  tag: slug,
+}));
 
 function AnimatedFilterChip({
   label,
@@ -27,6 +25,8 @@ function AnimatedFilterChip({
   isActive: boolean;
   onPress: () => void;
 }) {
+  const { palette } = useAppTheme();
+  const { colors } = palette;
   const scale = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -50,11 +50,22 @@ function AnimatedFilterChip({
     <Animated.View style={animatedStyle}>
       <Pressable
         onPress={handlePress}
-        className={`px-4 py-3 rounded-full border ${isActive ? "bg-brand-green border-brand-green shadow-soft-lift" : "bg-surface-warm border-border-subtle"}`}
-        style={{ minHeight: 48, justifyContent: "center" }}
+        className="rounded-2xl border px-4 py-3"
+        style={{
+          minHeight: 48,
+          justifyContent: "center",
+          backgroundColor: isActive ? colors.ink.primary : colors.surface.card,
+          borderColor: isActive ? colors.ink.primary : colors.border.subtle,
+          boxShadow: isActive
+            ? "0 14px 30px -18px rgba(9,9,11,0.5)"
+            : "0 1px 2px rgba(15,23,42,0.03)",
+        }}
+        accessibilityRole="button"
+        accessibilityState={{ selected: isActive }}
       >
         <Text
-          className={`text-sm font-bold ${isActive ? "text-white" : "text-ink"}`}
+          className="text-sm font-bold"
+          style={{ color: isActive ? colors.ink.inverse : colors.ink.primary }}
         >
           {label}
         </Text>
@@ -73,7 +84,7 @@ export default React.memo(function DietaryFilterBar({
   toggleDietaryTag,
 }: DietaryFilterBarProps) {
   return (
-    <View className="bg-surface-card pb-3">
+    <View className="bg-surface-warm pb-3">
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}

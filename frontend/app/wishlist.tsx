@@ -9,17 +9,20 @@ import { useQuery } from "@tanstack/react-query";
 import { Heart, HeartOff, RefreshCw } from "lucide-react-native";
 import WishlistTableRow from "@/components/WishlistTableRow";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
-import ProductCardSkeleton, {
-  useShimmerStyle,
-} from "@/components/ProductCardSkeleton";
+import { ListEmptyState } from "@/components/ui/ListEmptyState";
+import WishlistSkeletonRow from "@/components/WishlistSkeletonRow";
+import { useShimmerStyle } from "@/components/ProductCardSkeleton";
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { Product } from "@/types/product";
 import { Favorite, getUserFavorites } from "@/api/favorites";
+import { useAppTheme } from "@/hooks/useAppTheme";
+import { withAlpha } from "@/lib/colorUtils";
 
 export default function WishlistScreen() {
   const router = useRouter();
   const { isLoaded, isSignedIn, getToken } = useAuth();
   const shimmerStyle = useShimmerStyle();
+  const { palette, statusBarStyle } = useAppTheme();
 
   const {
     data: favorites,
@@ -32,6 +35,7 @@ export default function WishlistScreen() {
       return getUserFavorites(getToken);
     },
     enabled: isSignedIn,
+    staleTime: 2 * 60 * 1000, // 2 minutes
   });
 
   // Granular selector for favoriteIds to avoid re-renders on other store updates
@@ -60,46 +64,39 @@ export default function WishlistScreen() {
 
   const renderEmpty = useMemo(
     () => (
-      <View className="flex-1 items-center justify-center p-8 mt-10">
-        <View className="bg-gray-100 p-6 rounded-full mb-6">
-          <HeartOff size={48} color="#9CA3AF" />
-        </View>
-        <Text className="text-xl font-bold text-gray-900 mb-2">
-          Lista vacía
-        </Text>
-        <Text className="text-center text-gray-500 mb-6">
-          Aún no tienes productos en tu lista de deseos. Explora y guarda tus
-          favoritos.
-        </Text>
-        <Pressable
-          onPress={() => router.push("/")}
-          className="bg-black px-6 py-3 rounded-full active:opacity-80"
-          style={{ minHeight: 44 }}
-          accessibilityRole="button"
-          accessibilityLabel="Explorar productos"
-        >
-          <Text className="text-white font-bold text-base">
-            Explorar productos
-          </Text>
-        </Pressable>
-      </View>
+      <ListEmptyState
+        icon={HeartOff}
+        iconColor={palette.colors.state.error}
+        iconBgColor={withAlpha(palette.colors.state.error, 12)}
+        title="Lista vacía"
+        description="Guarda productos para volver rápido a tus favoritos."
+        actionLabel="Explorar productos"
+        onActionPress={() => router.push("/")}
+        style={{ marginTop: 40 }}
+      />
     ),
-    [router]
+    [palette.colors.state.error, router]
   );
 
   if (!isLoaded || isLoading) {
     return (
-      <View className="flex-1 bg-gray-50">
+      <View
+        className="flex-1"
+        style={{ backgroundColor: palette.colors.surface.warm }}
+      >
+        <StatusBar style={statusBarStyle} />
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
           title="Lista de deseos"
           icon={Heart}
           showBackButton={true}
         />
-        <View className="px-4 mt-4 gap-3">
-          <ProductCardSkeleton shimmerStyle={shimmerStyle} />
-          <ProductCardSkeleton shimmerStyle={shimmerStyle} />
-          <ProductCardSkeleton shimmerStyle={shimmerStyle} />
+        <View className="mt-4 flex-1">
+          <WishlistSkeletonRow shimmerStyle={shimmerStyle} />
+          <WishlistSkeletonRow shimmerStyle={shimmerStyle} />
+          <WishlistSkeletonRow shimmerStyle={shimmerStyle} />
+          <WishlistSkeletonRow shimmerStyle={shimmerStyle} />
+          <WishlistSkeletonRow shimmerStyle={shimmerStyle} />
         </View>
       </View>
     );
@@ -107,7 +104,11 @@ export default function WishlistScreen() {
 
   if (error) {
     return (
-      <View className="flex-1 bg-gray-50">
+      <View
+        className="flex-1"
+        style={{ backgroundColor: palette.colors.surface.warm }}
+      >
+        <StatusBar style={statusBarStyle} />
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader
           title="Lista de deseos"
@@ -115,18 +116,29 @@ export default function WishlistScreen() {
           showBackButton={true}
         />
         <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-red-500 text-base mb-4">
+          <Text
+            className="text-base mb-4"
+            style={{ color: palette.colors.state.error }}
+          >
             Error cargando tu lista de deseos
           </Text>
           <Pressable
             onPress={() => refetch()}
-            className="flex-row items-center gap-2 bg-black px-6 py-3 rounded-full"
-            style={{ minHeight: 44 }}
+            className="flex-row items-center gap-2 rounded-2xl px-6 py-3"
+            style={{
+              minHeight: 48,
+              backgroundColor: palette.colors.ink.primary,
+            }}
             accessibilityRole="button"
             accessibilityLabel="Reintentar cargar lista de deseos"
           >
-            <RefreshCw size={18} color="white" />
-            <Text className="text-white font-bold">Reintentar</Text>
+            <RefreshCw size={18} color={palette.colors.ink.inverse} />
+            <Text
+              className="font-bold"
+              style={{ color: palette.colors.ink.inverse }}
+            >
+              Reintentar
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -135,12 +147,16 @@ export default function WishlistScreen() {
 
   return (
     <AuthGate message="Inicia sesión para ver tu lista de deseos.">
-      <View className="flex-1 bg-gray-50">
-        <StatusBar style="dark" />
+      <View
+        className="flex-1"
+        style={{ backgroundColor: palette.colors.surface.warm }}
+      >
+        <StatusBar style={statusBarStyle} />
         <Stack.Screen options={{ headerShown: false }} />
 
         <FlatList
-          className="flex-1 bg-gray-50"
+          className="flex-1"
+          style={{ backgroundColor: palette.colors.surface.warm }}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 120, paddingTop: 8 }}
           ListHeaderComponent={listHeader}

@@ -149,5 +149,8 @@ export async function fetchWithAuth(
   }
 
   await throwIfNotOk(res, "API request failed");
+  if (res.status === 204) {
+    return undefined;
+  }
   return res.json();
 }

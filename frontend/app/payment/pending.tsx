@@ -2,17 +2,19 @@ import { getOrderById } from "@/api/orders";
 import { AuthGate } from "@/components/AuthGate";
 import { Button, ButtonText } from "@/components/ui/button";
 import { VStack } from "@/components/ui/vstack";
+import { useAppTheme } from "@/hooks/useAppTheme";
 import { useAuth } from "@clerk/clerk-expo";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ClockIcon } from "lucide-react-native";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Linking, Text, View } from "react-native";
+import { Linking, Text, View } from "react-native";
 
 const POLL_INTERVAL_MS = 5000;
 const MAX_POLLS = 12;
 
 export default function PaymentPendingScreen() {
   const router = useRouter();
+  const { palette } = useAppTheme();
   const { getToken } = useAuth();
   const { orderId, checkoutUrl } = useLocalSearchParams<{
     orderId: string;
@@ -78,21 +80,24 @@ export default function PaymentPendingScreen() {
 
   return (
     <AuthGate message="Inicia sesion para ver el estado de tu pago.">
-      <View className="flex-1 bg-white justify-center items-center p-6">
-        <View className="bg-yellow-100 p-6 rounded-full mb-6">
-          <ClockIcon size={64} color="#eab308" />
+      <View className="flex-1 items-center justify-center bg-surface-warm p-6">
+        <View
+          className="mb-6 rounded-[28px] border bg-surface-card p-6"
+          style={{ borderColor: palette.colors.state.warning }}
+        >
+          <ClockIcon size={64} color={palette.colors.state.warning} />
         </View>
 
-        <Text className="text-3xl font-bold text-center mb-2 text-black">
-          Pago Pendiente
+        <Text className="mb-2 text-center text-3xl font-black tracking-[-0.5px] text-ink">
+          Pago pendiente
         </Text>
 
-        <Text className="text-gray-600 text-center mb-4 text-lg">
+        <Text className="text-ink-muted text-center mb-4 text-lg">
           Tu pago aun esta siendo procesado.
         </Text>
 
         {orderId && (
-          <Text className="text-sm text-gray-400 text-center mb-6">
+          <Text className="text-sm text-ink-subtle text-center mb-6">
             Orden ID: {orderId}
           </Text>
         )}
@@ -100,14 +105,21 @@ export default function PaymentPendingScreen() {
         {!maxRetriesReached ? (
           <>
             <View className="mb-8">
-              <ActivityIndicator size="large" color="#000" />
+              <View className="flex-row gap-2">
+                <View className="h-3 w-3 rounded-full bg-state-success" />
+                <View className="h-3 w-3 rounded-full bg-border-default" />
+                <View className="h-3 w-3 rounded-full bg-ink-subtle" />
+              </View>
             </View>
-            <Text className="text-sm text-gray-600 text-center mb-8">
+            <Text className="text-sm text-ink-muted text-center mb-8">
               Verificando estado del pago... ({pollCount}/{MAX_POLLS})
             </Text>
           </>
         ) : (
-          <Text className="text-sm text-orange-600 text-center mb-8">
+          <Text
+            className="text-sm text-center mb-8"
+            style={{ color: palette.colors.state.warning }}
+          >
             No pudimos confirmar tu pago automaticamente. Puedes verificar el
             estado en tus ordenes o intentar nuevamente.
           </Text>
@@ -117,10 +129,10 @@ export default function PaymentPendingScreen() {
           {checkoutUrl && (
             <Button
               size="lg"
-              className="bg-black"
+              className="rounded-2xl bg-ink"
               onPress={() => Linking.openURL(checkoutUrl)}
             >
-              <ButtonText className="text-white font-bold">
+              <ButtonText className="text-ink-inverse font-bold">
                 Abrir Mercado Pago
               </ButtonText>
             </Button>
@@ -128,11 +140,11 @@ export default function PaymentPendingScreen() {
 
           <Button
             size="lg"
-            className="bg-blue-600"
+            className="rounded-2xl bg-ink"
             onPress={checkOrderStatus}
             disabled={isChecking}
           >
-            <ButtonText className="text-white font-bold">
+            <ButtonText className="text-ink-inverse font-bold">
               {isChecking ? "Verificando..." : "Verificar estado"}
             </ButtonText>
           </Button>
@@ -140,10 +152,10 @@ export default function PaymentPendingScreen() {
           <Button
             size="lg"
             variant="outline"
-            className="border-gray-300"
+            className="rounded-2xl border-border-default"
             onPress={() => router.replace("/orders")}
           >
-            <ButtonText className="text-gray-700 font-bold">
+            <ButtonText className="text-ink font-bold">
               Ir a mis ordenes
             </ButtonText>
           </Button>

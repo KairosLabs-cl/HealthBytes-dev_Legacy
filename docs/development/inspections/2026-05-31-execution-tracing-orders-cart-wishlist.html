@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HealthBytes - Tracing de órdenes, carrito y wishlist</title>
+  <style>
+    :root { color-scheme: light; --ink:#172033; --muted:#526071; --line:#d8dee8; --panel:#f7f9fc; --accent:#174ea6; --code:#eef3f9; }
+    body { margin:0; background:#fff; color:var(--ink); font:15px/1.55 Arial, sans-serif; }
+    main { max-width:1120px; margin:0 auto; padding:32px 24px 64px; }
+    h1,h2,h3 { line-height:1.2; } h1 { margin:0 0 8px; } h2 { margin-top:42px; border-bottom:2px solid var(--line); padding-bottom:8px; }
+    h3 { margin-top:26px; } p,li { max-width:1000px; } .meta,.note { color:var(--muted); }
+    .note { background:var(--panel); border-left:4px solid var(--accent); padding:12px 16px; }
+    code { background:var(--code); border-radius:4px; padding:2px 5px; font-size:.92em; }
+    pre { overflow:auto; background:#111827; color:#f9fafb; border-radius:8px; padding:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0 22px; } th,td { border:1px solid var(--line); padding:9px 10px; text-align:left; vertical-align:top; }
+    th { background:var(--panel); } ol li { margin:7px 0; } .ref { color:#154c96; white-space:nowrap; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Reporte de tracing: órdenes, carrito y wishlist</h1>
+  <p class="meta">HealthBytes · QA y Observabilidad · 2026-05-31 · Inspección estática del código actual</p>
+  <p class="note"><strong>Alcance:</strong> hechos observables en código. El estado Zustand está en <code>frontend/store/</code>; no existe una carpeta llamada <code>Frozen</code>. No se incluyen propuestas, refactors ni inferencias de rendimiento.</p>
+
+  <h2>0. Infraestructura común de recepción</h2>
+  <ol>
+    <li>FastAPI registra routers con prefijos reales: <code>/orders</code>, <code>/cart</code> y <code>/favorites</code>. <span class="ref">backend/app/main.py:363-370</span></li>
+    <li>Las rutas dependen de <code>get_current_user</code>. Antes del router, middleware <code>attach_user_for_rate_limiting</code> intenta extraer <code>Authorization: Bearer ...</code>, verificar Clerk o JWT legado y cargar <code>User</code>. Si encuentra usuario, lo asigna a <code>request.state.user</code>. <span class="ref">backend/app/main.py:107-165</span></li>
+    <li><code>get_current_user</code> retorna primero <code>request.state.user</code> si existe. Si no existe, sigue sus ramas de autenticación: bypass dev configurado, Clerk o JWT legado. <span class="ref">backend/app/middleware/auth.py:126-226</span></li>
+    <li><code>get_db</code> entrega una <code>AsyncSession</code> SQLAlchemy y la cierra al terminar la petición. PostgreSQL usa URL transformada a <code>postgresql+psycopg://</code>. <span class="ref">backend/app/db/database.py:9-44</span></li>
+  </ol>
+
+  <h2>1. Carga y procesamiento de vista de órdenes</h2>
+  <p class="note"><strong>Dato exacto:</strong> esta vista no consulta tabla <code>payments</code> ni construye una categoría frontend llamada <code>paid</code>. Expone filtros sobre <code>orders.status</code>: <code>all</code>, <code>unpaid</code>, <code>processing</code>, <code>shipped</code>, <code>delivered</code> y <code>returns</code>. <span class="ref">frontend/app/orders.tsx:138-145</span></p>
+
+  <h3>1. Interacción UI</h3>
+  <ol>
+    <li>Al montar <code>OrdersScreen</code>, <code>useEffect</code> espera <code>isSignedIn</code> e <code>isLoaded</code>. Calcula <code>status</code> desde <code>selectedFilter</code>, ejecuta <code>getToken()</code> y, si hay token, llama <code>fetchOrders(token, 0, undefined, status)</code>. <span class="ref">frontend/app/orders.tsx:147-211</span></li>
+    <li>Al presionar filtro, <code>handleFilterPress(filterId)</code> actualiza <code>selectedFilter</code>, obtiene token y llama <code>fetchOrders(token, 0, undefined, status)</code>. Para <code>all</code>, <code>status</code> queda <code>undefined</code>. <span class="ref">frontend/app/orders.tsx:226-235</span></li>
+    <li>Pull-to-refresh ejecuta <code>onRefresh</code>. Botón “Cargar más órdenes” obtiene token y llama <code>loadMoreOrders(token)</code>. <span class="ref">frontend/app/orders.tsx:213-222,275-305</span></li>
+  </ol>
+
+  <h3>2. Mutación Zustand</h3>
+  <ol>
+    <li><code>useOrders.fetchOrders</code> actualiza estado <strong>antes</strong> de red: <code>{ isLoading: true, error: null, currentStatus: status ?? null }</code>. <span class="ref">frontend/store/orderStore.ts:43-51</span></li>
+    <li>En éxito reemplaza lista: <code>orders</code>, <code>hasMore: orders.length === 50</code>, <code>isLoading: false</code>. En error conserva lista previa y escribe <code>error</code> e <code>isLoading: false</code>. <span class="ref">frontend/store/orderStore.ts:52-63</span></li>
+    <li><code>loadMoreOrders</code> evita nueva ejecución si <code>isLoadingMore</code> ya es verdadero. Antes de red escribe <code>{ isLoadingMore: true, error: null }</code>; en éxito concatena resultados; en error escribe mensaje e <code>isLoadingMore: false</code>. <span class="ref">frontend/store/orderStore.ts:69-90</span></li>
+  </ol>
+
+  <h3>3. Capa de red frontend</h3>
+  <pre>GET ${EXPO_PUBLIC_API_URL}/orders?skip=0&amp;limit=50
+GET ${EXPO_PUBLIC_API_URL}/orders?skip=0&amp;limit=50&amp;status=unpaid</pre>
+  <ol>
+    <li><code>ordersApi.getOrders</code> construye <code>URLSearchParams</code> con <code>skip</code>, <code>limit</code> y <code>status</code> sólo si existe. Envía headers <code>Content-Type: application/json</code> y <code>Authorization: Bearer ${token}</code>. <span class="ref">frontend/api/orders.ts:61-83</span></li>
+    <li>Luego ejecuta <code>throwIfNotOk</code>, parsea <code>res.json()</code> y retorna arreglo o <code>[]</code>. No hay <code>setTimeout</code>. El <code>try/catch</code> está en store. <span class="ref">frontend/api/orders.ts:85-89; frontend/store/orderStore.ts:50-63</span></li>
+  </ol>
+
+  <h3>4. Recepción FastAPI y lógica</h3>
+  <ol>
+    <li><code>GET /orders</code> llega a <code>list_orders(skip, limit, status_filter, db, current_user)</code>. Router valida <code>skip &gt;= 0</code>, <code>1 &lt;= limit &lt;= 50</code> y mapea query <code>status</code> a <code>status_filter</code>. <span class="ref">backend/app/api/v1/orders.py:120-127</span></li>
+    <li>Router llama <code>order_service.list_orders_for_request</code>. Service inicia <code>select(Order)</code>; admin no agrega filtro por usuario; seller y resto agregan <code>Order.user_id == current_user.id</code>. Si llega <code>status_filter</code>, agrega <code>Order.status == status_filter</code>. <span class="ref">backend/app/services/order_service.py:172-189</span></li>
+    <li>Service agrega <code>selectinload(Order.items)</code>, orden descendente por <code>created_at</code> e <code>id</code>, <code>offset(skip)</code> y <code>limit(limit)</code>; ejecuta statement y retorna órdenes. <span class="ref">backend/app/services/order_service.py:190-198</span></li>
+    <li>Router transforma cada orden y cada item a <code>OrderResponse</code> y <code>OrderItemResponse</code>. En excepción no HTTP, responde HTTP 500 con <code>ErrorResponse.server_error</code>. <span class="ref">backend/app/api/v1/orders.py:145-182</span></li>
+  </ol>
+
+  <h3>5. Datos PostgreSQL / ORM</h3>
+  <pre>SELECT orders.* FROM orders
+WHERE orders.user_id = :current_user_id       -- seller/customer
+  AND orders.status = :status_filter          -- sólo si query status existe
+ORDER BY orders.created_at DESC, orders.id DESC
+OFFSET :skip LIMIT :limit;
+
+SELECT order_items.* FROM order_items
+WHERE order_items.order_id IN (...);           -- selectinload(Order.items)</pre>
+  <p>Para admin se omite predicado <code>orders.user_id</code>. La autenticación puede ejecutar además lectura de <code>users</code> descrita en sección 0. Modelos: <span class="ref">backend/app/db/schemas.py:161-199</span>.</p>
+
+  <h3>6. Retorno y render</h3>
+  <ol>
+    <li>FastAPI retorna HTTP 200 con arreglo JSON de órdenes. Cada objeto contiene <code>id</code>, <code>user_id</code>, <code>created_at</code>, <code>status</code>, <code>address_id</code>, <code>payment_method</code> e <code>items</code>. <span class="ref">backend/app/schemas/order.py:65-93</span></li>
+    <li>Zustand reemplaza o concatena <code>orders</code>. <code>OrdersScreen</code> pasa lista a <code>FlatList</code>. <code>OrderListItem</code> normaliza status, suma cantidades y calcula total desde <code>item.price * item.quantity</code>. <span class="ref">frontend/app/orders.tsx:224-251,343-359; frontend/components/OrderListItem.tsx:19-45</span></li>
+  </ol>
+
+  <h2>2. Eliminación rápida y consecutiva de ítems del carrito</h2>
+  <h3>1. Interacción UI</h3>
+  <ol>
+    <li><code>CartScreen</code> pasa <code>removeProduct</code> como prop <code>onRemove</code> a cada <code>CartItem</code>. Botón papelera ejecuta <code>onRemove(item.product.id)</code>. <span class="ref">frontend/app/(tabs)/cart.tsx:78-112; frontend/components/CartItem.tsx:137-151</span></li>
+    <li>Botón se deshabilita si <code>isRemoving</code> contiene ID del producto. <span class="ref">frontend/components/CartItem.tsx:24-30,139-150</span></li>
+  </ol>
+
+  <h3>2. Mutación Zustand</h3>
+  <ol>
+    <li><code>removeProduct(productId, getToken)</code> lee <code>removingProducts</code>. Si mismo ID ya existe en Set, retorna sin request. <span class="ref">frontend/store/cartStore.ts:318-324</span></li>
+    <li>Antes de red agrega ID a <code>removingProducts</code> y elimina item de <code>items</code> con <code>filter</code>. Es actualización optimista. <span class="ref">frontend/store/cartStore.ts:326-334</span></li>
+    <li>El Set es por ID. Invocaciones para IDs distintos atraviesan función independientemente y construyen requests separados. <span class="ref">frontend/store/cartStore.ts:318-350</span></li>
+  </ol>
+
+  <h3>3. Capa de red frontend</h3>
+  <pre>DELETE ${EXPO_PUBLIC_API_URL}/cart/items/${productId}
+Content-Type: application/json
+Authorization: Bearer ${token}</pre>
+  <ol>
+    <li><code>cartApi.removeFromCart</code> llama <code>fetchWithAuth</code>. No envía body. <span class="ref">frontend/api/cart.ts:67-77</span></li>
+    <li><code>fetchWithAuth</code> obtiene token Clerk si recibe <code>getToken</code>, ejecuta <code>fetch</code>, contempla retry ante HTTP 401 y después ejecuta <code>throwIfNotOk</code> seguido de <code>res.json()</code>. No usa <code>setTimeout</code>. <span class="ref">frontend/api/auth.ts:67-152</span></li>
+  </ol>
+
+  <h3>4. Recepción FastAPI y lógica</h3>
+  <ol>
+    <li><code>DELETE /cart/items/{product_id}</code> llega a <code>remove_from_cart</code>, con usuario autenticado y sesión DB. Router llama <code>cart_service.remove_from_cart(current_user.id, product_id, db)</code>. <span class="ref">backend/app/api/v1/cart.py:61-72</span></li>
+    <li>Service ejecuta delete filtrado por usuario y producto; luego <code>db.commit()</code>. No lanza error si fila no existe. <span class="ref">backend/app/services/cart_service.py:130-139</span></li>
+  </ol>
+
+  <h3>5. Datos PostgreSQL / ORM</h3>
+  <pre>DELETE FROM cart_items
+WHERE cart_items.user_id = :current_user_id
+  AND cart_items.product_id = :product_id;
+COMMIT;</pre>
+  <p>Modelo y constraint: <span class="ref">backend/app/db/schemas.py:202-223</span>.</p>
+
+  <h3>6. Retorno y procesamiento Zustand</h3>
+  <ol>
+    <li>FastAPI declara HTTP <code>204 No Content</code>. <span class="ref">backend/app/api/v1/cart.py:61</span></li>
+    <li>Tras un 204, <code>fetchWithAuth</code> pasa <code>throwIfNotOk</code> porque response es ok y luego llama <code>res.json()</code>. <span class="ref">frontend/api/auth.ts:151-152; frontend/lib/apiError.ts:21-25</span></li>
+    <li>Si promesa rechaza al parsear cuerpo vacío, <code>removeProduct</code> entra en <code>catch</code>, ejecuta <code>syncWithServer(getToken)</code>, que hace <code>GET /cart</code>, transforma respuesta y reemplaza <code>items</code>; después escribe mensaje de error. Finalmente elimina ID de <code>removingProducts</code>. <span class="ref">frontend/store/cartStore.ts:67-87,336-351; frontend/api/cart.ts:29-34</span></li>
+    <li>Si helper retorna sin rechazo, store sólo elimina ID de <code>removingProducts</code>; item ya había sido quitado localmente antes de red. <span class="ref">frontend/store/cartStore.ts:331-350</span></li>
+  </ol>
+
+  <h2>3. Presiones repetidas de Like / Wishlist</h2>
+  <h3>1. Interacción UI</h3>
+  <ol>
+    <li><code>FavoriteButton</code> aparece en tarjeta de producto y detalle. <span class="ref">frontend/components/ProductCard.tsx:267; frontend/app/product/[id].tsx:729-732</span></li>
+    <li><code>Pressable.onPress</code> evita propagación y llama <code>handlePress()</code>. <code>handlePress</code> obtiene token; sin token muestra <code>Alert</code> y retorna. Con token ejecuta animación si corresponde y espera <code>toggleFavorite(productId, getToken)</code>. <span class="ref">frontend/components/FavoriteButton.tsx:30-48,62-93</span></li>
+    <li>La fila de wishlist tiene otra entrada: <code>WishlistTableRow.handleRemove</code> obtiene token y llama mismo <code>toggleFavorite</code>. <span class="ref">frontend/components/WishlistTableRow.tsx:25-29,165-170</span></li>
+  </ol>
+
+  <h3>2. Mutación Zustand</h3>
+  <ol>
+    <li><code>toggleFavorite</code> lee referencia actual <code>favoriteIds</code> y calcula <code>wasFavorite</code>. Crea nuevo Set, agrega o elimina ID y lo publica <strong>antes</strong> de red. <span class="ref">frontend/store/favoritesStore.ts:29-40</span></li>
+    <li>No existe Set de operación en curso ni retorno temprano por producto dentro de <code>toggleFavorite</code>. Cada invocación que llega lee estado vigente al iniciar esa invocación. <span class="ref">frontend/store/favoritesStore.ts:29-53</span></li>
+    <li>En excepción, store hace rollback mediante <code>set({ favoriteIds })</code>, usando referencia capturada al inicio de esa invocación. <span class="ref">frontend/store/favoritesStore.ts:49-52</span></li>
+  </ol>
+
+  <h3>3. Capa de red frontend</h3>
+  <pre>POST ${EXPO_PUBLIC_API_URL}/favorites
+Content-Type: application/json
+Authorization: Bearer ${token}
+{"product_id":123}
+
+DELETE ${EXPO_PUBLIC_API_URL}/favorites/123
+Content-Type: application/json
+Authorization: Bearer ${token}</pre>
+  <ol>
+    <li>Si <code>wasFavorite</code> es falso, llama <code>addFavorite</code>: POST con body JSON. Si verdadero, llama <code>removeFavorite</code>: DELETE sin body. <span class="ref">frontend/store/favoritesStore.ts:42-48; frontend/api/favorites.ts:11-22</span></li>
+    <li>Ambas funciones pasan por <code>fetchWithAuth</code>: token, fetch, rama opcional de retry 401, <code>throwIfNotOk</code> y <code>res.json()</code>. No hay <code>setTimeout</code> ni debounce. <span class="ref">frontend/api/auth.ts:67-152</span></li>
+  </ol>
+
+  <h3>4. Recepción FastAPI y lógica</h3>
+  <table>
+    <thead><tr><th>Request</th><th>Router</th><th>Service</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>POST /favorites</code></td>
+        <td><code>add_favorite</code> llama service. <code>ValueError</code> se traduce a HTTP 409; otra excepción, HTTP 500. <span class="ref">backend/app/api/v1/favorites.py:19-40</span></td>
+        <td><code>add_favorite</code> consulta combinación usuario-producto. Si existe, lanza <code>ValueError</code>. Si no, crea <code>UserFavorite</code>, hace commit, refresh y recarga relación producto con dietary tags. <span class="ref">backend/app/services/favorite_service.py:15-51</span></td>
+      </tr>
+      <tr>
+        <td><code>DELETE /favorites/{product_id}</code></td>
+        <td><code>remove_favorite</code> llama service. Si retorna falso, responde HTTP 404. Si elimina, endpoint declara HTTP 204. <span class="ref">backend/app/api/v1/favorites.py:43-65</span></td>
+        <td><code>remove_favorite</code> consulta combinación usuario-producto. Si no existe retorna falso. Si existe ejecuta <code>db.delete(favorite)</code> y commit. <span class="ref">backend/app/services/favorite_service.py:54-80</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>5. Datos PostgreSQL / ORM</h3>
+  <pre>-- POST
+SELECT user_favorites.* FROM user_favorites
+WHERE user_favorites.user_id = :current_user_id
+  AND user_favorites.product_id = :product_id;
+INSERT INTO user_favorites (user_id, product_id) VALUES (...); -- si no existe
+COMMIT;
+SELECT user_favorites.* ... WHERE user_favorites.id = :favorite_id; -- recarga con relación
+
+-- DELETE
+SELECT user_favorites.* FROM user_favorites
+WHERE user_favorites.user_id = :current_user_id
+  AND user_favorites.product_id = :product_id;
+DELETE FROM user_favorites WHERE user_favorites.id = :favorite_id; -- si existe
+COMMIT;</pre>
+  <p>Tabla tiene constraint único <code>(user_id, product_id)</code>. <span class="ref">backend/app/db/schemas.py:137-158</span></p>
+
+  <h3>6. Retorno y procesamiento Zustand</h3>
+  <ol>
+    <li>POST exitoso retorna HTTP 201 con <code>FavoriteResponse</code>, incluyendo producto opcional. Store no usa payload; conserva Set optimista. <span class="ref">backend/app/api/v1/favorites.py:19; backend/app/schemas/favorite.py:17-31; frontend/store/favoritesStore.ts:42-48</span></li>
+    <li>DELETE exitoso retorna HTTP 204 sin contenido. Igual que carrito, helper común intenta <code>res.json()</code> después de <code>throwIfNotOk</code>. Si parseo rechaza, store ejecuta rollback con Set capturado. <span class="ref">backend/app/api/v1/favorites.py:43; frontend/api/auth.ts:151-152; frontend/store/favoritesStore.ts:49-52</span></li>
+    <li>POST duplicado retorna HTTP 409; DELETE de favorito ausente retorna HTTP 404. En ambos casos <code>throwIfNotOk</code> lanza y store ejecuta rollback capturado por esa invocación. <span class="ref">backend/app/api/v1/favorites.py:34-35,57-58; frontend/lib/apiError.ts:21-49; frontend/store/favoritesStore.ts:49-52</span></li>
+    <li>Cada presión repetida puede iniciar su propia secuencia <code>getToken → toggleFavorite → mutación optimista → request → éxito o rollback</code>. La rama POST o DELETE depende de <code>favoriteIds.has(productId)</code> leído al entrar a cada <code>toggleFavorite</code>. <span class="ref">frontend/components/FavoriteButton.tsx:30-48; frontend/store/favoritesStore.ts:29-53</span></li>
+  </ol>
+
+  <h2>4. Referencias principales</h2>
+  <table>
+    <thead><tr><th>Capa</th><th>Archivos</th></tr></thead>
+    <tbody>
+      <tr><td>UI</td><td><code>frontend/app/orders.tsx</code>, <code>frontend/app/(tabs)/cart.tsx</code>, <code>frontend/components/CartItem.tsx</code>, <code>frontend/components/FavoriteButton.tsx</code>, <code>frontend/components/WishlistTableRow.tsx</code></td></tr>
+      <tr><td>Zustand</td><td><code>frontend/store/orderStore.ts</code>, <code>frontend/store/cartStore.ts</code>, <code>frontend/store/favoritesStore.ts</code></td></tr>
+      <tr><td>Red frontend</td><td><code>frontend/api/orders.ts</code>, <code>frontend/api/cart.ts</code>, <code>frontend/api/favorites.ts</code>, <code>frontend/api/auth.ts</code>, <code>frontend/lib/apiError.ts</code></td></tr>
+      <tr><td>FastAPI</td><td><code>backend/app/main.py</code>, <code>backend/app/api/v1/orders.py</code>, <code>backend/app/api/v1/cart.py</code>, <code>backend/app/api/v1/favorites.py</code>, <code>backend/app/middleware/auth.py</code></td></tr>
+      <tr><td>Servicios y datos</td><td><code>backend/app/services/order_service.py</code>, <code>backend/app/services/cart_service.py</code>, <code>backend/app/services/favorite_service.py</code>, <code>backend/app/db/schemas.py</code>, <code>backend/app/db/database.py</code></td></tr>
+    </tbody>
+  </table>
+</main>
+</body>
+</html>

@@ -1,4 +1,6 @@
 import { HStack } from "@/components/ui/hstack";
+import { useAppTheme } from "@/hooks/useAppTheme";
+import { Check } from "lucide-react-native";
 import { Text, View } from "react-native";
 
 export interface StepIndicatorProps {
@@ -12,6 +14,8 @@ export function StepIndicator({
   totalSteps,
   steps,
 }: StepIndicatorProps) {
+  const { palette } = useAppTheme();
+
   return (
     <View className="mb-8">
       <HStack space="md" className="items-center justify-between">
@@ -24,27 +28,40 @@ export function StepIndicator({
             <View key={step} className="flex-1 items-center">
               {/* Circle */}
               <View
-                className={`w-10 h-10 rounded-full items-center justify-center mb-2 ${
-                  isCompleted
-                    ? "bg-brand-green"
+                className="mb-2 h-10 w-10 items-center justify-center rounded-2xl border"
+                style={{
+                  backgroundColor: isCompleted
+                    ? palette.colors.state.success
                     : isActive
-                      ? "bg-blue-600"
-                      : "bg-border-subtle"
-                }`}
+                      ? palette.colors.ink.primary
+                      : palette.colors.surface.card,
+                  borderColor:
+                    isCompleted || isActive
+                      ? "transparent"
+                      : palette.colors.border.subtle,
+                }}
               >
-                <Text
-                  className={`font-bold text-sm ${
-                    isCompleted || isActive ? "text-white" : "text-ink-muted"
-                  }`}
-                >
-                  {isCompleted ? "✓" : stepNumber}
-                </Text>
+                {isCompleted ? (
+                  <Check
+                    size={16}
+                    color={palette.colors.ink.inverse}
+                    strokeWidth={2.8}
+                  />
+                ) : (
+                  <Text
+                    className={`text-sm font-bold ${
+                      isActive ? "text-ink-inverse" : "text-ink-subtle"
+                    }`}
+                  >
+                    {stepNumber}
+                  </Text>
+                )}
               </View>
 
               {/* Label */}
               <Text
                 className={`text-xs font-semibold text-center ${
-                  isActive ? "text-blue-600" : "text-ink-subtle"
+                  isActive ? "text-ink" : "text-ink-subtle"
                 }`}
               >
                 {step}
@@ -55,9 +72,9 @@ export function StepIndicator({
       </HStack>
 
       {/* Progress Bar */}
-      <View className="h-1 bg-border-subtle rounded-full mt-4 overflow-hidden">
+      <View className="mt-4 h-1 overflow-hidden rounded-full bg-border-subtle">
         <View
-          className="h-full bg-blue-600 rounded-full"
+          className="h-full rounded-full bg-ink"
           style={{ width: `${((currentStep - 1) / (totalSteps - 1)) * 100}%` }}
         />
       </View>

@@ -1,12 +1,7 @@
 import { create } from "zustand";
+import type { DietaryOption } from "@/lib/dietaryOptions";
 
-export type DietaryTag =
-  | "sin-gluten"
-  | "vegano"
-  | "sin-lactosa"
-  | "bajo-en-azucar"
-  | "alto-en-proteina"
-  | "para-diabeticos";
+export type DietaryTag = DietaryOption["slug"];
 
 interface ProductFiltersState {
   category?: string;

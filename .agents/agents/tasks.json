@@ -1,0 +1,132 @@
+{
+  "columns": {
+    "periodic": {
+      "id": "periodic",
+      "title": "Periódicas",
+      "taskIds": [
+        "task-1779486907711",
+        "task-1779486907706"
+      ]
+    },
+    "todo": {
+      "id": "todo",
+      "title": "To Do",
+      "taskIds": [
+        "task-1779486907707",
+        "task-1779486907708"
+      ]
+    },
+    "in-progress": {
+      "id": "in-progress",
+      "title": "In Progress",
+      "taskIds": [
+        "task-20260531-orders-payment-query-contract",
+        "task-20260601-nativewind-web-dark-mode",
+        "task-20260601-account-settings-theme-selector",
+        "task-20260603-expo-go-push-warning",
+        "task-20260603-security-dependency-audit-fixes"
+      ]
+    },
+    "done": {
+      "id": "done",
+      "title": "Done",
+      "taskIds": [
+        "task-20260529-changelog-cleanup",
+        "task-20260529-agent-role-routing",
+        "task-20260529-product-safety-agents",
+        "task-20260531-cart-delete-response-contract",
+        "task-20260531-wishlist-toggle-concurrency",
+        "task-20260601-android-lan-start-default",
+        "task-20260601-auth-preferences-startup-polish"
+      ]
+    }
+  },
+  "tasks": {
+    "task-20260529-changelog-cleanup": {
+      "id": "task-20260529-changelog-cleanup",
+      "content": "Limpiar duplicaciones en CHANGELOG.md y actualizar cronología de releases con versión 0.4.0",
+      "agent": "hermes-verifier"
+    },
+    "task-1779486907706": {
+      "id": "task-1779486907706",
+      "content": "Realizar una auditoría de docs personalizados tanto readmes como contextos",
+      "agent": "hermes-verifier"
+    },
+    "task-1779486907707": {
+      "id": "task-1779486907707",
+      "content": "Auditoría UX y Accesibilidad Frontend",
+      "agent": "frontend-dev"
+    },
+    "task-1779486907708": {
+      "id": "task-1779486907708",
+      "content": "Aumentar coverage de pruebas backend al 85%",
+      "agent": "healthbytes-qa"
+    },
+    "task-1779486907711": {
+      "id": "task-1779486907711",
+      "content": "Ejecutar tests End-to-End de flujos críticos",
+      "agent": "healthbytes-qa"
+    },
+    "task-20260529-agent-role-routing": {
+      "id": "task-20260529-agent-role-routing",
+      "content": "Actualizar AGENTS.md y .agents/router.json para que los roles agent:* se resuelvan a perfiles ejecutables",
+      "agent": "hermes-verifier"
+    },
+    "task-20260529-product-safety-agents": {
+      "id": "task-20260529-product-safety-agents",
+      "content": "Actualizar agentes y docs IA para mejorar decisiones de producto y seguridad alimentaria en HealthBytes",
+      "agent": "hermes-verifier"
+    },
+    "task-20260531-orders-payment-query-contract": {
+      "id": "task-20260531-orders-payment-query-contract",
+      "content": "Definir y corregir contrato end-to-end de consulta de órdenes pagadas y no pagadas con tests",
+      "agent": "backend-dev"
+    },
+    "task-20260531-cart-delete-response-contract": {
+      "id": "task-20260531-cart-delete-response-contract",
+      "content": "Corregir contrato end-to-end de eliminación rápida y consecutiva de ítems del carrito con tests",
+      "agent": "frontend-dev"
+    },
+    "task-20260531-wishlist-toggle-concurrency": {
+      "id": "task-20260531-wishlist-toggle-concurrency",
+      "content": "Corregir comportamiento end-to-end de likes repetidos en wishlist con tests",
+      "agent": "frontend-dev"
+    },
+    "task-20260601-android-lan-start-default": {
+      "id": "task-20260601-android-lan-start-default",
+      "content": "Hacer explícitos Expo Go y LAN como defaults de pnpm start para testing Android por QR y validar overrides de Expo",
+      "agent": "frontend-dev"
+    },
+    "task-20260601-auth-preferences-startup-polish": {
+      "id": "task-20260601-auth-preferences-startup-polish",
+      "content": "Corregir fuente Fraunces, detalle Clerk, iconos SVG de preferencias y doble consulta inicial de catálogo con tests",
+      "agent": "frontend-dev"
+    },
+    "task-20260601-nativewind-web-dark-mode": {
+      "id": "task-20260601-nativewind-web-dark-mode",
+      "content": "Diagnosticar y corregir error web de NativeWind al sincronizar tema manual con darkMode media, con regresión y validación runtime en 8081",
+      "agent": "frontend-dev"
+    },
+    "task-20260601-account-settings-theme-selector": {
+      "id": "task-20260601-account-settings-theme-selector",
+      "content": "Agregar selector de apariencia Automático, Claro y Oscuro en Ajustes de Cuenta y conectar AppThemeProvider global con tests",
+      "agent": "frontend-dev"
+    },
+    "task-20260603-expo-go-push-warning": {
+      "id": "task-20260603-expo-go-push-warning",
+      "content": "Evitar warnings esperados de push notifications en Expo Go y bloquear registro remoto no soportado con tests",
+      "agent": "frontend-dev"
+    },
+    "task-20260603-security-dependency-audit-fixes": {
+      "id": "task-20260603-security-dependency-audit-fixes",
+      "content": "Corregir hallazgos de auditoría seguridad/dependencias frontend y backend con validación enfocada",
+      "agent": "code-reviewer"
+    }
+  },
+  "columnOrder": [
+    "periodic",
+    "todo",
+    "in-progress",
+    "done"
+  ]
+}

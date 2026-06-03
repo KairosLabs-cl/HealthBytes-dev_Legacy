@@ -261,8 +261,8 @@ All checks must pass before merge.
 ## Related Documentation
 
 - [README.md](../README.md) - Project overview and quick start
-- [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture
-- [CONFIGURATION.md](./CONFIGURATION.md) - Environment variables
+- [ARCHITECTURE](../architecture/architecture.md) - System architecture
+- [CONFIGURATION](../setup/configuration.md) - Environment variables
 - [Testing Guide](./testing/README.md) - Test strategy and patterns
 
 ---

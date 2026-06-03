@@ -19,8 +19,10 @@ interface AuthStoreState {
   clearAdditionalData: () => void;
 }
 
+type PersistedAuthStoreState = Pick<AuthStoreState, "additionalUserData">;
+
 export const useAuthStore = create(
-  persist<AuthStoreState>(
+  persist<AuthStoreState, [], [], PersistedAuthStoreState>(
     (set) => ({
       accessToken: null,
       refreshToken: null,
@@ -34,6 +36,9 @@ export const useAuthStore = create(
     {
       name: "auth-store",
       storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state) => ({
+        additionalUserData: state.additionalUserData,
+      }),
     }
   )
 );

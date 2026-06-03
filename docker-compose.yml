@@ -6,11 +6,11 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USER:-healthbytes}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-healthbytes_dev}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
       POSTGRES_DB: ${DB_NAME:-healthbytes}
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./Tools/backend/database/migrations:/docker-entrypoint-initdb.d:ro
@@ -35,13 +35,13 @@ services:
     container_name: healthbytes-backend
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql://${DB_USER:-healthbytes}:${DB_PASSWORD:-healthbytes_dev}@postgres:5432/${DB_NAME:-healthbytes}
+      DATABASE_URL: postgresql://${DB_USER:-healthbytes}:${DB_PASSWORD:?Set DB_PASSWORD in .env}@postgres:5432/${DB_NAME:-healthbytes}
       JWT_SECRET: ${JWT_SECRET}  # Set in .env file - never hardcode
       CLERK_PUBLISHABLE_KEY: ${CLERK_PUBLISHABLE_KEY}
       CLERK_SECRET_KEY: ${CLERK_SECRET_KEY}
       ENVIRONMENT: ${ENVIRONMENT:-development}
       LOG_LEVEL: ${LOG_LEVEL:-info}
-      REDIS_URL: redis://:healthbytes_secure_password_2026@redis:6379/0
+      REDIS_URL: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}@redis:6379/0
     ports:
       - "3001:3001"
     volumes:
@@ -103,13 +103,11 @@ services:
     image: redis:7-alpine
     container_name: healthbytes-redis
     restart: unless-stopped
-    command: redis-server --requirepass healthbytes_secure_password_2026
-    ports:
-      - "6379:6379"
+    command: redis-server --requirepass ${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}
     networks:
       - healthbytes_network
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "healthbytes_secure_password_2026", "ping"]
+      test: ["CMD-SHELL", "redis-cli -a \"$REDIS_PASSWORD\" ping"]
       interval: 10s
       timeout: 5s
       retries: 3

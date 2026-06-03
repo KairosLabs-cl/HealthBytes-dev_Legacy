@@ -14,48 +14,9 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-
-const DIETARY_OPTIONS = [
-  {
-    slug: "sin-gluten",
-    label: "Sin Gluten",
-    emoji: "🌾",
-    description: "Apto para celíacos",
-    testID: "tag-celiac",
-  },
-  {
-    slug: "para-diabeticos",
-    label: "Para diabéticos",
-    emoji: "🩺",
-    description: "Bajo índice glucémico",
-    testID: "tag-diabetic",
-  },
-  {
-    slug: "vegano",
-    label: "Vegano",
-    emoji: "🌱",
-    description: "Sin productos de origen animal",
-    testID: "tag-vegan",
-  },
-  {
-    slug: "sin-lactosa",
-    label: "Sin Lactosa",
-    emoji: "🥛",
-    description: "Apto para intolerantes",
-  },
-  {
-    slug: "bajo-en-azucar",
-    label: "Bajo en azúcar",
-    emoji: "🍬",
-    description: "Reducido en azúcares",
-  },
-  {
-    slug: "alto-en-proteina",
-    label: "Alto en proteína",
-    emoji: "💪",
-    description: "Ideal para deportistas",
-  },
-] as const;
+import { Check, CheckCircle2, Salad } from "lucide-react-native";
+import { DIETARY_OPTIONS } from "@/lib/dietaryOptions";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 const TOTAL_STEPS = 3;
 
@@ -73,6 +34,7 @@ export default function OnboardingModal({
   const { getToken } = useAuth();
   const setDietaryTags = useProductFilters((state) => state.setDietaryTags);
   const reducedMotion = useReducedMotion();
+  const { palette } = useAppTheme();
 
   const toggle = useCallback((slug: string) => {
     setSelected((prev) =>
@@ -123,15 +85,22 @@ export default function OnboardingModal({
       animationType="slide"
       presentationStyle="fullScreen"
     >
-      <View className="flex-1 bg-surface-warm">
+      <View
+        className="flex-1"
+        style={{ backgroundColor: palette.colors.surface.warm }}
+      >
         {/* Progress indicator */}
         <View className="px-6 pt-12 pb-4 flex-row gap-2">
           {Array.from({ length: TOTAL_STEPS }, (_, i) => (
             <View
               key={i}
-              className={`flex-1 h-1.5 rounded-full ${
-                i <= step ? "bg-brand-green" : "bg-border-subtle"
-              }`}
+              className="flex-1 h-1.5 rounded-full"
+              style={{
+                backgroundColor:
+                  i <= step
+                    ? palette.colors.brand.green
+                    : palette.colors.border.subtle,
+              }}
             />
           ))}
         </View>
@@ -158,7 +127,10 @@ export default function OnboardingModal({
         </View>
 
         {/* Fixed Bottom Actions */}
-        <View className="px-6 pb-12 pt-4 bg-surface-warm">
+        <View
+          className="px-6 pb-12 pt-4"
+          style={{ backgroundColor: palette.colors.surface.warm }}
+        >
           <PrimaryButton
             testID={step === 2 ? "submit-btn" : undefined}
             onPress={step === 2 ? handleFinish : handleNext}
@@ -182,7 +154,10 @@ export default function OnboardingModal({
               accessibilityLabel="Omitir tutorial"
               accessibilityRole="button"
             >
-              <Text className="text-ink-subtle text-sm font-medium">
+              <Text
+                className="text-sm font-medium"
+                style={{ color: palette.colors.ink.subtle }}
+              >
                 Saltar por ahora
               </Text>
             </Pressable>
@@ -205,6 +180,7 @@ function PrimaryButton({
   testID?: string;
 }) {
   const scale = useSharedValue(1);
+  const { palette } = useAppTheme();
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -233,19 +209,19 @@ function PrimaryButton({
           {
             minHeight: 60,
             width: "100%",
-            backgroundColor: "#2D2926",
-            borderRadius: 9999,
+            backgroundColor: palette.colors.accent.primary,
+            borderRadius: 16,
             alignItems: "center",
             justifyContent: "center",
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.1,
-            shadowRadius: 2,
-            elevation: 2,
           },
         ]}
       >
-        <Text className="text-white font-bold text-lg">{label}</Text>
+        <Text
+          className="font-bold text-lg"
+          style={{ color: palette.colors.ink.inverse }}
+        >
+          {label}
+        </Text>
       </Animated.View>
     </Pressable>
   );
@@ -258,6 +234,8 @@ interface StepProps {
 }
 
 function StepWelcome({ reducedMotion }: StepProps) {
+  const { palette } = useAppTheme();
+
   return (
     <Animated.View
       entering={reducedMotion ? FadeIn.duration(0) : FadeIn.duration(400)}
@@ -267,11 +245,26 @@ function StepWelcome({ reducedMotion }: StepProps) {
       className="flex-1 justify-center items-center pb-8"
     >
       <View className="items-center mb-4">
-        <Text className="text-[80px] mb-6" accessibilityElementsHidden>🥗</Text>
-        <Text className="text-4xl font-extrabold text-ink text-center mb-4 leading-tight">
+        <View
+          className="mb-6 h-20 w-20 items-center justify-center rounded-[28px]"
+          style={{ backgroundColor: palette.colors.accent.light }}
+        >
+          <Salad
+            size={42}
+            color={palette.colors.icon.accent}
+            strokeWidth={2.2}
+          />
+        </View>
+        <Text
+          className="text-4xl font-extrabold text-center mb-4 leading-tight"
+          style={{ color: palette.colors.ink.primary }}
+        >
           Bienvenido a HealthBytes
         </Text>
-        <Text className="text-lg text-ink opacity-70 text-center leading-relaxed px-2">
+        <Text
+          className="text-lg text-center leading-relaxed px-2"
+          style={{ color: palette.colors.ink.muted }}
+        >
           Encontra productos saludables adaptados a tus necesidades
           alimentarias. Filtramos por vos para que compres con tranquilidad.
         </Text>
@@ -297,7 +290,9 @@ function DietaryTagCard({
   isActive: boolean;
   onPress: () => void;
 }) {
+  const DietaryIcon = item.icon;
   const scale = useSharedValue(1);
+  const { palette } = useAppTheme();
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -331,20 +326,50 @@ function DietaryTagCard({
             borderWidth: 2,
             padding: 16,
             justifyContent: "space-between",
-            backgroundColor: isActive ? "#FFFFFF" : "transparent",
-            borderColor: isActive ? "#2E5C3A" : "#EAE5E0",
+            backgroundColor: isActive
+              ? palette.colors.surface.card
+              : "transparent",
+            borderColor: isActive
+              ? palette.colors.accent.primary
+              : palette.colors.border.subtle,
           },
         ]}
       >
         <View style={{ alignItems: "flex-start" }}>
-          <Text style={{ fontSize: 36, marginBottom: 12 }} accessibilityElementsHidden>{item.emoji}</Text>
+          <View
+            style={{
+              width: 36,
+              height: 36,
+              marginBottom: 12,
+              borderRadius: 14,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: isActive
+                ? palette.colors.brand.green
+                : palette.colors.surface.muted,
+            }}
+          >
+            {isActive ? (
+              <Check
+                size={18}
+                color={palette.colors.ink.inverse}
+                strokeWidth={2.8}
+              />
+            ) : (
+              <DietaryIcon
+                size={18}
+                color={palette.colors.icon.primary}
+                strokeWidth={2.2}
+              />
+            )}
+          </View>
         </View>
         <View>
           <Text
             style={{
               fontSize: 16,
               fontWeight: "bold",
-              color: isActive ? "#2D2926" : "#2D2926",
+              color: palette.colors.ink.primary,
             }}
           >
             {item.label}
@@ -354,7 +379,9 @@ function DietaryTagCard({
               fontSize: 12,
               marginTop: 4,
               fontWeight: isActive ? "500" : "normal",
-              color: isActive ? "#2E5C3A" : "#6B6B6B",
+              color: isActive
+                ? palette.colors.accent.primary
+                : palette.colors.ink.muted,
             }}
           >
             {item.description}
@@ -370,6 +397,8 @@ function StepPreferences({
   toggle,
   reducedMotion,
 }: StepPreferencesProps) {
+  const { palette } = useAppTheme();
+
   return (
     <Animated.View
       entering={
@@ -381,10 +410,16 @@ function StepPreferences({
       className="flex-1 pt-4"
     >
       <View className="my-6">
-        <Text className="text-3xl font-extrabold text-ink text-center mb-2">
+        <Text
+          className="text-3xl font-extrabold text-center mb-2"
+          style={{ color: palette.colors.ink.primary }}
+        >
           ¿Qué tipo de dieta sigues?
         </Text>
-        <Text className="text-ink opacity-70 text-base text-center leading-relaxed px-4">
+        <Text
+          className="text-base text-center leading-relaxed px-4"
+          style={{ color: palette.colors.ink.muted }}
+        >
           Selecciona tus restricciones para personalizar tu tienda.
         </Text>
       </View>
@@ -419,6 +454,8 @@ function StepConfirmation({
   selectedCount,
   reducedMotion,
 }: StepConfirmationProps) {
+  const { palette } = useAppTheme();
+
   return (
     <Animated.View
       entering={
@@ -428,15 +465,30 @@ function StepConfirmation({
       className="flex-1 justify-center items-center pb-12"
     >
       <View className="items-center mb-8">
-        <Text className="text-[80px] mb-6" accessibilityElementsHidden>🎉</Text>
-        <Text className="text-4xl font-extrabold text-ink text-center mb-4 px-2">
+        <View
+          className="mb-6 h-20 w-20 items-center justify-center rounded-[28px]"
+          style={{ backgroundColor: palette.colors.accent.light }}
+        >
+          <CheckCircle2
+            size={42}
+            color={palette.colors.icon.accent}
+            strokeWidth={2.2}
+          />
+        </View>
+        <Text
+          className="text-4xl font-extrabold text-center mb-4 px-2"
+          style={{ color: palette.colors.ink.primary }}
+        >
           ¡Todo listo!
         </Text>
-        <Text className="text-lg text-ink opacity-70 text-center leading-relaxed px-6">
+        <Text
+          className="text-lg text-center leading-relaxed px-6"
+          style={{ color: palette.colors.ink.muted }}
+        >
           {selectedCount > 0
             ? `Personalizamos tu experiencia con ${selectedCount} ${
                 selectedCount === 1 ? "restriccion" : "restricciones"
-              }. Te mostraremos productos aptos garantizados.`
+              }. Te mostraremos coincidencias basadas en tus preferencias; revisá siempre la etiqueta del producto.`
             : "Podés configurar tus restricciones en cualquier momento desde tu perfil."}
         </Text>
       </View>

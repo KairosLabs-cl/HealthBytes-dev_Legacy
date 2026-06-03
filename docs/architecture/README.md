@@ -7,11 +7,7 @@ Comprende cómo está construido HealthBytes y por qué tomamos estas decisiones
 ### 📄 Documentos de Arquitectura
 
 - **[architecture.md](./architecture.md)** - Arquitectura del sistema, componentes y flujos principales
-- **[API_DESIGN_ANALYSIS.md](./API_DESIGN_ANALYSIS.md)** - Análisis completo del diseño REST API
-  - Problemas identificados y soluciones
-  - Recomendaciones prioritizadas (crítico, importante, nice-to-have)
-  - Benchmarks y métricas de performance
-  - Basado en: `api-design-principles` skill
+- **[HealthBytes_Architecture_Review.md](./HealthBytes_Architecture_Review.md)** - Review técnico consolidado y plan de acción
 
 ### Stack Tecnológico
 
@@ -220,19 +216,6 @@ Frontend [actualiza Zustand store]
 
 ---
 
-## 🚀 Roadmap de Arquitectura
+## 🚀 Estado y Roadmap
 
-| Fase | Tarea | Status |
-|------|-------|--------|
-| 1 | Core CRUD (productos, órdenes) | ✅ DONE |
-| 2 | Autenticación (Clerk + JWT) | ✅ DONE |
-| 3 | Services layer (extraer lógica) | 🟡 IN PROGRESS |
-| 4 | Testing (cobertura 70%+) | 🟡 IN PROGRESS |
-| 5 | Full-Text Search | ✅ DONE |
-| 6 | Docker containerization | 📋 PLANNED |
-| 7 | CI/CD (GitHub Actions) | 📋 PLANNED |
-| 8 | Payment integration (Venti + Mercado Pago) | 📋 PLANNED |
-
----
-
-Última actualización: Feb 10, 2026
+Ver [PROJECT_STATUS.md](../development/PROJECT_STATUS.md) — fuente de verdad única para hitos, prioridades y progreso actual.

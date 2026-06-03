@@ -1,5 +1,5 @@
 import { FlashList } from "@shopify/flash-list";
-import { useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import { View, Pressable } from "react-native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -9,12 +9,45 @@ import { useQuery } from "@tanstack/react-query";
 import { listProducts } from "@/api/products";
 import ProductCard from "@/components/ProductCard";
 import DietaryFilterBar from "@/components/DietaryFilterBar";
+import ProductCardSkeleton, { useShimmerStyle } from "@/components/ProductCardSkeleton";
 import { RefreshCw, Package } from "lucide-react-native";
 import { useProductFilters } from "@/store/productFiltersStore";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { Product } from "@/types/product";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
-const keyExtractor = (item: Product) => item.id.toString();
+type SkeletonProductItem = { id: string; _isSkeleton: true };
+type ProductListItem = Product | SkeletonProductItem;
+
+const isSkeletonProductItem = (item: ProductListItem): item is SkeletonProductItem =>
+  "_isSkeleton" in item;
+
+// Stable memoized cell wrapper to prevent FlashList from re-creating the row
+// wrapper on every render. Previously the inline renderItem created a new View
+// on every call, breaking recycling.
+const ProductCardCell = memo(function ProductCardCell({ product }: { product: Product }) {
+  return (
+    <View style={{ flex: 1, padding: 6 }}>
+      <ProductCard product={product} width="full" />
+    </View>
+  );
+});
+ProductCardCell.displayName = "ProductCardCell";
+
+const SkeletonCell = memo(function SkeletonCell({
+  shimmerStyle,
+}: {
+  shimmerStyle: ReturnType<typeof useShimmerStyle>;
+}) {
+  return (
+    <View style={{ flex: 1, padding: 6 }}>
+      <ProductCardSkeleton shimmerStyle={shimmerStyle} />
+    </View>
+  );
+});
+SkeletonCell.displayName = "SkeletonCell";
+
+const keyExtractor = (item: ProductListItem) => item.id.toString();
 
 export default function AllProductsScreen() {
   // ⚡ Bolt: Granular selectors to prevent re-renders when other filter state changes
@@ -22,6 +55,7 @@ export default function AllProductsScreen() {
   const toggleDietaryTag = useProductFilters((state) => state.toggleDietaryTag);
   const clearFilters = useProductFilters((state) => state.clearFilters);
   const [refreshing, setRefreshing] = useState(false);
+  const { palette, statusBarStyle } = useAppTheme();
 
   const {
     data: products,
@@ -46,20 +80,24 @@ export default function AllProductsScreen() {
   const numColumns = useBreakpointValue({
     default: 2,
     sm: 3,
-    xl: 4,
+    md: 4,
+    lg: 5,
   }) as number;
 
+  const shimmerStyle = useShimmerStyle();
+
   const renderItem = useCallback(
-    ({ item }: { item: Product }) => (
-      <View
-        style={{
-          flex: 1,
-          padding: 4,
-        }}
-      >
-        <ProductCard product={item} width="full" />
-      </View>
-    ),
+    ({ item }: { item: ProductListItem }) => {
+      if (isSkeletonProductItem(item)) {
+        return <SkeletonCell shimmerStyle={shimmerStyle} />;
+      }
+      return <ProductCardCell product={item} />;
+    },
+    [shimmerStyle]
+  );
+
+  const skeletonData = useMemo<SkeletonProductItem[]>(
+    () => Array.from({ length: 12 }).map((_, i) => ({ id: `skeleton-${i}`, _isSkeleton: true })),
     []
   );
 
@@ -70,8 +108,8 @@ export default function AllProductsScreen() {
           dietaryTags={dietaryTags}
           toggleDietaryTag={toggleDietaryTag}
         />
-        <View className="px-4 flex-row items-center justify-between mt-4 mb-2">
-          <Text className="text-lg font-bold text-gray-900">
+        <View className="mt-4 mb-3 flex-row items-center justify-between px-4">
+          <Text className="text-lg font-black tracking-[-0.2px] text-ink">
             {dietaryTags.length > 0
               ? "Productos filtrados"
               : "Todo el catalogo"}
@@ -83,7 +121,10 @@ export default function AllProductsScreen() {
               accessibilityRole="button"
               accessibilityLabel="Limpiar filtros"
             >
-              <Text className="text-sm font-semibold text-green-600">
+              <Text
+                className="text-sm font-bold"
+                style={{ color: palette.colors.state.success }}
+              >
                 Limpiar
               </Text>
             </Pressable>
@@ -95,8 +136,8 @@ export default function AllProductsScreen() {
   );
 
   return (
-    <View className="flex-1 bg-gray-50">
-      <StatusBar style="dark" />
+    <View className="flex-1 bg-surface-warm">
+      <StatusBar style={statusBarStyle} />
       <Stack.Screen options={{ headerShown: false }} />
 
       <ScreenHeader
@@ -112,19 +153,19 @@ export default function AllProductsScreen() {
           </Text>
           <Pressable
             onPress={() => refetch()}
-            className="flex-row items-center gap-2 bg-black px-6 py-3 rounded-full"
-            style={{ minHeight: 44 }}
+            className="flex-row items-center gap-2 rounded-2xl bg-ink px-6 py-3"
+            style={{ minHeight: 48 }}
             accessibilityRole="button"
             accessibilityLabel="Reintentar cargar productos"
           >
-            <RefreshCw size={18} color="white" />
-            <Text className="text-white font-bold">Reintentar</Text>
+            <RefreshCw size={18} color={palette.colors.ink.inverse} />
+            <Text className="text-ink-inverse font-bold">Reintentar</Text>
           </Pressable>
         </View>
       ) : (
-        <View key={numColumns} className="flex-1">
-          <FlashList<Product>
-            data={isLoading ? [] : products}
+        <View className="flex-1">
+          <FlashList<ProductListItem>
+            data={isLoading ? skeletonData : products}
             renderItem={renderItem}
             keyExtractor={keyExtractor}
             numColumns={numColumns}
@@ -139,9 +180,11 @@ export default function AllProductsScreen() {
             estimatedItemSize={280}
             ListEmptyComponent={
               isLoading ? null : (
-                <View className="items-center justify-center py-20">
-                  <Package size={48} color="#D1D5DB" />
-                  <Text className="text-gray-400 mt-4 text-center">
+                <View className="items-start rounded-[28px] border border-border-subtle bg-surface-card p-6">
+                  <View className="mb-5 h-14 w-14 items-center justify-center rounded-[22px] bg-surface-muted">
+                    <Package size={28} color={palette.colors.icon.primary} />
+                  </View>
+                  <Text className="text-base leading-6 text-ink-muted">
                     {dietaryTags.length > 0
                       ? "No hay productos para estos filtros"
                       : "No hay productos disponibles por ahora."}
@@ -149,12 +192,12 @@ export default function AllProductsScreen() {
                   {dietaryTags.length > 0 && (
                     <Pressable
                       onPress={clearFilters}
-                      className="mt-4 bg-black rounded-full px-6 py-3"
-                      style={{ minHeight: 44 }}
+                      className="mt-4 rounded-2xl bg-ink px-6 py-3"
+                      style={{ minHeight: 48 }}
                       accessibilityRole="button"
                       accessibilityLabel="Ver todos los productos"
                     >
-                      <Text className="text-white font-semibold">
+                      <Text className="text-ink-inverse font-semibold">
                         Ver todos
                       </Text>
                     </Pressable>

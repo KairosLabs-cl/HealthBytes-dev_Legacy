@@ -4,20 +4,18 @@
 
 @layer base {
   :root {
-    --surface-warm: #FCFAF8;
-    --surface-card: #FFFFFF;
-    --ink: #2D2926;
-    --brand-green: #2E5C3A;
-    --border-subtle: #EAE5E0;
+    --surface-warm: rgb(var(--color-surface-warm));
+    --surface-card: rgb(var(--color-surface-card));
+    --ink: rgb(var(--color-ink-primary));
+    --brand-green: rgb(var(--color-brand-green));
+    --border-subtle: rgb(var(--color-border-subtle));
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --surface-warm: #1C1C1E;
-      --surface-card: #2C2C2E;
-      --ink: #F5F0EB;
-      --brand-green: #4CAF72;
-      --border-subtle: #3A3A3C;
-    }
+  .dark {
+    --surface-warm: rgb(var(--color-surface-warm));
+    --surface-card: rgb(var(--color-surface-card));
+    --ink: rgb(var(--color-ink-primary));
+    --brand-green: rgb(var(--color-brand-green));
+    --border-subtle: rgb(var(--color-border-subtle));
   }
 }

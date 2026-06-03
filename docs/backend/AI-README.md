@@ -42,18 +42,7 @@ Este archivo define reglas, patrones y principios que debes seguir cuando genere
 
 ### Estructura de Capas
 
-```
-api/v1/          ← HTTP requests (routers)
-├─ services/     ← Business logic (DB queries, calculations)
-├─ schemas/      ← Pydantic DTOs (request/response validation)
-├─ db/
-│  ├─ models/    ← SQLAlchemy ORM models
-│  └─ database.py ← Connection & session management
-├─ core/
-│  ├─ security.py ← JWT, hashing
-│  └─ exceptions.py ← Custom exceptions
-└─ middleware/   ← Auth middleware
-```
+El backend sigue una arquitectura de 3 capas estricta. Los **routers** (`api/v1/`) solo manejan HTTP: validación de input con Pydantic y dispatch a servicios. Los **servicios** (`services/`) contienen toda la lógica de negocio, queries y cálculos. Los **modelos** (`db/models/`) definen las tablas SQLAlchemy. La seguridad (JWT, hashing) vive en `core/security.py` y el middleware de autenticación en `middleware/`.
 
 **Regla de oro**: Cada capa tiene responsabilidad clara. No mezclar.
 

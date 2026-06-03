@@ -7,6 +7,9 @@ dist/
 build/
 *.log
 
+# PNPM
+.pnpm-store/
+
 # Node modules (ONLY in frontend/)
 /node_modules/
 /package-lock.json
@@ -42,6 +45,7 @@ backend/.pytest_cache/
 .auth/
 .opencode/node_modules/
 .opencode/bun.lock
+.antigravitycli/
 .claude/settings.local.json
 .worktrees/
 healthbytes-ui-extraction/
@@ -58,3 +62,6 @@ AGENT.md
 
 # Auth & Sessions
 .auth/
+
+# Docs tests (sub-branches only, not master)
+docs/tests/

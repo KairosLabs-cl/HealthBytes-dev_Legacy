@@ -64,15 +64,7 @@ Si una decisión técnica complica estos puntos → **debe justificarse o descar
 
 ### Organización de Carpetas
 
-```
-components/     → Componentes puros (sin lógica de fetch)
-api/            → Clientes API (data layer)
-store/          → Zustand stores (estado global)
-types/          → TypeScript definitions
-lib/            → Utilidades y helpers
-assets/         → Recursos estáticos
-app/            → Screens y navegación
-```
+El código se organiza por responsabilidad. Las **screens** van en `app/` (Expo Router, file-based routing). Los **componentes** reutilizables sin lógica de fetch van en `components/`. Los **clientes API** (funciones de fetch tipadas) van en `api/`. El **estado global** (Zustand stores) va en `store/`. Los **tipos TypeScript** compartidos van en `types/`. Los helpers y utilidades van en `lib/`.
 
 ### Nuevas Dependencias
 

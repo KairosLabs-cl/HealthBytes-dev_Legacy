@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react-native";
-import CartScreen from "../cart";
+import CartScreen from "../(tabs)/cart";
 import { useCart } from "@/store/cartStore";
 
 // Mocks

@@ -1,0 +1,288 @@
+{
+  "$comment": "Single source of truth for all AI skills. Each tool loads from .agents/skills/<name>/SKILL.md",
+  "skills": [
+    {
+      "name": "brainstorming",
+      "path": ".agents/skills/brainstorming/SKILL.md",
+      "description": "Use before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation.",
+      "trigger": "before_creative_work"
+    },
+    {
+      "name": "changelog-generator",
+      "path": ".agents/skills/changelog-generator/SKILL.md",
+      "description": "Automatically creates user-facing changelogs from git commits by analyzing commit history, categorizing changes, and transforming technical commits into clear, customer-friendly release notes.",
+      "trigger": "on_demand"
+    },
+    {
+      "name": "version-bump",
+      "path": ".agents/skills/version-bump/SKILL.md",
+      "description": "Use when the user needs to change, update, or bump the app version of HealthBytes — mentions versión, version bump, subir versión, cambiar versión, release, or nueva versión.",
+      "trigger": "on_demand"
+    },
+    {
+      "name": "dispatching-parallel-agents",
+      "path": ".agents/skills/dispatching-parallel-agents/SKILL.md",
+      "description": "Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies.",
+      "trigger": "multi_task"
+    },
+    {
+      "name": "error-handling-patterns",
+      "path": ".agents/skills/error-handling-patterns/SKILL.md",
+      "description": "Master error handling patterns across languages including exceptions, Result types, error propagation, and graceful degradation.",
+      "trigger": "on_demand"
+    },
+    {
+      "name": "executing-plans",
+      "path": ".agents/skills/executing-plans/SKILL.md",
+      "description": "Use when you have a written implementation plan to execute in a separate session with review checkpoints.",
+      "trigger": "plan_execution"
+    },
+    {
+      "name": "finishing-a-development-branch",
+      "path": ".agents/skills/finishing-a-development-branch/SKILL.md",
+      "description": "Use when implementation is complete, all tests pass, and you need to decide how to integrate the work.",
+      "trigger": "branch_complete"
+    },
+    {
+      "name": "interface-design",
+      "path": ".agents/skills/interface-design/SKILL.md",
+      "description": "For interface design - dashboards, admin panels, apps, tools, and interactive products. NOT for marketing design.",
+      "trigger": "ui_design"
+    },
+    {
+      "name": "mobile-design",
+      "path": ".agents/skills/mobile-design/SKILL.md",
+      "description": "Mobile-first design and engineering doctrine for iOS and Android apps. Covers touch interaction, performance, platform conventions, offline behavior.",
+      "trigger": "mobile_work"
+    },
+    {
+      "name": "react-native-best-practices",
+      "path": ".agents/skills/react-native-best-practices/SKILL.md",
+      "description": "React Native performance optimization guidelines for FPS, TTI, bundle size, memory leaks, re-renders, and animations.",
+      "trigger": "react_native"
+    },
+    {
+      "name": "receiving-code-review",
+      "path": ".agents/skills/receiving-code-review/SKILL.md",
+      "description": "Use when receiving code review feedback, before implementing suggestions.",
+      "trigger": "code_review_received"
+    },
+    {
+      "name": "requesting-code-review",
+      "path": ".agents/skills/requesting-code-review/SKILL.md",
+      "description": "Use when completing tasks, implementing major features, or before merging to verify work meets requirements.",
+      "trigger": "code_review_request"
+    },
+    {
+      "name": "repo-self-improvement",
+      "path": ".agents/skills/repo-self-improvement/SKILL.md",
+      "description": "Use when repeated project mistakes, review feedback, failed commands, onboarding friction, or team workflow lessons should become reusable AI development behavior for this repo.",
+      "trigger": "workflow_learning"
+    },
+    {
+      "name": "subagent-driven-development",
+      "path": ".agents/skills/subagent-driven-development/SKILL.md",
+      "description": "Use when executing implementation plans with independent tasks in the current session.",
+      "trigger": "subagent_work"
+    },
+    {
+      "name": "supabase-postgres-best-practices",
+      "path": ".agents/skills/supabase-postgres-best-practices/SKILL.md",
+      "description": "Postgres performance optimization and best practices from Supabase. Use when writing, reviewing, or optimizing Postgres queries, schema designs, or database configurations.",
+      "trigger": "postgres_work"
+    },
+    {
+      "name": "systematic-debugging",
+      "path": ".agents/skills/systematic-debugging/SKILL.md",
+      "description": "Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes.",
+      "trigger": "debugging"
+    },
+    {
+      "name": "test-driven-development",
+      "path": ".agents/skills/test-driven-development/SKILL.md",
+      "description": "Use when implementing any feature or bugfix, before writing implementation code.",
+      "trigger": "before_implementation"
+    },
+    {
+      "name": "using-git-worktrees",
+      "path": ".agents/skills/using-git-worktrees/SKILL.md",
+      "description": "Use when starting feature work that needs isolation from current workspace or before executing implementation plans.",
+      "trigger": "worktree_setup"
+    },
+    {
+      "name": "using-superpowers",
+      "path": ".agents/skills/using-superpowers/SKILL.md",
+      "description": "Use when starting any conversation - establishes how to find and use skills.",
+      "trigger": "session_start"
+    },
+    {
+      "name": "verification-before-completion",
+      "path": ".agents/skills/verification-before-completion/SKILL.md",
+      "description": "Use when about to claim work is complete, fixed, or passing, before committing or creating PRs.",
+      "trigger": "before_completion"
+    },
+    {
+      "name": "writing-plans",
+      "path": ".agents/skills/writing-plans/SKILL.md",
+      "description": "Use when you have a spec or requirements for a multi-step task, before touching code.",
+      "trigger": "before_planning"
+    },
+    {
+      "name": "writing-skills",
+      "path": ".agents/skills/writing-skills/SKILL.md",
+      "description": "Use when creating new skills, editing existing skills, or verifying skills work before deployment.",
+      "trigger": "skill_authoring"
+    },
+    {
+      "name": "postgresql-skill",
+      "path": ".agents/skills/supabase-postgres-best-practices/SKILL.md",
+      "description": "PostgreSQL-specific patterns for database design, optimization, and transaction management.",
+      "trigger": "postgres_work",
+      "alias_for": "supabase-postgres-best-practices"
+    },
+    {
+      "name": "contributors-generator",
+      "path": ".agents/skills/contributors-generator/SKILL.md",
+      "description": "Automatically generates and updates the CONTRIBUTORS.md file by analyzing git merge history, identifying authors who have merged at least 2 branches, and formatting the output beautifully.",
+      "trigger": "on_demand"
+    }
+  ],
+  "agents": [
+    {
+      "name": "backend-dev",
+      "path": ".agents/agents/backend-dev.md",
+      "description": "Executable backend implementation agent for FastAPI, SQLAlchemy, services, schemas, routers, backend tests, and source-backed dietary eligibility data.",
+      "roles": ["agent:architecture", "agent:security"],
+      "jules_prompt": ".agents/agents/jules/backend-dev-prompt.md",
+      "task_gate": ".agents/agents/tasks.json"
+    },
+    {
+      "name": "code-reviewer",
+      "path": ".agents/agents/code-reviewer.md",
+      "description": "Executable review agent for correctness, security, architecture, product trust, food-safety claims, conventions, and PR readiness.",
+      "roles": [
+        "agent:producto",
+        "agent:ux",
+        "agent:ui",
+        "agent:accessibility",
+        "agent:security",
+        "agent:architecture",
+        "agent:docs"
+      ],
+      "jules_prompt": ".agents/agents/jules/code-reviewer-prompt.md",
+      "task_gate": ".agents/agents/tasks.json"
+    },
+    {
+      "name": "frontend-dev",
+      "path": ".agents/agents/frontend-dev.md",
+      "description": "Executable frontend implementation agent for Expo, React Native, components, screens, stores, API clients, restriction-aware UI, UX, and accessibility fixes.",
+      "roles": ["agent:ux", "agent:ui", "agent:accessibility", "agent:architecture"],
+      "jules_prompt": ".agents/agents/jules/frontend-dev-prompt.md",
+      "task_gate": ".agents/agents/tasks.json"
+    },
+    {
+      "name": "healthbytes-qa",
+      "path": ".agents/agents/healthbytes-qa.md",
+      "description": "Executable QA agent for full backend/frontend verification, CI evidence, architecture scans, restriction-flow checks, and smoke-test reporting.",
+      "roles": ["agent:qa"],
+      "jules_prompt": ".agents/agents/jules/healthbytes-qa-prompt.md",
+      "task_gate": ".agents/agents/tasks.json"
+    },
+    {
+      "name": "test-runner",
+      "path": ".agents/agents/test-runner.md",
+      "description": "Executable test agent for focused pytest, Jest, type-check, lint, dietary edge-case coverage, and failure triage.",
+      "roles": ["agent:qa"],
+      "jules_prompt": ".agents/agents/jules/test-runner-prompt.md",
+      "task_gate": ".agents/agents/tasks.json"
+    },
+    {
+      "name": "hermes-verifier",
+      "path": ".agents/agents/hermes-verifier.md",
+      "description": "Executable final verifier for product truth, docs consistency, source-backed claims, task evidence, and PR gate validation.",
+      "roles": ["agent:docs", "agent:qa", "agent:architecture"],
+      "jules_prompt": ".agents/agents/jules/hermes-verifier-prompt.md",
+      "task_gate": ".agents/agents/tasks.json"
+    }
+  ],
+  "roleLabels": [
+    {
+      "label": "agent:producto",
+      "primary_agent": "code-reviewer",
+      "prompt_section": "Perfil: Producto",
+      "mode": "review"
+    },
+    {
+      "label": "agent:ux",
+      "primary_agent": "frontend-dev",
+      "review_agent": "code-reviewer",
+      "prompt_section": "Perfil: UX",
+      "mode": "review_or_implementation"
+    },
+    {
+      "label": "agent:ui",
+      "primary_agent": "frontend-dev",
+      "review_agent": "code-reviewer",
+      "prompt_section": "Perfil: UI Visual",
+      "mode": "review_or_implementation"
+    },
+    {
+      "label": "agent:accessibility",
+      "primary_agent": "frontend-dev",
+      "review_agent": "code-reviewer",
+      "prompt_section": "Perfil: Accesibilidad",
+      "mode": "review_or_implementation"
+    },
+    {
+      "label": "agent:security",
+      "primary_agent": "code-reviewer",
+      "implementation_agents": ["backend-dev", "frontend-dev"],
+      "prompt_section": "Perfil: Seguridad",
+      "mode": "review_or_implementation"
+    },
+    {
+      "label": "agent:architecture",
+      "primary_agent": "backend-dev",
+      "implementation_agents": ["backend-dev", "frontend-dev"],
+      "review_agent": "code-reviewer",
+      "prompt_section": "Perfil: Arquitectura E Ingenieria",
+      "mode": "review_or_implementation"
+    },
+    {
+      "label": "agent:qa",
+      "primary_agent": "healthbytes-qa",
+      "focused_agent": "test-runner",
+      "prompt_section": "Perfil: QA Y CI",
+      "mode": "verification"
+    },
+    {
+      "label": "agent:docs",
+      "primary_agent": "hermes-verifier",
+      "review_agent": "code-reviewer",
+      "prompt_section": "Perfil: Documentacion Y Knowledge Base",
+      "mode": "review_or_verification"
+    }
+  ],
+  "domainDecisionRules": {
+    "healthbytes_product_safety": [
+      "Treat allergies, intolerances, diagnoses, minutas, meal plans, and restriction profiles as trust-sensitive product work.",
+      "Never infer safe, compatible, or recommended from missing, weak, or client-provided data.",
+      "Dietary and nutrition claims need source-backed product data or an explicit unverified/unknown state.",
+      "Keep restriction warnings visible in catalog, product detail, cart, checkout, recommendations, and meal-plan flows.",
+      "Avoid medical-certainty language; HealthBytes can support choices, not diagnose or guarantee outcomes.",
+      "Protect restriction, diagnosis, minuta, and meal-plan data as sensitive personal data."
+    ]
+  },
+  "context": [
+    {
+      "name": "bolt",
+      "path": ".agents/context/bolt.md",
+      "description": "Lessons learned from Bolt - batch processing and stock reservation patterns"
+    },
+    {
+      "name": "sentinel",
+      "path": ".agents/context/sentinel.md",
+      "description": "Security learnings - timing attacks, XSS prevention"
+    }
+  ]
+}

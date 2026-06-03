@@ -1,6 +1,6 @@
 import pytest
 from datetime import timedelta
-from jose import jwt
+import jwt
 from app.core.security import create_refresh_token, verify_refresh_token
 from app.config import settings
 

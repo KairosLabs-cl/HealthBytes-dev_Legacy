@@ -7,6 +7,8 @@ interface PreferencesState {
   themePreference: "light" | "dark" | "system";
   hasSeenOnboarding: boolean;
   hasCompletedOnboarding: boolean;
+  hasHydrated: boolean;
+  setHasHydrated: () => void;
   setDietaryPreferences: (tags: string[]) => void;
   togglePreference: (id: string) => void;
   updateDietaryPreferences: (tags: string[]) => Promise<void>;
@@ -23,6 +25,8 @@ export const usePreferencesStore = create(
       themePreference: "system",
       hasSeenOnboarding: false,
       hasCompletedOnboarding: false,
+      hasHydrated: false,
+      setHasHydrated: () => set({ hasHydrated: true }),
       setDietaryPreferences: (tags) => set({ dietaryPreferences: tags }),
       togglePreference: (id) =>
         set((state) => ({
@@ -50,6 +54,9 @@ export const usePreferencesStore = create(
     {
       name: "preferences-store",
       storage: createJSONStorage(() => AsyncStorage),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated();
+      },
     }
   )
 );

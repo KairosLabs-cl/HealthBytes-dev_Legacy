@@ -10,16 +10,22 @@ import {
   ChevronRight,
   HelpCircle,
 } from "lucide-react-native";
+import { useAppTheme } from "@/hooks/useAppTheme";
 
 export default function SupportScreen() {
+  const { palette, statusBarStyle } = useAppTheme();
+
   const handleEmailPress = () => {
     Linking.openURL("mailto:healthbytes@gmail.com");
   };
 
   return (
     <AuthGate message="Inicia sesión para contactar soporte.">
-      <View className="flex-1 bg-white">
-        <StatusBar style="dark" />
+      <View
+        className="flex-1"
+        style={{ backgroundColor: palette.colors.surface.warm }}
+      >
+        <StatusBar style={statusBarStyle} />
         <Stack.Screen options={{ headerShown: false }} />
 
         <ScreenHeader
@@ -36,72 +42,119 @@ export default function SupportScreen() {
           <View className="max-w-[800px] mx-auto w-full">
             {/* Hero Section */}
             <View className="px-5 mt-4">
-              <View className="rounded-3xl bg-black px-6 py-8 overflow-hidden relative">
+              <View
+                className="relative overflow-hidden rounded-[28px] px-6 py-8"
+                style={{ backgroundColor: palette.colors.ink.primary }}
+              >
                 <View className="z-10">
-                  <Text className="text-[11px] uppercase text-gray-400 tracking-[1.5px] font-bold mb-1">
+                  <Text
+                    className="text-[11px] uppercase tracking-[1.5px] font-bold mb-1"
+                    style={{ color: palette.colors.ink.subtle }}
+                  >
                     Centro de Ayuda
                   </Text>
-                  <Text className="text-3xl font-extrabold text-white mb-2">
+                  <Text
+                    className="text-3xl font-extrabold mb-2"
+                    style={{ color: palette.colors.ink.inverse }}
+                  >
                     Estamos para{"\n"}asistirte
                   </Text>
-                  <Text className="text-sm text-gray-300 max-w-[200px]">
+                  <Text
+                    className="text-sm max-w-[200px]"
+                    style={{ color: palette.colors.ink.subtle }}
+                  >
                     Tu bienestar es nuestra prioridad. Contáctanos hoy mismo.
                   </Text>
                 </View>
 
-                {/* Abstract decoration */}
-                <View
-                  className="absolute -right-10 -bottom-10 w-44 h-44 bg-green-500/20 rounded-full"
-                  style={{ transform: [{ scale: 1.5 }] }}
-                />
                 <View className="absolute right-6 top-8">
-                  <HelpCircle size={80} color="rgba(255,255,255,0.05)" />
+                  <HelpCircle
+                    size={80}
+                    color={`${palette.colors.ink.inverse}0D`}
+                  />
                 </View>
               </View>
             </View>
 
             {/* Contact Methods */}
             <View className="px-5 mt-8">
-              <Text className="text-lg font-bold text-gray-900 mb-4 px-1">
+              <Text
+                className="mb-4 px-1 text-lg font-black tracking-[-0.2px]"
+                style={{ color: palette.colors.ink.primary }}
+              >
                 Canales de contacto
               </Text>
 
               {/* Email Card */}
               <Pressable
                 onPress={handleEmailPress}
-                className="bg-gray-50 rounded-2xl p-5 flex-row items-center border border-gray-100 mb-4 active:bg-gray-100"
+                className="mb-4 flex-row items-center rounded-[24px] border p-5 active:opacity-85"
+                style={{
+                  backgroundColor: palette.colors.surface.card,
+                  borderColor: palette.colors.border.subtle,
+                }}
               >
-                <View className="w-12 h-12 bg-white rounded-full items-center justify-center shadow-sm border border-gray-100">
-                  <Mail size={24} color="#16A34A" />
+                <View
+                  className="h-12 w-12 items-center justify-center rounded-2xl"
+                  style={{ backgroundColor: palette.colors.accent.light }}
+                >
+                  <Mail size={24} color={palette.colors.icon.accent} />
                 </View>
                 <View className="flex-1 ml-4">
-                  <Text className="text-sm font-bold text-gray-900">
+                  <Text
+                    className="text-sm font-bold"
+                    style={{ color: palette.colors.ink.primary }}
+                  >
                     Escríbenos por correo
                   </Text>
-                  <Text className="text-xs text-gray-500">
+                  <Text
+                    className="text-xs"
+                    style={{ color: palette.colors.ink.muted }}
+                  >
                     healthbytes@gmail.com
                   </Text>
                 </View>
-                <ChevronRight size={20} color="#D1D5DB" />
+                <ChevronRight size={20} color={palette.colors.icon.muted} />
               </Pressable>
 
               {/* Chat Card (Coming Soon) */}
-              <View className="bg-gray-50 rounded-2xl p-5 flex-row items-center border border-gray-100 opacity-60">
-                <View className="w-12 h-12 bg-white rounded-full items-center justify-center border border-gray-100">
-                  <MessageCircle size={24} color="#6B7280" />
+              <View
+                className="flex-row items-center rounded-[24px] border p-5 opacity-60"
+                style={{
+                  backgroundColor: palette.colors.surface.card,
+                  borderColor: palette.colors.border.subtle,
+                }}
+              >
+                <View
+                  className="h-12 w-12 items-center justify-center rounded-2xl"
+                  style={{ backgroundColor: palette.colors.surface.muted }}
+                >
+                  <MessageCircle size={24} color={palette.colors.icon.muted} />
                 </View>
                 <View className="flex-1 ml-4">
                   <View className="flex-row items-center">
-                    <Text className="text-sm font-bold text-gray-900">
+                    <Text
+                      className="text-sm font-bold"
+                      style={{ color: palette.colors.ink.primary }}
+                    >
                       Chat en vivo
                     </Text>
-                    <View className="ml-2 bg-gray-200 px-2 py-0.5 rounded-md">
-                      <Text className="text-[9px] font-bold text-gray-500">
+                    <View
+                      className="ml-2 rounded-md px-2 py-0.5"
+                      style={{ backgroundColor: palette.colors.surface.muted }}
+                    >
+                      <Text
+                        className="text-[9px] font-bold"
+                        style={{ color: palette.colors.ink.muted }}
+                      >
                         PRÓXIMAMENTE
                       </Text>
                     </View>
                   </View>
-                  <Text className="text-xs text-gray-500">
+                  <Text
+                    className="text-xs"
+                    style={{ color: palette.colors.ink.muted }}
+                  >
                     Respuesta instantánea
                   </Text>
                 </View>
@@ -110,14 +163,26 @@ export default function SupportScreen() {
 
             {/* Additional Info */}
             <View className="px-5 mt-10">
-              <View className="bg-green-50 rounded-3xl p-6 border border-green-100">
-                <Text className="text-sm font-semibold text-green-800 mb-2">
+              <View
+                className="rounded-[24px] border p-6"
+                style={{
+                  backgroundColor: `${palette.colors.state.success}1F`,
+                  borderColor: `${palette.colors.state.success}3D`,
+                }}
+              >
+                <Text
+                  className="text-sm font-semibold mb-2"
+                  style={{ color: palette.colors.state.success }}
+                >
                   ¿Tienes dudas sobre un producto?
                 </Text>
-                <Text className="text-xs text-green-700 leading-5">
-                  Nuestro equipo de expertos revisa cada ingrediente para
-                  asegurar que cumpla con los estándares de salud requeridos
-                  para tu dieta específica.
+                <Text
+                  className="text-xs leading-5"
+                  style={{ color: palette.colors.state.success }}
+                >
+                  Nuestro equipo puede ayudarte a revisar ingredientes,
+                  etiquetas y datos disponibles para que tomes una decisión
+                  informada según tu dieta específica.
                 </Text>
               </View>
             </View>

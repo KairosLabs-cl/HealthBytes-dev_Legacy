@@ -7,8 +7,9 @@ import FavoriteButton from "@/components/FavoriteButton";
 import { RatingStars } from "@/components/RatingStars";
 import StockBadge from "@/components/StockBadge";
 import { Text } from "@/components/ui/text";
+import { useAppTheme } from "@/hooks/useAppTheme";
 import { formatPrice } from "@/lib/formatPrice";
-import { theme } from "@/lib/theme";
+import { DIETARY_ICON_BY_SLUG } from "@/lib/dietaryOptions";
 import { useCartAnimation } from "@/store/cartAnimationStore";
 import { useCart } from "@/store/cartStore";
 import type { Product } from "@/types/product";
@@ -17,15 +18,9 @@ import { useAuth } from "@clerk/clerk-expo";
 import { Image as ExpoImage } from "expo-image";
 import { useRouter } from "expo-router";
 import {
-  Dumbbell,
-  Gauge,
-  Heart,
   Info,
-  MilkOff,
   Package,
   Store,
-  Vegan,
-  WheatOff,
 } from "lucide-react-native";
 import { memo, useRef, useState } from "react";
 import {
@@ -46,39 +41,6 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-const { colors, shadows } = theme;
-
-const DIETARY_ICONS: Record<
-  string,
-  React.ComponentType<{ size?: number; color?: string }>
-> = {
-  "sin-gluten": WheatOff,
-  vegano: Vegan,
-  "para-veganos": Vegan,
-  "sin-lactosa": MilkOff,
-  "bajo-en-azucar": Gauge,
-  "alto-en-proteina": Dumbbell,
-  "para-diabeticos": Heart,
-};
-
-const TAG_COLORS: Record<string, { bg: string; text: string; border: string }> =
-  {
-    green: {
-      bg: colors.brand.greenLight,
-      text: colors.success,
-      border: "#86EFAC",
-    },
-    blue: { bg: "#EFF6FF", text: "#1D4ED8", border: "#93C5FD" },
-    orange: { bg: "#FFF7ED", text: "#C2410C", border: "#FDBA74" },
-    purple: { bg: "#FAF5FF", text: "#7E22CE", border: "#D8B4FE" },
-    red: { bg: "#FEF2F2", text: colors.error, border: "#FCA5A5" },
-    emerald: { bg: "#ECFDF5", text: colors.success, border: "#6EE7B7" },
-  };
-const DEFAULT_TAG = {
-  bg: colors.legacy.gray[50],
-  text: colors.legacy.gray[600],
-  border: colors.border.default,
-};
 type CrossPlatformViewStyle = ViewStyle & { boxShadow?: string };
 
 export type ProductCardProps = {
@@ -98,6 +60,8 @@ function ProductCard({
 }: ProductCardProps) {
   const router = useRouter();
   const { isSignedIn } = useAuth();
+  const { palette } = useAppTheme();
+  const { colors } = palette;
   const addProduct = useCart((state) => state.addProduct);
   const triggerFly = useCartAnimation((s) => s.trigger);
   const isOutOfStock = product.stock === 0;
@@ -141,6 +105,24 @@ function ProductCard({
   };
 
   const allTags = (product.dietary_tags ?? []).map(normalizeDietaryTag);
+  const tagColors: Record<string, { bg: string; text: string; border: string }> =
+    {
+      green: {
+        bg: colors.brand.greenLight,
+        text: colors.success,
+        border: "#86EFAC",
+      },
+      blue: { bg: "#EFF6FF", text: "#1D4ED8", border: "#93C5FD" },
+      orange: { bg: "#FFF7ED", text: "#C2410C", border: "#FDBA74" },
+      purple: { bg: "#FAF5FF", text: "#7E22CE", border: "#D8B4FE" },
+      red: { bg: "#FEF2F2", text: colors.error, border: "#FCA5A5" },
+      emerald: { bg: "#ECFDF5", text: colors.success, border: "#6EE7B7" },
+    };
+  const defaultTag = {
+    bg: colors.legacy.gray[50],
+    text: colors.legacy.gray[600],
+    border: colors.border.default,
+  };
   const categoryLabel = product.category
     ? product.category.charAt(0).toUpperCase() + product.category.slice(1)
     : null;
@@ -160,21 +142,20 @@ function ProductCard({
         style={{
           ...containerStyle,
           backgroundColor: colors.surface.card,
-          borderRadius: 12,
-          overflow: "hidden",
+          borderRadius: 24,
           borderWidth: 1,
           borderColor: colors.border.subtle,
           ...Platform.select<CrossPlatformViewStyle>({
             web: {
-              boxShadow: shadows.lift,
+              boxShadow: "0 20px 40px -15px rgba(0,0,0,0.05)",
             },
             ios: {
-              shadowColor: colors.legacy.black,
-              shadowOpacity: 0.1,
-              shadowRadius: 12,
-              shadowOffset: { width: 0, height: 3 },
+              shadowColor: "#000",
+              shadowOpacity: 0.05,
+              shadowRadius: 20,
+              shadowOffset: { width: 0, height: 10 },
             },
-            android: { elevation: 3 },
+            android: { elevation: 2 },
             default: {},
           }),
         }}
@@ -224,9 +205,10 @@ function ProductCard({
           <View
             style={{
               position: "relative",
-              aspectRatio: 4 / 3,
-              borderRadius: 8,
+              aspectRatio: 1,
+              borderRadius: 16,
               overflow: "hidden",
+              backgroundColor: colors.surface.elevated,
             }}
           >
             {!imgError && product.image ? (
@@ -271,7 +253,7 @@ function ProductCard({
 
         {/* Content */}
         <View
-          style={{ paddingHorizontal: 10, paddingTop: 4, paddingBottom: 12 }}
+          style={{ paddingHorizontal: 12, paddingTop: 8, paddingBottom: 16 }}
         >
           {/* Category */}
           {categoryLabel && (
@@ -294,9 +276,10 @@ function ProductCard({
           <Text
             numberOfLines={1}
             style={{
-              fontSize: 13,
-              fontWeight: "700",
+              fontSize: 14,
+              fontWeight: "800",
               color: colors.ink.primary,
+              letterSpacing: -0.3,
               marginBottom: 2,
             }}
           >
@@ -345,8 +328,11 @@ function ProductCard({
               }}
             >
               {allTags.slice(0, 2).map((tag) => {
-                const c = TAG_COLORS[tag.color || ""] || DEFAULT_TAG;
-                const TagIcon = DIETARY_ICONS[tag.name] ?? Info;
+                const c = tagColors[tag.color || ""] || defaultTag;
+                const TagIcon =
+                  DIETARY_ICON_BY_SLUG[
+                    tag.name as keyof typeof DIETARY_ICON_BY_SLUG
+                  ] ?? Info;
                 return (
                   <View
                     key={tag.name}
@@ -410,13 +396,13 @@ function ProductCard({
             <View>
               <Text
                 style={{
-                  fontSize: 17,
-                  fontWeight: "800",
+                  fontSize: 18,
+                  fontWeight: "900",
                   color: colors.ink.primary,
-                  letterSpacing: -0.3,
+                  letterSpacing: -0.5,
                 }}
               >
-                <Text style={{ fontSize: 11, fontWeight: "700" }}>$</Text>
+                <Text style={{ fontSize: 12, fontWeight: "800" }}>$</Text>
                 {formatPrice(product.price).replace("$", "")}
               </Text>
               {product.original_price ? (
@@ -452,28 +438,28 @@ function ProductCard({
               hitSlop={4}
               style={{
                 width: "100%",
-                paddingVertical: 7,
+                paddingVertical: 10,
                 alignItems: "center",
                 justifyContent: "center",
                 backgroundColor: isOutOfStock
                   ? colors.legacy.gray[200]
                   : colors.ink.primary,
-                minHeight: 36,
-                borderRadius: 999,
+                minHeight: 40,
+                borderRadius: 16,
                 ...Platform.select<CrossPlatformViewStyle>({
                   web: {
                     boxShadow: isOutOfStock
                       ? "none"
-                      : "0px 2px 6px rgba(0,0,0,0.18)",
+                      : "0px 4px 10px rgba(0,0,0,0.1)",
                   },
                   default: isOutOfStock
                     ? {}
                     : {
                         shadowColor: colors.legacy.black,
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.18,
-                        shadowRadius: 4,
-                        elevation: 3,
+                        shadowOffset: { width: 0, height: 4 },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 10,
+                        elevation: 2,
                       },
                 }),
               }}

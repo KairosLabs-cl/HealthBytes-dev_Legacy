@@ -9,6 +9,7 @@ export type ProductFilters = {
   dietary?: string[]; // Array de etiquetas como ["vegano", "sin-gluten"]
   minPrice?: number;
   maxPrice?: number;
+  limit?: number;
 };
 
 // Función mejorada que acepta múltiples filtros
@@ -32,6 +33,9 @@ export async function listProducts(
   }
   if (filters?.maxPrice !== undefined) {
     params.append("max_price", filters.maxPrice.toString());
+  }
+  if (filters?.limit !== undefined) {
+    params.append("limit", filters.limit.toString());
   }
 
   const url = params.toString()

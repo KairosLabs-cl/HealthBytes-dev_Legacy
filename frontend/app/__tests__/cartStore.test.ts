@@ -86,6 +86,61 @@ describe("Cart Store Logic", () => {
     expect(useCart.getState().items[0].product.id).toBe(1);
   });
 
+  test("removeProduct keeps optimistic removal after successful DELETE", async () => {
+    useCart.setState({
+      items: [{ product: product, quantity: 1 }],
+    });
+    (cartApi.removeFromCart as jest.Mock).mockResolvedValue(undefined);
+
+    await useCart.getState().removeProduct(product.id);
+
+    expect(cartApi.removeFromCart).toHaveBeenCalledWith(1, undefined);
+    expect(cartApi.getCart).not.toHaveBeenCalled();
+    expect(useCart.getState().items).toHaveLength(0);
+    expect(useCart.getState().error).toBeNull();
+  });
+
+  test("removeProduct sends separate DELETE requests for distinct product IDs", async () => {
+    const secondProduct = { ...product, id: 2, name: "Second Product" };
+    useCart.setState({
+      items: [
+        { product: product, quantity: 1 },
+        { product: secondProduct, quantity: 1 },
+      ],
+    });
+    (cartApi.removeFromCart as jest.Mock).mockResolvedValue(undefined);
+
+    await Promise.all([
+      useCart.getState().removeProduct(product.id),
+      useCart.getState().removeProduct(secondProduct.id),
+    ]);
+
+    expect(cartApi.removeFromCart).toHaveBeenCalledTimes(2);
+    expect(cartApi.removeFromCart).toHaveBeenCalledWith(1, undefined);
+    expect(cartApi.removeFromCart).toHaveBeenCalledWith(2, undefined);
+    expect(useCart.getState().items).toHaveLength(0);
+  });
+
+  test("removeProduct sends one DELETE while the same product ID is in flight", async () => {
+    let resolveRemove: (() => void) | undefined;
+    useCart.setState({
+      items: [{ product: product, quantity: 1 }],
+    });
+    (cartApi.removeFromCart as jest.Mock).mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveRemove = resolve;
+        })
+    );
+
+    const firstRemove = useCart.getState().removeProduct(product.id);
+    const duplicateRemove = useCart.getState().removeProduct(product.id);
+
+    expect(cartApi.removeFromCart).toHaveBeenCalledTimes(1);
+    resolveRemove?.();
+    await Promise.all([firstRemove, duplicateRemove]);
+  });
+
   test("decrementProduct rolls back (quantity > 1) on API failure", async () => {
     // Setup initial state with quantity 2
     useCart.setState({
@@ -152,6 +207,36 @@ describe("Cart Store Logic", () => {
     expect(useCart.getState().items).toHaveLength(1);
   });
 
+  test("clearLocalCart ignores a stale server sync completion", async () => {
+    let resolveCart:
+      | ((cart: { items: any[]; total: number }) => void)
+      | undefined;
+    (cartApi.getCart as jest.Mock).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveCart = resolve;
+        })
+    );
+
+    const sync = useCart.getState().syncWithServer();
+    useCart.getState().clearLocalCart();
+    resolveCart?.({
+      items: [
+        {
+          id: 1,
+          product_id: 1,
+          quantity: 1,
+          created_at: "",
+          product: { id: 1, name: "Old session item", price: 100, stock: 10 },
+        },
+      ],
+      total: 100,
+    });
+    await sync;
+
+    expect(useCart.getState().items).toHaveLength(0);
+  });
+
   test("resetCart rolls back on API failure", async () => {
     // Setup initial state with items
     useCart.setState({
@@ -169,5 +254,26 @@ describe("Cart Store Logic", () => {
 
     // Final state should still have items (rolled back)
     expect(useCart.getState().items).toHaveLength(1);
+  });
+
+  test("clearLocalCart ignores a stale reset rollback", async () => {
+    let rejectClear: ((error: Error) => void) | undefined;
+    useCart.setState({
+      items: [{ product: product, quantity: 1 }],
+    });
+    (cartApi.clearCart as jest.Mock).mockImplementation(
+      () =>
+        new Promise<void>((_, reject) => {
+          rejectClear = reject;
+        })
+    );
+
+    const reset = useCart.getState().resetCart();
+    useCart.getState().clearLocalCart();
+    rejectClear?.(new Error("Old session request failed"));
+    await reset;
+
+    expect(useCart.getState().items).toHaveLength(0);
+    expect(useCart.getState().error).toBeNull();
   });
 });
