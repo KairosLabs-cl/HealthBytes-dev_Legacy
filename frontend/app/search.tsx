@@ -147,7 +147,7 @@ export default function SearchScreen() {
         </View>
       );
     }
-    
+
     return renderEmpty;
   }, [error, palette.colors.ink.inverse, refetch, router, renderEmpty]);
 
