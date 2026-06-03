@@ -26,7 +26,7 @@ export const DIETARY_OPTIONS: DietaryOption[] = [
   {
     slug: "sin-gluten",
     label: "Sin gluten",
-    description: "Apto para celíacos",
+    description: "Según etiqueta sin gluten",
     icon: WheatOff,
     testID: "tag-celiac",
   },
@@ -40,7 +40,7 @@ export const DIETARY_OPTIONS: DietaryOption[] = [
   {
     slug: "sin-lactosa",
     label: "Sin lactosa",
-    description: "Apto para intolerantes",
+    description: "Según etiqueta sin lactosa",
     icon: MilkOff,
   },
   {

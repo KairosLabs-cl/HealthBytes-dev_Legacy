@@ -100,7 +100,7 @@ export default function LoginScreen() {
                 className="text-[32px] font-black leading-[36px] tracking-[-0.5px]"
                 style={{ color: palette.colors.ink.primary }}
               >
-                Compra segura para tus restricciones.
+                Compra con señales claras para tus restricciones.
               </Text>
             </View>
           </View>

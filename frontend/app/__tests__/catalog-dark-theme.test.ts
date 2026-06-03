@@ -55,4 +55,12 @@ describe("catalog dark theme migration", () => {
       /(?:bg-\[#fafafa\]|bg-white|text-\[#09090b\]|text-black|border-(?:slate|gray)-[12]00(?:\/70)?)/
     );
   });
+
+  it("keeps dietary hero copy informational instead of therapeutic", () => {
+    const homeSource = readApp("(tabs)/index.tsx");
+
+    expect(homeSource).not.toContain("controlar la glucosa");
+    expect(homeSource).not.toContain("Control glucémico inteligente");
+    expect(homeSource).not.toContain("Productos de bajo índice glucémico");
+  });
 });

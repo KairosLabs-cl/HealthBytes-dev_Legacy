@@ -12,4 +12,10 @@ describe("dietary options", () => {
       DIETARY_OPTIONS.length
     );
   });
+
+  it("does not describe dietary tags as guaranteed suitable", () => {
+    for (const option of DIETARY_OPTIONS) {
+      expect(option.description).not.toMatch(/apto para/i);
+    }
+  });
 });

@@ -45,5 +45,8 @@ describe("account and auth dark theme surfaces", () => {
 
   it("does not promise guaranteed dietary suitability", () => {
     expect(onboardingSource).not.toContain("aptos garantizados");
+    expect(readAppSource("../(auth)/login.tsx")).not.toContain(
+      "Compra segura para tus restricciones"
+    );
   });
 });

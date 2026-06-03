@@ -67,4 +67,11 @@ describe("secondary flows dark theme migration", () => {
     expect(addressSource).toContain("palette.colors.state.error");
     expect(addressSource).toContain("palette.colors.state.success");
   });
+
+  it("keeps support copy cautious about dietary suitability", () => {
+    const supportSource = readAppSource("support.tsx");
+
+    expect(supportSource).not.toContain("asegurar que cumpla");
+    expect(supportSource).toContain("revisar ingredientes");
+  });
 });

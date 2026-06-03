@@ -180,9 +180,9 @@ export default function SupportScreen() {
                   className="text-xs leading-5"
                   style={{ color: palette.colors.state.success }}
                 >
-                  Nuestro equipo de expertos revisa cada ingrediente para
-                  asegurar que cumpla con los estándares de salud requeridos
-                  para tu dieta específica.
+                  Nuestro equipo puede ayudarte a revisar ingredientes,
+                  etiquetas y datos disponibles para que tomes una decisión
+                  informada según tu dieta específica.
                 </Text>
               </View>
             </View>

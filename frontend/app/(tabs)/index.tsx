@@ -44,15 +44,15 @@ const HERO_CONTENT: Record<string, { headline: string; subtitle: string }> = {
   },
   "bajo-en-azucar": {
     headline: "Bajo en azucar, alto en sabor",
-    subtitle: "Ideal para controlar la glucosa",
+    subtitle: "Datos de azúcar declarados",
   },
   "alto-en-proteina": {
     headline: "Proteína para tu rendimiento",
     subtitle: "Opciones altas en proteína",
   },
   "para-diabeticos": {
-    headline: "Control glucémico inteligente",
-    subtitle: "Productos de bajo índice glucémico",
+    headline: "Datos glucémicos disponibles",
+    subtitle: "Revisa la información declarada",
   },
 };
 const HERO_DEFAULT = {

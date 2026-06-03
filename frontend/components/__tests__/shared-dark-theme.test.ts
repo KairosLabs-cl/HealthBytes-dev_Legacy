@@ -56,4 +56,17 @@ describe("shared dark theme migration", () => {
       });
     }
   );
+
+  it("pins Android bottom nav radii in native styles", () => {
+    const source = readFileSync(
+      resolve(__dirname, "../../components/ui/NavBar/BottomNavBar.tsx"),
+      "utf8"
+    );
+
+    expect(source).toContain("NAV_BAR_RADIUS");
+    expect(source).toContain("TAB_PILL_RADIUS");
+    expect(source).toContain("borderRadius: NAV_BAR_RADIUS");
+    expect(source).toContain("borderRadius: TAB_PILL_RADIUS");
+    expect(source).toContain('overflow: "hidden"');
+  });
 });

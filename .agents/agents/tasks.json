@@ -22,7 +22,8 @@
       "taskIds": [
         "task-20260531-orders-payment-query-contract",
         "task-20260601-nativewind-web-dark-mode",
-        "task-20260601-account-settings-theme-selector"
+        "task-20260601-account-settings-theme-selector",
+        "task-20260603-expo-go-push-warning"
       ]
     },
     "done": {
@@ -108,6 +109,11 @@
     "task-20260601-account-settings-theme-selector": {
       "id": "task-20260601-account-settings-theme-selector",
       "content": "Agregar selector de apariencia Automático, Claro y Oscuro en Ajustes de Cuenta y conectar AppThemeProvider global con tests",
+      "agent": "frontend-dev"
+    },
+    "task-20260603-expo-go-push-warning": {
+      "id": "task-20260603-expo-go-push-warning",
+      "content": "Evitar warnings esperados de push notifications en Expo Go y bloquear registro remoto no soportado con tests",
       "agent": "frontend-dev"
     }
   },

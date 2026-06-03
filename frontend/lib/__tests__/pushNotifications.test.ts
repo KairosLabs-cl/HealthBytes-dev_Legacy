@@ -2,6 +2,8 @@ import {
   getPushRegistrationReadiness,
   notificationUrlToRoute,
 } from "@/lib/pushNotifications";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 describe("push notification helpers", () => {
   it("blocks remote push registration on web", () => {
@@ -49,7 +51,27 @@ describe("push notification helpers", () => {
   });
 
   it("converts app notification urls into Expo Router paths", () => {
-    expect(notificationUrlToRoute("healthbytes://orders/42")).toBe("/orders/42");
+    expect(notificationUrlToRoute("healthbytes://orders/42")).toBe(
+      "/orders/42"
+    );
     expect(notificationUrlToRoute("/product/7")).toBe("/product/7");
+  });
+
+  it("does not leave production console logs in the push notification hook", () => {
+    const hookSource = readFileSync(
+      resolve(__dirname, "../../hooks/usePushNotifications.ts"),
+      "utf8"
+    );
+
+    expect(hookSource).not.toContain("console.log");
+  });
+
+  it("does not leave production console warnings in the push notification hook", () => {
+    const hookSource = readFileSync(
+      resolve(__dirname, "../../hooks/usePushNotifications.ts"),
+      "utf8"
+    );
+
+    expect(hookSource).not.toContain("console.warn");
   });
 });

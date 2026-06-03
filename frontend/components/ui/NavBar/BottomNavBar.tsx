@@ -2,8 +2,8 @@ import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { useCart, selectCartItemCount } from "@/store/cartStore";
 import { Home, ShoppingCart, User } from "lucide-react-native";
-import React, { useCallback, useEffect } from "react";
-import { Platform, Pressable, View } from "react-native";
+import React, { useCallback, useEffect, useMemo } from "react";
+import { Platform, Pressable, StyleSheet, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -36,6 +36,49 @@ const TAB_CONFIG = [
   { name: "cart", label: "Carrito", icon: ShoppingCart, hasBadge: true },
   { name: "profile", label: "Perfil", icon: User, hasBadge: false },
 ] as const;
+
+const NAV_BAR_RADIUS = 999;
+const TAB_PILL_RADIUS = 999;
+
+const styles = StyleSheet.create({
+  animatedTabContent: {
+    width: "100%",
+    borderRadius: TAB_PILL_RADIUS,
+    overflow: "hidden",
+  },
+  mobileTabPressable: {
+    minHeight: 48,
+    width: "100%",
+    flex: 1,
+    borderRadius: TAB_PILL_RADIUS,
+    overflow: "hidden",
+  },
+  navShell: {
+    borderRadius: NAV_BAR_RADIUS,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+    overflow: "hidden",
+  },
+  positioner: {
+    position: "absolute",
+    left: 12,
+    right: 12,
+    zIndex: 50,
+  },
+  tabPill: {
+    borderRadius: TAB_PILL_RADIUS,
+    minHeight: 44,
+    overflow: "hidden",
+  },
+  webTabPressable: {
+    minHeight: 48,
+    flex: 1,
+    borderRadius: TAB_PILL_RADIUS,
+    overflow: "hidden",
+  },
+});
 
 // --- Animated Badge Component ---
 const AnimatedBadge = React.memo(({ count }: { count: number }) => {
@@ -94,6 +137,14 @@ const TabItem = React.memo(
   ({ label, icon, isActive, badge, onPress, onLongPress }: TabItemProps) => {
     const scale = useSharedValue(1);
     const { palette } = useAppTheme();
+    const tabPillStyle = useMemo(
+      () => ({
+        backgroundColor: isActive
+          ? palette.colors.surface.card
+          : "transparent",
+      }),
+      [isActive, palette.colors.surface.card]
+    );
 
     const handlePressIn = useCallback(() => {
       if (isMobile) {
@@ -120,15 +171,10 @@ const TabItem = React.memo(
 
     const innerContent = (
       <View
-        className={`w-full items-center justify-center gap-1 rounded-full ${
+        className={`w-full items-center justify-center gap-1 ${
           isMobile ? "px-3 py-2" : "px-3 py-1.5"
         }`}
-        style={{
-          backgroundColor: isActive
-            ? palette.colors.surface.card
-            : "transparent",
-          minHeight: 44,
-        }}
+        style={[styles.tabPill, tabPillStyle]}
       >
         <View className="relative">
           <Icon
@@ -158,7 +204,7 @@ const TabItem = React.memo(
     if (isMobile && AnimatedPressable) {
       return (
         <AnimatedPressable
-          style={[{ minHeight: 48 }, { width: "100%", flex: 1 }]}
+          style={styles.mobileTabPressable}
           className="items-center justify-center"
           accessibilityRole="button"
           accessibilityState={isActive ? { selected: true } : {}}
@@ -168,7 +214,7 @@ const TabItem = React.memo(
           onPress={handlePress}
           onLongPress={onLongPress}
         >
-          <Animated.View style={[animatedStyle, { width: "100%" }]}>
+          <Animated.View style={[animatedStyle, styles.animatedTabContent]}>
             {innerContent}
           </Animated.View>
         </AnimatedPressable>
@@ -178,7 +224,7 @@ const TabItem = React.memo(
     // On web: use plain Pressable (no Reanimated transforms)
     return (
       <Pressable
-        style={{ minHeight: 48, flex: 1 }}
+        style={styles.webTabPressable}
         className="items-center justify-center"
         accessibilityRole="button"
         accessibilityState={isActive ? { selected: true } : {}}
@@ -205,16 +251,16 @@ function BottomNavBar({ state, descriptors, navigation }: BottomTabBarProps) {
 
   const navContent = (
     <View
-      className={`bg-ink rounded-full flex-row justify-between items-center ${
+      className={`flex-row justify-between items-center ${
         isMobile ? "px-4 py-2" : "px-3 py-1.5"
       } ${isMobile ? "gap-3" : "gap-2"}`}
-      style={{
-        shadowColor: palette.colors.surface.overlay,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
-        elevation: 8,
-      }}
+      style={[
+        styles.navShell,
+        {
+          backgroundColor: palette.colors.ink.primary,
+          shadowColor: palette.colors.surface.overlay,
+        },
+      ]}
     >
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
@@ -258,15 +304,11 @@ function BottomNavBar({ state, descriptors, navigation }: BottomTabBarProps) {
     </View>
   );
 
-  const positionStyle = {
-    position: "absolute" as const,
-    bottom: bottomPosition,
-    left: 12,
-    right: 12,
-    zIndex: 50,
-  };
-
-  return <View style={positionStyle}>{navContent}</View>;
+  return (
+    <View style={[styles.positioner, { bottom: bottomPosition }]}>
+      {navContent}
+    </View>
+  );
 }
 
 export default React.memo(BottomNavBar);

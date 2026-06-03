@@ -6,6 +6,7 @@ import { useRouter, type Href } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 import { updatePushToken } from "@/api/users";
 import Constants from "expo-constants";
+import { getPushRegistrationReadiness } from "@/lib/pushNotifications";
 
 const PLACEHOLDER_PROJECT_ID = "REPLACE_WITH_YOUR_EAS_PROJECT_ID";
 const EXPO_PUSH_TOKEN_PATTERN = /^(ExponentPushToken|ExpoPushToken)\[[^\]]+\]$/;
@@ -69,44 +70,41 @@ export function usePushNotifications() {
       });
     }
 
-    if (Device.isDevice) {
-      const { status: existingStatus } =
-        await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-      if (existingStatus !== "granted") {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      }
-      if (finalStatus !== "granted") {
-        return;
-      }
+    const projectId = getEasProjectId();
+    const readiness = getPushRegistrationReadiness({
+      platform: Platform.OS,
+      isDevice: Device.isDevice,
+      projectId,
+      appOwnership: Constants.appOwnership,
+    });
 
-      const projectId = getEasProjectId();
-      if (!projectId) {
-        return;
-      }
+    if (!readiness.ready) {
+      return;
+    }
 
-      try {
-        const pushTokenString = (
-          await Notifications.getExpoPushTokenAsync({
-            projectId,
-          })
-        ).data;
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== "granted") {
+      return;
+    }
 
-        if (EXPO_PUSH_TOKEN_PATTERN.test(pushTokenString)) {
-          token = pushTokenString;
-          setExpoPushToken(token);
-        }
-      } catch (e: unknown) {
-        // En SDK 53, expo-notifications remueve el soporte de Push Notifications en Expo Go para Android.
-        // Capturamos el error para que la app no crashee en desarrollo.
-        console.warn(
-          "No se pudo obtener el token de push (¿Estás usando Expo Go en Android?). Error: ",
-          e
-        );
+    try {
+      const pushTokenString = (
+        await Notifications.getExpoPushTokenAsync({
+          projectId,
+        })
+      ).data;
+
+      if (EXPO_PUSH_TOKEN_PATTERN.test(pushTokenString)) {
+        token = pushTokenString;
+        setExpoPushToken(token);
       }
-    } else {
-      console.log("Must use physical device for Push Notifications");
+    } catch {
+      return;
     }
 
     return token;
