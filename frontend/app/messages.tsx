@@ -6,6 +6,7 @@ import { Text } from "@/components/ui/text";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { MessageSquare, Inbox, Bell } from "lucide-react-native";
 import { useAppTheme } from "@/hooks/useAppTheme";
+import { withAlpha } from "@/lib/colorUtils";
 
 export default function MessagesScreen() {
   const { palette, statusBarStyle } = useAppTheme();
@@ -61,7 +62,7 @@ export default function MessagesScreen() {
                 <View className="absolute right-6 top-8">
                   <MessageSquare
                     size={80}
-                    color={`${palette.colors.ink.inverse}0D`}
+                    color={withAlpha(palette.colors.ink.inverse, 5)}
                   />
                 </View>
               </View>

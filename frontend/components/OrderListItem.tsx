@@ -17,14 +17,15 @@ export function OrderListItem({ order, onPress }: OrderListItemProps) {
   const normalizedStatus = normalizeStatus(order.status as unknown as string);
   const statusLabel = STATUS_LABELS[normalizedStatus];
   const { palette } = useAppTheme();
-  const statusColor = {
+  const statusMap: Record<string, string> = {
     unpaid: palette.colors.state.warning,
     processing: palette.colors.state.info,
     shipped: palette.colors.icon.accent,
     delivered: palette.colors.state.success,
     returns: palette.colors.state.warning,
     cancelled: palette.colors.state.error,
-  }[normalizedStatus];
+  };
+  const statusColor = statusMap[normalizedStatus] || palette.colors.ink.muted;
 
   const formattedDate = useMemo(() => {
     const date = new Date(order.created_at);

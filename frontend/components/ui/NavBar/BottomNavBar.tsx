@@ -241,6 +241,11 @@ const TabItem = React.memo(
 TabItem.displayName = "TabItem";
 
 // --- Main BottomNavBar ---
+/**
+ * Bottom navigation bar component for tab-based navigation.
+ * Renders tabs from react-navigation state with theme-driven styling.
+ * @param props - BottomTabBarProps from @react-navigation/bottom-tabs
+ */
 function BottomNavBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const cartCount = useCart(selectCartItemCount);
   const insets = useSafeAreaInsets();

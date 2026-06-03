@@ -248,16 +248,29 @@ const GuestBanner = React.memo(() => {
   if (isSignedIn) return null;
 
   return (
-    <View className="mx-4 mt-3 flex-row items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3">
-      <View className="h-11 w-11 items-center justify-center rounded-2xl bg-surface-card">
-        <Utensils size={20} color="#22c55e" strokeWidth={2.3} />
+    <View
+      className="mx-4 mt-3 flex-row items-center gap-3 rounded-2xl border px-4 py-3"
+      style={{
+        backgroundColor: palette.colors.surface.card,
+        borderColor: palette.colors.border.subtle,
+      }}
+    >
+      <View
+        className="h-11 w-11 items-center justify-center rounded-2xl"
+        style={{ backgroundColor: palette.colors.surface.muted }}
+      >
+        <Utensils size={20} color={palette.colors.icon.primary} strokeWidth={2.3} />
       </View>
-      <Text className="flex-1 text-xs font-semibold leading-5 text-emerald-950">
+      <Text
+        className="flex-1 text-xs font-semibold leading-5"
+        style={{ color: palette.colors.ink.primary }}
+      >
         Inicia sesión para ver productos personalizados
       </Text>
       <Pressable
         onPress={() => router.push("/(auth)/login")}
-        className="h-11 min-w-11 items-center justify-center rounded-2xl bg-ink px-3"
+        className="h-11 min-w-11 items-center justify-center rounded-2xl px-3"
+        style={{ backgroundColor: palette.colors.ink.primary }}
         accessibilityRole="button"
         accessibilityLabel="Entrar a HealthBytes"
       >

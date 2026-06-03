@@ -121,7 +121,10 @@ export default function AllProductsScreen() {
               accessibilityRole="button"
               accessibilityLabel="Limpiar filtros"
             >
-              <Text className="text-sm font-bold text-emerald-600">
+              <Text
+                className="text-sm font-bold"
+                style={{ color: palette.colors.state.success }}
+              >
                 Limpiar
               </Text>
             </Pressable>

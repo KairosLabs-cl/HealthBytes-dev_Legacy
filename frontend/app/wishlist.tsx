@@ -16,6 +16,7 @@ import { useFavoritesStore } from "@/store/favoritesStore";
 import { Product } from "@/types/product";
 import { Favorite, getUserFavorites } from "@/api/favorites";
 import { useAppTheme } from "@/hooks/useAppTheme";
+import { withAlpha } from "@/lib/colorUtils";
 
 export default function WishlistScreen() {
   const router = useRouter();
@@ -66,7 +67,7 @@ export default function WishlistScreen() {
       <ListEmptyState
         icon={HeartOff}
         iconColor={palette.colors.state.error}
-        iconBgColor={`${palette.colors.state.error}1F`}
+        iconBgColor={withAlpha(palette.colors.state.error, 12)}
         title="Lista vacía"
         description="Guarda productos para volver rápido a tus favoritos."
         actionLabel="Explorar productos"

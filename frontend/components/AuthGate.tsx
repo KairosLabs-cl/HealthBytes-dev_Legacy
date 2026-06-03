@@ -72,7 +72,7 @@ export function AuthGate({
             accessibilityLabel="Volver al catálogo"
           >
             <Text className="text-sm font-medium text-ink-muted">
-              Volver al catalogo
+              Volver al catálogo
             </Text>
           </Pressable>
         </View>

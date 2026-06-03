@@ -59,6 +59,12 @@ const options = [
   { label: "Contactate con soporte", icon: Phone, href: "/support" },
 ];
 
+/**
+ * ProfileScreen component that displays user information, orders summary,
+ * and general settings options.
+ *
+ * @returns {JSX.Element} The rendered ProfileScreen component.
+ */
 export default function ProfileScreen() {
   const router = useRouter();
   const { signOut } = useClerk();
