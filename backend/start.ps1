@@ -112,7 +112,21 @@ if (-not $NoInstall) {
     Show-HealthSummary -Logs $installLog
 }
 
-# 4) Start server via run_server.py (configured reload excludes)
+# 4) Apply local database migrations
+if (-not $env:NO_MIGRATIONS) {
+    Write-Host ""
+    Write-Host "Applying database migrations..." -ForegroundColor Yellow
+    python -m alembic upgrade head
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host ""
+        Write-Host "Alembic migrations failed." -ForegroundColor Red
+        Write-Host "Check backend/.env DATABASE_URL and confirm Postgres is running." -ForegroundColor Red
+        Write-Host "Skip only when intentional: `$env:NO_MIGRATIONS=1; .\start.ps1" -ForegroundColor Yellow
+        exit 1
+    }
+}
+
+# 5) Start server via run_server.py (configured reload excludes)
 Write-Host ""
 Write-Host "Starting FastAPI server on http://127.0.0.1:3001 ..." -ForegroundColor Green
 Write-Host "Press CTRL+C to stop." -ForegroundColor Green

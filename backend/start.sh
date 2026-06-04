@@ -136,7 +136,20 @@ if [ "${NO_INSTALL:-}" != "1" ]; then
   rm -f "$INSTALL_LOG"
 fi
 
-# 4) Start server via run_server.py (configured reload excludes)
+# 4) Apply local database migrations
+if [ "${NO_MIGRATIONS:-}" != "1" ]; then
+  echo ""
+  echo "Applying database migrations..."
+  if ! python -m alembic upgrade head; then
+    echo ""
+    echo "❌ Alembic migrations failed."
+    echo "   Check backend/.env DATABASE_URL and confirm Postgres is running."
+    echo "   Skip only when intentional: NO_MIGRATIONS=1 ./start.sh"
+    exit 1
+  fi
+fi
+
+# 5) Start server via run_server.py (configured reload excludes)
 echo ""
 echo "Starting FastAPI server on http://127.0.0.1:3001 ..."
 echo "Press CTRL+C to stop."

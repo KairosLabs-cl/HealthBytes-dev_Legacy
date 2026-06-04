@@ -78,10 +78,12 @@ Fuente de verdad: [docs/roadmap/weekly-status.md](docs/roadmap/weekly-status.md)
 
 ## Quick Start
 
+Full first-run guide for new developers: [docs/development/setup/local-setup.md](docs/development/setup/local-setup.md).
+
 ### Prerrequisitos
 
 - Python 3.13+ — [python.org](https://www.python.org/downloads/)
-- Node.js 18+ — [nodejs.org](https://nodejs.org/)
+- Node.js 20.18+ — [nodejs.org](https://nodejs.org/)
 - pnpm 8+ — `npm install -g pnpm`
 - PostgreSQL 14+ — [postgresql.org](https://www.postgresql.org/download/)
 - Docker (opcional, recomendado para la DB)

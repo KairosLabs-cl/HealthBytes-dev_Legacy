@@ -9,8 +9,6 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 BACKEND_MAIN="$REPO_ROOT/backend/app/main.py"
 ENV_FILE="$SCRIPT_DIR/.env"
 
-DEFAULT_CLERK_KEY="EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY_REDACTED"
-
 print_header() {
   echo ""
   echo "================================================"
@@ -67,36 +65,33 @@ get_local_ip() {
 }
 
 read_clerk_key_from_env() {
-  local key="$DEFAULT_CLERK_KEY"
+  local key="${EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY:-}"
+
   if [ -f "$ENV_FILE" ]; then
     local existing
     existing="$(grep -E '^EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=' "$ENV_FILE" | head -n 1 | cut -d= -f2- || true)"
-    if [ -n "${existing:-}" ]; then
+    if [[ "${existing:-}" == pk_* ]]; then
       key="$existing"
     fi
   fi
+
+  while [[ "${key:-}" != pk_* ]]; do
+    echo ""
+    echo "Clerk publishable key requerida para que Expo arranque."
+    echo "Pide la key del proyecto local o copiala desde Clerk Dashboard."
+    read -r -p "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY (pk_test_...): " key
+  done
+
   echo "$key"
 }
 
 update_backend_cors() {
-  local local_ip="$1"
-
-  if [ ! -f "$BACKEND_MAIN" ]; then
+  if [ -f "$BACKEND_MAIN" ]; then
+    echo "✅ Backend dev CORS ya permite IPs LAN privadas por regex."
+    echo "   No se modifica backend/app/main.py."
+  else
     echo "⚠️  No se encontro el archivo main.py del backend"
-    return 0
   fi
-
-  local tmp_file
-  tmp_file="$(mktemp)"
-
-  perl -pe "s#http://(?:10|192\.168|172\.(?:1[6-9]|2\\d|3[01]))\.\d+\.\d+:8081#http://${local_ip}:8081#g; s#exp://(?:10|192\.168|172\.(?:1[6-9]|2\\d|3[01]))\.\d+\.\d+:8081#exp://${local_ip}:8081#g" \
-    "$BACKEND_MAIN" > "$tmp_file"
-
-  mv "$tmp_file" "$BACKEND_MAIN"
-
-  echo "✅ CORS del backend actualizado con IP: $local_ip"
-  echo ""
-  echo "⚠️  IMPORTANTE: Reinicia el backend para aplicar cambios de CORS"
 }
 
 print_header
@@ -162,7 +157,7 @@ read -r -p "Deseas actualizar tambien el CORS del backend? [S/n]: " UPDATE_CORS
 UPDATE_CORS="${UPDATE_CORS:-S}"
 
 if [[ "$UPDATE_CORS" =~ ^[Ss]$ ]]; then
-  update_backend_cors "$LOCAL_IP"
+  update_backend_cors
 fi
 
 echo ""
@@ -172,7 +167,7 @@ echo "Proximos pasos:"
 echo "  1. Si Expo esta corriendo, presiona 'r' para recargar"
 echo "  2. Si no esta corriendo, ejecuta: pnpm start"
 if [[ "$UPDATE_CORS" =~ ^[Ss]$ ]]; then
-  echo "  3. Reinicia el backend para aplicar CORS"
+  echo "  3. Confirma que backend corre en http://0.0.0.0:3001 o http://127.0.0.1:3001"
 fi
 echo ""
 echo "Listo para desarrollar!"

@@ -13,9 +13,9 @@ const EXPO_PUSH_TOKEN_PATTERN = /^(ExponentPushToken|ExpoPushToken)\[[^\]]+\]$/;
 const ALLOWED_DEEP_LINK_PATTERNS = [/^\/orders\/\d+$/, /^\/product\/\d+$/];
 
 // Configura cómo se comportan las notificaciones en primer plano
+// SDK 53+: shouldShowAlert fue eliminado; usar shouldShowBanner y shouldShowList
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
     shouldShowBanner: true,

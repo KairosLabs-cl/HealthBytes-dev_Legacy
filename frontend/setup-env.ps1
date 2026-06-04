@@ -88,14 +88,24 @@ $apiUrl = switch ($choice) {
 
 # Leer el archivo .env existente si existe
 $envFilePath = Join-Path $PSScriptRoot ".env"
-$clerkKey = "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY_REDACTED"
+$clerkKey = $env:EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
 
 if (Test-Path $envFilePath) {
     $envContent = Get-Content $envFilePath -Raw
     # Extraer la key de Clerk si existe
     if ($envContent -match "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=(.+)") {
-        $clerkKey = $matches[1].Trim()
+        $existingClerkKey = $matches[1].Trim()
+        if ($existingClerkKey -like "pk_*") {
+            $clerkKey = $existingClerkKey
+        }
     }
+}
+
+while (-not $clerkKey -or $clerkKey -notlike "pk_*") {
+    Write-Host ""
+    Write-Host "Clerk publishable key requerida para que Expo arranque." -ForegroundColor Yellow
+    Write-Host "Pide la key del proyecto local o copiala desde Clerk Dashboard." -ForegroundColor White
+    $clerkKey = Read-Host "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY (pk_test_...)"
 }
 
 # Crear contenido del .env
@@ -129,17 +139,9 @@ if ($updateCors -eq "" -or $updateCors -eq "S" -or $updateCors -eq "s") {
     $backendMainPath = Join-Path (Split-Path $PSScriptRoot -Parent) "backend\app\main.py"
 
     if (Test-Path $backendMainPath) {
-        $mainContent = Get-Content $backendMainPath -Raw
-
-        # Actualizar cualquier IP (10.x, 192.168.x, 172.x) o incluso la antigua 10.89...
-        $mainContent = [System.Text.RegularExpressions.Regex]::Replace($mainContent, 'http://(?:10|192\.168|172\.(?:1[6-9]|2\d|3[01]))\.\d+\.\d+:8081', "http://${localIP}:8081")
-        $mainContent = [System.Text.RegularExpressions.Regex]::Replace($mainContent, 'exp://(?:10|192\.168|172\.(?:1[6-9]|2\d|3[01]))\.\d+\.\d+:8081', "exp://${localIP}:8081")
-
-        Set-Content -Path $backendMainPath -Value $mainContent -NoNewline
-
-        Write-Host "✅ CORS del backend actualizado con IP: $localIP" -ForegroundColor Green
+        Write-Host "✅ Backend dev CORS ya permite IPs LAN privadas por regex." -ForegroundColor Green
+        Write-Host "   No se modifica backend/app/main.py." -ForegroundColor White
         Write-Host ""
-        Write-Host "⚠️  IMPORTANTE: Reinicia el backend para aplicar cambios de CORS" -ForegroundColor Yellow
     } else {
         Write-Host "⚠️  No se encontró el archivo main.py del backend" -ForegroundColor Yellow
     }
@@ -152,7 +154,7 @@ Write-Host "Próximos pasos:" -ForegroundColor Yellow
 Write-Host "  1. Si Expo está corriendo, presiona 'r' para recargar" -ForegroundColor White
 Write-Host "  2. Si no está corriendo, ejecuta: pnpm start" -ForegroundColor White
 if ($updateCors -eq "" -or $updateCors -eq "S" -or $updateCors -eq "s") {
-    Write-Host "  3. Reinicia el backend para aplicar CORS" -ForegroundColor White
+    Write-Host "  3. Confirma que backend corre en http://0.0.0.0:3001 o http://127.0.0.1:3001" -ForegroundColor White
 }
 Write-Host ""
 Write-Host "¡Listo para desarrollar! 🚀" -ForegroundColor Green
