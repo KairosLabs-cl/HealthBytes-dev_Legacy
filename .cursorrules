@@ -7,6 +7,35 @@ Al iniciar CUALQUIER chat nuevo (sea en VSCode, Cursor, Open Code, u otro), **de
 
 ---
 
+## 🏷️ NOMENCLATURA DE SKILLS (OBLIGATORIO)
+
+Cualquier skill creada **específicamente para este proyecto** (HealthBytes) debe seguir el prefijo:
+
+```
+HealthBytes-{accion}
+```
+
+**Ejemplos correctos:**
+- `HealthBytes-sprint` ✅
+- `HealthBytes-docs` ✅
+- `HealthBytes-version` ✅
+- `HealthBytes-contributors` ✅
+- `HealthBytes-changelog` ✅
+
+**Skills genéricas** (reutilizables en cualquier proyecto) mantienen su nombre original:
+- `systematic-debugging` ✅
+- `test-driven-development` ✅
+- `writing-plans` ✅
+
+**Cómo distinguir:** Si la descripción de la skill menciona "HealthBytes", necesidades del equipo de este repo, o flujos específicos de este proyecto → prefijo `HealthBytes-`.
+
+**Al crear cualquier skill nueva:**
+1. Determinar si es HealthBytes-específica o genérica
+2. Si es específica: carpeta `.agents/skills/HealthBytes-{accion}/`
+3. Actualizar `name:` en el frontmatter YAML del SKILL.md
+4. Registrar en `.agents/router.json` con el nombre correcto
+
+
 ## 🚫 PROHIBICIONES ABSOLUTAS
 
 ### Nunca Modificar Sin Aprobación Explícita

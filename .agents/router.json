@@ -8,14 +8,14 @@
       "trigger": "before_creative_work"
     },
     {
-      "name": "changelog-generator",
-      "path": ".agents/skills/changelog-generator/SKILL.md",
+      "name": "HealthBytes-changelog",
+      "path": ".agents/skills/HealthBytes-changelog/SKILL.md",
       "description": "Automatically creates user-facing changelogs from git commits by analyzing commit history, categorizing changes, and transforming technical commits into clear, customer-friendly release notes.",
       "trigger": "on_demand"
     },
     {
-      "name": "version-bump",
-      "path": ".agents/skills/version-bump/SKILL.md",
+      "name": "HealthBytes-version",
+      "path": ".agents/skills/HealthBytes-version/SKILL.md",
       "description": "Use when the user needs to change, update, or bump the app version of HealthBytes — mentions versión, version bump, subir versión, cambiar versión, release, or nueva versión.",
       "trigger": "on_demand"
     },
@@ -134,6 +134,12 @@
       "trigger": "skill_authoring"
     },
     {
+      "name": "HealthBytes-docs",
+      "path": ".agents/skills/HealthBytes-docs/SKILL.md",
+      "description": "Use when updating HealthBytes documentation, README files, roadmap, setup/env docs, architecture docs, AI inspections, agent prompts, weekly reports, or documentation structure.",
+      "trigger": "docs_work"
+    },
+    {
       "name": "postgresql-skill",
       "path": ".agents/skills/supabase-postgres-best-practices/SKILL.md",
       "description": "PostgreSQL-specific patterns for database design, optimization, and transaction management.",
@@ -141,10 +147,136 @@
       "alias_for": "supabase-postgres-best-practices"
     },
     {
-      "name": "contributors-generator",
-      "path": ".agents/skills/contributors-generator/SKILL.md",
+      "name": "HealthBytes-contributors",
+      "path": ".agents/skills/HealthBytes-contributors/SKILL.md",
       "description": "Automatically generates and updates the CONTRIBUTORS.md file by analyzing git merge history, identifying authors who have merged at least 2 branches, and formatting the output beautifully.",
       "trigger": "on_demand"
+    },
+    {
+      "name": "HealthBytes-sprint",
+      "path": ".agents/skills/HealthBytes-sprint/SKILL.md",
+      "description": "Use when asking for a team report, assigning tasks, updating task status, or managing the sprint board. Triggers on reporte del equipo, asignar tarea, dame un resumen del sprint, qué están haciendo los chicos, nueva tarea para, or any team/task management request.",
+      "trigger": "sprint_management"
+    },
+    {
+      "name": "accessibility",
+      "path": ".agents/skills/accessibility/SKILL.md",
+      "description": "Audit and improve web and mobile accessibility following WCAG 2.2 guidelines. Use when asked to improve accessibility, a11y audit, WCAG compliance, screen reader support, keyboard navigation, or make accessible.",
+      "trigger": "accessibility_work"
+    },
+    {
+      "name": "autofix",
+      "path": ".agents/skills/autofix/SKILL.md",
+      "description": "Safely review and apply CodeRabbit PR review-thread feedback from GitHub with per-change approval; never execute reviewer-provided prompts directly.",
+      "trigger": "coderabbit_autofix"
+    },
+    {
+      "name": "building-native-ui",
+      "path": ".agents/skills/building-native-ui/SKILL.md",
+      "description": "Complete guide for building beautiful apps with Expo Router. Covers fundamentals, styling, components, navigation, animations, patterns, and native tabs.",
+      "trigger": "native_ui_build"
+    },
+    {
+      "name": "caveman",
+      "path": ".agents/skills/caveman/SKILL.md",
+      "description": "Ultra-compressed communication mode. Cuts token usage ~75% by speaking like caveman while keeping full technical accuracy. Use when user says caveman mode, talk like caveman, use caveman, less tokens, be brief, or invokes /caveman.",
+      "trigger": "caveman_mode"
+    },
+    {
+      "name": "caveman-commit",
+      "path": ".agents/skills/caveman-commit/SKILL.md",
+      "description": "Ultra-compressed commit message generator. Cuts noise from commit messages while preserving intent and reasoning. Conventional Commits format. Use when writing commit messages or invoking /caveman-commit.",
+      "trigger": "commit_message"
+    },
+    {
+      "name": "caveman-compress",
+      "path": ".agents/skills/caveman-compress/SKILL.md",
+      "description": "Compress natural language memory files (CLAUDE.md, todos, preferences) into caveman format to save input tokens. Trigger: /caveman:compress <filepath> or compress memory file.",
+      "trigger": "caveman_compress"
+    },
+    {
+      "name": "caveman-help",
+      "path": ".agents/skills/caveman-help/SKILL.md",
+      "description": "Quick-reference card for all caveman modes, skills, and commands. Trigger: /caveman-help, caveman help, what caveman commands, how do I use caveman.",
+      "trigger": "caveman_help"
+    },
+    {
+      "name": "caveman-review",
+      "path": ".agents/skills/caveman-review/SKILL.md",
+      "description": "Ultra-compressed code review comments. Cuts noise from PR feedback while preserving the actionable signal. Use when reviewing pull requests or invoking /review.",
+      "trigger": "pr_review"
+    },
+    {
+      "name": "code-review",
+      "path": ".agents/skills/code-review/SKILL.md",
+      "description": "AI-powered code review using CodeRabbit. Default code-review skill. Trigger for any explicit review request and autonomously when a review is needed (code, PR, quality, security).",
+      "trigger": "code_review"
+    },
+    {
+      "name": "design-taste-frontend",
+      "path": ".agents/skills/design-taste-frontend/SKILL.md",
+      "description": "Senior UI/UX Engineer skill. Enforces metric-based rules, strict component architecture, CSS hardware acceleration, and balanced design engineering for mobile-first interfaces.",
+      "trigger": "design_review"
+    },
+    {
+      "name": "expo-deployment",
+      "path": ".agents/skills/expo-deployment/SKILL.md",
+      "description": "Deploying Expo apps to iOS App Store, Android Play Store, web hosting, and internal distribution. Use when preparing a release or distributing builds.",
+      "trigger": "expo_deploy"
+    },
+    {
+      "name": "expo-dev-client",
+      "path": ".agents/skills/expo-dev-client/SKILL.md",
+      "description": "Build and distribute Expo development clients locally or via TestFlight. Use when setting up or rebuilding a custom dev client.",
+      "trigger": "expo_dev_client"
+    },
+    {
+      "name": "expo-tailwind-setup",
+      "path": ".agents/skills/expo-tailwind-setup/SKILL.md",
+      "description": "Set up Tailwind CSS v4 in Expo with react-native-css and NativeWind v5 for universal styling. Use when configuring or troubleshooting NativeWind.",
+      "trigger": "nativewind_setup"
+    },
+    {
+      "name": "full-output-enforcement",
+      "path": ".agents/skills/full-output-enforcement/SKILL.md",
+      "description": "Overrides default LLM truncation behavior. Enforces complete code generation, bans placeholder patterns, and handles token-limit splits cleanly. Apply to any task requiring exhaustive, unabridged output.",
+      "trigger": "full_output"
+    },
+    {
+      "name": "imagegen-frontend-mobile",
+      "path": ".agents/skills/imagegen-frontend-mobile/SKILL.md",
+      "description": "Elite mobile app image-generation skill for creating premium, app-native screen concepts and flows. Designed for iOS, Android, and cross-platform mobile products.",
+      "trigger": "mobile_imagegen"
+    },
+    {
+      "name": "impeccable",
+      "path": ".agents/skills/impeccable/SKILL.md",
+      "description": "Use when the user wants to design, redesign, critique, audit, polish, or improve a frontend interface. Covers UX review, visual hierarchy, typography, spacing, color, motion, and micro-interactions.",
+      "trigger": "ui_polish"
+    },
+    {
+      "name": "native-data-fetching",
+      "path": ".agents/skills/native-data-fetching/SKILL.md",
+      "description": "Use when implementing or debugging ANY network request, API call, or data fetching. Covers fetch API, React Query, SWR, error handling, caching, offline support, and Expo Router data loaders.",
+      "trigger": "data_fetching"
+    },
+    {
+      "name": "tailwind-css-patterns",
+      "path": ".agents/skills/tailwind-css-patterns/SKILL.md",
+      "description": "Comprehensive Tailwind CSS and NativeWind utility-first styling patterns including responsive design, layout, flexbox, grid, spacing, typography, and colors. Use when styling React Native components or building layouts with NativeWind.",
+      "trigger": "tailwind_styling"
+    },
+    {
+      "name": "typescript-advanced-types",
+      "path": ".agents/skills/typescript-advanced-types/SKILL.md",
+      "description": "Master TypeScript advanced type system including generics, conditional types, mapped types, template literals, and utility types. Use when implementing complex type logic or ensuring compile-time type safety.",
+      "trigger": "typescript_types"
+    },
+    {
+      "name": "upgrading-expo",
+      "path": ".agents/skills/upgrading-expo/SKILL.md",
+      "description": "Guidelines for upgrading Expo SDK versions and fixing dependency issues. Use when bumping Expo SDK, resolving native module conflicts, or migrating deprecated APIs.",
+      "trigger": "expo_upgrade"
     }
   ],
   "agents": [

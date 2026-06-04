@@ -12,6 +12,9 @@
       "id": "todo",
       "title": "To Do",
       "taskIds": [
+        "task-20260604-benjamin-dev-setup",
+        "task-20260604-andres-recon",
+        "task-20260604-abram-recon",
         "task-1779486907707",
         "task-1779486907708"
       ]
@@ -46,6 +49,21 @@
       "id": "task-20260529-changelog-cleanup",
       "content": "Limpiar duplicaciones en CHANGELOG.md y actualizar cronología de releases con versión 0.4.0",
       "agent": "hermes-verifier"
+    },
+    "task-20260604-benjamin-dev-setup": {
+      "id": "task-20260604-benjamin-dev-setup",
+      "content": "[Benjamin · CTO] Documentar y scriptear setup del entorno local para que Andrés y Abram puedan levantar el proyecto sin ayuda",
+      "agent": "hermes-verifier"
+    },
+    "task-20260604-andres-recon": {
+      "id": "task-20260604-andres-recon",
+      "content": "[Andrés · FE Junior] Reconocimiento del frontend: leer guía RECON_GUIDE_ANDRES.md y entregar reporte RECON_ANDRES_2026-06-04.md en docs/recon/",
+      "agent": "frontend-dev"
+    },
+    "task-20260604-abram-recon": {
+      "id": "task-20260604-abram-recon",
+      "content": "[Abram · BE Junior] Reconocimiento del backend: leer guía RECON_GUIDE_ABRAM.md y entregar reporte RECON_ABRAM_2026-06-04.md en docs/recon/",
+      "agent": "backend-dev"
     },
     "task-1779486907706": {
       "id": "task-1779486907706",

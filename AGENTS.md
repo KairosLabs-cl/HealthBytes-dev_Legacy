@@ -16,6 +16,17 @@
 - When a task uses a conceptual role label, resolve it through `.agents/router.json` to one or more executable agent profiles before acting.
 - When adding a new agent profile, add its `.agents/agents/<name>.md` file, its optional `.agents/agents/jules/<name>-prompt.md` loader, and its `.agents/router.json` registry entry in the same change.
 
+## Skill Naming Convention
+
+Any skill created specifically for this project must use the `HealthBytes-{action}` prefix. Generic skills (reusable across any project) keep their original name.
+
+- HealthBytes-specific: `HealthBytes-sprint`, `HealthBytes-docs`, `HealthBytes-version`, `HealthBytes-contributors`, `HealthBytes-changelog`
+- Generic: `systematic-debugging`, `test-driven-development`, `writing-plans`
+
+**Rule of thumb:** If the skill description mentions HealthBytes, the team, or repo-specific workflows → prefix `HealthBytes-`.
+
+When creating a new HealthBytes skill: name the folder `.agents/skills/HealthBytes-{action}/`, set `name: HealthBytes-{action}` in the SKILL.md frontmatter, and register it in `.agents/router.json`.
+
 ## Product And Food Safety
 
 HealthBytes is an e-commerce product for people with dietary restrictions, restrictive-food needs, minutas, and meal-planning support. Agents must treat these flows as trust-sensitive product work, not generic catalog UI.

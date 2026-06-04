@@ -47,7 +47,7 @@ El intercambio es explícito y simétrico:
 
 Esto convierte a HealthBytes en la fuente de verdad sobre **dónde están y qué tienen disponible** las tiendas especializadas — dato que hoy no existe en ningún lugar centralizado.
 
-> Esta propuesta es una visión de negocio a largo plazo. No hay implementación activa. El flujo de inserción B2B está documentado en [docs/architecture/diagrams/b2b-product-insertion-flow.md](docs/architecture/diagrams/b2b-product-insertion-flow.md).
+> Esta propuesta es una visión de negocio a largo plazo. No hay implementación activa. El flujo de inserción B2B histórico está en [docs/legacy/architecture/diagrams/b2b-product-insertion-flow.md](docs/legacy/architecture/diagrams/b2b-product-insertion-flow.md).
 
 ### Visión — Computer Vision
 
@@ -72,7 +72,7 @@ Esto convierte a HealthBytes en la fuente de verdad sobre **dónde están y qué
 | CI/CD + Infra | ✅ GitHub Actions + Docker + AWS scripts |
 <!-- /DOCSYNC:status-table -->
 
-Fuente de verdad: [docs/development/PROJECT_STATUS.md](docs/development/PROJECT_STATUS.md)
+Fuente de verdad: [docs/roadmap/weekly-status.md](docs/roadmap/weekly-status.md)
 
 ---
 
@@ -200,6 +200,7 @@ python -c "from app.core.config import settings; print(settings.DATABASE_URL)"
 - Rutas en `backend/app/api/v1/` → solo llaman a servicios
 - Lógica de negocio en `backend/app/services/`
 - Modelos DB en `backend/app/db/` · Schemas Pydantic en `backend/app/schemas/`
+- Fuente técnica: [docs/development/architecture/](docs/development/architecture/)
 
 ---
 
@@ -260,11 +261,14 @@ HealthBytes-dev/
 │   ├── setup-env.sh         # Configuración .env Mac/Linux
 │   └── setup-env.ps1        # Configuración .env Windows
 │
-├── docs/                    # Documentación técnica
-│   ├── development/         # PROJECT_STATUS.md, roadmap, guías
-│   ├── architecture/        # Decisiones y diagramas
-│   ├── features/            # Documentación por feature
-│   └── security/            # Políticas y auditorías
+├── docs/
+│   ├── product/             # Producto, usuarios, comercio, health rules
+│   ├── roadmap/             # MVP, estado, release readiness, backlog
+│   ├── development/         # Arquitectura, setup, decisiones
+│   ├── ai/                  # Agentes, prompts, inspecciones
+│   ├── executive/           # Reportes ejecutivos
+│   ├── operations/          # QA, seguridad, release process
+│   └── legacy/              # Histórico preservado
 │
 ├── infra/                   # Scripts AWS (ECR, ECS, SSM)
 ├── .agents/                     # Skills y agentes de IA del repo
@@ -278,10 +282,13 @@ HealthBytes-dev/
 
 | Qué necesito | Dónde |
 | --- | --- |
-| Estado y roadmap actual | [docs/development/PROJECT_STATUS.md](docs/development/PROJECT_STATUS.md) |
 | Índice general de docs | [docs/README.md](docs/README.md) |
-| Seguridad | [docs/architecture/security/](docs/architecture/security/) |
-| Reglas para agentes de IA | [AGENTS.md](AGENTS.md) · [.cursorrules](.cursorrules) |
+| Producto y usuarios | [docs/product/](docs/product/) |
+| Estado, MVP y roadmap | [docs/roadmap/](docs/roadmap/) |
+| Arquitectura | [docs/development/architecture/](docs/development/architecture/) |
+| Setup y variables | [docs/development/setup/](docs/development/setup/) |
+| Seguridad y QA | [docs/operations/](docs/operations/) |
+| Reglas para agentes de IA | [AGENTS.md](AGENTS.md) · [.cursorrules](.cursorrules) · [.agents/router.json](.agents/router.json) |
 | API interactiva (runtime) | http://localhost:3001/docs |
 | Figma / Wireframes | [Ver diseño](https://www.figma.com/design/0yTwgp5ddVCKM1SL1p2rIS/) |
 
@@ -368,7 +375,7 @@ git push origin feat/mi-feature
 Hecho con ❤️ por el equipo de HealthBytes
 
 <!-- DOCSYNC:last-updated -->
-_Última actualización: 2026-05-29 — generado automáticamente por docsync_
+_Última actualización: 2026-06-04 — docs reboot_
 <!-- /DOCSYNC:last-updated -->
 
 </div>
