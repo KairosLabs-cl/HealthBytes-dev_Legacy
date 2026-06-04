@@ -23,8 +23,7 @@ Reason: core backend, frontend, database, authentication, tests, and CI exist, b
 
 ## Progress
 
-- Documentation reboot structure exists and old docs are preserved in `docs/legacy/`.
-- Product SSOT now starts in `docs/product/` with health-rules framing for diabetes, dyslipidemia, and hypertension.
+- Documentation reboot structure complete. Product SSOT starts in `docs/product/` with health-rules framing for diabetes, dyslipidemia, and hypertension.
 - Roadmap SSOT now lives in `docs/roadmap/` instead of root roadmap/status files.
 
 ## Risks
@@ -39,7 +38,6 @@ Reason: core backend, frontend, database, authentication, tests, and CI exist, b
 | --- | --- | --- |
 | Choose staging path: Railway, Render, Fly.io, or AWS ECS | Product/Tech lead | Before beta smoke |
 | Confirm store-submission path for Android and iOS | Product/Tech lead | Before public beta |
-| Decide next legacy extraction target from `docs/legacy/AUDIT.md` | Docs owner | Next docs pass |
 
 ## Next Week
 

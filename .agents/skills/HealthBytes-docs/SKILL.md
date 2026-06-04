@@ -38,7 +38,6 @@ Use the right owner:
 | AI inspections | `docs/ai/inspections/` |
 | Executive reports | `docs/executive/` |
 | QA/security/release process | `docs/operations/` |
-| Historical docs | `docs/legacy/` |
 
 Update the source of truth first. Update indexes and pointers second.
 
@@ -47,7 +46,6 @@ Update the source of truth first. Update indexes and pointers second.
 - Do not create new docs in repo root without explicit user approval.
 - Put AI-generated audits and investigation outputs in `docs/ai/inspections/`.
 - Put executive meeting material in `docs/executive/`.
-- Put old docs in `docs/legacy/` preserving old folder structure.
 - Keep root `README.md` concise.
 - Keep `docs/README.md` as navigation, not a long status document.
 
@@ -73,9 +71,8 @@ Avoid:
 
 When moving or rewriting docs:
 
-1. Classify each legacy doc as `keep`, `rewrite`, `merge`, `reference`, or `delete_later`.
-2. Preserve old content in `docs/legacy/`.
-3. Write the new concise source of truth.
+1. Classify each doc as `keep`, `rewrite`, `merge`, `reference`, or `delete_later`.
+2. Write the new concise source of truth.
 4. Update links.
 5. Search for stale paths.
 6. Report unresolved references.

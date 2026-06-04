@@ -47,7 +47,7 @@ El intercambio es explícito y simétrico:
 
 Esto convierte a HealthBytes en la fuente de verdad sobre **dónde están y qué tienen disponible** las tiendas especializadas — dato que hoy no existe en ningún lugar centralizado.
 
-> Esta propuesta es una visión de negocio a largo plazo. No hay implementación activa. El flujo de inserción B2B histórico está en [docs/legacy/architecture/diagrams/b2b-product-insertion-flow.md](docs/legacy/architecture/diagrams/b2b-product-insertion-flow.md).
+> Esta propuesta es una visión de negocio a largo plazo. No hay implementación activa.
 
 ### Visión — Computer Vision
 
@@ -267,8 +267,7 @@ HealthBytes-dev/
 │   ├── development/         # Arquitectura, setup, decisiones
 │   ├── ai/                  # Agentes, prompts, inspecciones
 │   ├── executive/           # Reportes ejecutivos
-│   ├── operations/          # QA, seguridad, release process
-│   └── legacy/              # Histórico preservado
+│   └── operations/          # QA, seguridad, release process
 │
 ├── infra/                   # Scripts AWS (ECR, ECS, SSM)
 ├── .agents/                     # Skills y agentes de IA del repo
