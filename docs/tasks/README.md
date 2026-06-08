@@ -10,34 +10,34 @@ Tareas del equipo organizadas por desarrollador y fecha.
 tasks/
 ├── benjamin-zamora/
 │   └── 2026-06/
-│       ├── TASK_DEV_SETUP.md (✅ completada)
-│       ├── TASK_DISABLE_MARKETPLACE_FRONTEND.md (P0)
-│       ├── TASK_STORE_MODEL_SEED.md (P0)
-│       └── TASK_PUSH_TOKEN_BACKEND.md (P1)
+│       ├── 2026-06-04_TASK_DEV_SETUP.md (✅ completada)
+│       ├── 2026-06-08_TASK_DISABLE_MARKETPLACE_FRONTEND.md (P0)
+│       ├── 2026-06-08_TASK_STORE_MODEL_SEED.md (P0)
+│       └── 2026-06-08_TASK_PUSH_TOKEN_BACKEND.md (P1)
 │
 ├── bastian-soto/
 │   └── 2026-06/
-│       ├── TASK_STORE_MAP.md (P0)
-│       └── TASK_A11Y_AUDIT.md (P1)
+│       ├── 2026-06-08_TASK_STORE_MAP.md (P0)
+│       └── 2026-06-08_TASK_A11Y_AUDIT.md (P1)
 │
 ├── jose-luna/
 │   └── 2026-06/
-│       ├── TASK_DISABLE_MARKETPLACE_BACKEND.md (P0)
-│       ├── TASK_STORE_ENDPOINTS.md (P0)
-│       ├── TASK_ORDERS_CONTRACT.md (en progreso)
-│       └── TASK_ECS_DEPLOY_PART.md (P2)
+│       ├── 2026-06-08_TASK_DISABLE_MARKETPLACE_BACKEND.md (P0)
+│       ├── 2026-06-08_TASK_STORE_ENDPOINTS.md (P0)
+│       ├── 2026-05-31_TASK_ORDERS_CONTRACT.md (en progreso)
+│       └── 2026-06-08_TASK_ECS_DEPLOY_PART.md (P2)
 │
 ├── andres-silva/
 │   └── 2026-06/
-│       └── RECON_GUIDE.md (en progreso)
+│       └── 2026-06-04_RECON_GUIDE.md (en progreso)
 │
 ├── abraham-abanto/
 │   └── 2026-06/
-│       └── RECON_GUIDE.md (en progreso)
+│       └── 2026-06-04_RECON_GUIDE.md (en progreso)
 │
 ├── collaborative/
 │   └── 2026-06/
-│       └── TASK_ECS_STAGING.md (P2 - Benjamin Zamora + Jose Luna)
+│       └── 2026-06-08_TASK_ECS_STAGING.md (P2 - Benjamin Zamora + Jose Luna)
 │
 └── templates/
     └── RECON_TEMPLATE.md
@@ -48,22 +48,22 @@ tasks/
 ## 🎯 Tareas Activas (P0 - Deadline: 2026-06-20)
 
 ### Benjamin Zamora (Fullstack)
-1. **Deshabilitar marketplace frontend** → `benjamin-zamora/2026-06/TASK_DISABLE_MARKETPLACE_FRONTEND.md`
-2. **Modelo Store + seed tiendas** → `benjamin-zamora/2026-06/TASK_STORE_MODEL_SEED.md`
+1. **Deshabilitar marketplace frontend** → `benjamin-zamora/2026-06/2026-06-08_TASK_DISABLE_MARKETPLACE_FRONTEND.md`
+2. **Modelo Store + seed tiendas** → `benjamin-zamora/2026-06/2026-06-08_TASK_STORE_MODEL_SEED.md`
 3. **Renombrar Carrito → Mi Lista** (tarea simple, sin doc)
 
 ### Jose Luna (DevOps - Backend)
-1. **Deshabilitar marketplace backend** → `jose-luna/2026-06/TASK_DISABLE_MARKETPLACE_BACKEND.md`
-2. **Endpoints store locator** → `jose-luna/2026-06/TASK_STORE_ENDPOINTS.md`
+1. **Deshabilitar marketplace backend** → `jose-luna/2026-06/2026-06-08_TASK_DISABLE_MARKETPLACE_BACKEND.md`
+2. **Endpoints store locator** → `jose-luna/2026-06/2026-06-08_TASK_STORE_ENDPOINTS.md`
 
 ### Bastian Soto (Frontend)
-1. **Mapa estilo Copec/Submarino** → `bastian-soto/2026-06/TASK_STORE_MAP.md`
+1. **Mapa estilo Copec/Submarino** → `bastian-soto/2026-06/2026-06-08_TASK_STORE_MAP.md`
 
 ### Andres Silva (Frontend Jr)
-1. **Recon frontend** → `andres-silva/2026-06/RECON_GUIDE.md`
+1. **Recon frontend** → `andres-silva/2026-06/2026-06-04_RECON_GUIDE.md`
 
 ### Abraham Abanto (Backend Jr)
-1. **Recon backend** → `abraham-abanto/2026-06/RECON_GUIDE.md`
+1. **Recon backend** → `abraham-abanto/2026-06/2026-06-04_RECON_GUIDE.md`
 
 ---
 
@@ -82,8 +82,8 @@ tasks/
 ## 🗂️ Convención de Naming
 
 ### Archivos de tareas:
-- `TASK_{DESCRIPCION}.md` — tareas de implementación
-- `RECON_GUIDE.md` — guías de reconocimiento para nuevos
+- `YYYY-MM-DD_TASK_{DESCRIPCION}.md` — tareas de implementación
+- `YYYY-MM-DD_RECON_GUIDE.md` — guías de reconocimiento para nuevos
 
 ### Carpetas:
 - `{dev}/YYYY-MM/` — tareas por desarrollador y mes
