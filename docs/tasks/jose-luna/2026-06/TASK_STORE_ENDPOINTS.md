@@ -1,8 +1,8 @@
-# 🛠️ Task — José (DevOps - Backend)
+# 🛠️ Task — Jose Luna (DevOps - Backend)
 
 **Tarea:** Endpoints Store Locator  
 **Branch:** `feat/store-locator-api`  
-**ID:** `task-20260608-jose-store-endpoints`  
+**ID:** `task-20260608-jose-luna-store-endpoints`  
 **Deadline:** 2026-06-20  
 **Tipo:** `feat` — PIVOTE P0
 

@@ -1,8 +1,8 @@
-# 🛠️ Task — José (DevOps - Backend)
+# 🛠️ Task — Jose Luna (DevOps - Backend)
 
 **Tarea:** Deshabilitar Marketplace Backend  
 **Branch:** `refactor/disable-marketplace-backend`  
-**ID:** `task-20260608-jose-disable-marketplace-backend`  
+**ID:** `task-20260608-jose-luna-disable-marketplace-backend`  
 **Deadline:** 2026-06-20  
 **Tipo:** `refactor` — PIVOTE P0
 

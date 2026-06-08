@@ -1,7 +1,7 @@
-# 🔍 Recon Guide — Abram (Backend)
+# 🔍 Recon Guide — Abraham Abanto (Backend)
 
 > **Esta semana no escribes código.** Exploras, lees, y escribes tu reporte.
-> Tu entregable al final de la semana es `docs/recon/RECON_ABRAM_2026-06-04.md`.
+> Tu entregable al final de la semana es `docs/recon/RECON_ABRAHAM_ABANTO_2026-06-04.md`.
 
 ---
 
@@ -57,7 +57,7 @@ los datos, cómo se procesan las órdenes y pagos, y cómo se protegen los endpo
 
 ## Tu entregable
 
-Copia `docs/tasks/RECON_TEMPLATE.md` → guárdalo como `docs/tasks/RECON_ABRAM_2026-06-04.md`
+Copia `docs/tasks/RECON_TEMPLATE.md` → guárdalo como `docs/tasks/RECON_ABRAHAM_ABANTO_2026-06-04.md`
 y completa las 6 secciones con lo que encontraste.
 
 **No hay respuestas incorrectas.** El reporte es para ti y para el equipo.

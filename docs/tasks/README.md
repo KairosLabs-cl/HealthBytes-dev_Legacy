@@ -15,29 +15,29 @@ tasks/
 │       ├── TASK_STORE_MODEL_SEED.md (P0)
 │       └── TASK_PUSH_TOKEN_BACKEND.md (P1)
 │
-├── bastian/
+├── bastian-soto/
 │   └── 2026-06/
 │       ├── TASK_STORE_MAP.md (P0)
 │       └── TASK_A11Y_AUDIT.md (P1)
 │
-├── jose/
+├── jose-luna/
 │   └── 2026-06/
 │       ├── TASK_DISABLE_MARKETPLACE_BACKEND.md (P0)
 │       ├── TASK_STORE_ENDPOINTS.md (P0)
 │       ├── TASK_ORDERS_CONTRACT.md (en progreso)
 │       └── TASK_ECS_DEPLOY_PART.md (P2)
 │
-├── andres/
+├── andres-silva/
 │   └── 2026-06/
 │       └── RECON_GUIDE.md (en progreso)
 │
-├── abram/
+├── abraham-abanto/
 │   └── 2026-06/
 │       └── RECON_GUIDE.md (en progreso)
 │
 ├── collaborative/
 │   └── 2026-06/
-│       └── TASK_ECS_STAGING.md (P2 - Benjamin + José)
+│       └── TASK_ECS_STAGING.md (P2 - Benjamin Zamora + Jose Luna)
 │
 └── templates/
     └── RECON_TEMPLATE.md
@@ -52,18 +52,18 @@ tasks/
 2. **Modelo Store + seed tiendas** → `benjamin-zamora/2026-06/TASK_STORE_MODEL_SEED.md`
 3. **Renombrar Carrito → Mi Lista** (tarea simple, sin doc)
 
-### José (DevOps - Backend)
-1. **Deshabilitar marketplace backend** → `jose/2026-06/TASK_DISABLE_MARKETPLACE_BACKEND.md`
-2. **Endpoints store locator** → `jose/2026-06/TASK_STORE_ENDPOINTS.md`
+### Jose Luna (DevOps - Backend)
+1. **Deshabilitar marketplace backend** → `jose-luna/2026-06/TASK_DISABLE_MARKETPLACE_BACKEND.md`
+2. **Endpoints store locator** → `jose-luna/2026-06/TASK_STORE_ENDPOINTS.md`
 
-### Bastian (Frontend)
-1. **Mapa estilo Copec/Submarino** → `bastian/2026-06/TASK_STORE_MAP.md`
+### Bastian Soto (Frontend)
+1. **Mapa estilo Copec/Submarino** → `bastian-soto/2026-06/TASK_STORE_MAP.md`
 
-### Andrés (Frontend Jr)
-1. **Recon frontend** → `andres/2026-06/RECON_GUIDE.md`
+### Andres Silva (Frontend Jr)
+1. **Recon frontend** → `andres-silva/2026-06/RECON_GUIDE.md`
 
-### Abram (Backend Jr)
-1. **Recon backend** → `abram/2026-06/RECON_GUIDE.md`
+### Abraham Abanto (Backend Jr)
+1. **Recon backend** → `abraham-abanto/2026-06/RECON_GUIDE.md`
 
 ---
 
@@ -72,10 +72,10 @@ tasks/
 | Dev | P0 activas | P1 | P2 | Completadas |
 |---|---|---|---|---|
 | Benjamin Zamora | 3 | 1 | 0 | 1 |
-| Bastian | 1 | 1 | 0 | 0 |
-| José | 2 | 0 | 1 | 0 |
-| Andrés | 1 | 0 | 0 | 0 |
-| Abram | 1 | 0 | 0 | 0 |
+| Bastian Soto | 1 | 1 | 0 | 0 |
+| Jose Luna | 2 | 0 | 1 | 0 |
+| Andres Silva | 1 | 0 | 0 | 0 |
+| Abraham Abanto | 1 | 0 | 0 | 0 |
 
 ---
 

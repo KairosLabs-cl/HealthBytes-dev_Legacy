@@ -1,4 +1,4 @@
-# 🛠️ Task — José (Backend Mid) — Parte ECS Deploy
+# 🛠️ Task — Jose Luna (Backend Mid) — Parte ECS Deploy
 
 **Tarea colaborativa:** Staging Deploy AWS ECS  
 **Tu parte:** Dockerfiles + CI/CD + Task Definitions + Smoke Tests  

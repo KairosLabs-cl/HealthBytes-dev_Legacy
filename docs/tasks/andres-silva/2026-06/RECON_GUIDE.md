@@ -1,7 +1,7 @@
 # 🔍 Recon Guide — Andrés (Frontend)
 
 > **Esta semana no escribes código.** Exploras, lees, y escribes tu reporte.
-> Tu entregable al final de la semana es `docs/recon/RECON_ANDRES_2026-06-04.md`.
+> Tu entregable al final de la semana es `docs/recon/RECON_ANDRES_SILVA_2026-06-04.md`.
 
 ---
 
@@ -55,7 +55,7 @@ cómo funciona el carrito, y cómo viajan los datos entre la app y la API.
 
 ## Tu entregable
 
-Copia `docs/tasks/RECON_TEMPLATE.md` → guárdalo como `docs/tasks/RECON_ANDRES_2026-06-04.md`
+Copia `docs/tasks/RECON_TEMPLATE.md` → guárdalo como `docs/tasks/RECON_ANDRES_SILVA_2026-06-04.md`
 y completa las 6 secciones con lo que encontraste.
 
 **No hay respuestas incorrectas.** El reporte es para ti y para el equipo.
