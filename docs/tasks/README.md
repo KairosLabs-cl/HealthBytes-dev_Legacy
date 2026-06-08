@@ -8,7 +8,7 @@ Tareas del equipo organizadas por desarrollador y fecha.
 
 ```
 tasks/
-├── benjamin/
+├── benjamin-zamora/
 │   └── 2026-06/
 │       ├── TASK_DEV_SETUP.md (✅ completada)
 │       ├── TASK_DISABLE_MARKETPLACE_FRONTEND.md (P0)
@@ -47,9 +47,9 @@ tasks/
 
 ## 🎯 Tareas Activas (P0 - Deadline: 2026-06-20)
 
-### Benjamin (Fullstack)
-1. **Deshabilitar marketplace frontend** → `benjamin/2026-06/TASK_DISABLE_MARKETPLACE_FRONTEND.md`
-2. **Modelo Store + seed tiendas** → `benjamin/2026-06/TASK_STORE_MODEL_SEED.md`
+### Benjamin Zamora (Fullstack)
+1. **Deshabilitar marketplace frontend** → `benjamin-zamora/2026-06/TASK_DISABLE_MARKETPLACE_FRONTEND.md`
+2. **Modelo Store + seed tiendas** → `benjamin-zamora/2026-06/TASK_STORE_MODEL_SEED.md`
 3. **Renombrar Carrito → Mi Lista** (tarea simple, sin doc)
 
 ### José (DevOps - Backend)
@@ -71,7 +71,7 @@ tasks/
 
 | Dev | P0 activas | P1 | P2 | Completadas |
 |---|---|---|---|---|
-| Benjamin | 3 | 1 | 0 | 1 |
+| Benjamin Zamora | 3 | 1 | 0 | 1 |
 | Bastian | 1 | 1 | 0 | 0 |
 | José | 2 | 0 | 1 | 0 |
 | Andrés | 1 | 0 | 0 | 0 |

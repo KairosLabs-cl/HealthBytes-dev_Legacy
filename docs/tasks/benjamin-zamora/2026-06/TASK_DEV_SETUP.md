@@ -2,7 +2,7 @@
 
 **Tarea:** Setup del entorno de desarrollo local para nuevos devs
 **Branch:** `docs/dev-environment-onboarding`
-**ID:** `task-20260604-benjamin-dev-setup`
+**ID:** `task-20260604-benjamin-zamora-dev-setup`
 **Tipo:** `docs` + `feat` — ayuda directa al equipo esta semana
 
 ---

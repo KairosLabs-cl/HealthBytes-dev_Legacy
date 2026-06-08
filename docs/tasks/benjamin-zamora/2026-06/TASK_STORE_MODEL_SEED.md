@@ -2,7 +2,7 @@
 
 **Tarea:** Modelo Store + ProductAvailability + Seed 5 Tiendas Mock  
 **Branch:** `feat/store-model-demo`  
-**ID:** `task-20260608-benjamin-store-model-seed`  
+**ID:** `task-20260608-benjamin-zamora-store-model-seed`  
 **Deadline:** 2026-06-20 (2 semanas)  
 **Tipo:** `feat` — PIVOTE P0
 

@@ -2,7 +2,7 @@
 
 **Tarea:** Deshabilitar Features de Marketplace  
 **Branch:** `refactor/disable-marketplace-features`  
-**ID:** `task-20260608-benjamin-disable-marketplace`  
+**ID:** `task-20260608-benjamin-zamora-disable-marketplace-frontend`  
 **Tipo:** `refactor` — PIVOTE DEL PRODUCTO (P0)
 
 ---
