@@ -3,20 +3,20 @@
     "periodic": {
       "id": "periodic",
       "title": "Periódicas",
-      "taskIds": [
-        "task-1779486907711",
-        "task-1779486907706"
-      ]
+      "taskIds": ["task-1779486907711", "task-1779486907706"]
     },
     "todo": {
       "id": "todo",
       "title": "To Do",
       "taskIds": [
-        "task-20260604-benjamin-dev-setup",
+        "task-20260608-benjamin-disable-marketplace-frontend",
+        "task-20260608-benjamin-store-model-seed",
+        "task-20260608-benjamin-rename-cart",
+        "task-20260608-jose-disable-marketplace-backend",
+        "task-20260608-jose-store-endpoints",
+        "task-20260608-bastian-store-locator-ui",
         "task-20260604-andres-recon",
-        "task-20260604-abram-recon",
-        "task-1779486907707",
-        "task-1779486907708"
+        "task-20260604-abram-recon"
       ]
     },
     "in-progress": {
@@ -40,7 +40,8 @@
         "task-20260531-cart-delete-response-contract",
         "task-20260531-wishlist-toggle-concurrency",
         "task-20260601-android-lan-start-default",
-        "task-20260601-auth-preferences-startup-polish"
+        "task-20260601-auth-preferences-startup-polish",
+        "task-20260604-benjamin-dev-setup"
       ]
     }
   },
@@ -53,7 +54,8 @@
     "task-20260604-benjamin-dev-setup": {
       "id": "task-20260604-benjamin-dev-setup",
       "content": "[Benjamin · CTO] Documentar y scriptear setup del entorno local para que Andrés y Abram puedan levantar el proyecto sin ayuda",
-      "agent": "hermes-verifier"
+      "agent": "hermes-verifier",
+      "completedAt": "2026-06-08"
     },
     "task-20260604-andres-recon": {
       "id": "task-20260604-andres-recon",
@@ -139,12 +141,60 @@
       "id": "task-20260603-security-dependency-audit-fixes",
       "content": "Corregir hallazgos de auditoría seguridad/dependencias frontend y backend con validación enfocada",
       "agent": "code-reviewer"
+    },
+    "task-20260608-benjamin-disable-marketplace-frontend": {
+      "id": "task-20260608-benjamin-disable-marketplace-frontend",
+      "content": "[Benjamin · Fullstack] Deshabilitar checkout/pagos en frontend con feature flags y banners",
+      "agent": "frontend-dev",
+      "priority": "P0",
+      "deadline": "2026-06-20"
+    },
+    "task-20260608-benjamin-store-model-seed": {
+      "id": "task-20260608-benjamin-store-model-seed",
+      "content": "[Benjamin · Fullstack] Modelo Store + ProductAvailability + seed 5 tiendas mock (NutriVida, BioMarket, etc)",
+      "agent": "backend-dev",
+      "priority": "P0",
+      "deadline": "2026-06-20"
+    },
+    "task-20260608-benjamin-rename-cart": {
+      "id": "task-20260608-benjamin-rename-cart",
+      "content": "[Benjamin · Fullstack] Renombrar 'Carrito' → 'Mi Lista' en toda la app",
+      "agent": "frontend-dev",
+      "priority": "P0",
+      "deadline": "2026-06-20"
+    },
+    "task-20260608-jose-disable-marketplace-backend": {
+      "id": "task-20260608-jose-disable-marketplace-backend",
+      "content": "[José · DevOps-Backend] Deshabilitar endpoints órdenes/pagos con decorator @require_marketplace",
+      "agent": "backend-dev",
+      "priority": "P0",
+      "deadline": "2026-06-20"
+    },
+    "task-20260608-jose-store-endpoints": {
+      "id": "task-20260608-jose-store-endpoints",
+      "content": "[José · DevOps-Backend] Endpoints /products/{id}/stores y /stores/nearby con geolocalización",
+      "agent": "backend-dev",
+      "priority": "P1"
+    },
+    "task-20260608-bastian-store-locator-ui": {
+      "id": "task-20260608-bastian-store-locator-ui",
+      "content": "[Bastian · Frontend] UI 'Dónde conseguir' con react-native-maps + botones de navegación",
+      "agent": "frontend-dev",
+      "priority": "P0"
+    },
+    "task-20260608-benjamin-push-token-backend": {
+      "id": "task-20260608-benjamin-push-token-backend",
+      "content": "[Benjamin · Fullstack] Implementar endpoint PATCH /users/me/push-token - OPCIONAL",
+      "agent": "backend-dev",
+      "priority": "P1"
+    },
+    "task-20260608-staging-ecs-deploy": {
+      "id": "task-20260608-staging-ecs-deploy",
+      "content": "[Benjamin + José · Infra] Desplegar backend y frontend a AWS ECS staging - POST-VALIDACIÓN",
+      "agent": "hermes-verifier",
+      "assignees": ["benjamin", "jose"],
+      "priority": "P2"
     }
   },
-  "columnOrder": [
-    "periodic",
-    "todo",
-    "in-progress",
-    "done"
-  ]
+  "columnOrder": ["periodic", "todo", "in-progress", "done"]
 }
