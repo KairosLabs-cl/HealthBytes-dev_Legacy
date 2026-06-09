@@ -267,11 +267,11 @@ async def test_payments_disabled_when_marketplace_off(client: AsyncClient, auth_
 - [ ] Tests de feature flags pasan
 
 ### Frontend:
-- [ ] `FEATURES.MARKETPLACE_ENABLED = false` en config
-- [ ] Botón "Ir a Checkout" en carrito reemplazado por banner informativo
-- [ ] Pantalla checkout muestra mensaje "Próximamente" y redirige
-- [ ] Banner explica que deben usar "Dónde conseguir"
-- [ ] `pnpm run type-check` pasa sin errores
+- [x] `FEATURES.MARKETPLACE_ENABLED = false` en config
+- [x] Botón "Ir a Checkout" en carrito reemplazado por banner informativo
+- [x] Pantalla checkout muestra mensaje "Próximamente" y redirige
+- [x] Banner explica que deben usar "Dónde conseguir"
+- [x] `pnpm run type-check` pasa sin errores
 
 ### General:
 - [ ] **NADA se eliminó** — solo se deshabilitó

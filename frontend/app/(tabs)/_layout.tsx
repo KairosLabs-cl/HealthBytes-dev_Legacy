@@ -29,7 +29,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="cart"
         options={{
-          title: "Carrito",
+          title: "Mi lista",
         }}
       />
       <Tabs.Screen

@@ -140,7 +140,7 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
           accessibilityLabel={
             isOutOfStock
               ? `${product.name} agotado`
-              : `Agregar ${product.name} al carrito`
+              : `Agregar ${product.name} a mi lista`
           }
           accessibilityState={{ disabled: isOutOfStock }}
           hitSlop={4}
@@ -174,7 +174,7 @@ const WishlistTableRow: React.FC<WishlistTableRowProps> = ({ product }) => {
               marginLeft: 5,
             }}
           >
-            Agregar al carrito
+            Agregar a mi lista
           </Text>
         </Pressable>
       </View>

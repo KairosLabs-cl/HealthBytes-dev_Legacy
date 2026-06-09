@@ -349,7 +349,7 @@ export default function ProductDetailsScreen() {
     if (!product || stock === 0) return "Agotado";
     if (currentInCart >= stock) return "Máximo alcanzado";
     if (currentInCart > 0) return "Agregar uno más";
-    return "Agregar al carrito";
+    return "Agregar a mi lista";
   };
 
   if (isLoading) {
@@ -420,8 +420,8 @@ export default function ProductDetailsScreen() {
           accessibilityRole="button"
           accessibilityLabel={
             cartItemCount > 0
-              ? `Ver carrito, ${cartItemCount} producto${cartItemCount !== 1 ? "s" : ""}`
-              : "Ver carrito"
+              ? `Ver lista, ${cartItemCount} producto${cartItemCount !== 1 ? "s" : ""}`
+              : "Ver lista"
           }
           style={{
             boxShadow: "0 18px 32px -18px rgba(9,9,11,0.55)",
@@ -448,11 +448,11 @@ export default function ProductDetailsScreen() {
         {/* Hero Image */}
         <Animated.View entering={FadeIn.duration(400)}>
           <View className="px-4 py-4">
-            <View className="items-center justify-center overflow-hidden rounded-[28px] border border-border-subtle bg-surface-card py-6">
+            <View className="items-center justify-center overflow-hidden rounded-[28px] border border-border-subtle bg-surface-card">
               <Image
                 source={{ uri: product.image }}
                 className="h-72 w-full"
-                resizeMode="contain"
+                resizeMode="cover"
                 alt={`Imagen de ${product.name}`}
               />
               <View className="absolute bottom-0 h-12 w-full bg-surface-elevated/80" />

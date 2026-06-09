@@ -58,7 +58,7 @@ const CartItem = ({
         <ExpoImage
           source={{ uri: item.product.image }}
           style={{ width: "100%", height: "100%" }}
-          contentFit="contain"
+          contentFit="cover"
           alt={`Imagen de ${item.product.name}`}
           transition={200}
         />

@@ -372,8 +372,8 @@ export default function OrdersScreen() {
         <View className="flex-1 justify-center px-6">
           <ListEmptyState
             icon={Package}
-            title="No hay órdenes todavía"
-            description="Cuando hagas tu primera compra, aparecerá aquí el historial de todos tus pedidos."
+            title="No hay búsquedas todavía"
+            description="Aquí aparecerá el historial de tus búsquedas de tiendas para productos."
             actionLabel="Ver productos"
             onActionPress={() => router.replace("/")}
             style={{ padding: 0 }}

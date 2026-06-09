@@ -1,4 +1,4 @@
-import * as Linking from "expo-linking";
+import * as AuthSession from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
 import { Text } from "@/components/ui/text";
 import { View, Pressable } from "react-native";
@@ -8,12 +8,15 @@ import { useState } from "react";
 import { ChevronLeft, Leaf, ShieldCheck } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import Constants from "expo-constants";
 import { useAppTheme } from "@/hooks/useAppTheme";
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
   const router = useRouter();
+  // Note: Clerk strategy debe coincidir con lo configurado en el Dashboard
+  // Valores válidos: "oauth_google" (v2.x) o simplemente "google" en algunas versiones
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
   const { palette, statusBarStyle } = useAppTheme();
 
@@ -21,12 +24,23 @@ export default function LoginScreen() {
   const [error, setError] = useState<string | null>(null);
 
   const handleGoogleLogin = async () => {
+    const isExpoGo = Constants.appOwnership === "expo";
+
+    const redirectUrl = isExpoGo
+      ? AuthSession.makeRedirectUri({
+          path: "oauth-native-callback",
+        })
+      : AuthSession.makeRedirectUri({
+          path: "oauth-native-callback",
+          scheme: "healthbytes",
+        });
+
     try {
       setIsLoading(true);
       setError(null);
 
       const { createdSessionId, setActive } = await startOAuthFlow({
-        redirectUrl: Linking.createURL("/(auth)/login", { scheme: "myapp" }),
+        redirectUrl,
       });
 
       if (createdSessionId && setActive) {
@@ -41,7 +55,13 @@ export default function LoginScreen() {
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Error inesperado";
-      setError(msg);
+      if (msg.toLowerCase().includes("authorized redirect uri")) {
+        setError(
+          `Redirect URI no autorizada en Clerk. URL actual: ${redirectUrl}`
+        );
+      } else {
+        setError(msg);
+      }
     } finally {
       setIsLoading(false);
     }

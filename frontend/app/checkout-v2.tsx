@@ -9,6 +9,7 @@ import { Button, ButtonText } from "@/components/ui/button";
 import { LoadingDots } from "@/components/ui/LoadingDots";
 import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
+import { FEATURES } from "@/lib/config";
 import { formatPrice } from "@/lib/formatPrice";
 import { useAddress } from "@/store/addressStore";
 import { useCart, selectCartSubtotal } from "@/store/cartStore";
@@ -58,6 +59,10 @@ export default function CheckoutV2Screen() {
   const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
+    if (!FEATURES.MARKETPLACE_ENABLED) {
+      return;
+    }
+
     const loadAddresses = async () => {
       try {
         const token = await getToken();
@@ -74,6 +79,16 @@ export default function CheckoutV2Screen() {
 
   const shipping = 0;
   const total = subtotal + shipping;
+  const firstProductId = items[0]?.product.id ?? null;
+
+  const handleFindStores = () => {
+    if (firstProductId !== null) {
+      router.replace(`/product/${firstProductId}/stores`);
+      return;
+    }
+
+    router.replace("/all-products");
+  };
 
   const handleNext = async () => {
     if (currentStep === "address" && !selectedAddress) {
@@ -184,6 +199,47 @@ export default function CheckoutV2Screen() {
       scrollRef.current?.scrollTo({ y: 0, animated: true });
     }
   };
+
+  if (!FEATURES.MARKETPLACE_ENABLED) {
+    return (
+      <View className="flex-1 bg-surface-warm">
+        <StatusBar style={statusBarStyle} />
+        <Stack.Screen options={{ headerShown: false }} />
+        <ScreenHeader
+          title="Dónde conseguir"
+          icon={MapPinIcon}
+          showBackButton={true}
+        />
+
+        <View className="flex-1 justify-center px-6">
+          <View className="rounded-[24px] border border-border-subtle bg-surface-card p-6">
+            <View className="mb-4 h-12 w-12 items-center justify-center rounded-2xl bg-surface-warm">
+              <MapPinIcon size={24} color={palette.colors.icon.primary} />
+            </View>
+            <Text className="text-2xl font-black tracking-[-0.2px] text-ink">
+              Encuentra dónde comprar
+            </Text>
+            <Text className="mt-3 text-base leading-6 text-ink-muted">
+              Compra directa y pagos están pausados mientras validamos tiendas
+              físicas. Te llevamos al mapa de tiendas para buscar disponibilidad.
+            </Text>
+
+            <Button
+              size="lg"
+              className="mt-6 h-14 rounded-2xl bg-ink"
+              onPress={handleFindStores}
+              accessibilityRole="button"
+              accessibilityLabel="Ver tiendas del producto"
+            >
+              <ButtonText className="text-ink-inverse font-bold text-base">
+                Ver tiendas del producto
+              </ButtonText>
+            </Button>
+          </View>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <AuthGate message="Inicia sesion para completar tu compra.">
@@ -431,10 +487,6 @@ export default function CheckoutV2Screen() {
                     </Text>
                   </HStack>
 
-                  <HStack className="justify-between mb-3">
-                    <Text className="text-ink-muted">Envío</Text>
-                    <Text className="font-bold text-state-success">Gratis</Text>
-                  </HStack>
 
                   <View className="h-[1px] bg-border-subtle my-3" />
 

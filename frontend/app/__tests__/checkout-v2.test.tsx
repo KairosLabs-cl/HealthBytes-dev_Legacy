@@ -13,6 +13,8 @@ import { createOrder } from "@/api/orders";
 import { createMercadoPagoPreference } from "@/api/mercadopago";
 import { useAuth } from "@clerk/clerk-expo";
 
+let mockMarketplaceEnabled = true;
+
 // --- Router ---
 
 const mockPush = jest.fn();
@@ -48,6 +50,17 @@ jest.mock("@/api/orders", () => ({
 
 jest.mock("@/api/mercadopago", () => ({
   createMercadoPagoPreference: jest.fn(),
+}));
+
+jest.mock("@/lib/config", () => ({
+  FEATURES: {
+    get MARKETPLACE_ENABLED() {
+      return mockMarketplaceEnabled;
+    },
+    SEARCH_ENABLED: true,
+    STORE_LOCATOR_ENABLED: true,
+    WISHLIST_ENABLED: true,
+  },
 }));
 
 // --- React Query ---
@@ -212,6 +225,7 @@ async function renderAtStep(step: "address" | "payment" | "summary") {
 describe("CheckoutV2Screen", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockMarketplaceEnabled = true;
     jest.spyOn(Linking, "canOpenURL").mockResolvedValue(true);
     jest.spyOn(Linking, "openURL").mockResolvedValue(undefined);
     setupAuth();
@@ -220,6 +234,29 @@ describe("CheckoutV2Screen", () => {
 
   afterEach(() => {
     jest.restoreAllMocks();
+  });
+
+  describe("Marketplace deshabilitado", () => {
+    it("muestra CTA de tiendas y no llama APIs de checkout", () => {
+      mockMarketplaceEnabled = false;
+
+      render(<CheckoutV2Screen />);
+
+      expect(screen.getByText("Encuentra dónde comprar")).toBeTruthy();
+      expect(screen.getByText("Ver tiendas del producto")).toBeTruthy();
+      expect(createOrder).not.toHaveBeenCalled();
+      expect(createMercadoPagoPreference).not.toHaveBeenCalled();
+      expect(Linking.openURL).not.toHaveBeenCalled();
+    });
+
+    it("navega al mapa de tiendas del primer producto del carrito", () => {
+      mockMarketplaceEnabled = false;
+
+      render(<CheckoutV2Screen />);
+      fireEvent.press(screen.getByText("Ver tiendas del producto"));
+
+      expect(mockReplace).toHaveBeenCalledWith("/product/1/stores");
+    });
   });
 
   // =========================================================================

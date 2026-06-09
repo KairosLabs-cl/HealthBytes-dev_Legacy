@@ -157,68 +157,35 @@ export default function ProfileScreen() {
             </Pressable>
           </View>
 
-          <View
-            className="mb-4 rounded-[28px] p-4"
+          <Pressable
+            className="mb-4 rounded-[28px] p-4 flex-row items-center justify-between"
             style={{ backgroundColor: palette.colors.accent.primary }}
+            onPress={() => router.push("/orders")}
+            accessibilityRole="button"
+            accessibilityLabel="Ver mi historial de búsqueda"
           >
-            <View className="flex-row items-center mb-1">
-              <Icon
-                as={PackageOpen}
-                color={palette.colors.ink.inverse}
-                size="lg"
-              />
+            <View>
+              <View className="flex-row items-center mb-1">
+                <Icon
+                  as={PackageOpen}
+                  color={palette.colors.ink.inverse}
+                  size="lg"
+                />
+                <Text
+                  className="text-lg font-semibold ml-2"
+                  style={{ color: palette.colors.ink.inverse }}
+                >
+                  Mi historial
+                </Text>
+              </View>
               <Text
-                className="text-lg font-semibold ml-2"
+                className="text-xs"
                 style={{ color: palette.colors.ink.inverse }}
               >
-                Mis órdenes
+                ¡Revisa los productos que has buscado!
               </Text>
             </View>
-            <Text
-              className="text-xs mb-3"
-              style={{ color: palette.colors.ink.inverse }}
-            >
-              Ve el estado de tus compras!
-            </Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ gap: 8, paddingRight: 4 }}
-            >
-              {orderStatuses.map((item) => (
-                <Pressable
-                  key={item.label}
-                  className="items-center justify-center rounded-2xl px-3 py-2"
-                  style={{
-                    minHeight: 56,
-                    minWidth: 88,
-                    backgroundColor: palette.colors.surface.card,
-                  }}
-                  onPress={() =>
-                    router.push({
-                      pathname: "/orders",
-                      params: { status: item.status },
-                    })
-                  }
-                  accessibilityRole="button"
-                  accessibilityLabel={`Ver órdenes ${item.label.toLowerCase()}`}
-                >
-                  <Icon
-                    as={item.icon}
-                    color={palette.colors.icon.primary}
-                    size="lg"
-                    className="mb-1"
-                  />
-                  <Text
-                    className="text-[11px] font-semibold text-center"
-                    style={{ color: palette.colors.ink.primary }}
-                  >
-                    {item.label}
-                  </Text>
-                </Pressable>
-              ))}
-            </ScrollView>
-          </View>
+          </Pressable>
 
           <View className="mb-3 flex-row items-center">
             <Icon

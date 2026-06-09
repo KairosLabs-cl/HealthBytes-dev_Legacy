@@ -117,6 +117,8 @@ function ProductCard({
       purple: { bg: "#FAF5FF", text: "#7E22CE", border: "#D8B4FE" },
       red: { bg: "#FEF2F2", text: colors.error, border: "#FCA5A5" },
       emerald: { bg: "#ECFDF5", text: colors.success, border: "#6EE7B7" },
+      black: { bg: "#18181B", text: "#FFFFFF", border: "#3F3F46" },
+      white: { bg: "#FFFFFF", text: "#18181B", border: "#E4E4E7" },
     };
   const defaultTag = {
     bg: colors.legacy.gray[50],
@@ -417,7 +419,18 @@ function ProductCard({
                 >
                   {formatPrice(product.original_price)}
                 </Text>
-              ) : null}
+              ) : (
+                <Text
+                  style={{
+                    fontSize: 11,
+                    fontWeight: "500",
+                    color: "transparent",
+                    marginTop: 1,
+                  }}
+                >
+                  -
+                </Text>
+              )}
             </View>
             <StockBadge stock={product.stock} variant="inline" />
           </View>
@@ -432,7 +445,7 @@ function ProductCard({
               accessibilityLabel={
                 isOutOfStock
                   ? `${product.name} sin stock`
-                  : `Agregar ${product.name} al carrito`
+                  : `Agregar ${product.name} a mi lista`
               }
               accessibilityState={{ disabled: isOutOfStock }}
               hitSlop={4}
@@ -472,7 +485,7 @@ function ProductCard({
                   letterSpacing: 0.2,
                 }}
               >
-                {isOutOfStock ? "Sin stock" : "Agregar al carrito"}
+                {isOutOfStock ? "Sin stock" : "Agregar a mi lista"}
               </Text>
             </Pressable>
           </Animated.View>

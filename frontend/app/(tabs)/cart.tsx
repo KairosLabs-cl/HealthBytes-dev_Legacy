@@ -2,6 +2,7 @@ import { AuthGate } from "@/components/AuthGate";
 import CartItem from "@/components/CartItem";
 import RecentlyViewedBar from "@/components/RecentlyViewedBar";
 import { Text } from "@/components/ui/text";
+import { FEATURES } from "@/lib/config";
 import { formatPrice } from "@/lib/formatPrice";
 import {
   useCart,
@@ -20,12 +21,14 @@ import { useShallow } from "zustand/react/shallow";
 
 interface CartFooterProps {
   itemCount: number;
+  firstProductId: string | number | null;
   subtotal: number;
   onCheckout: () => void;
+  onFindStores: (productId: string | number | null) => void;
 }
 
 const CartFooter = React.memo<CartFooterProps>(
-  ({ itemCount, subtotal, onCheckout }) => {
+  ({ itemCount, firstProductId, subtotal, onCheckout, onFindStores }) => {
     return (
       <View className="mt-2 rounded-[24px] border border-border-subtle bg-surface-card p-5">
         <Text className="mb-4 text-lg font-black tracking-[-0.2px] text-ink">
@@ -41,12 +44,7 @@ const CartFooter = React.memo<CartFooterProps>(
           </Text>
         </View>
 
-        <View className="flex-row justify-between mb-4">
-          <Text className="text-sm text-ink-muted font-medium">Envío</Text>
-          <Text className="font-bold text-state-success">Gratis</Text>
-        </View>
-
-        <View className="my-4 h-px bg-border-subtle" />
+        <View className="mb-4 h-px bg-border-subtle" />
 
         <View className="mb-5 flex-row items-center justify-between">
           <Text className="text-xl font-black text-ink">
@@ -57,17 +55,38 @@ const CartFooter = React.memo<CartFooterProps>(
           </Text>
         </View>
 
-        {/* Checkout Button */}
-        <Pressable
-          onPress={onCheckout}
-          className="h-14 w-full items-center justify-center rounded-2xl bg-ink active:opacity-75"
-          accessibilityRole="button"
-          accessibilityLabel={`Proceder al pago, total ${formatPrice(subtotal)}`}
-        >
-          <Text className="text-ink-inverse font-bold text-base">
-            Proceder al pago
-          </Text>
-        </Pressable>
+        {FEATURES.MARKETPLACE_ENABLED ? (
+          <Pressable
+            onPress={onCheckout}
+            className="h-14 w-full items-center justify-center rounded-2xl bg-ink active:opacity-75"
+            accessibilityRole="button"
+            accessibilityLabel={`Proceder al pago, total ${formatPrice(subtotal)}`}
+          >
+            <Text className="text-ink-inverse font-bold text-base">
+              Proceder al pago
+            </Text>
+          </Pressable>
+        ) : (
+          <View className="rounded-2xl border border-border-default bg-surface-warm p-4">
+            <Text className="text-base font-black text-ink">
+              Encuentra dónde comprar
+            </Text>
+            <Text className="mt-1 text-sm leading-5 text-ink-muted">
+              Compra directa pausada. Busca tiendas físicas donde conseguir tus
+              productos.
+            </Text>
+            <Pressable
+              onPress={() => onFindStores(firstProductId)}
+              className="mt-4 h-12 w-full items-center justify-center rounded-2xl bg-ink active:opacity-75"
+              accessibilityRole="button"
+              accessibilityLabel="Encontrar tiendas donde conseguir estos productos"
+            >
+              <Text className="text-ink-inverse font-bold text-base">
+                Encontrar tiendas
+              </Text>
+            </Pressable>
+          </View>
+        )}
       </View>
     );
   }
@@ -99,6 +118,18 @@ export default function CartScreen() {
     router.push("/checkout-v2");
   }, [router]);
 
+  const onFindStores = useCallback(
+    (productId: string | number | null) => {
+      if (productId !== null) {
+        router.push(`/product/${productId}/stores`);
+        return;
+      }
+
+      router.push("/all-products");
+    },
+    [router]
+  );
+
   const renderItem = useCallback(
     ({ item }: { item: CartItemType }) => (
       <CartItem
@@ -112,13 +143,13 @@ export default function CartScreen() {
   );
 
   return (
-    <AuthGate message="Necesitas una cuenta para ver tu carrito.">
+    <AuthGate message="Necesitas una cuenta para ver tu lista.">
       {items.length === 0 ? (
         <>
-          <ScreenHeader title="Carrito de compras" icon={ShoppingBag} />
+          <ScreenHeader title="Mi lista de compras" icon={ShoppingBag} />
           <ListEmptyState
             icon={ShoppingBag}
-            title="Tu carrito está vacío"
+            title="Tu lista está vacía"
             description="Agrega productos para comenzar tu compra"
             actionLabel="Explorar productos"
             onActionPress={() => router.push("/")}
@@ -127,7 +158,7 @@ export default function CartScreen() {
         </>
       ) : (
         <>
-          <ScreenHeader title="Carrito de compras" icon={ShoppingBag} />
+          <ScreenHeader title="Mi lista de compras" icon={ShoppingBag} />
           <View className="flex-1 bg-surface-warm">
             <FlashList
               data={items}
@@ -141,8 +172,10 @@ export default function CartScreen() {
                 <View className="mt-2 pb-16">
                   <CartFooter
                     itemCount={itemCount}
+                    firstProductId={items[0]?.product.id ?? null}
                     subtotal={subtotal}
                     onCheckout={onCheckout}
+                    onFindStores={onFindStores}
                   />
                   <RecentlyViewedBar />
                 </View>

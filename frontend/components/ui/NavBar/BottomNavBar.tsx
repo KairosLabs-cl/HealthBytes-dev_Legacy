@@ -33,7 +33,7 @@ const AnimatedPressable = isMobile
 
 const TAB_CONFIG = [
   { name: "index", label: "Inicio", icon: Home, hasBadge: false },
-  { name: "cart", label: "Carrito", icon: ShoppingCart, hasBadge: true },
+  { name: "cart", label: "Mi lista", icon: ShoppingCart, hasBadge: true },
   { name: "profile", label: "Perfil", icon: User, hasBadge: false },
 ] as const;
 

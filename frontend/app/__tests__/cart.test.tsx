@@ -1,7 +1,9 @@
 import React from "react";
-import { render, screen } from "@testing-library/react-native";
+import { fireEvent, render, screen } from "@testing-library/react-native";
 import CartScreen from "../(tabs)/cart";
 import { useCart } from "@/store/cartStore";
+
+const mockPush = jest.fn();
 
 // Mocks
 jest.mock("@/store/cartStore", () => ({
@@ -12,7 +14,7 @@ jest.mock("@/store/cartStore", () => ({
 
 jest.mock("expo-router", () => ({
   useRouter: () => ({
-    push: jest.fn(),
+    push: mockPush,
     replace: jest.fn(),
   }),
   Stack: {
@@ -116,5 +118,38 @@ describe("CartScreen", () => {
     // Check footer rendered (checks for text in footer)
     expect(screen.getByText("Resumen de compra")).toBeTruthy();
     expect(screen.getByText("Total")).toBeTruthy();
+  });
+
+  it("replaces checkout with a store-finder action when marketplace is disabled", () => {
+    const mockItems = [
+      { product: { id: 7, name: "Prod 1", price: 10 }, quantity: 1 },
+    ];
+
+    const {
+      selectCartItemCount,
+      selectCartSubtotal,
+    } = require("@/store/cartStore");
+    (selectCartItemCount as jest.Mock).mockImplementation(() => 1);
+    (selectCartSubtotal as jest.Mock).mockImplementation(() => 10);
+
+    (useCart as unknown as jest.Mock).mockImplementation((selector) => {
+      if (selector === selectCartItemCount) return 1;
+      if (selector === selectCartSubtotal) return 10;
+
+      const state = {
+        items: mockItems,
+        addProduct: jest.fn(),
+        decrementProduct: jest.fn(),
+        removeProduct: jest.fn(),
+      };
+      return typeof selector === "function" ? selector(state) : state;
+    });
+
+    render(<CartScreen />);
+
+    expect(screen.queryByText("Proceder al pago")).toBeNull();
+    expect(screen.getByText("Encuentra dónde comprar")).toBeTruthy();
+    fireEvent.press(screen.getByText("Encontrar tiendas"));
+    expect(mockPush).toHaveBeenCalledWith("/product/7/stores");
   });
 });
