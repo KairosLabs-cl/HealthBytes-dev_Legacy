@@ -48,13 +48,13 @@ const orderStatuses = [
 ];
 
 const options = [
-  { label: "Mensajes del vendedor", icon: MessageSquare, href: "/messages" },
+  // { label: "Mensajes del vendedor", icon: MessageSquare, href: "/messages" },
   {
     label: "Preferencias alimentarias",
     icon: Salad,
     href: "/dietary-preferences",
   },
-  { label: "Direcciones", icon: MapPin, href: "/addresses" },
+  // { label: "Direcciones", icon: MapPin, href: "/addresses" },
   { label: "Lista de deseos", icon: Heart, href: "/wishlist" },
   { label: "Contactate con soporte", icon: Phone, href: "/support" },
 ];

@@ -15,10 +15,11 @@ function HomeSkeleton() {
 
   return (
     <SafeAreaView className="flex-1 bg-surface-warm" edges={["top"]}>
-      {/* Header placeholder — matches Header.tsx layout */}
-      <View className="bg-surface-warm px-4 pt-6 pb-4">
+      {/* Header placeholder */}
+      <View className="px-5 pt-5 pb-3 bg-surface-warm">
         <Animated.View style={shimmerStyle}>
-          <View className="mb-3 h-7 w-44 rounded-xl bg-surface-elevated" />
+          <View className="mb-[2px] h-4 w-24 rounded bg-surface-elevated" />
+          <View className="mb-3.5 h-7 w-44 rounded-xl bg-surface-elevated" />
         </Animated.View>
         {/* Search bar placeholder */}
         <Animated.View style={shimmerStyle}>
@@ -26,10 +27,10 @@ function HomeSkeleton() {
         </Animated.View>
       </View>
 
-      {/* Filter chips placeholder — matches 44px minHeight chips */}
-      <View className="bg-surface-warm px-4 pb-1">
-        <View className="flex-row gap-2 mt-2">
-          {[80, 70, 90, 100].map((width, i) => (
+      {/* Filter chips placeholder */}
+      <View className="bg-surface-warm pb-3">
+        <View className="flex-row gap-2 pt-2 px-4">
+          {[120, 100, 140, 110].map((width, i) => (
             <Animated.View key={i} style={[shimmerStyle, { width }]}>
               <View className="h-12 w-full rounded-2xl bg-surface-muted" />
             </Animated.View>
@@ -37,22 +38,30 @@ function HomeSkeleton() {
         </View>
       </View>
 
-      {/* Banner placeholder */}
-      <View className="px-4 mt-4">
+      {/* HeroBanner placeholder */}
+      <View className="px-4 mt-3 mb-1">
         <Animated.View style={shimmerStyle}>
-          <View className="h-40 rounded-[28px] bg-surface-elevated" />
+          <View className="h-[170px] rounded-[28px] bg-surface-elevated" />
         </Animated.View>
       </View>
 
       {/* Product grid placeholder */}
       <View className="px-4 mt-4">
-        <View className="flex-row gap-2 mb-2">
-          <ProductCardSkeleton shimmerStyle={shimmerStyle} />
-          <ProductCardSkeleton shimmerStyle={shimmerStyle} />
+        <View className="flex-row gap-4 mb-4">
+          <View className="flex-1">
+            <ProductCardSkeleton shimmerStyle={shimmerStyle} />
+          </View>
+          <View className="flex-1">
+            <ProductCardSkeleton shimmerStyle={shimmerStyle} />
+          </View>
         </View>
-        <View className="flex-row gap-2">
-          <ProductCardSkeleton shimmerStyle={shimmerStyle} />
-          <ProductCardSkeleton shimmerStyle={shimmerStyle} />
+        <View className="flex-row gap-4">
+          <View className="flex-1">
+            <ProductCardSkeleton shimmerStyle={shimmerStyle} />
+          </View>
+          <View className="flex-1">
+            <ProductCardSkeleton shimmerStyle={shimmerStyle} />
+          </View>
         </View>
       </View>
     </SafeAreaView>

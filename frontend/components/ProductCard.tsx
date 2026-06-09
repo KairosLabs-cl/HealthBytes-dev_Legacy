@@ -66,11 +66,16 @@ function ProductCard({
   const triggerFly = useCartAnimation((s) => s.trigger);
   const isOutOfStock = product.stock === 0;
   const cartScale = useSharedValue(1);
+  const cardScale = useSharedValue(1);
   const addBtnRef = useRef<View>(null);
   const [imgError, setImgError] = useState(false);
 
   const cartAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: cartScale.value }],
+  }));
+
+  const cardAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: cardScale.value }],
   }));
 
   const handleAddToCart = (e: GestureResponderEvent) => {
@@ -145,13 +150,19 @@ function ProductCard({
   return (
     <Pressable
       onPress={() => router.push(`/product/${product.id}`)}
+      onPressIn={() => {
+        cardScale.value = withTiming(0.96, { duration: 100, easing: Easing.out(Easing.ease) });
+      }}
+      onPressOut={() => {
+        cardScale.value = withTiming(1, { duration: 150, easing: Easing.out(Easing.ease) });
+      }}
       style={containerStyle}
       accessibilityRole="button"
       accessibilityLabel={`Ver detalles de ${product.name}, ${formatPrice(product.price)}`}
       accessibilityHint="Toca para ver detalles del producto"
     >
-      <View
-        style={{
+      <Animated.View
+        style={[{
           ...containerStyle,
           backgroundColor: colors.surface.card,
           borderRadius: 24,
@@ -170,7 +181,7 @@ function ProductCard({
             android: { elevation: 2 },
             default: {},
           }),
-        }}
+        }, cardAnimatedStyle]}
       >
         {/* Image */}
         <View style={{ padding: 8, position: "relative" }}>
@@ -298,8 +309,9 @@ function ProductCard({
             {product.name}
           </Text>
 
-          {/* Vendor name */}
-          {product.vendor_name && (
+          {/* Vendor name (hidden per request) */}
+          {/*
+          product.vendor_name && (
             <View className="flex-row items-center mb-2">
               <Store
                 size={12}
@@ -317,7 +329,8 @@ function ProductCard({
                 {product.vendor_name}
               </Text>
             </View>
-          )}
+          )
+          */}
 
           {/* Product rating */}
           {rating && rating.review_count > 0 && (
@@ -500,7 +513,7 @@ function ProductCard({
             </Pressable>
           </Animated.View>
         </View>
-      </View>
+      </Animated.View>
     </Pressable>
   );
 }

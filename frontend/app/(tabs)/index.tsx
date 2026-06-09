@@ -116,7 +116,7 @@ const HeroBanner = React.memo(
               paddingTop: 20,
               paddingBottom: 20,
               flex: 1,
-              maxWidth: "65%",
+              zIndex: 10,
             }}
           >
             {/* Eyebrow label */}
@@ -199,37 +199,30 @@ const HeroBanner = React.memo(
             </Pressable>
           </View>
 
-          {/* Right: floating product image */}
-          <View
-            style={{
-              position: "absolute",
-              right: 16,
-              bottom: 16,
-              top: 16,
-              width: 110,
-              borderRadius: 20,
-              backgroundColor: "rgba(255,255,255,0.07)",
-              borderWidth: 1,
-              borderColor: "rgba(255,255,255,0.1)",
-              alignItems: "center",
-              justifyContent: "center",
-              overflow: "hidden",
-            }}
-          >
-            {heroProduct ? (
+          {/* Background product image */}
+          {heroProduct && (
+            <View
+              style={{
+                position: "absolute",
+                right: -20,
+                bottom: -20,
+                top: 0,
+                width: "70%",
+                opacity: 0.15,
+                alignItems: "flex-end",
+                justifyContent: "center",
+                zIndex: 1,
+              }}
+            >
               <ExpoImage
                 source={{ uri: heroProduct.image }}
-                style={{ width: "90%", height: "90%" }}
+                style={{ width: "100%", height: "150%" }}
                 contentFit="contain"
                 alt={`Imagen de ${heroProduct.name}`}
                 transition={400}
               />
-            ) : (
-              <Text style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>
-                Snacks
-              </Text>
-            )}
-          </View>
+            </View>
+          )}
         </View>
       </View>
     );
