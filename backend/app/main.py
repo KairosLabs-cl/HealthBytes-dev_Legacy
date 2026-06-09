@@ -76,7 +76,7 @@ init_sentry()
 # Create FastAPI application
 app = FastAPI(
     title="HealthBytes API",
-    version="0.4.0",
+    version="0.5.0",
     description=(
         "API de HealthBytes — plataforma de e-commerce para personas con "
         "restricciones dietéticas"
