@@ -14,6 +14,8 @@ const TAG_COLORS: Record<string, { bg: string; text: string }> = {
   purple: { bg: "bg-purple-100", text: "text-purple-700" },
   red: { bg: "bg-red-100", text: "text-red-700" },
   emerald: { bg: "bg-emerald-100", text: "text-emerald-700" },
+  black: { bg: "bg-zinc-900", text: "text-white" },
+  white: { bg: "bg-white", text: "text-zinc-900" },
 };
 
 const DEFAULT_COLORS = { bg: "bg-surface-muted", text: "text-ink-muted" };
@@ -55,7 +57,7 @@ export const DietaryBadgeList: React.FC<DietaryBadgeListProps> = React.memo(
     if (!tags || tags.length === 0) return null;
 
     return (
-      <View className="flex-row flex-wrap gap-2 mb-4">
+      <View className="flex-row flex-wrap gap-2">
         {tags.map((raw, index) => {
           const tag = normalizeDietaryTag(raw);
           return <DietaryBadge key={tag.id || index} tag={tag} />;

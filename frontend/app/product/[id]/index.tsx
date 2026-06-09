@@ -444,6 +444,8 @@ export default function ProductDetailsScreen() {
         className="flex-1"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 + insets.bottom }}
+        bounces={false}
+        overScrollMode="never"
       >
         {/* Hero Image */}
         <Animated.View entering={FadeIn.duration(400)}>
@@ -455,21 +457,21 @@ export default function ProductDetailsScreen() {
                 resizeMode="cover"
                 alt={`Imagen de ${product.name}`}
               />
-              <View className="absolute bottom-0 h-12 w-full bg-surface-elevated/80" />
+              <View className="absolute bottom-0 w-full px-4 pt-12 pb-2" style={{ backgroundColor: "rgba(0,0,0,0.4)" }}>
+                <Animated.View entering={FadeInUp.delay(100).duration(400)}>
+                  <DietaryBadgeList tags={product.dietary_tags} />
+                </Animated.View>
+              </View>
             </View>
           </View>
         </Animated.View>
 
         {/* Product Info */}
-        <View className="px-5 py-5">
+        <View className="px-5 pt-2 pb-5">
           {/* SECTION 1: Trust Badges + Name + Price */}
-          <Animated.View entering={FadeInUp.delay(100).duration(400)}>
-            <DietaryBadgeList tags={product.dietary_tags} />
-          </Animated.View>
-
           <Animated.View
             entering={FadeInUp.delay(160).duration(400)}
-            className="mt-3 mb-4"
+            className="mb-4"
           >
             <Text
               className="mb-2 text-3xl font-black leading-tight text-ink"
