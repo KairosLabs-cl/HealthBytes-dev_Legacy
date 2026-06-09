@@ -60,7 +60,7 @@ function ProductCard({
 }: ProductCardProps) {
   const router = useRouter();
   const { isSignedIn } = useAuth();
-  const { palette } = useAppTheme();
+  const { palette, isDark } = useAppTheme();
   const { colors } = palette;
   const addProduct = useCart((state) => state.addProduct);
   const triggerFly = useCartAnimation((s) => s.trigger);
@@ -107,24 +107,34 @@ function ProductCard({
   const allTags = (product.dietary_tags ?? []).map(normalizeDietaryTag);
   const tagColors: Record<string, { bg: string; text: string; border: string }> =
     {
-      green: {
-        bg: colors.brand.greenLight,
-        text: colors.success,
-        border: "#86EFAC",
-      },
-      blue: { bg: "#EFF6FF", text: "#1D4ED8", border: "#93C5FD" },
-      orange: { bg: "#FFF7ED", text: "#C2410C", border: "#FDBA74" },
-      purple: { bg: "#FAF5FF", text: "#7E22CE", border: "#D8B4FE" },
-      red: { bg: "#FEF2F2", text: colors.error, border: "#FCA5A5" },
-      emerald: { bg: "#ECFDF5", text: colors.success, border: "#6EE7B7" },
-      black: { bg: "#18181B", text: "#FFFFFF", border: "#3F3F46" },
-      white: { bg: "#FFFFFF", text: "#18181B", border: "#E4E4E7" },
+      green: isDark
+        ? { bg: "#064E3B", text: "#34D399", border: "#065F46" }
+        : { bg: colors.brand.greenLight, text: colors.success, border: "#86EFAC" },
+      blue: isDark
+        ? { bg: "#1E3A8A", text: "#60A5FA", border: "#1E40AF" }
+        : { bg: "#EFF6FF", text: "#1D4ED8", border: "#93C5FD" },
+      orange: isDark
+        ? { bg: "#7C2D12", text: "#FB923C", border: "#9A3412" }
+        : { bg: "#FFF7ED", text: "#C2410C", border: "#FDBA74" },
+      purple: isDark
+        ? { bg: "#4C1D95", text: "#A78BFA", border: "#5B21B6" }
+        : { bg: "#FAF5FF", text: "#7E22CE", border: "#D8B4FE" },
+      red: isDark
+        ? { bg: "#7F1D1D", text: "#F87171", border: "#991B1B" }
+        : { bg: "#FEF2F2", text: colors.error, border: "#FCA5A5" },
+      emerald: isDark
+        ? { bg: "#064E3B", text: "#34D399", border: "#065F46" }
+        : { bg: "#ECFDF5", text: colors.success, border: "#6EE7B7" },
+      black: isDark
+        ? { bg: "#27272A", text: "#E4E4E7", border: "#3F3F46" }
+        : { bg: "#18181B", text: "#FFFFFF", border: "#3F3F46" },
+      white: isDark
+        ? { bg: "#E4E4E7", text: "#18181B", border: "#D4D4D8" }
+        : { bg: "#FFFFFF", text: "#18181B", border: "#E4E4E7" },
     };
-  const defaultTag = {
-    bg: colors.legacy.gray[50],
-    text: colors.legacy.gray[600],
-    border: colors.border.default,
-  };
+  const defaultTag = isDark
+    ? { bg: colors.legacy.gray[800], text: colors.legacy.gray[300], border: colors.border.default }
+    : { bg: colors.legacy.gray[50], text: colors.legacy.gray[600], border: colors.border.default };
   const categoryLabel = product.category
     ? product.category.charAt(0).toUpperCase() + product.category.slice(1)
     : null;

@@ -28,9 +28,12 @@ const KNOWN_TAGS: Record<string, { display_name: string; color: string }> = {
   vegano: { display_name: "Vegano", color: "emerald" },
   "sin-lactosa": { display_name: "Sin lactosa", color: "blue" },
   "bajo-en-azucar": { display_name: "Bajo en azúcar", color: "orange" },
+  "sin-azucar": { display_name: "Sin azúcar", color: "orange" },
   "alto-en-proteina": { display_name: "Alto en proteína", color: "purple" },
   "para-diabeticos": { display_name: "Para diabéticos", color: "red" },
   "para-veganos": { display_name: "Para veganos", color: "emerald" },
+  organico: { display_name: "Orgánico", color: "green" },
+  "100-natural": { display_name: "100% Natural", color: "emerald" },
 };
 
 /** Normalize a raw tag (string or object) into a DietaryTag object */

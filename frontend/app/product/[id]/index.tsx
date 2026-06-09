@@ -457,7 +457,7 @@ export default function ProductDetailsScreen() {
                 resizeMode="cover"
                 alt={`Imagen de ${product.name}`}
               />
-              <View className="absolute bottom-0 w-full px-4 pt-12 pb-2" style={{ backgroundColor: "rgba(0,0,0,0.4)" }}>
+              <View className="absolute bottom-0 w-full px-4 py-3" style={{ backgroundColor: "rgba(0,0,0,0.4)" }}>
                 <Animated.View entering={FadeInUp.delay(100).duration(400)}>
                   <DietaryBadgeList tags={product.dietary_tags} />
                 </Animated.View>
