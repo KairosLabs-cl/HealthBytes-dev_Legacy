@@ -1,10 +1,10 @@
-# 🛠️ Task — Benjamin + José (Colaborativa)
+# 🛠️ Task — nojustbenja + chachoCL (Colaborativa)
 
 **Tarea:** Staging Deploy — AWS ECS  
 **Branch:** `ops/staging-ecs-deploy`  
 **ID:** `task-20260608-staging-ecs-deploy`  
 **Tipo:** `ops` — infraestructura release readiness P1  
-**Assignees:** Benjamin (CTO) + José (Backend Mid)
+**Assignees:** nojustbenja (CTO) + chachoCL (Backend Mid)
 
 ---
 
@@ -18,7 +18,7 @@ Desplegar backend y frontend a **AWS ECS staging** usando la arquitectura roadma
 
 ## 📊 División de responsabilidades
 
-### Benjamin (Infraestructura AWS)
+### nojustbenja (Infraestructura AWS)
 - Crear/configurar VPC, subnets, security groups
 - Configurar ECS Cluster (Fargate)
 - Provisionar RDS PostgreSQL staging
@@ -29,7 +29,7 @@ Desplegar backend y frontend a **AWS ECS staging** usando la arquitectura roadma
 - Configurar Route53 (si aplica)
 - **Documentar costos baseline mensuales**
 
-### José (Aplicación y CI/CD)
+### chachoCL (Aplicación y CI/CD)
 - Crear `backend/Dockerfile` optimizado
 - Crear `frontend/Dockerfile` o config S3+CloudFront
 - Crear ECS Task Definitions
@@ -50,12 +50,12 @@ Desplegar backend y frontend a **AWS ECS staging** usando la arquitectura roadma
 
 | Responsable | Acción | Archivo |
 |---|---|---|
-| **José** | Crear | `backend/Dockerfile` |
-| **José** | Crear | `frontend/Dockerfile` o config S3 |
-| **José** | Crear | `.github/workflows/staging-deploy.yml` (CI/CD) |
-| **José** | Crear | `backend/tests/test_smoke_staging.py` (smoke tests) |
-| **Benjamin** | Crear/revisar | Scripts en `infra/aws/` (Terraform o CLI) |
-| **Benjamin** | Documentar | Variables en AWS SSM Parameter Store |
+| **chachoCL** | Crear | `backend/Dockerfile` |
+| **chachoCL** | Crear | `frontend/Dockerfile` o config S3 |
+| **chachoCL** | Crear | `.github/workflows/staging-deploy.yml` (CI/CD) |
+| **chachoCL** | Crear | `backend/tests/test_smoke_staging.py` (smoke tests) |
+| **nojustbenja** | Crear/revisar | Scripts en `infra/aws/` (Terraform o CLI) |
+| **nojustbenja** | Documentar | Variables en AWS SSM Parameter Store |
 | **Ambos** | Crear | `docs/operations/aws-ecs-staging.md` (guía completa) |
 | **Ambos** | Revisar | ECS Task Definitions JSON |
 
@@ -278,7 +278,7 @@ curl -X POST https://api-staging.healthbytes.app/api/v1/auth/login \
 
 ## Criterios de aceptación
 
-### Infraestructura (Benjamin):
+### Infraestructura (nojustbenja):
 - [ ] ECS Cluster creado y funcional
 - [ ] RDS PostgreSQL staging provisionado y accesible
 - [ ] ElastiCache Redis staging provisionado
@@ -288,7 +288,7 @@ curl -X POST https://api-staging.healthbytes.app/api/v1/auth/login \
 - [ ] SSM Parameter Store poblado con secrets
 - [ ] **Costos baseline mensuales documentados** (~$75-100)
 
-### Aplicación (José):
+### Aplicación (chachoCL):
 - [ ] `backend/Dockerfile` optimizado y funcional
 - [ ] `frontend/Dockerfile` o S3 config funcional
 - [ ] ECS Task Definitions creadas y válidas
@@ -322,7 +322,7 @@ curl -X POST https://api-staging.healthbytes.app/api/v1/auth/login \
 
 ## Commits esperados
 
-### José:
+### chachoCL:
 ```
 ops(docker): add optimized Dockerfile for backend staging
 ops(docker): add frontend Dockerfile for ECS deployment
@@ -330,7 +330,7 @@ ops(ci): add GitHub Actions workflow for ECS staging deploy
 test(smoke): add post-deploy smoke tests for staging
 ```
 
-### Benjamin:
+### nojustbenja:
 ```
 ops(aws): configure ECS cluster and Fargate services
 ops(aws): provision RDS PostgreSQL and ElastiCache Redis staging

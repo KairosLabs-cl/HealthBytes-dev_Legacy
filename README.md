@@ -1,5 +1,9 @@
 # HealthBytes
 
+> [!WARNING]
+> **LEGACY PROJECT**
+> This repository is no longer actively maintained. It is exposed strictly for open-source reference and portfolio purposes. Active development has ceased.
+
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React Native](https://img.shields.io/badge/React_Native-20232A?style=flat-square&logo=react&logoColor=61DAFB)](https://reactnative.dev/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat-square&logo=fastapi)](https://fastapi.tiangolo.com/)
@@ -366,8 +370,8 @@ git push origin feat/mi-feature
 
 ## Contacto
 
-- 📧 [staff@healthbytes.cl](mailto:staff@healthbytes.cl)
-- 🐛 [GitHub Issues](https://github.com/WindB3NJA/HealthBytes-dev/issues)
+- 📧 [hello@example.com](mailto:hello@example.com)
+- 🐛 [GitHub Issues](https://github.com/nojustbenja/HealthBytes-dev/issues)
 
 ---
 

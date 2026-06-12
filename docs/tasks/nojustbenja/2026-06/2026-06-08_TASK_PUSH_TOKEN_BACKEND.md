@@ -1,8 +1,8 @@
-# 🛠️ Task — Benjamin (CTO / Backend)
+# 🛠️ Task — nojustbenja (CTO / Backend)
 
 **Tarea:** Push-Token Registration Backend  
 **Branch:** `feat/push-token-registration`  
-**ID:** `task-20260608-benjamin-zamora-push-token-backend`  
+**ID:** `task-20260608-nojustbenja-push-token-backend`  
 **Tipo:** `feat` — release readiness P1
 
 ---

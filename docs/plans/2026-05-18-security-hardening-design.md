@@ -9,7 +9,7 @@
 - **Frontend:** Update `authStore.ts` to manage refresh tokens. Implement silent refresh logic in `fetchWithAuth`.
 - **DevOps:** Update CI/CD to block on security vulnerabilities and enforce Redis in production.
 
-**Tech Stack:** FastAPI, SQLAlchemy, JWT (JOSE), React Native, Zustand, GitHub Actions.
+**Tech Stack:** FastAPI, SQLAlchemy, JWT (chachoCL), React Native, Zustand, GitHub Actions.
 
 ---
 

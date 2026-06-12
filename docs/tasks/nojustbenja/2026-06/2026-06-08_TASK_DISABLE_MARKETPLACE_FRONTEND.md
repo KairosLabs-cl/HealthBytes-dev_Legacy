@@ -1,8 +1,8 @@
-# 🛠️ Task — Benjamin (Fullstack)
+# 🛠️ Task — nojustbenja (Fullstack)
 
 **Tarea:** Deshabilitar Features de Marketplace  
 **Branch:** `refactor/disable-marketplace-features`  
-**ID:** `task-20260608-benjamin-zamora-disable-marketplace-frontend`  
+**ID:** `task-20260608-nojustbenja-disable-marketplace-frontend`  
 **Tipo:** `refactor` — PIVOTE DEL PRODUCTO (P0)
 
 ---

@@ -16,7 +16,7 @@
 
 | # | Severidad | Problema | Archivo |
 |---|-----------|----------|---------|
-| 1 | 🔴 CRÍTICO | **Dos librerías JWT en paralelo**: `python-jose` (sign/verify legacy) + `PyJWT` (Clerk). Conflict de versiones esperando explotar. | `requirements.txt`, `security.py`, `auth.py` |
+| 1 | 🔴 CRÍTICO | **Dos librerías JWT en paralelo**: `python-chachoCL` (sign/verify legacy) + `PyJWT` (Clerk). Conflict de versiones esperando explotar. | `requirements.txt`, `security.py`, `auth.py` |
 | 2 | 🔴 CRÍTICO | **`resend.Emails.send()` es SÍNCRONO** dentro de `async def`. Bloquea el event loop con cada email. 100 órdenes simultáneas = API congelada. | `email_service.py:244` |
 | 3 | 🔴 CRÍTICO | **Redis singleton global mutable** con `_redis_client = None` sin lock asyncio. Race condition en startup bajo alta concurrencia. | `database.py:57-73` |
 | 4 | 🔴 CRÍTICO | **`create_order` hace commit y luego envía email fire-and-forget**: si el email falla, stock ya reservado sin posibilidad de rollback. | `order_service.py:118-150` |
@@ -42,15 +42,15 @@
 
 ## 📋 Proposed Changes
 
-### Component 1: JWT Consolidation — Eliminar python-jose
+### Component 1: JWT Consolidation — Eliminar python-chachoCL
 
-**Problema**: `python-jose` y `PyJWT` coexisten. `python-jose` tiene vulnerabilidades conocidas (CVE-2022-29217) y está menos mantenido. `PyJWT` ya se usa para Clerk — consolidar todo ahí.
+**Problema**: `python-chachoCL` y `PyJWT` coexisten. `python-chachoCL` tiene vulnerabilidades conocidas (CVE-2022-29217) y está menos mantenido. `PyJWT` ya se usa para Clerk — consolidar todo ahí.
 
 ---
 
 #### [MODIFY] requirements.txt
 
-- Eliminar `python-jose[cryptography]>=3.5.0`
+- Eliminar `python-chachoCL[cryptography]>=3.5.0`
 - Mantener `PyJWT[crypto]>=2.10.1` (ya presente)
 
 #### [MODIFY] app/core/security.py
@@ -62,27 +62,27 @@
 ```python
 # tests/test_core/test_security.py
 def test_no_jose_import():
-    """python-jose no debe estar en el árbol de imports de security.py"""
+    """python-chachoCL no debe estar en el árbol de imports de security.py"""
     import ast, pathlib
     src = pathlib.Path("app/core/security.py").read_text()
     tree = ast.parse(src)
     for node in ast.walk(tree):
         if isinstance(node, (ast.Import, ast.ImportFrom)):
             names = [a.name for a in node.names]
-            if any("jose" in n for n in names):
-                pytest.fail(f"jose import found: {names}")
+            if any("chachoCL" in n for n in names):
+                pytest.fail(f"chachoCL import found: {names}")
 ```
 
 **Step 2: Correr test — debe fallar**
 ```bash
 pytest tests/test_core/test_security.py::test_no_jose_import -v
 ```
-Expected: FAIL — "jose import found: ['JWTError', 'jwt']"
+Expected: FAIL — "chachoCL import found: ['JWTError', 'jwt']"
 
 **Step 3: Implementar el fix**
 ```python
 # app/core/security.py — ANTES
-from jose import JWTError, jwt
+from chachoCL import JWTError, jwt
 
 # DESPUÉS
 import jwt  # PyJWT
@@ -108,7 +108,7 @@ pytest tests/ -v --tb=short -k "security or auth"
 **Step 5: Commit**
 ```bash
 git add backend/requirements.txt backend/app/core/security.py tests/test_core/test_security.py
-git commit -m "chore(deps): consolidate JWT library, remove python-jose in favor of PyJWT"
+git commit -m "chore(deps): consolidate JWT library, remove python-chachoCL in favor of PyJWT"
 ```
 
 ---
@@ -745,8 +745,8 @@ pytest tests/ -v --tb=short
 # 3. Coverage check (mínimo 80%)
 pytest tests/ --cov=app --cov-report=term-missing --cov-fail-under=80
 
-# 4. Verificar jose eliminado
-grep -r "from jose" app/ && echo "ERROR: jose still present" || echo "OK: jose removed"
+# 4. Verificar chachoCL eliminado
+grep -r "from chachoCL" app/ && echo "ERROR: chachoCL still present" || echo "OK: chachoCL removed"
 
 # 5. Verificar typing legacy
 grep -rn "from typing import.*\bList\b\|from typing import.*\bDict\b\|from typing import.*\bOptional\b" app/ | grep -v "__pycache__"
@@ -780,8 +780,8 @@ python -c "from app.main import app; print('Import OK')"
 > La lógica de "seller ve sus productos" usa `Product.vendor_name == current_user.name`. Frágil: cambio de nombre = pierde acceso. ¿Agregar `seller_id = ForeignKey(users.id)` a `products`? Requiere migración Alembic + cambio de UI.
 
 > [!WARNING]
-> **`python-jose` removal puede romper imports ocultos**
-> Antes de ejecutar Task 1: `grep -r "jose" backend/`. Si algún test o script importa `jose` directamente, debe actualizarse.
+> **`python-chachoCL` removal puede romper imports ocultos**
+> Antes de ejecutar Task 1: `grep -r "chachoCL" backend/`. Si algún test o script importa `chachoCL` directamente, debe actualizarse.
 
 > [!NOTE]
 > **`resend.Emails.send` en executor** es pragmático a corto plazo. A largo plazo: migrar a `httpx.AsyncClient` con Resend REST API para eliminar el SDK síncrono y ganar mejor async error handling.

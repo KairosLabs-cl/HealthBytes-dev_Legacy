@@ -1,4 +1,4 @@
-# 🛠️ Task — Jose Luna (Backend Mid)
+# 🛠️ Task — chachoCL (Backend Mid)
 
 **Tarea:** Contrato end-to-end de consulta de órdenes pagadas y no pagadas
 **Branch:** `fix/orders-payment-query-contract`

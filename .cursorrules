@@ -497,7 +497,7 @@ asyncpg                  # Driver async para PostgreSQL
 aiosqlite                # Driver async para SQLite (tests)
 pydantic>=2.0.0
 alembic                  # Migraciones DB
-python-jose[cryptography]
+python-chachoCL[cryptography]
 passlib[bcrypt]
 python-multipart
 redis                    # Cache (redis-py)

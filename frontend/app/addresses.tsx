@@ -97,7 +97,7 @@ export default function AddressesScreen() {
       "Macul",
       "La Pintana",
       "Pirque",
-      "San José de Maipo",
+      "San chachoCL de Maipo",
       "Buin",
       "Calera de Tango",
       "Paine",

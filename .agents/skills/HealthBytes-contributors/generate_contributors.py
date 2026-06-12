@@ -8,38 +8,38 @@ def run_cmd(cmd, cwd=None):
 
 # Configuration mapping to consolidate different email/name strings to unique developers
 DEVELOPER_MAP = {
-    "benjamin zamora": {
-        "name": "Benjamin Zamora",
-        "github": "nojustbenja",
-        "roles": "Liderazgo Técnico, Arquitectura del Sistema (FastAPI/Zustand), Integración de Pagos y Seguridad."
-    },
-    "benjamín zamora": {
-        "name": "Benjamin Zamora",
+    "nojustbenja": {
+        "name": "nojustbenja",
         "github": "nojustbenja",
         "roles": "Liderazgo Técnico, Arquitectura del Sistema (FastAPI/Zustand), Integración de Pagos y Seguridad."
     },
     "nojustbenja": {
-        "name": "Benjamin Zamora",
+        "name": "nojustbenja",
         "github": "nojustbenja",
         "roles": "Liderazgo Técnico, Arquitectura del Sistema (FastAPI/Zustand), Integración de Pagos y Seguridad."
     },
-    "guillermo": {
-        "name": "Guillermo Serrano",
+    "nojustbenja": {
+        "name": "nojustbenja",
+        "github": "nojustbenja",
+        "roles": "Liderazgo Técnico, Arquitectura del Sistema (FastAPI/Zustand), Integración de Pagos y Seguridad."
+    },
+    "GuillermoSerrano132": {
+        "name": "GuillermoSerrano132",
         "github": "GuillermoSerrano132",
         "roles": "Desarrollo Frontend, Vistas del E-commerce, Refactorización y Pruebas Unitarias."
     },
     "guillermoserrano132": {
-        "name": "Guillermo Serrano",
+        "name": "GuillermoSerrano132",
         "github": "GuillermoSerrano132",
         "roles": "Desarrollo Frontend, Vistas del E-commerce, Refactorización y Pruebas Unitarias."
     },
-    "josé": {
-        "name": "José",
+    "chachoCL": {
+        "name": "chachoCL",
         "github": "chachoCL",
         "roles": "Rutas de Autenticación, Middleware del Backend y Reforzamiento de Seguridad."
     },
-    "jose": {
-        "name": "José",
+    "chachoCL": {
+        "name": "chachoCL",
         "github": "chachoCL",
         "roles": "Rutas de Autenticación, Middleware del Backend y Reforzamiento de Seguridad."
     },

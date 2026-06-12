@@ -12,9 +12,9 @@ Gestiona el ciclo de vida de tareas del equipo HealthBytes: reportes de estado, 
 **Equipo:**
 | Persona | Rol | Nivel |
 |---|---|---|
-| Benjamin | CTO / Full-Stack | Senior — reviewer y oversight |
+| nojustbenja | CTO / Full-Stack | Senior — reviewer y oversight |
 | Bastián | Frontend | Mid |
-| José | Backend | Mid |
+| chachoCL | Backend | Mid |
 | Andrés | Frontend | 🆕 Junior |
 | Abram | Backend | 🆕 Junior |
 
@@ -151,7 +151,7 @@ Si el usuario menciona un dev + trabajo sin pedir explícitamente gestión de ta
 
 **Ejemplos que disparan este skill:**
 - "Voy a pedirle a Bastián que arregle el login"
-- "José terminó el contrato de órdenes"
+- "chachoCL terminó el contrato de órdenes"
 - "Andrés no entiende los stores de Zustand"
 
 **Respuesta:**

@@ -1,8 +1,8 @@
-# 🛠️ Task — Bastian Soto (Frontend dev)
+# 🛠️ Task — Basty001 (Frontend dev)
 
 **Tarea:** UI Mapa "Dónde Conseguir" (estilo Copec/Submarino)  
 **Branch:** `feat/store-locator-map`  
-**ID:** `task-20260608-bastian-soto-store-locator-ui`  
+**ID:** `task-20260608-Basty001-store-locator-ui`  
 **Deadline:** 2026-06-20 (2 semanas)  
 **Tipo:** `feat` — PIVOTE P0
 
@@ -554,6 +554,6 @@ feat(stores): add "Cómo llegar" opening Google Maps
 
 ---
 
-## 🎯 Tip de Benjamin
+## 🎯 Tip de nojustbenja
 
 > "El truco de Copec/Submarino es la **simplicidad**: mapa + lista + botón de acción. No sobrecompliques. Usuarios solo quieren saber dónde ir y cómo llegar. Eso es todo." 💪

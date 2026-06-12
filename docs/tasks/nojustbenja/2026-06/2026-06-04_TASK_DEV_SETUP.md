@@ -1,8 +1,8 @@
-# 🛠️ Task — Benjamin (CTO / Full-Stack)
+# 🛠️ Task — nojustbenja (CTO / Full-Stack)
 
 **Tarea:** Setup del entorno de desarrollo local para nuevos devs
 **Branch:** `docs/dev-environment-onboarding`
-**ID:** `task-20260604-benjamin-zamora-dev-setup`
+**ID:** `task-20260604-nojustbenja-dev-setup`
 **Tipo:** `docs` + `feat` — ayuda directa al equipo esta semana
 
 ---

@@ -1,8 +1,8 @@
-# 🛠️ Task — Jose Luna (DevOps - Backend)
+# 🛠️ Task — chachoCL (DevOps - Backend)
 
 **Tarea:** Deshabilitar Marketplace Backend  
 **Branch:** `refactor/disable-marketplace-backend`  
-**ID:** `task-20260608-jose-luna-disable-marketplace-backend`  
+**ID:** `task-20260608-chachoCL-disable-marketplace-backend`  
 **Deadline:** 2026-06-20  
 **Tipo:** `refactor` — PIVOTE P0
 
@@ -262,9 +262,9 @@ docs(api): update Swagger docs for disabled marketplace endpoints
 
 ---
 
-## Coordinación con Benjamin
+## Coordinación con nojustbenja
 
-Benjamin está haciendo lo mismo en el frontend. Ambos deben mergear antes de que Bastian empiece con el mapa, para que la app muestre correctamente "Próximamente" en vez de checkout.
+nojustbenja está haciendo lo mismo en el frontend. Ambos deben mergear antes de que Basty001 empiece con el mapa, para que la app muestre correctamente "Próximamente" en vez de checkout.
 
 ---
 

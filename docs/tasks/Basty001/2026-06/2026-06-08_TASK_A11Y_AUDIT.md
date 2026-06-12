@@ -76,4 +76,4 @@ pnpm test --passWithNoTests
 
 > [!IMPORTANT]
 > **No hagas cambios visuales** a menos que sean necesarios para el contraste.
-> Si tienes dudas sobre si un cambio rompe algo, pregúntale a Benjamin antes de mergear.
+> Si tienes dudas sobre si un cambio rompe algo, pregúntale a nojustbenja antes de mergear.

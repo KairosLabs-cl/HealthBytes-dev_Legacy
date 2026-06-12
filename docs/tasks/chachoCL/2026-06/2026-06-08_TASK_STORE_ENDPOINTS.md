@@ -1,8 +1,8 @@
-# 🛠️ Task — Jose Luna (DevOps - Backend)
+# 🛠️ Task — chachoCL (DevOps - Backend)
 
 **Tarea:** Endpoints Store Locator  
 **Branch:** `feat/store-locator-api`  
-**ID:** `task-20260608-jose-luna-store-endpoints`  
+**ID:** `task-20260608-chachoCL-store-endpoints`  
 **Deadline:** 2026-06-20  
 **Tipo:** `feat` — PIVOTE P0
 
@@ -299,9 +299,9 @@ docs(api): update Swagger with store locator endpoints
 
 ---
 
-## Coordinación con Bastian
+## Coordinación con Basty001
 
-Bastian necesita que estos endpoints estén funcionando para poder mostrar el mapa. Coordiná con él para darle la estructura exacta del JSON que retornan.
+Basty001 necesita que estos endpoints estén funcionando para poder mostrar el mapa. Coordiná con él para darle la estructura exacta del JSON que retornan.
 
 **Ejemplo de response esperado:**
 ```json
@@ -322,4 +322,4 @@ Bastian necesita que estos endpoints estén funcionando para poder mostrar el ma
 ---
 
 > [!IMPORTANT]
-> Estos endpoints son **críticos** para el demo. Sin ellos, el mapa de Bastian está vacío.
+> Estos endpoints son **críticos** para el demo. Sin ellos, el mapa de Basty001 está vacío.

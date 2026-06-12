@@ -8,19 +8,19 @@ Tareas del equipo organizadas por desarrollador y fecha.
 
 ```
 tasks/
-├── benjamin-zamora/
+├── nojustbenja/
 │   └── 2026-06/
 │       ├── 2026-06-04_TASK_DEV_SETUP.md (✅ completada)
 │       ├── 2026-06-08_TASK_DISABLE_MARKETPLACE_FRONTEND.md (P0)
 │       ├── 2026-06-08_TASK_STORE_MODEL_SEED.md (P0)
 │       └── 2026-06-08_TASK_PUSH_TOKEN_BACKEND.md (P1)
 │
-├── bastian-soto/
+├── Basty001/
 │   └── 2026-06/
 │       ├── 2026-06-08_TASK_STORE_MAP.md (P0)
 │       └── 2026-06-08_TASK_A11Y_AUDIT.md (P1)
 │
-├── jose-luna/
+├── chachoCL/
 │   └── 2026-06/
 │       ├── 2026-06-08_TASK_DISABLE_MARKETPLACE_BACKEND.md (P0)
 │       ├── 2026-06-08_TASK_STORE_ENDPOINTS.md (P0)
@@ -37,7 +37,7 @@ tasks/
 │
 ├── collaborative/
 │   └── 2026-06/
-│       └── 2026-06-08_TASK_ECS_STAGING.md (P2 - Benjamin Zamora + Jose Luna)
+│       └── 2026-06-08_TASK_ECS_STAGING.md (P2 - nojustbenja + chachoCL)
 │
 └── templates/
     └── RECON_TEMPLATE.md
@@ -47,17 +47,17 @@ tasks/
 
 ## 🎯 Tareas Activas (P0 - Deadline: 2026-06-20)
 
-### Benjamin Zamora (Fullstack)
-1. **Deshabilitar marketplace frontend** → `benjamin-zamora/2026-06/2026-06-08_TASK_DISABLE_MARKETPLACE_FRONTEND.md`
-2. **Modelo Store + seed tiendas** → `benjamin-zamora/2026-06/2026-06-08_TASK_STORE_MODEL_SEED.md`
+### nojustbenja (Fullstack)
+1. **Deshabilitar marketplace frontend** → `nojustbenja/2026-06/2026-06-08_TASK_DISABLE_MARKETPLACE_FRONTEND.md`
+2. **Modelo Store + seed tiendas** → `nojustbenja/2026-06/2026-06-08_TASK_STORE_MODEL_SEED.md`
 3. **Renombrar Carrito → Mi Lista** (tarea simple, sin doc)
 
-### Jose Luna (DevOps - Backend)
-1. **Deshabilitar marketplace backend** → `jose-luna/2026-06/2026-06-08_TASK_DISABLE_MARKETPLACE_BACKEND.md`
-2. **Endpoints store locator** → `jose-luna/2026-06/2026-06-08_TASK_STORE_ENDPOINTS.md`
+### chachoCL (DevOps - Backend)
+1. **Deshabilitar marketplace backend** → `chachoCL/2026-06/2026-06-08_TASK_DISABLE_MARKETPLACE_BACKEND.md`
+2. **Endpoints store locator** → `chachoCL/2026-06/2026-06-08_TASK_STORE_ENDPOINTS.md`
 
-### Bastian Soto (Frontend)
-1. **Mapa estilo Copec/Submarino** → `bastian-soto/2026-06/2026-06-08_TASK_STORE_MAP.md`
+### Basty001 (Frontend)
+1. **Mapa estilo Copec/Submarino** → `Basty001/2026-06/2026-06-08_TASK_STORE_MAP.md`
 
 ### Andres Silva (Frontend Jr)
 1. **Recon frontend** → `andres-silva/2026-06/2026-06-04_RECON_GUIDE.md`
@@ -71,9 +71,9 @@ tasks/
 
 | Dev | P0 activas | P1 | P2 | Completadas |
 |---|---|---|---|---|
-| Benjamin Zamora | 3 | 1 | 0 | 1 |
-| Bastian Soto | 1 | 1 | 0 | 0 |
-| Jose Luna | 2 | 0 | 1 | 0 |
+| nojustbenja | 3 | 1 | 0 | 1 |
+| Basty001 | 1 | 1 | 0 | 0 |
+| chachoCL | 2 | 0 | 1 | 0 |
 | Andres Silva | 1 | 0 | 0 | 0 |
 | Abraham Abanto | 1 | 0 | 0 | 0 |
 

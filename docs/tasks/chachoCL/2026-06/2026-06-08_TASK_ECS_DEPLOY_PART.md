@@ -1,16 +1,16 @@
-# 🛠️ Task — Jose Luna (Backend Mid) — Parte ECS Deploy
+# 🛠️ Task — chachoCL (Backend Mid) — Parte ECS Deploy
 
 **Tarea colaborativa:** Staging Deploy AWS ECS  
 **Tu parte:** Dockerfiles + CI/CD + Task Definitions + Smoke Tests  
 **Branch:** `ops/staging-ecs-deploy`  
 **ID:** `task-20260608-staging-ecs-deploy`  
-**Colaborador:** Benjamin (infraestructura AWS)
+**Colaborador:** nojustbenja (infraestructura AWS)
 
 ---
 
 ## Tu responsabilidad en esta tarea
 
-Mientras Benjamin configura la infraestructura AWS (VPC, ECS, RDS, Redis, ALB), vos te encargás de:
+Mientras nojustbenja configura la infraestructura AWS (VPC, ECS, RDS, Redis, ALB), vos te encargás de:
 
 1. **Dockerfiles optimizados** para backend y frontend
 2. **ECS Task Definitions** (JSON configs)
@@ -218,7 +218,7 @@ http {
 }
 ```
 
-**⚠️ Benjamin te va a dar el `ACCOUNT_ID` y los ARNs de los roles.**
+**⚠️ nojustbenja te va a dar el `ACCOUNT_ID` y los ARNs de los roles.**
 
 ---
 
@@ -376,8 +376,8 @@ async def test_login_endpoint_exists():
 - [ ] CI/CD pipeline `.github/workflows/staging-deploy.yml` funcional
 - [ ] Smoke tests escritos y pasando localmente
 - [ ] Build de Docker localmente exitoso: `docker build -t test-backend backend/`
-- [ ] **Benjamin revisó y aprobó tus Dockerfiles**
-- [ ] **Vos revisaste y aprobaste la infra de Benjamin**
+- [ ] **nojustbenja revisó y aprobó tus Dockerfiles**
+- [ ] **Vos revisaste y aprobaste la infra de nojustbenja**
 
 ---
 
@@ -401,16 +401,16 @@ curl http://localhost:3001/health
 
 ---
 
-## Coordinación con Benjamin
+## Coordinación con nojustbenja
 
 **Antes de empezar:**
-- Esperar a que Benjamin confirme que la infra base está lista (VPC, ECS cluster, RDS, Redis)
+- Esperar a que nojustbenja confirme que la infra base está lista (VPC, ECS cluster, RDS, Redis)
 - Pedirle los ARNs de IAM roles para el task definition
 - Confirmar el `ACCOUNT_ID` de AWS para ECR
 
 **Durante el desarrollo:**
-- Push frequent de tus cambios a una branch `feat/ecs-deploy-jose`
-- Benjamin hace lo mismo en `feat/ecs-deploy-benjamin`
+- Push frequent de tus cambios a una branch `feat/ecs-deploy-chachoCL`
+- nojustbenja hace lo mismo en `feat/ecs-deploy-nojustbenja`
 - Ambos revisan los PRs del otro
 
 **Al final:**
@@ -434,4 +434,4 @@ docs(ops): document deployment process in aws-ecs-staging.md
 ---
 
 > [!IMPORTANT]
-> Esta es una tarea **colaborativa**. No trabajes aislado — coordina frecuentemente con Benjamin. Ambos revisan y aprueban antes de mergear.
+> Esta es una tarea **colaborativa**. No trabajes aislado — coordina frecuentemente con nojustbenja. Ambos revisan y aprueban antes de mergear.
