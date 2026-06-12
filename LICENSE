@@ -22,11 +22,17 @@ SOFTWARE.
 
 ---
 
-CLÁUSULAS ADICIONALES / ADDITIONAL CLAUSES
+CLÁUSULAS ADICIONALES Y EXENCIÓN ABSOLUTA DE RESPONSABILIDAD
 
-Al utilizar este código, usted acepta explícitamente las siguientes condiciones (solicitadas por los creadores):
+El uso, copia, modificación o distribución de este código implica la aceptación incondicional y legalmente vinculante de las siguientes condiciones por parte del usuario (sea persona física o jurídica):
 
-1. Atribución Obligatoria: Quien quiera usar este código para distribuirlo o basarse en él, debe mencionarnos y darnos el crédito correspondiente.
-2. Libertad de Uso: Es código abierto (Open Source). Haga usted lo que le plazca con él, siempre y cuando respete los términos aquí estipulados.
-3. Exención de Responsabilidad para Empresas y Organizaciones: Si usted representa a una empresa, organización o entidad (especialmente aquellas en búsqueda de financiación o inversión), asume la responsabilidad absoluta por el uso de este código. No nos responsabilice, ni nos eche la culpa de cualquier fallo, pérdida financiera o consecuencia derivada de su implementación.
-4. Protección de Reputación: Queda terminantemente prohibido utilizar nuestro nombre o la autoría de este proyecto para manchar nuestra imagen, difamarnos o culpabilizarnos ante terceros.
+1. Atribución Obligatoria: Toda persona o entidad que utilice, distribuya, modifique o incorpore este código (en su totalidad o en parte) deberá otorgar el crédito correspondiente a los creadores originales de forma clara y visible.
+
+2. Libertad de Uso: Este software es de código abierto. Usted es libre de hacer lo que le plazca con él (incluyendo usos comerciales), siempre y cuando cumpla estrictamente con todas las condiciones de esta licencia.
+
+3. Exención Absoluta de Responsabilidad y Renuncia a Demandas (Para toda Persona o Entidad):
+El uso de este código es bajo su propio y exclusivo riesgo. Si usted actúa en nombre propio o representa a CUALQUIER tipo de entidad legal (incluyendo, de manera enunciativa mas no limitativa: corporaciones privadas, startups buscando financiación, organizaciones no gubernamentales (ONGs), entidades sin fines de lucro, fundaciones, entes gubernamentales, inversionistas o grupos de cualquier naturaleza), USTED y la entidad a la que representa asumen el 100% de la responsabilidad legal, técnica, financiera y operativa.
+Bajo NINGUNA circunstancia, concepto legal o teoría de responsabilidad (incluyendo contrato, responsabilidad estricta, negligencia o agravio) los autores originales, mantenedores o contribuidores de este proyecto podrán ser sujetos a demandas, reclamos legales, ni responsabilizados por daños directos, indirectos, incidentales, consecuentes, especiales o punitivos (incluyendo, sin limitación, pérdida de datos, lucro cesante, fallos de seguridad o interrupción de operaciones) que resulten del uso o la incapacidad de usar este software.
+
+4. Protección de Reputación e Indemnidad:
+Queda estrictamente prohibido utilizar el nombre del proyecto, el de sus autores o cualquier supuesta asociación con nosotros para difamarnos, manchar nuestra reputación pública o intentar transferirnos culpa alguna. Asimismo, al usar este código, usted acepta defender e indemnizar a los autores contra cualquier reclamo de terceros derivado del uso que usted o su organización hagan del mismo.
