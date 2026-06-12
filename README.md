@@ -1,4 +1,4 @@
-# HealthBytes
+# HealthBytes Ecomerce Solution - Legacy 
 
 > [!WARNING]
 > **LEGACY PROJECT**
